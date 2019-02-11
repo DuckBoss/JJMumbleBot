@@ -59,10 +59,10 @@ def msg(mumble, receiver, message):
 
 
 def setup_privileges():
-    with open("%s/blacklist.txt" % cfg.privileges_path) as blklist:
+    with open("%sblacklist.txt" % cfg.privileges_path) as blklist:
         line = blklist.readline()
         pv.blacklist_names.append(line.strip())
-    with open("%s/admin.txt" % cfg.privileges_path) as admlist:
+    with open("%sadmin.txt" % cfg.privileges_path) as admlist:
         line = admlist.readline()
         pv.admin_names.append(line.strip())
     print("User privilege setup complete.")
@@ -84,7 +84,7 @@ def get_blacklist():
     blklist_txt = "<br><font color='red'>Blacklist:</font><br>"
     try:
         lines = None
-        with open("%s/blacklist.txt" % cfg.privileges_path, 'r') as blklist:
+        with open("%sblacklist.txt" % cfg.privileges_path, 'r') as blklist:
             lines = blklist.readlines()
         for i in range(len(lines)):
             blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, lines[i].strip())
@@ -97,7 +97,7 @@ def get_blacklist():
 def add_to_blacklist(user_name):
     try:
         if user_name not in pv.blacklist_names:
-            with open("%s/blacklist.txt" % cfg.privileges_path, 'a') as blklist:
+            with open("%sblacklist.txt" % cfg.privileges_path, 'a') as blklist:
                 blklist.write("%s\n" % user_name)
                 pv.blacklist_names.append(user_name)
                 print("User %s added to the blacklist." % user_name)
@@ -113,9 +113,9 @@ def remove_from_blacklist(user_name):
     try:
         if user_name in pv.blacklist_names:
             lines = None
-            with open("%s/blacklist.txt" % cfg.privileges_path, 'r') as blklist:
+            with open("%sblacklist.txt" % cfg.privileges_path, 'r') as blklist:
                 lines = blklist.readlines()
-            with open("%s/blacklist.txt" % cfg.privileges_path, 'w') as blklist:
+            with open("%sblacklist.txt" % cfg.privileges_path, 'w') as blklist:
                 for line in lines:
                     if line != ("%s\n" % user_name):
                         blklist.write(line)

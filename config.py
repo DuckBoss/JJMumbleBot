@@ -1,23 +1,18 @@
 server_ip = "SERVER_IP"
-user_id = "BOT_USER"
-password = "BOT_PASSWORD"
+user_id = "USERNAME"
+password = "PASSWORD"
 port = PORT_NUMBER
-user_cert = "BOT_CERT_PATH"
+user_cert = "CERT_FILE_PATH"
 
-temporary_img_dir = "TEMP_IMAGE_DIR"
-temporary_media_dir = "TEMP_MEDIA_DIR"
-permanent_media_dir = "PERM_MEDIA_DIR"
+temporary_img_dir = "TEMP_IMG_DIR_PATH"
+temporary_media_dir = "TEMP_MEDIA_DIR_PATH"
+permanent_media_dir = "PERM_MEDIA_DIR_PATH"
 
-vlc_dir = "VLC_DIR"
-default_channel = "DEFAULT_CHANNEL"
-plugins_path = "PLUGINS_PATH"
-privileges_path = ""
+vlc_dir = "VLC_PATH"
+default_channel = "DEFAULT_CHANNEL_NAME"
+plugins_path = "PLUGINS_DIR_PATH"
+privileges_path = "PRIVILEGES_DIR_PATH"
 
-
-
-bot_version = "v2.2.3_p2"
-about_text = "<br> DuckBot is a plugin-based mumble bot client. <br> DuckBot is currently on version: %s" % bot_version
-
-known_bugs = "<br>#### Known Bugs ####<br>\
-            <b></b><br>\
-            <br>"
+bot_version = "v2.2.4_p1"
+about_text = "<br> JJMumbleBot is a plugin-based python3 mumble bot client. <br> JJMumbleBot is currently on version: %s" % bot_version
+known_bugs = "<br>#### Known Bugs ####<br>"

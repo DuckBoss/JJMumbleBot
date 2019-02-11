@@ -16,7 +16,7 @@ class Plugin(PluginBase):
                         All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
                         <b>!youtube/!yt 'search_term'</b>: Searches youtube for a song/video.<br>\
                         <b>!play/!p 'item_number' 'item_count'(optional)</b>: Plays the selected song from youtube.<br>\
-                        <b>!stop/!hajima/!yamero</b>: Stops the currently playing track.<br>\
+                        <b>!stop</b>: Stops the currently playing track.<br>\
                         <b>!volume/!v '0..1'</b>: Sets the bot audio volume.<br>\
                         <b>!replay/!rp</b>: Replays the last played audio track.<br>\
                         <b>!next/!skip</b>: Goes to the next song in the queue.<br>\
@@ -27,7 +27,7 @@ class Plugin(PluginBase):
 
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': 'R:/temporary_media/%(id)s.wav',
+        'outtmpl': utils.get_temporary_media_dir()+'%(id)s.wav',
         'noplaylist': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
@@ -340,7 +340,7 @@ class Plugin(PluginBase):
             if info_dict['duration'] >= self.max_track_duration:
                 return None
 
-            if os.path.isfile("R:/temporary_media/%s.wav" % info_dict['id']):
+            if os.path.isfile(utils.get_temporary_media_dir()+"%s.wav" % info_dict['id']):
                 print("File exists, skipping download...")
                 prep_struct = {
                     'main_id': info_dict['id'],
@@ -409,7 +409,7 @@ class Plugin(PluginBase):
         return queue_titles
 
     def plugin_test(self):
-        print("Music Plugin self-test callback.")
+        print("Youtube Plugin self-test callback.")
 
     def quit(self):
         self.stop_audio()

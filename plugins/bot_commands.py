@@ -121,7 +121,7 @@ class Plugin(PluginBase):
 
     @staticmethod
     def plugin_test():
-        print("Watch_Together Plugin self-test callback.")
+        print("Bot_Commands Plugin self-test callback.")
 
     def quit(self):
         print("Exiting Bot_Commands Plugin...")
