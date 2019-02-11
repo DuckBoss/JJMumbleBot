@@ -8,6 +8,7 @@ A python 3 mumble bot with extensive features.
 ## Features
 - Streams youtube songs in the channel.
 - Posts images from urls or from a local directory in the channel.
+- Sound Board that plays short wav audio clips in the channel.
 - Fast, responsive, plugin-based system for easy expandability.
 
 ## Wiki
