@@ -1,7 +1,6 @@
 # JJMumbleBot
 A python 3 mumble bot with extensive features.
 
-<b> Please check out the wiki for more information </b>
 
 ## Features
 - Streams youtube songs in the channel.
@@ -9,4 +8,5 @@ A python 3 mumble bot with extensive features.
 - Fast, responsive, plugin-based system for easy expandability.
 
 ## Wiki
+<b> Please check out the wiki for more information </b>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a>
