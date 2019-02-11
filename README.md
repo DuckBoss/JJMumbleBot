@@ -8,5 +8,5 @@ A python 3 mumble bot with extensive features.
 - Fast, responsive, plugin-based system for easy expandability.
 
 ## Wiki
-<b> Please check out the wiki for more information </b>
+<b> Please check out the wiki for more information </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a>
