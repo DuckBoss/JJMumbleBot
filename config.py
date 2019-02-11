@@ -11,7 +11,7 @@ permanent_media_dir = "PERM_MEDIA_DIR"
 vlc_dir = "VLC_DIR"
 default_channel = "DEFAULT_CHANNEL"
 plugins_path = "PLUGINS_PATH"
-privileges_path = "PRIV_FILE_PATH"
+privileges_path = ""
 
 
 
