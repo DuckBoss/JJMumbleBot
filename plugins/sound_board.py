@@ -14,7 +14,7 @@ class Plugin(PluginBase):
                     <b>!sb 'file_name'</b>: The file must be in wav format.<br>\
                     <b>!sbv '0..1'</b>: Sets the sound board audio volume.<br>\
                     <b>!sbreplay/!sbr</b>: Replays the last played sound board track.<br>\
-                    <b>!sb_list</b>: Displays all the available sound board tracks.<br>\
+                    <b>!sblist</b>: Displays all the available sound board tracks.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track."
 
     exit_flag = False
@@ -44,15 +44,24 @@ class Plugin(PluginBase):
                 return
             return
 
-        elif command == "sb_list":
-            final_text = "<br><font color='red'>Local Sound Board Files</font><br>"
+        elif command == "sblist":
             file_counter = 0
+            internal_list = []
+
             for file in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
                 if file.endswith(".wav"):
-                    final_text += "<font color='cyan'>[%d]:</font> <font color='yellow'>%s</font><br>" % (file_counter, file)
+                    internal_list.append("<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file))
                     file_counter += 1
+
+            cur_text = "<br><font color='red'>Local Sound Board Files</font>"
+            for i in range(len(internal_list)):
+                cur_text += internal_list[i]
+                if i % 50 == 0 and i != 0:
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               '%s' % cur_text)
+                    cur_text = ""
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       '%s' % final_text)
+                       '%s' % cur_text)
             return
 
         elif command == "sbreplay" or command == "sbr":
