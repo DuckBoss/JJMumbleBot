@@ -17,7 +17,7 @@ class Plugin(PluginBase):
                         All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
-                        <b>!img_list</b>: Lists all locally hosted images."
+                        <b>!imglist</b>: Lists all locally hosted images."
 
     def __init__(self):
         print("Images Plugin Initialized.")
@@ -55,7 +55,7 @@ class Plugin(PluginBase):
                        '%s' % formatted_string)
             return
 
-        elif command == "img_list":
+        elif command == "imglist":
             file_counter = 0
             internal_list = []
 
