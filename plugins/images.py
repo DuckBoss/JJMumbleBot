@@ -56,14 +56,24 @@ class Plugin(PluginBase):
             return
 
         elif command == "img_list":
-            final_text = "<br><font color='red'>Local Image Files</font><br>"
             file_counter = 0
-            for file in os.listdir(utils.get_permanent_media_dir()+"images/"):
-                if file.endswith(".jpg") or file.endswith(".png"):
-                    final_text += "<font color='cyan'>[%d]:</font> <font color='yellow'>%s</font><br>" % (file_counter, file)
+            internal_list = []
+
+            for file in os.listdir(utils.get_permanent_media_dir() + "images/"):
+                if file.endswith(".jpg"):
+                    internal_list.append(
+                        "<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file))
                     file_counter += 1
+
+            cur_text = "<br><font color='red'>Local Image Files</font>"
+            for i in range(len(internal_list)):
+                cur_text += internal_list[i]
+                if i % 50 == 0 and i != 0:
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               '%s' % cur_text)
+                    cur_text = ""
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       '%s' % final_text)
+                       '%s' % cur_text)
             return
 
     def mid(self, text, begin, length):
