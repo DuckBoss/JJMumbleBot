@@ -140,14 +140,10 @@ class Plugin(PluginBase):
             if vol > 1:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Invalid Volume Input: [0-1]")
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Set volume to %s" % self.volume)
                 return
             if vol < 0:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Invalid Volume Input: [0-1]")
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Set volume to %s" % self.volume)
                 return
             self.volume = vol
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
