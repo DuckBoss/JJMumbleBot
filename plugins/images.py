@@ -14,7 +14,7 @@ import shutil
 
 class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Images Plugin Help <font color='red'>#####</font></b><br> \
-                        All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
+                        All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
