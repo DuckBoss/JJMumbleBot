@@ -13,7 +13,7 @@ import helpers.queue_handler as qh
 
 class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Youtube Plugin Help <font color='red'>#####</font></b><br> \
-                        All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
+                        All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!youtube/!yt 'search_term'</b>: Searches youtube for a song/video.<br>\
                         <b>!play/!p 'item_number' 'item_count'(optional)</b>: Plays the selected song from youtube.<br>\
                         <b>!stop</b>: Stops the currently playing track.<br>\
