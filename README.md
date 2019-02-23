@@ -16,6 +16,9 @@ A python 3 mumble bot with extensive features.
 - <b>Rework privilege system</b>
 - <b>Add logging features to commands</b>
 
-## Wiki
+### Wiki
 <b> Please check out the wiki for more information </b> <br>
-<a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a>
+<a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
+<b> Quick Start guide: </b> <br>
+<a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start</a> <br>
+
