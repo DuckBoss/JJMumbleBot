@@ -11,12 +11,12 @@ A python 3 mumble bot with extensive features.
 - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
 - <b>Fast, responsive, plugin-based system for easy expandability.</b>
 
-### TODO:
+#### TODO:
 - <b>Migrate config system to INI files</b>
 - <b>Rework privilege system</b>
 - <b>Add logging features to commands</b>
 
-### Wiki
+## Wiki
 <b> Please check out the wiki for more information </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Quick Start guide: </b> <br>
