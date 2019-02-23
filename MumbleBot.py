@@ -6,14 +6,20 @@ import sys
 import utils
 import privileges as pv
 
-
 class Bot:
     exit_flag = False
+    safe_mode = False
     bot_status = "Offline"
     bot_plugins = {}
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
+        # Initialize system arguments.
+        if len(sys.argv) > 0:
+            for item in sys.argv:
+                # Enable safe mode.
+                if item == "-safe":
+                    self.safe_mode = True
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(cfg.server_ip, user=cfg.user_id, port=cfg.port, certfile=cfg.user_cert,
                                       password=cfg.password)
@@ -26,14 +32,33 @@ class Bot:
         utils.make_directory(cfg.temporary_img_dir)
         # Setup privileges.
         utils.setup_privileges()
-        # Initialize all plugins.
-        self.initialize_plugins()
+        # Initialize plugins.
+        if self.safe_mode:  
+            self.initialize_plugins_safe()     
+        else:
+            self.initialize_plugins()
         # Run a plugin callback test.
         self.plugin_callback_test()
         print("JJ Mumble Bot initialized!\n")
         # Join the server after all initialization is complete.
         self.join_server()
         self.loop()
+
+    def initialize_plugins_safe(self):
+        # Load Plugins
+        print("\n######### Initializing Plugins #########\n")
+        sys.path.insert(0, cfg.plugins_path)
+        for p_file in os.listdir(cfg.plugins_path):
+            f_name, f_ext = os.path.splitext(p_file)
+            if f_ext == ".py":
+                if f_name == "help":
+                    continue
+                elif f_name == "bot_commands":
+                    plugin = __import__(f_name)
+                    self.bot_plugins[f_name] = plugin.Plugin()
+        help_plugin = __import__('help')
+        self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
+        sys.path.pop(0)
 
     def initialize_plugins(self):
         # Load Plugins
@@ -79,7 +104,10 @@ class Bot:
         for plugin in self.bot_plugins.values():
             plugin.quit()
         self.bot_plugins.clear()
-        self.initialize_plugins()
+        if self.safe_mode:
+            self.initialize_plugins_safe()
+        else:
+            self.initialize_plugins()
         utils.setup_privileges()
         time.sleep(0.3)
         print("All plugins refreshed.")
@@ -137,6 +165,10 @@ class Bot:
                            "JJMumbleBot is %s." % self.status())
                 return
 
+            elif command == "system_test":
+                self.plugin_callback_test()
+                return
+
             for plugin in self.bot_plugins.values():
                 plugin.process_command(self.mumble, text)
 
@@ -149,7 +181,7 @@ class Bot:
         utils.clear_directory(utils.get_temporary_img_dir())
         print("Cleared temporary directories.")
         self.exit_flag = True
-
+        
     def loop(self):
         while not self.exit_flag:
             time.sleep(0.1)

@@ -19,6 +19,7 @@ class Plugin(PluginBase):
             <b>!version</b>: Displays the bot version.<br>\
             <b>!status</b>: Displays the bots current status.<br>\
             <b>!refresh</b>: Refreshes all plugins.<br>\
+            <b>!spam_test</b>: Spams the channel with test messages.<br>\
             <b>!about</b>: Displays the bots about screen."
 
     def __init__(self):
@@ -37,6 +38,13 @@ class Plugin(PluginBase):
                 return
             parameter = message_parse[1]
             utils.echo(utils.get_my_channel(mumble), parameter)
+            return
+
+        elif command == "spam_test":
+            if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
+                return
+            for i in range(10):
+                utils.echo(utils.get_my_channel(mumble), "This is a test message...")
             return
 
         elif command == "msg":
