@@ -151,6 +151,8 @@ class Bot:
                 if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
                     self.refresh_plugins()
                     return
+                else:
+                    print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 return
 
             elif command == "exit" or command == "quit":
@@ -158,6 +160,8 @@ class Bot:
                     print("Stopping all threads...")
                     self.exit()
                     return
+                else:
+                    print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 return
 
             elif command == "status":
@@ -166,7 +170,11 @@ class Bot:
                 return
 
             elif command == "system_test":
-                self.plugin_callback_test()
+                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                    self.plugin_callback_test()
+                    return
+                else:
+                    print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 return
 
             for plugin in self.bot_plugins.values():

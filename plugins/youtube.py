@@ -79,6 +79,9 @@ class Plugin(PluginBase):
             return
 
         elif command == "next" or command == "skip":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             if self.music_thread is not None:
                 if self.queue_instance.is_empty():
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -91,6 +94,9 @@ class Plugin(PluginBase):
             return
 
         elif command == "stop":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             if self.music_thread is not None:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Stopping youtube audio thread...")
@@ -101,7 +107,8 @@ class Plugin(PluginBase):
             return
 
         elif command == "clear_cache":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
+                print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
             print("Clearing youtube temporary media cache.")
             self.clear_download_cache(mumble)
@@ -109,6 +116,7 @@ class Plugin(PluginBase):
 
         elif command == "clear":
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             print("Clearing youtube queue.")
             self.clear_queue()
@@ -118,6 +126,7 @@ class Plugin(PluginBase):
 
         elif command == "max_duration":
             if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
+                print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
             try:
                 new_max = int(message[1:].split(' ', 1)[1])
@@ -130,6 +139,9 @@ class Plugin(PluginBase):
                 return
 
         elif command == "volume" or command == "v":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
@@ -152,6 +164,7 @@ class Plugin(PluginBase):
 
         elif command == "youtube" or command == "yt":
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             try:
                 search_term = message_parse[1]
@@ -168,6 +181,7 @@ class Plugin(PluginBase):
 
         elif command == "queue" or command == "q":
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             queue_results = self.get_queue()
             if queue_results is not None:
@@ -181,6 +195,7 @@ class Plugin(PluginBase):
 
         elif command == "play" or command == "p":
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.can_play:
                 # self.sound_board_plugin.clear_audio_thread()
@@ -246,6 +261,7 @@ class Plugin(PluginBase):
 
         elif command == "replay" or command == "rp":
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.music_thread is not None:
                 if self.current_song is not None and self.current_song_info is not None:

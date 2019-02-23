@@ -37,6 +37,9 @@ class Plugin(PluginBase):
         all_messages = message[1:].split()
         command = message_parse[0]
         if command == "sbstop" or command == "sbs":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             if self.audio_thread is not None:
                 self.stop_audio()
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -45,6 +48,9 @@ class Plugin(PluginBase):
             return
 
         elif command == "sblist":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             file_counter = 0
             internal_list = []
 
@@ -65,11 +71,11 @@ class Plugin(PluginBase):
             return
 
         elif command == "sbreplay" or command == "sbr":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             if self.audio_thread is not None:
                 if self.current_song is not None:
-                    if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
-                        return
-
                     self.youtube_plugin.clear_audio_plugin()
 
                     uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
@@ -104,6 +110,9 @@ class Plugin(PluginBase):
             return
 
         elif command == "sbv":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
@@ -130,6 +139,9 @@ class Plugin(PluginBase):
             return
 
         elif command == "sb":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
                 return
             parameter = message_parse[1]
