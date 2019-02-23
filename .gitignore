@@ -2,9 +2,3 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Blacklist/Admin Files
-privileges/
-
-# Configs
-config.py
