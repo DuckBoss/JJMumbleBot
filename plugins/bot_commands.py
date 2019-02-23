@@ -8,7 +8,7 @@ class Plugin(PluginBase):
     start_time = None
 
     help_data = "<br><b><font color='red'>#####</font> Bot_Commands Plugin Help <font color='red'>#####</font></b><br> \
-            All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
+            All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
             <b>!echo 'message/image'</b>: Echoes a message/image in the chat.<br>\
             <b>!make 'channel_name'</b>: Creates a channel with the given name.<br>\
             <b>!move 'channel_name'</b>: Moves to an existing channel with the given name.<br>\
@@ -65,7 +65,7 @@ class Plugin(PluginBase):
                 return
             else:
                 channel_search.move_in()
-                utils.echo(channel_search, "DuckBot was moved by %s" % mumble.users[text.actor]['name'])
+                utils.echo(channel_search, "JJMumbleBot was moved by %s" % mumble.users[text.actor]['name'])
             return
 
         elif command == "make":
@@ -90,7 +90,7 @@ class Plugin(PluginBase):
 
         elif command == "version":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "DuckBot is on version %s" % utils.get_version())
+                       "JJMumbleBot is on version %s" % utils.get_version())
             return
 
         elif command == "about":

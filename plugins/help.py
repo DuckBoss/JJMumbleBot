@@ -4,7 +4,7 @@ import utils
 
 class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> DuckyBot General Help Commands <font color='red'>#####</font></b><br> \
-                All commands can be run by typing it in the chat or privately messaging DuckBot.<br>\
+                All commands can be run by typing it in the chat or privately messaging JJMumbleBot.<br>\
                 <b>!help</b>: Displays this general help screen.<br>\
                 <b>!bot_help</b>: Displays the bot_commands plugin help screen.<br>\
                 <b>!youtube_help/!yt_help</b>: Displays the youtube plugin help screen.<br>\

@@ -5,7 +5,7 @@ import utils
 
 class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Twice Plugin Help <font color='red'>#####</font></b><br> \
-                        All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
+                        All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!uptime</b>: Returns the bot uptime."
 
     start_seconds = 0

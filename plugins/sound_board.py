@@ -10,7 +10,7 @@ import os
 class Plugin(PluginBase):
 
     help_data = "<br><b><font color='red'>#####</font> Sound_Board Plugin Help <font color='red'>#####</font></b><br> \
-                    All commands can be run by typing it in the channel or privately messaging DuckBot.<br>\
+                    All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                     <b>!sb 'file_name'</b>: The file must be in wav format.<br>\
                     <b>!sbv '0..1'</b>: Sets the sound board audio volume.<br>\
                     <b>!sbreplay/!sbr</b>: Replays the last played sound board track.<br>\
