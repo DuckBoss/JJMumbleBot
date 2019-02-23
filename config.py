@@ -13,6 +13,6 @@ default_channel = "DEFAULT_CHANNEL_NAME"
 plugins_path = "PLUGINS_DIR_PATH"
 privileges_path = "PRIVILEGES_DIR_PATH"
 
-bot_version = "v2.2.4_p1"
+bot_version = "v1.2.2"
 about_text = "<br> JJMumbleBot is a plugin-based python3 mumble bot client. <br> JJMumbleBot is currently on version: %s" % bot_version
 known_bugs = "<br>#### Known Bugs ####<br>"
