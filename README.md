@@ -2,7 +2,7 @@
 [![GitHub release](https://img.shields.io/badge/Build-1.2-brightgreen.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
 
-A python 3 mumble bot with extensive features.
+A python 3 mumble bot with extensive features and a plugin based system.
 
 
 ## Features
