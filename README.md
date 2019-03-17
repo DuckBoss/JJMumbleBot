@@ -13,7 +13,6 @@ A python 3 mumble bot with extensive features and a plugin based system.
 
 #### TODO:
 - <b>Rework privilege system</b>
-- <b>Add logging features to commands</b>
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
