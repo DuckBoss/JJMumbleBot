@@ -9,6 +9,7 @@ import subprocess as sp
 import time
 import audioop
 import helpers.queue_handler as qh
+import configparser
 
 
 class Plugin(PluginBase):
@@ -43,16 +44,25 @@ class Plugin(PluginBase):
     current_song_info = None
     music_thread = None
     exit_flag = False
+    # default volume
     volume = 0.5
 
     sound_board_plugin = None
 
+    config = None
+    # max number of tracks in the queue.
     max_queue_size = 25
+    # max track duration in seconds.
     max_track_duration = 900
 
     def __init__(self, mumble):
         print("Music Plugin Initialized...")
         super().__init__()
+        self.config = configparser.ConfigParser()
+        self.config.read('JJMumbleBot/config.ini')
+        self.volume = float(self.config['Plugin_Settings']['Youtube_DefaultVolume'])
+        self.max_queue_size = int(self.config['Plugin_Settings']['Youtube_MaxQueueLength'])
+        self.max_track_duration = int(self.config['Plugin_Settings']['Youtube_MaxVideoLength'])
         utils.clear_directory(utils.get_temporary_media_dir())
         self.queue_instance = qh.QueueHandler(self.max_queue_size)
         self.audio_loop(mumble)
