@@ -6,14 +6,16 @@ A python 3 mumble bot with extensive features and a plugin based system.
 
 
 ## Features
-- <b>Youtube Plugin</b> - Streams youtube songs in the channel.
-- <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
-- <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
-- <b>Fast, responsive, plugin-based system for easy expandability.</b>
+- <b>Built-in Plugins</b> - Fast, responsive, plugin-based system for easy expandability.
+  - <b>Youtube Plugin</b> - Streams youtube songs in the channel.
+  - <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
+  - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
+  - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">Full list of built-in plugins</a></b>
+- <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Event logging to keep track of bot usage and command history.</b>
 
 #### TODO:
-- <b>Rework privilege system</b>
+- <b>Rework user privilege system</b>
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
