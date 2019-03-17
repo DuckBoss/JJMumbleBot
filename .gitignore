@@ -4,3 +4,6 @@ __pycache__/
 *$py.class
 # Ignore logs
 *.log
+# Ignore test files
+*.wav
+*.mp3
