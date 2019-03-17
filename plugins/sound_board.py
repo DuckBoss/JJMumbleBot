@@ -31,7 +31,7 @@ class Plugin(PluginBase):
         print("Sound_Board Plugin Initialized...")    
         super().__init__()
         self.config = configparser.ConfigParser()
-        self.config.read('JJMumbleBot/config.ini')
+        self.config.read(utils.get_config_dir())
         self.volume = float(self.config['Plugin_Settings']['SoundBoard_DefaultVolume'])
 
     def set_youtube_plugin(self, yt_plugin):

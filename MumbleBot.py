@@ -17,8 +17,12 @@ class Bot:
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
+        # Initialize configs.
+        self.cfg_inst = configparser.ConfigParser()
+        self.cfg_inst.read(utils.get_config_dir())
         # Initialize application logging.
-        logging.basicConfig(filename='JJMumbleBot/runtime.log', format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+        logging.basicConfig(filename='%s/runtime.log'%self.cfg_inst['Bot_Directories']['LogDirectory'], format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+        logging.info("Application configs have been read succesfully.")
         # Initialize system arguments.
         if len(sys.argv) > 0:
             for item in sys.argv:
@@ -29,10 +33,6 @@ class Bot:
                 if item == "-debug":
                     self.debug_mode = True
                     logging.info("Debug mode has been enabled through system arguments.")
-        # Initialize configs.
-        self.cfg_inst = configparser.ConfigParser()
-        self.cfg_inst.read('JJMumbleBot/config.ini')
-        logging.info("Application configs have been read succesfully.")
         # Run Debug Mode tests.
         if self.debug_mode:
             self.config_debug()

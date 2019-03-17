@@ -59,7 +59,7 @@ class Plugin(PluginBase):
         print("Music Plugin Initialized...")
         super().__init__()
         self.config = configparser.ConfigParser()
-        self.config.read('JJMumbleBot/config.ini')
+        self.config.read(utils.get_config_dir())
         self.volume = float(self.config['Plugin_Settings']['Youtube_DefaultVolume'])
         self.max_queue_size = int(self.config['Plugin_Settings']['Youtube_MaxQueueLength'])
         self.max_track_duration = int(self.config['Plugin_Settings']['Youtube_MaxVideoLength'])
