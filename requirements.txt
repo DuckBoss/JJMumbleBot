@@ -1,0 +1,7 @@
+requests==2.18.4
+youtube_dl==2019.1.10
+opuslib==3.0.1
+Pillow==5.4.1
+beautifulsoup4==4.7.1
+protobuf==3.7.0
+configparser==3.7.3
