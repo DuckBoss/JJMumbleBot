@@ -120,18 +120,12 @@ class Plugin(PluginBase):
                            "Current sound board volume: %s" % self.volume)
                 return
             if vol > 1:
-                self.volume = 1
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Invalid sound_board volume Input: [0-1]")
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Set sound_board volume to %s" % self.volume)
                 return
             if vol < 0:
-                self.volume = 0
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Invalid sound_board volume Input: [0-1]")
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Set sound_board volume to %s" % self.volume)
                 return
             self.volume = vol
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
