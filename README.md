@@ -1,5 +1,5 @@
 # JJMumbleBot
-[![GitHub release](https://img.shields.io/badge/Build-1.2-brightgreen.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
+[![GitHub release](https://img.shields.io/badge/Build-1.3-brightgreen.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
 
 A python 3 mumble bot with extensive features and a plugin based system.
@@ -12,7 +12,6 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Fast, responsive, plugin-based system for easy expandability.</b>
 
 #### TODO:
-- <b>Migrate config system to INI files</b>
 - <b>Rework privilege system</b>
 - <b>Add logging features to commands</b>
 
