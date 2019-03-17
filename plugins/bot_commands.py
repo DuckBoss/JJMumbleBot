@@ -51,7 +51,8 @@ class Plugin(PluginBase):
                 print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
             logging.info("Manually Logged: [%s]" % (all_messages[1]))
-
+            return
+            
         elif command == "spam_test":
             if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
                 print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
