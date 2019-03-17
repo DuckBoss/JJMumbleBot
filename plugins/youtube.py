@@ -175,7 +175,7 @@ class Plugin(PluginBase):
             search_results = self.get_choices(self.all_searches)
 
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s\n%s" % (search_results, "Which one would you like to play? "))
+                       "%s\n%s" % (search_results, "Which one would you like to play?"))
             self.can_play = True
             return
 
