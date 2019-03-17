@@ -10,10 +10,10 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
 - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
 - <b>Fast, responsive, plugin-based system for easy expandability.</b>
+- <b>Event logging to keep track of bot usage and command history.</b>
 
 #### TODO:
 - <b>Rework privilege system</b>
-- <b>Add logging features to commands</b>
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
