@@ -2,6 +2,12 @@ import privileges as pv
 import os
 import configparser
 
+def get_config_dir():
+    return os.path.join(os.path.dirname(__file__), "config.ini")
+
+def get_main_dir():
+    return os.path.dirname(__file__)
+
 def parse_message(text):
     message = text.message.strip()
     return message
@@ -9,7 +15,7 @@ def parse_message(text):
 
 def get_version():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     return config['Bot_Information']['BotVersion']
 
 
@@ -25,8 +31,8 @@ def get_channel(mumble, channel_name):
 
 def get_default_channel():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
-    return config['Default_Settings']['DefaultChannel']
+    config.read(get_config_dir())
+    return config['Connection_Settings']['DefaultChannel']
 
 
 def get_my_channel(mumble):
@@ -43,7 +49,7 @@ def make_channel(mumble, root_channel, channel_name):
 
 def leave(mumble):
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     default_channel = get_channel(mumble, config['Connection_Settings']['DefaultChannel'])
     default_channel.move_in()
     return default_channel
@@ -65,11 +71,11 @@ def msg(mumble, receiver, message):
 
 def setup_privileges():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
-    with open("JJMumbleBot/privileges/blacklist.txt") as blklist:
+    config.read(get_config_dir())
+    with open("%s/privileges/blacklist.txt" % get_main_dir()) as blklist:
         line = blklist.readline()
         pv.blacklist_names.append(line.strip())
-    with open("JJMumbleBot/privileges/admin.txt") as admlist:
+    with open("%s/privileges/admin.txt" % get_main_dir()) as admlist:
         line = admlist.readline()
         pv.admin_names.append(line.strip())
     print("User privilege setup complete.")
@@ -89,11 +95,11 @@ def privileges_check(user):
 
 def get_blacklist():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     blklist_txt = "<br><font color='red'>Blacklist:</font><br>"
     try:
         lines = None
-        with open("JJMumbleBot/privileges/blacklist.txt", 'r') as blklist:
+        with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
             lines = blklist.readlines()
         for i in range(len(lines)):
             blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, lines[i].strip())
@@ -105,10 +111,10 @@ def get_blacklist():
 
 def add_to_blacklist(user_name):
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     try:
         if user_name not in pv.blacklist_names:
-            with open("JJMumbleBot/privileges/blacklist.txt", 'a') as blklist:
+            with open("%s/privileges/blacklist.txt" % get_main_dir(), 'a') as blklist:
                 blklist.write("%s\n" % user_name)
                 pv.blacklist_names.append(user_name)
                 print("User %s added to the blacklist." % user_name)
@@ -122,13 +128,13 @@ def add_to_blacklist(user_name):
 
 def remove_from_blacklist(user_name):
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     try:
         if user_name in pv.blacklist_names:
             lines = None
-            with open("JJMumbleBot/privileges/blacklist.txt", 'r') as blklist:
+            with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
                 lines = blklist.readlines()
-            with open("JJMumbleBot/privileges/blacklist.txt", 'w') as blklist:
+            with open("%s/privileges/blacklist.txt" % get_main_dir(), 'w') as blklist:
                 for line in lines:
                     if line != ("%s\n" % user_name):
                         blklist.write(line)
@@ -144,31 +150,31 @@ def remove_from_blacklist(user_name):
 
 def get_temporary_img_dir():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     return config['Media_Directories']['TemporaryImageDirectory']
 
 
 def get_temporary_media_dir():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     return config['Media_Directories']['TemporaryMediaDirectory']
 
 
 def get_permanent_media_dir():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     return config['Media_Directories']['PermanentMediaDirectory']
 
 
 def get_vlc_dir():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     return config['Bot_Directories']['VLCDirectory']
 
 
 def get_about():
     config = configparser.ConfigParser()
-    config.read('JJMumbleBot/config.ini')
+    config.read(get_config_dir())
     return config['Bot_Information']['AboutText']
 
 
