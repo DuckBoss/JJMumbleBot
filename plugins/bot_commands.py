@@ -126,14 +126,20 @@ class Plugin(PluginBase):
             if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
                 print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
-            parameter = message_parse[1]
-            result = utils.remove_from_blacklist(parameter)
-            if result is True:
+            try:
+                parameter = message_parse[1]
+                result = utils.remove_from_blacklist(parameter)
+                if result is True:
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "User: %s removed from the blacklist." % parameter)
+                else:
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "User: %s could not be removed from the blacklist." % parameter)
+            except IndexError:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "User: %s removed from the blacklist." % parameter)
-            else:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "User: %s could not be removed from the blacklist." % parameter)
+                               "Command format: !whitelist displayname")
+                return
+            return
 
     @staticmethod
     def plugin_test():

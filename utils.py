@@ -66,10 +66,10 @@ def msg(mumble, receiver, message):
 def setup_privileges():
     config = configparser.ConfigParser()
     config.read('JJMumbleBot/config.ini')
-    with open("%sblacklist.txt" % config['Bot_Directories']['PrivilegesDirectory']) as blklist:
+    with open("JJMumbleBot/privileges/blacklist.txt") as blklist:
         line = blklist.readline()
         pv.blacklist_names.append(line.strip())
-    with open("%sadmin.txt" % config['Bot_Directories']['PrivilegesDirectory']) as admlist:
+    with open("JJMumbleBot/privileges/admin.txt") as admlist:
         line = admlist.readline()
         pv.admin_names.append(line.strip())
     print("User privilege setup complete.")
@@ -93,7 +93,7 @@ def get_blacklist():
     blklist_txt = "<br><font color='red'>Blacklist:</font><br>"
     try:
         lines = None
-        with open("%sblacklist.txt" % config['Bot_Directories']['PrivilegesDirectory'], 'r') as blklist:
+        with open("JJMumbleBot/privileges/blacklist.txt", 'r') as blklist:
             lines = blklist.readlines()
         for i in range(len(lines)):
             blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, lines[i].strip())
@@ -108,7 +108,7 @@ def add_to_blacklist(user_name):
     config.read('JJMumbleBot/config.ini')
     try:
         if user_name not in pv.blacklist_names:
-            with open("%sblacklist.txt" % config['Bot_Directories']['PrivilegesDirectory'], 'a') as blklist:
+            with open("JJMumbleBot/privileges/blacklist.txt", 'a') as blklist:
                 blklist.write("%s\n" % user_name)
                 pv.blacklist_names.append(user_name)
                 print("User %s added to the blacklist." % user_name)
@@ -126,9 +126,9 @@ def remove_from_blacklist(user_name):
     try:
         if user_name in pv.blacklist_names:
             lines = None
-            with open("%sblacklist.txt" % config['Bot_Directories']['PrivilegesDirectory'], 'r') as blklist:
+            with open("JJMumbleBot/privileges/blacklist.txt", 'r') as blklist:
                 lines = blklist.readlines()
-            with open("%sblacklist.txt" % config['Bot_Directories']['PrivilegesDirectory'], 'w') as blklist:
+            with open("JJMumbleBot/privileges/blacklist.txt", 'w') as blklist:
                 for line in lines:
                     if line != ("%s\n" % user_name):
                         blklist.write(line)
