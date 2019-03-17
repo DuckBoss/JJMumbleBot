@@ -5,6 +5,7 @@ import sys
 import utils
 import privileges as pv
 import configparser
+import logging
 
 class Bot:
     exit_flag = False
@@ -16,17 +17,22 @@ class Bot:
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
+        # Initialize application logging.
+        logging.basicConfig(filename='JJMumbleBot/runtime.log', format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
         # Initialize system arguments.
         if len(sys.argv) > 0:
             for item in sys.argv:
                 # Enable safe mode.
                 if item == "-safe":
                     self.safe_mode = True
+                    logging.info("Safe mode has been enabled through system arguments.")
                 if item == "-debug":
                     self.debug_mode = True
+                    logging.info("Debug mode has been enabled through system arguments.")
         # Initialize configs.
         self.cfg_inst = configparser.ConfigParser()
         self.cfg_inst.read('JJMumbleBot/config.ini')
+        logging.info("Application configs have been read succesfully.")
         # Run Debug Mode tests.
         if self.debug_mode:
             self.config_debug()
@@ -36,6 +42,7 @@ class Bot:
         server_port = int(self.cfg_inst['Connection_Settings']['ServerPort'])
         user_id = self.cfg_inst['Connection_Settings']['UserID']
         user_cert = self.cfg_inst['Connection_Settings']['UserCertification']
+        logging.info("Retrieved server information from application configs.")
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
                                       password=server_pass)
@@ -46,18 +53,24 @@ class Bot:
         # Create temporary directories.
         utils.make_directory(self.cfg_inst['Media_Directories']['TemporaryMediaDirectory'])
         utils.make_directory(self.cfg_inst['Media_Directories']['TemporaryImageDirectory'])
+        logging.info("Initialized temporary media directories.")
         # Setup privileges.
         utils.setup_privileges()
+        logging.info("Initialized user privileges.")
         # Initialize plugins.
         if self.safe_mode:  
-            self.initialize_plugins_safe()     
+            self.initialize_plugins_safe()
+            logging.info("Initialized plugins with safe mode.")
         else:
             self.initialize_plugins()
+            logging.info("Initialized plugins.")
         # Run a plugin callback test.
         self.plugin_callback_test()
+        logging.info("Plugin callback test succesful.")
         print("JJ Mumble Bot initialized!\n")
         # Join the server after all initialization is complete.
         self.join_server()
+        logging.info("JJ Mumble Bot has fully initialized and joined the server.")
         self.loop()
 
     def config_debug(self):
@@ -111,7 +124,8 @@ class Bot:
     def live_plugin_check(self):
         length_check = len([f for f in os.listdir(self.cfg_inst['Bot_Directories']['PluginsDirectory']) if os.path.isfile(os.path.join(self.cfg_inst['Bot_Directories']['PluginsDirectory'], f))])
         if length_check != len(self.bot_plugins):
-            print("Plugin change detected... Adding to plugin cache.")
+            print("Plugin change detected... adding to plugin cache.")
+            logging.warning("Plugin change detected... adding to plugin cache.")
             self.refresh_plugins()
 
     def plugin_callback_test(self):
@@ -138,6 +152,7 @@ class Bot:
         print("All plugins refreshed.")
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                    "JJ Mumble Bot has refreshed all plugins.")
+        logging.info("JJ Mumble Bot has refreshed all plugins.")
 
     def join_server(self):
         self.mumble.start()
@@ -164,6 +179,7 @@ class Bot:
             print("Message Received: [%s -> %s]" % (user['name'], message))
 
         if message[0] == "!":
+            logging.info("Command Received: [%s -> %s]" % (user['name'], message))
             self.live_plugin_check()
 
             all_messages = message[1:].split()
@@ -178,15 +194,18 @@ class Bot:
                     return
                 else:
                     print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                    logging.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
                 return
 
             elif command == "exit" or command == "quit":
                 if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
                     print("Stopping all threads...")
                     self.exit()
+                    logging.info("JJ Mumble Bot is being shut down.")
                     return
                 else:
                     print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                    logging.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
                 return
 
             elif command == "status":
@@ -197,9 +216,11 @@ class Bot:
             elif command == "system_test":
                 if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
                     self.plugin_callback_test()
+                    logging.info("A system self-test was run.")
                     return
                 else:
                     print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                    logging.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
                 return
 
             for plugin in self.bot_plugins.values():

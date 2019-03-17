@@ -2,7 +2,7 @@ import utils
 from templates.plugin_template import PluginBase
 import privileges as pv
 import time
-
+import logging
 
 class Plugin(PluginBase):
     start_time = None
@@ -39,7 +39,14 @@ class Plugin(PluginBase):
                 return
             parameter = message_parse[1]
             utils.echo(utils.get_my_channel(mumble), parameter)
+            logging.info("Echo:[%s]" % (parameter))
             return
+
+        elif command == "log":
+            if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
+                print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
+                return
+            logging.info("Manually Logged: [%s]" % (all_messages[1]))
 
         elif command == "spam_test":
             if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
@@ -47,6 +54,7 @@ class Plugin(PluginBase):
                 return
             for i in range(10):
                 utils.echo(utils.get_my_channel(mumble), "This is a test message...")
+            logging.info("A spam_test was conducted by an administrator.")
             return
 
         elif command == "msg":
@@ -54,6 +62,7 @@ class Plugin(PluginBase):
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             utils.msg(mumble, all_messages[1], message[1:].split(' ', 2)[2])
+            logging.info("Msg:[%s]->[%s]" % (all_messages[1], message[1:].split(' ', 2)[2]))
             return
 
         elif command == "move":
@@ -70,6 +79,7 @@ class Plugin(PluginBase):
             else:
                 channel_search.move_in()
                 utils.echo(channel_search, "JJMumbleBot was moved by %s" % mumble.users[text.actor]['name'])
+                logging.info("Moved to channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
             return
 
         elif command == "make":
@@ -79,10 +89,12 @@ class Plugin(PluginBase):
             parameter = message_parse[1]
             channel_name = parameter
             utils.make_channel(mumble, mumble.channels[mumble.users.myself['channel_id']], channel_name)
+            logging.info("Made a channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
             return
 
         elif command == "leave":
             utils.leave(mumble)
+            logging.info("Returned to default channel.")
             return
 
         elif command == "joinme":
@@ -92,6 +104,7 @@ class Plugin(PluginBase):
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "Joining user: %s" % mumble.users[text.actor]['name'])
             mumble.channels[mumble.users[text.actor]['channel_id']].move_in()
+            logging.info("Joined user: %s" % mumble.users[text.actor]['name'])
             return
 
         elif command == "version":
@@ -114,6 +127,7 @@ class Plugin(PluginBase):
                 if result is True:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s added to the blacklist." % parameter)
+                    logging.info("Blacklisted user: %s" % parameter)
                 else:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s could not be added to the blacklist." % parameter)
@@ -132,6 +146,7 @@ class Plugin(PluginBase):
                 if result is True:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s removed from the blacklist." % parameter)
+                    logging.info("User: %s removed from the blacklist." % parameter)
                 else:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s could not be removed from the blacklist." % parameter)
