@@ -10,17 +10,21 @@ class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Bot_Commands Plugin Help <font color='red'>#####</font></b><br> \
             All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
             <b>!echo 'message/image'</b>: Echoes a message/image in the chat.<br>\
+            <b>!log 'message'</b>: Manually logs a message by an administrator.<br>\
             <b>!make 'channel_name'</b>: Creates a channel with the given name.<br>\
             <b>!move 'channel_name'</b>: Moves to an existing channel with the given name.<br>\
             <b>!joinme</b>: Moves to the users channel.<br>\
             <b>!msg 'username' 'message'</b>: Anonymously private messages a user from the bot.<br>\
             <b>!leave</b>: Moves the bot to the default channel.<br>\
             <b>!exit/!quit</b>: Initializes the bot exit procedure.<br>\
+            <b>!blacklist</b>: Displays the current list of users in the blacklist.<br>\
+            <b>!blacklist 'username'</b>: Blacklists specific users from using certain plugin commands.<br>\
+            <b>!whitelist 'username'</b>: Removes an existing user from the blacklist.<br>\
             <b>!version</b>: Displays the bot version.<br>\
             <b>!status</b>: Displays the bots current status.<br>\
             <b>!refresh</b>: Refreshes all plugins.<br>\
-            <b>!spam_test</b>: Spams the channel with test messages.<br>\
-            <b>!about</b>: Displays the bots about screen."
+            <b>!about</b>: Displays the bots about screen.<br>\
+            <b>!spam_test: Spams 10 test messages in the channel. This is an admin-only command.<br>"
 
     def __init__(self):
         print("Bot_Commands Plugin Initialized.")
