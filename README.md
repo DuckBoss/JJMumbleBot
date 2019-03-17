@@ -15,7 +15,7 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Event logging to keep track of bot usage and command history.</b>
 
 #### TODO:
-- <b>Rework privilege system</b>
+- <b>Rework user privilege system</b>
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
