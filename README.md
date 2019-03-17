@@ -6,10 +6,10 @@ A python 3 mumble bot with extensive features and a plugin based system.
 
 
 ## Features
-- <b>Youtube Plugin</b> - Streams youtube songs in the channel.
-- <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
-- <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
-- <b>Fast, responsive, plugin-based system for easy expandability.</b>
+- <b>Built-in Plugins</b> - Fast, responsive, plugin-based system for easy expandability.
+  - <b>Youtube Plugin</b> - Streams youtube songs in the channel.
+  - <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
+  - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
 - <b>Event logging to keep track of bot usage and command history.</b>
 
 #### TODO:
