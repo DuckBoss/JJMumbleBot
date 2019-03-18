@@ -19,7 +19,8 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - [ ] <b>Rework user privilege system</b>
 - [ ] <b>Optimize config access</b>
 - [ ] <b>Implement global audio locking to prevent custom user-made audio plugin overlap</b>
-
+- [ ] <b>Simplify configs so users can easily implement the bot</b>
+  
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
