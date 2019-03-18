@@ -1,6 +1,7 @@
 # JJMumbleBot
 [![GitHub release](https://img.shields.io/badge/Build-1.3-brightgreen.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
+[![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
 
 A python 3 mumble bot with extensive features and a plugin based system.
 
@@ -20,7 +21,8 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - [ ] <b>Optimize config access</b>
 - [ ] <b>Implement global audio locking to prevent custom user-made audio plugin overlap</b>
 - [ ] <b>Simplify configs so users can easily implement the bot</b>
-  
+- [ ] <b>Clean up some code!</b>
+
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
