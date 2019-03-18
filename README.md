@@ -16,7 +16,9 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Small footprint</b> - 2.6MB storage usage. 
 
 #### TODO:
-- <b>Rework user privilege system</b>
+- [ ] <b>Rework user privilege system</b>
+- [ ] <b>Optimize config access</b>
+- [ ] <b>Implement global audio locking to prevent custom user-made audio plugin overlap</b>
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
