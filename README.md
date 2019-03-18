@@ -1,5 +1,5 @@
 # JJMumbleBot
-[![GitHub release](https://img.shields.io/badge/Build-1.3-brightgreen.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
+![GitHub release](https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
 [![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
 
