@@ -206,7 +206,7 @@ class Plugin(PluginBase):
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.can_play:
-                # self.sound_board_plugin.clear_audio_thread()
+                self.sound_board_plugin.clear_audio_thread()
                 # self.stop_audio()
                 if self.queue_instance.is_full():
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
