@@ -86,8 +86,8 @@ class Bot:
     def initialize_plugins_safe(self):
         # Load Plugins
         print("\n######### Initializing Plugins #########\n")
-        sys.path.insert(0, self.cfg_inst['Bot_Directories']['PluginsDirectory'])
-        for p_file in os.listdir(self.cfg_inst['Bot_Directories']['PluginsDirectory']):
+        sys.path.insert(0, utils.get_plugin_dir())
+        for p_file in os.listdir(utils.get_plugin_dir()):
             f_name, f_ext = os.path.splitext(p_file)
             if f_ext == ".py":
                 if f_name == "help":
@@ -102,8 +102,8 @@ class Bot:
     def initialize_plugins(self):
         # Load Plugins
         print("\n######### Initializing Plugins #########\n")
-        sys.path.insert(0, self.cfg_inst['Bot_Directories']['PluginsDirectory'])
-        for p_file in os.listdir(self.cfg_inst['Bot_Directories']['PluginsDirectory']):
+        sys.path.insert(0, utils.get_plugin_dir())
+        for p_file in os.listdir(utils.get_plugin_dir()):
             f_name, f_ext = os.path.splitext(p_file)
             if f_ext == ".py":
                 if f_name == "help" or f_name == "youtube":
@@ -126,7 +126,7 @@ class Bot:
         if self.safe_mode:
             length_check = 2
         else:
-            length_check = len([f for f in os.listdir(self.cfg_inst['Bot_Directories']['PluginsDirectory']) if os.path.isfile(os.path.join(self.cfg_inst['Bot_Directories']['PluginsDirectory'], f))])
+            length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if os.path.isfile(os.path.join(utils.get_plugin_dir(), f))])
         if length_check != len(self.bot_plugins):
             print("Plugin change detected... adding to plugin cache.")
             logging.warning("Plugin change detected... adding to plugin cache.")
@@ -141,7 +141,7 @@ class Bot:
     def refresh_plugins(self):
         print("Refreshing all plugins...")
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                   "JJ Mumble Bot is refreshing all plugins.")
+                   "%s is refreshing all plugins." % utils.get_bot_name())
         time.sleep(0.3)
         print("Refreshing plugins...")
         for plugin in self.bot_plugins.values():
@@ -155,7 +155,7 @@ class Bot:
         time.sleep(0.3)
         print("All plugins refreshed.")
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                   "JJ Mumble Bot has refreshed all plugins.")
+                   "%s has refreshed all plugins." % utils.get_bot_name())
         logging.info("JJ Mumble Bot has refreshed all plugins.")
 
     def join_server(self):
@@ -163,11 +163,11 @@ class Bot:
         self.mumble.is_ready()
         self.bot_status = "Online"
         self.mumble.users.myself.comment(
-            "This is JJMumbleBot [%s].<br>%s<br>" % (self.cfg_inst['Bot_Information']['BotVersion'], self.cfg_inst['Bot_Information']['KnownBugs']))
+            "This is %s [%s].<br>%s<br>" % (utils.get_bot_name(), utils.get_version(), utils.get_known_bugs()))
         self.mumble.set_bandwidth(192000)
-        self.mumble.channels.find_by_name(self.cfg_inst['Connection_Settings']['DefaultChannel']).move_in()
+        self.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
         self.mumble.users.myself.mute()
-        self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message("JJMumbleBot is Online.")
+        self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message("%s is Online." % utils.get_bot_name())
         print("\n\nJJMumbleBot is %s\n\n" % self.status())
 
     def status(self):
@@ -214,7 +214,12 @@ class Bot:
 
             elif command == "status":
                 utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           "JJMumbleBot is %s." % self.status())
+                           "%s is %s." % (utils.get_bot_name(), self.status()))
+                return
+
+            elif command == "version":
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           "%s is on version %s" % (utils.get_bot_name(), utils.get_version()))
                 return
 
             elif command == "system_test":
@@ -223,7 +228,7 @@ class Bot:
                     logging.info("A system self-test was run.")
                     return
                 else:
-                    print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                    print("User [%s] must be an admin to use the system_test command." % (self.mumble.users[text.actor]['name']))
                     logging.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
                 return
 
@@ -232,7 +237,7 @@ class Bot:
 
     def exit(self):
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                   "JJMumbleBot was manually disconnected.")
+                   "%s was manually disconnected." % utils.get_bot_name())
         for plugin in self.bot_plugins.values():
             plugin.quit()
         utils.clear_directory(utils.get_temporary_media_dir())

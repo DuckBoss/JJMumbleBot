@@ -85,7 +85,7 @@ class Plugin(PluginBase):
                            "Now playing: %s" % self.current_song_info['main_title'])
             else:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "DuckBot is not playing anything right now.")
+                           "%s is not playing anything right now." % utils.get_bot_name())
             return
 
         elif command == "next" or command == "skip":

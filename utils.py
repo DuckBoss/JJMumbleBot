@@ -5,18 +5,20 @@ import configparser
 def get_config_dir():
     return os.path.join(os.path.dirname(__file__), "config.ini")
 
+
 def get_main_dir():
     return os.path.dirname(__file__)
+
+
+def get_bot_name():
+    config = configparser.ConfigParser()
+    config.read(get_config_dir())
+    return config['Connection_Settings']['UserID']
+
 
 def parse_message(text):
     message = text.message.strip()
     return message
-
-
-def get_version():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Bot_Information']['BotVersion']
 
 
 def echo(channel, message_text):
@@ -148,6 +150,11 @@ def remove_from_blacklist(user_name):
     return False
 
 
+def get_plugin_dir():
+    config = configparser.ConfigParser()
+    config.read(get_config_dir())
+    return config['Bot_Directories']['PluginsDirectory']
+
 def get_temporary_img_dir():
     config = configparser.ConfigParser()
     config.read(get_config_dir())
@@ -176,6 +183,18 @@ def get_about():
     config = configparser.ConfigParser()
     config.read(get_config_dir())
     return config['Bot_Information']['AboutText']
+
+
+def get_version():
+    config = configparser.ConfigParser()
+    config.read(get_config_dir())
+    return config['Bot_Information']['BotVersion']
+
+
+def get_known_bugs():
+    config = configparser.ConfigParser()
+    config.read(get_config_dir())
+    return config['Bot_Information']['KnownBugs']
 
 
 def clear_directory(d):
