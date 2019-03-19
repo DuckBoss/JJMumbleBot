@@ -323,8 +323,9 @@ class Plugin(PluginBase):
 
     def get_vid_list(self, search):
         url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
-        response = urllib.request.urlopen(url)
-        html = response.read()
+        req = urllib.request.Request(url)
+        with urllib.request.urlopen(req) as response:
+            html = response.read()
         soup = BeautifulSoup(html, 'html.parser')
         all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
         search_results_list = []
@@ -367,14 +368,14 @@ class Plugin(PluginBase):
                     'main_title': info_dict['title'],
                 }
                 return prep_struct
-            else:
-                download_target = ydl.prepare_filename(info_dict)
-                ydl.download([url])
-                prep_struct = {
-                    'main_id': info_dict['id'],
-                    'main_title': info_dict['title'],
-                }
-                return prep_struct
+
+            download_target = ydl.prepare_filename(info_dict)
+            ydl.download([url])
+            prep_struct = {
+                'main_id': info_dict['id'],
+                'main_title': info_dict['title'],
+            }
+            return prep_struct
 
     def play_audio(self, mumble):
         self.current_song_info = self.queue_instance.pop()
