@@ -15,7 +15,6 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Event logging to keep track of bot usage and command history.</b>
-- <b>Small footprint</b> - 2.6MB storage usage. 
 
 ### Extra Plugin Library:
 <b><a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a></b>
