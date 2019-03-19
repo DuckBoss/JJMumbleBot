@@ -21,7 +21,7 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
 - [ ] <b>New Built-in Plugin: Dice Roll (!random 'number_of_dice' 'dice_faces')</b>
 
-#### Plans For Future:
+### Plans For Future:
 - [ ] <b>Rework user privilege system</b>
 
 ## Wiki
