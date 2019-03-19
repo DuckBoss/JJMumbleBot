@@ -1,22 +1,23 @@
 import privileges as pv
 import os
-import configparser
+from helpers.config_access import GlobalMods as CFG
+
 
 def get_config_dir():
     return os.path.join(os.path.dirname(__file__), "config.ini")
 
+
 def get_main_dir():
     return os.path.dirname(__file__)
+
+
+def get_bot_name():
+    return CFG.cfg_inst['Connection_Settings']['UserID']
+
 
 def parse_message(text):
     message = text.message.strip()
     return message
-
-
-def get_version():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Bot_Information']['BotVersion']
 
 
 def echo(channel, message_text):
@@ -30,9 +31,7 @@ def get_channel(mumble, channel_name):
 
 
 def get_default_channel():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Connection_Settings']['DefaultChannel']
+    return CFG.cfg_inst['Connection_Settings']['DefaultChannel']
 
 
 def get_my_channel(mumble):
@@ -48,9 +47,7 @@ def make_channel(mumble, root_channel, channel_name):
 
 
 def leave(mumble):
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    default_channel = get_channel(mumble, config['Connection_Settings']['DefaultChannel'])
+    default_channel = get_channel(mumble, CFG.cfg_inst['Connection_Settings']['DefaultChannel'])
     default_channel.move_in()
     return default_channel
 
@@ -70,8 +67,6 @@ def msg(mumble, receiver, message):
 
 
 def setup_privileges():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
     with open("%s/privileges/blacklist.txt" % get_main_dir()) as blklist:
         line = blklist.readline()
         pv.blacklist_names.append(line.strip())
@@ -94,11 +89,8 @@ def privileges_check(user):
 
 
 def get_blacklist():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
     blklist_txt = "<br><font color='red'>Blacklist:</font><br>"
     try:
-        lines = None
         with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
             lines = blklist.readlines()
         for i, item in enumerate(lines):
@@ -110,8 +102,6 @@ def get_blacklist():
 
 
 def add_to_blacklist(user_name):
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
     try:
         if user_name not in pv.blacklist_names:
             with open("%s/privileges/blacklist.txt" % get_main_dir(), 'a') as blklist:
@@ -127,11 +117,8 @@ def add_to_blacklist(user_name):
 
 
 def remove_from_blacklist(user_name):
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
     try:
         if user_name in pv.blacklist_names:
-            lines = None
             with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
                 lines = blklist.readlines()
             with open("%s/privileges/blacklist.txt" % get_main_dir(), 'w') as blklist:
@@ -148,34 +135,35 @@ def remove_from_blacklist(user_name):
     return False
 
 
+def get_plugin_dir():
+    return CFG.cfg_inst['Bot_Directories']['PluginsDirectory']
+
 def get_temporary_img_dir():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Media_Directories']['TemporaryImageDirectory']
+    return CFG.cfg_inst['Media_Directories']['TemporaryImageDirectory']
 
 
 def get_temporary_media_dir():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Media_Directories']['TemporaryMediaDirectory']
+    return CFG.cfg_inst['Media_Directories']['TemporaryMediaDirectory']
 
 
 def get_permanent_media_dir():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Media_Directories']['PermanentMediaDirectory']
+    return CFG.cfg_inst['Media_Directories']['PermanentMediaDirectory']
 
 
 def get_vlc_dir():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Bot_Directories']['VLCDirectory']
+    return CFG.cfg_inst['Bot_Directories']['VLCDirectory']
 
 
 def get_about():
-    config = configparser.ConfigParser()
-    config.read(get_config_dir())
-    return config['Bot_Information']['AboutText']
+    return CFG.cfg_inst['Bot_Information']['AboutText']
+
+
+def get_version():
+    return CFG.cfg_inst['Bot_Information']['BotVersion']
+
+
+def get_known_bugs():
+    return CFG.cfg_inst['Bot_Information']['KnownBugs']
 
 
 def clear_directory(d):

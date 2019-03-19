@@ -4,6 +4,7 @@ import privileges as pv
 import time
 import logging
 
+
 class Plugin(PluginBase):
     start_time = None
 
@@ -83,7 +84,7 @@ class Plugin(PluginBase):
                 return
             else:
                 channel_search.move_in()
-                utils.echo(channel_search, "JJMumbleBot was moved by %s" % mumble.users[text.actor]['name'])
+                utils.echo(channel_search, "%s was moved by %s" % (utils.get_bot_name(), mumble.users[text.actor]['name']))
                 logging.info("Moved to channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
             return
 
@@ -110,11 +111,6 @@ class Plugin(PluginBase):
                        "Joining user: %s" % mumble.users[text.actor]['name'])
             mumble.channels[mumble.users[text.actor]['channel_id']].move_in()
             logging.info("Joined user: %s" % mumble.users[text.actor]['name'])
-            return
-
-        elif command == "version":
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "JJMumbleBot is on version %s" % utils.get_version())
             return
 
         elif command == "about":

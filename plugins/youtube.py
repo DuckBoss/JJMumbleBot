@@ -9,7 +9,7 @@ import subprocess as sp
 import time
 import audioop
 import helpers.queue_handler as qh
-import configparser
+from helpers.config_access import GlobalMods
 
 
 class Plugin(PluginBase):
@@ -58,11 +58,9 @@ class Plugin(PluginBase):
     def __init__(self, mumble):
         print("Music Plugin Initialized...")
         super().__init__()
-        self.config = configparser.ConfigParser()
-        self.config.read(utils.get_config_dir())
-        self.volume = float(self.config['Plugin_Settings']['Youtube_DefaultVolume'])
-        self.max_queue_size = int(self.config['Plugin_Settings']['Youtube_MaxQueueLength'])
-        self.max_track_duration = int(self.config['Plugin_Settings']['Youtube_MaxVideoLength'])
+        self.volume = float(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_DefaultVolume'])
+        self.max_queue_size = int(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_MaxQueueLength'])
+        self.max_track_duration = int(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_MaxVideoLength'])
         utils.clear_directory(utils.get_temporary_media_dir())
         self.queue_instance = qh.QueueHandler(self.max_queue_size)
         self.audio_loop(mumble)
@@ -85,7 +83,7 @@ class Plugin(PluginBase):
                            "Now playing: %s" % self.current_song_info['main_title'])
             else:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "DuckBot is not playing anything right now.")
+                           "%s is not playing anything right now." % utils.get_bot_name())
             return
 
         elif command == "next" or command == "skip":
@@ -208,7 +206,7 @@ class Plugin(PluginBase):
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.can_play:
-                # self.sound_board_plugin.clear_audio_thread()
+                self.sound_board_plugin.clear_audio_thread()
                 # self.stop_audio()
                 if self.queue_instance.is_full():
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],

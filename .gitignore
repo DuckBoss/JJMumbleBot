@@ -7,3 +7,14 @@ __pycache__/
 # Ignore test files
 *.wav
 *.mp3
+# PyCharm files
+.idea/vcs.xml
+.idea/
+# Certificates
+*.pem
+*.p12
+# Media Folders
+permanent_media/
+sound_board/
+temporary_media/
+temporary_images/

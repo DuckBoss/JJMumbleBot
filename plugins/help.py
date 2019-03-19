@@ -3,14 +3,14 @@ import utils
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> DuckyBot General Help Commands <font color='red'>#####</font></b><br> \
+    help_data = "<br><b><font color='red'>#####</font> %s General Help Commands <font color='red'>#####</font></b><br> \
                 All commands can be run by typing it in the chat or privately messaging JJMumbleBot.<br>\
                 <b>!help</b>: Displays this general help screen.<br>\
                 <b>!bot_help</b>: Displays the bot_commands plugin help screen.<br>\
                 <b>!youtube_help/!yt_help</b>: Displays the youtube plugin help screen.<br>\
                 <b>!sound_board_help/!sb_help</b>: Displays the sound_board plugin help screen.<br>\
                 <b>!images_help/!img_help</b>: Displays the images plugin help screen.<br>\
-                <b>!uptime_help</b> Displays the uptime plugin help screen."
+                <b>!uptime_help</b> Displays the uptime plugin help screen." % utils.get_bot_name()
 
     bot_plugins = {}
 
