@@ -17,6 +17,9 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Event logging to keep track of bot usage and command history.</b>
 - <b>Small footprint</b> - 2.6MB storage usage. 
 
+### Extra Plugin Library:
+<b><a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a></b>
+
 ### Plans For Next Update:
 - [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
 - [ ] <b>New Built-in Plugin: Dice Roll (!random 'number_of_dice' 'dice_faces')</b>
