@@ -9,7 +9,7 @@ import subprocess as sp
 import time
 import audioop
 import helpers.queue_handler as qh
-import configparser
+from helpers.configaccess import GlobalMods
 
 
 class Plugin(PluginBase):
@@ -58,11 +58,9 @@ class Plugin(PluginBase):
     def __init__(self, mumble):
         print("Music Plugin Initialized...")
         super().__init__()
-        self.config = configparser.ConfigParser()
-        self.config.read(utils.get_config_dir())
-        self.volume = float(self.config['Plugin_Settings']['Youtube_DefaultVolume'])
-        self.max_queue_size = int(self.config['Plugin_Settings']['Youtube_MaxQueueLength'])
-        self.max_track_duration = int(self.config['Plugin_Settings']['Youtube_MaxVideoLength'])
+        self.volume = float(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_DefaultVolume'])
+        self.max_queue_size = int(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_MaxQueueLength'])
+        self.max_track_duration = int(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_MaxVideoLength'])
         utils.clear_directory(utils.get_temporary_media_dir())
         self.queue_instance = qh.QueueHandler(self.max_queue_size)
         self.audio_loop(mumble)

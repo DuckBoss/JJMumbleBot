@@ -1,5 +1,5 @@
 from templates.plugin_template import PluginBase
-import configparser
+from helpers.configaccess import GlobalMods
 import utils
 import privileges as pv
 import subprocess as sp
@@ -30,9 +30,7 @@ class Plugin(PluginBase):
     def __init__(self):
         print("Sound_Board Plugin Initialized...")    
         super().__init__()
-        self.config = configparser.ConfigParser()
-        self.config.read(utils.get_config_dir())
-        self.volume = float(self.config['Plugin_Settings']['SoundBoard_DefaultVolume'])
+        self.volume = float(GlobalMods.cfg_inst['Plugin_Settings']['SoundBoard_DefaultVolume'])
 
     def set_youtube_plugin(self, yt_plugin):
         self.youtube_plugin = yt_plugin

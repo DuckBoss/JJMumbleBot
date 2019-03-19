@@ -4,6 +4,7 @@ import privileges as pv
 import time
 import logging
 
+
 class Plugin(PluginBase):
     start_time = None
 

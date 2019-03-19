@@ -7,3 +7,7 @@ __pycache__/
 # Ignore test files
 *.wav
 *.mp3
+# PyCharm files
+.idea/vcs.xml
+.idea/
+*.pem

@@ -4,24 +4,23 @@ import os
 import sys
 import utils
 import privileges as pv
-import configparser
 import logging
+from helpers.configaccess import GlobalMods as CFG
 
-class Bot:
+
+class JJMumbleBot:
     exit_flag = False
     safe_mode = False
     debug_mode = False
     bot_status = "Offline"
     bot_plugins = {}
-    cfg_inst = None
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
         # Initialize configs.
-        self.cfg_inst = configparser.ConfigParser()
-        self.cfg_inst.read(utils.get_config_dir())
+        CFG.cfg_inst.read(utils.get_config_dir())
         # Initialize application logging.
-        logging.basicConfig(filename='%s/runtime.log'%self.cfg_inst['Bot_Directories']['LogDirectory'], format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
+        logging.basicConfig(filename='%s/runtime.log' % CFG.cfg_inst['Bot_Directories']['LogDirectory'], format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
         logging.info("Application configs have been read succesfully.")
         # Initialize system arguments.
         if sys.argv:
@@ -37,23 +36,23 @@ class Bot:
         if self.debug_mode:
             self.config_debug()
         # Retrieve mumble client data from configs.
-        server_ip = self.cfg_inst['Connection_Settings']['ServerIP']
-        server_pass = self.cfg_inst['Connection_Settings']['ServerPassword']
-        server_port = int(self.cfg_inst['Connection_Settings']['ServerPort'])
-        user_id = self.cfg_inst['Connection_Settings']['UserID']
-        user_cert = self.cfg_inst['Connection_Settings']['UserCertification']
-        autoreconnect = self.cfg_inst.getboolean('Connection_Settings', 'AutoReconnect', fallback=False)
+        server_ip = CFG.cfg_inst['Connection_Settings']['ServerIP']
+        server_pass = CFG.cfg_inst['Connection_Settings']['ServerPassword']
+        server_port = int(CFG.cfg_inst['Connection_Settings']['ServerPort'])
+        user_id = CFG.cfg_inst['Connection_Settings']['UserID']
+        user_cert = CFG.cfg_inst['Connection_Settings']['UserCertification']
+        auto_reconnect = CFG.cfg_inst.getboolean('Connection_Settings', 'AutoReconnect', fallback=False)
         logging.info("Retrieved server information from application configs.")
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
-                                      password=server_pass, reconnect=autoreconnect)
+                                      password=server_pass, reconnect=auto_reconnect)
         # Initialize mumble callbacks.
         self.mumble.callbacks.set_callback("text_received", self.message_received)
         # Set mumble codec profile.
         self.mumble.set_codec_profile("audio")
         # Create temporary directories.
-        utils.make_directory(self.cfg_inst['Media_Directories']['TemporaryMediaDirectory'])
-        utils.make_directory(self.cfg_inst['Media_Directories']['TemporaryImageDirectory'])
+        utils.make_directory(CFG.cfg_inst['Media_Directories']['TemporaryMediaDirectory'])
+        utils.make_directory(CFG.cfg_inst['Media_Directories']['TemporaryImageDirectory'])
         logging.info("Initialized temporary media directories.")
         # Setup privileges.
         utils.setup_privileges()
@@ -77,9 +76,9 @@ class Bot:
     def config_debug(self):
         print("\n-------------------------------------------")
         print("Config Debug:")
-        for sect in self.cfg_inst.sections():
+        for sect in CFG.cfg_inst.sections():
             print("[%s]" % sect)
-            for (key,val) in self.cfg_inst.items(sect):
+            for (key,val) in CFG.cfg_inst.items(sect):
                 print("%s=%s" % (key, val))
         print("-------------------------------------------\n")
 
@@ -175,7 +174,6 @@ class Bot:
 
     def message_received(self, text):
         message = text.message.strip()
-        command = None
         user = self.mumble.users[text.actor]
         if "<img" in message:
             print("Message Received: [%s -> Image Data]" % user['name'])

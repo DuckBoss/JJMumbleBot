@@ -3,9 +3,7 @@ import requests
 import utils
 import os
 import privileges as pv
-import urllib.request
 from urllib.parse import quote
-import urllib
 from bs4 import BeautifulSoup
 from PIL import Image
 from binascii import b2a_base64
