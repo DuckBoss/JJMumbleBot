@@ -15,7 +15,8 @@ class Plugin(PluginBase):
                     <b>!sb 'file_name'</b>: The file must be in wav format.<br>\
                     <b>!sbv '0..1'</b>: Sets the sound board audio volume.<br>\
                     <b>!sbreplay/!sbr</b>: Replays the last played sound board track.<br>\
-                    <b>!sblist</b>: Displays all the available sound board tracks.<br>\
+                    <b>!sblist</b>: Displays all the available sound board tracks in private messages.<br>\
+                    <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track."
 
     exit_flag = False
@@ -52,6 +53,29 @@ class Plugin(PluginBase):
             return
 
         elif command == "sblist":
+            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
+            file_counter = 0
+            internal_list = []
+
+            for file_item in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
+                if file_item.endswith(".wav"):
+                    internal_list.append("<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file_item))
+                    file_counter += 1
+
+            cur_text = "<br><font color='red'>Local Sound Board Files</font>"
+            for i, item in enumerate(internal_list):
+                cur_text += item
+                if i % 50 == 0 and i != 0:
+                    utils.msg(mumble, mumble.users[text.actor]['name'],
+                       "%s" % cur_text)
+                    cur_text = ""
+            utils.msg(mumble, mumble.users[text.actor]['name'],
+                       "%s" % cur_text)
+            return
+
+        elif command == "sblist_echo":
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
