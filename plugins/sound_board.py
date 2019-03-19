@@ -60,14 +60,14 @@ class Plugin(PluginBase):
             file_counter = 0
             internal_list = []
 
-            for file in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
-                if file.endswith(".wav"):
-                    internal_list.append("<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file))
+            for file_item in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
+                if file_item.endswith(".wav"):
+                    internal_list.append("<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file_item))
                     file_counter += 1
 
             cur_text = "<br><font color='red'>Local Sound Board Files</font>"
-            for i in range(len(internal_list)):
-                cur_text += internal_list[i]
+            for i, item in enumerate(internal_list):
+                cur_text += item
                 if i % 50 == 0 and i != 0:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                '%s' % cur_text)

@@ -24,7 +24,7 @@ class Bot:
         logging.basicConfig(filename='%s/runtime.log'%self.cfg_inst['Bot_Directories']['LogDirectory'], format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
         logging.info("Application configs have been read succesfully.")
         # Initialize system arguments.
-        if len(sys.argv) > 0:
+        if sys.argv:
             for item in sys.argv:
                 # Enable safe mode.
                 if item == "-safe":
@@ -42,10 +42,11 @@ class Bot:
         server_port = int(self.cfg_inst['Connection_Settings']['ServerPort'])
         user_id = self.cfg_inst['Connection_Settings']['UserID']
         user_cert = self.cfg_inst['Connection_Settings']['UserCertification']
+        autoreconnect = self.cfg_inst.getboolean('Connection_Settings', 'AutoReconnect', fallback=False)
         logging.info("Retrieved server information from application configs.")
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
-                                      password=server_pass)
+                                      password=server_pass, reconnect=autoreconnect)
         # Initialize mumble callbacks.
         self.mumble.callbacks.set_callback("text_received", self.message_received)
         # Set mumble codec profile.
@@ -122,7 +123,10 @@ class Bot:
         sys.path.pop(0)
 
     def live_plugin_check(self):
-        length_check = len([f for f in os.listdir(self.cfg_inst['Bot_Directories']['PluginsDirectory']) if os.path.isfile(os.path.join(self.cfg_inst['Bot_Directories']['PluginsDirectory'], f))])
+        if self.safe_mode:
+            length_check = 2
+        else:
+            length_check = len([f for f in os.listdir(self.cfg_inst['Bot_Directories']['PluginsDirectory']) if os.path.isfile(os.path.join(self.cfg_inst['Bot_Directories']['PluginsDirectory'], f))])
         if length_check != len(self.bot_plugins):
             print("Plugin change detected... adding to plugin cache.")
             logging.warning("Plugin change detected... adding to plugin cache.")
@@ -183,7 +187,7 @@ class Bot:
             self.live_plugin_check()
 
             all_messages = message[1:].split()
-            if len(all_messages) > 0:
+            if all_messages:
                 command = all_messages[0]
             else:
                 return

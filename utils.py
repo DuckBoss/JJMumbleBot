@@ -101,8 +101,8 @@ def get_blacklist():
         lines = None
         with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
             lines = blklist.readlines()
-        for i in range(len(lines)):
-            blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, lines[i].strip())
+        for i, item in enumerate(lines):
+            blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, item.strip())
         return blklist_txt
     except Exception:
         print("File could not be opened.")

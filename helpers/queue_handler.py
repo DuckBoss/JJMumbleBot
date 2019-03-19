@@ -45,4 +45,3 @@ class QueueHandler:
     def clear(self):
         self.queue_storage.clear()
         self.queue_size = 0
-
