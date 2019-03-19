@@ -1,5 +1,5 @@
 from templates.plugin_template import PluginBase
-from helpers.configaccess import GlobalMods
+from helpers.config_access import GlobalMods
 import utils
 import privileges as pv
 import subprocess as sp

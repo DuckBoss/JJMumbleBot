@@ -10,4 +10,11 @@ __pycache__/
 # PyCharm files
 .idea/vcs.xml
 .idea/
+# Certificates
 *.pem
+*.p12
+# Media Folders
+permanent_media/
+sound_board/
+temporary_media/
+temporary_images/

@@ -1,6 +1,6 @@
 import privileges as pv
 import os
-from helpers.configaccess import GlobalMods as CFG
+from helpers.config_access import GlobalMods as CFG
 
 
 def get_config_dir():

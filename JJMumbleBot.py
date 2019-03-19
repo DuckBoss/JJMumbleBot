@@ -5,7 +5,7 @@ import sys
 import utils
 import privileges as pv
 import logging
-from helpers.configaccess import GlobalMods as CFG
+from helpers.config_access import GlobalMods as CFG
 
 
 class JJMumbleBot:

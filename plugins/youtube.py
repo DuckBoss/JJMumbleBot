@@ -9,7 +9,7 @@ import subprocess as sp
 import time
 import audioop
 import helpers.queue_handler as qh
-from helpers.configaccess import GlobalMods
+from helpers.config_access import GlobalMods
 
 
 class Plugin(PluginBase):
