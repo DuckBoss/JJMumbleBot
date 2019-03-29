@@ -119,7 +119,6 @@ class JJMumbleBot:
         self.bot_plugins.get('youtube').set_sound_board_plugin(self.bot_plugins.get('sound_board'))
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
-
         sys.path.pop(0)
 
     def live_plugin_check(self):
