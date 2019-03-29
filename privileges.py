@@ -34,20 +34,20 @@ def setup_privileges():
 def privileges_check(user):
 	if user['name'] in users.keys():
 		return int(users[user['name']])
-	else:
-		with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
-			csvr = csv.DictReader(csvf)
-			for i, row in enumerate(csvr):
-				if row['user'] == user['name']:
-					users[user['name']] = int(row['level'])
-					return int(users[user['name']])
-		with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a') as csvf:
-			headers = ['user','level']
-			csvw = csv.DictWriter(csvf, fieldnames=headers)
-			csvw.writerow({'user':user['name'], 'level':1})
-			users[user['name']] = 1
-			print("Added [%s-%s] to the user list." % (user['name'], 1))
-		return int(users[user['name']])
+
+	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
+		csvr = csv.DictReader(csvf)
+		for i, row in enumerate(csvr):
+			if row['user'] == user['name']:
+				users[user['name']] = int(row['level'])
+				return int(users[user['name']])
+	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a') as csvf:
+		headers = ['user','level']
+		csvw = csv.DictWriter(csvf, fieldnames=headers)
+		csvw.writerow({'user':user['name'], 'level':1})
+		users[user['name']] = 1
+		print("Added [%s-%s] to the user list." % (user['name'], 1))
+	return int(users[user['name']])
 
 def get_all_privileges():
 	priv_text = "<br><font color='red'>All user privileges:</font><br>"
