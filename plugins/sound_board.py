@@ -165,8 +165,6 @@ class Plugin(PluginBase):
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
-                return
             parameter = message_parse[1]
 
             if self.youtube_plugin.clear_audio_plugin() is False:
