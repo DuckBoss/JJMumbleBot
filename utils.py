@@ -1,4 +1,3 @@
-import privileges as pv
 import os
 from helpers.config_access import GlobalMods as CFG
 
@@ -65,7 +64,7 @@ def msg(mumble, receiver, message):
         if mumble.users[user]['name'] == receiver:
             mumble.users[user].send_message(message)
 
-
+"""
 def setup_privileges():
     with open("%s/privileges/blacklist.txt" % get_main_dir()) as blklist:
         line = blklist.readline()
@@ -134,7 +133,7 @@ def remove_from_blacklist(user_name):
     print("%s is not in the blacklist." % user_name)
     return False
 
-
+"""
 def get_plugin_dir():
     return CFG.cfg_inst['Bot_Directories']['PluginsDirectory']
 

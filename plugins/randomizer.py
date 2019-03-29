@@ -1,5 +1,6 @@
 from templates.plugin_template import PluginBase
 import utils
+import privileges as pv
 import os
 import random
 from datetime import datetime
@@ -26,6 +27,9 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "coinflip":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,2)
             if result == 1:
@@ -36,36 +40,54 @@ class Plugin(PluginBase):
                        "<font color='cyan'>Coin Flip Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d4roll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,4)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d6roll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,6)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d8roll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,8)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d10roll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,10)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d12roll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,12)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "customroll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
             try:
                 all_messages = message[1:].split()
                 number_of_dice = int(all_messages[1])

@@ -56,7 +56,7 @@ class JJMumbleBot:
         utils.make_directory(CFG.cfg_inst['Media_Directories']['TemporaryImageDirectory'])
         logging.info("Initialized temporary media directories.")
         # Setup privileges.
-        utils.setup_privileges()
+        pv.setup_privileges()
         logging.info("Initialized user privileges.")
         # Initialize plugins.
         if self.safe_mode:  
@@ -191,7 +191,7 @@ class JJMumbleBot:
                 return
 
             if command == "refresh":
-                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                     self.refresh_plugins()
                     return
                 else:
@@ -200,7 +200,7 @@ class JJMumbleBot:
                 return
 
             elif command == "exit" or command == "quit":
-                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                     print("Stopping all threads...")
                     self.exit()
                     logging.info("JJ Mumble Bot is being shut down.")
@@ -221,7 +221,7 @@ class JJMumbleBot:
                 return
 
             elif command == "system_test":
-                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                     self.plugin_callback_test()
                     logging.info("A system self-test was run.")
                     return

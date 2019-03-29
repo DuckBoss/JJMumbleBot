@@ -29,8 +29,8 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "post":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if pv.privileges_check(mumble.users[text.actor]) > pv.Privileges.MOD.value:
+                print("User [%s] must be a moderator to use this command." % (mumble.users[text.actor]['name']))
                 return
             img_url = message_parse[1]
             # Download image
@@ -49,7 +49,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "img":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             parameter = message_parse[1]
@@ -62,7 +62,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "imglist":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             file_counter = 0
