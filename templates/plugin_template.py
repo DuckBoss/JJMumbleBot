@@ -18,4 +18,18 @@ class PluginBase(ABC):
 
     @abstractmethod
     def help(self):
+        return help_data
+
+    @abstractmethod 
+    def get_plugin_version(self):
+        return plugin_version
+
+    @property
+    @abstractmethod
+    def help_data(self):
+        pass
+
+    @property
+    @abstractmethod
+    def plugin_version(self):
         pass
