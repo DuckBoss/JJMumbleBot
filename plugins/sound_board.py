@@ -18,7 +18,8 @@ class Plugin(PluginBase):
                     <b>!sblist</b>: Displays all the available sound board tracks in private messages.<br>\
                     <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track."
-
+    plugin_version = "1.5.0"
+    
     exit_flag = False
     current_song = None
     audio_thread = None
@@ -227,3 +228,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
+
+    def get_plugin_version(self):
+        return self.plugin_version

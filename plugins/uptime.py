@@ -7,7 +7,8 @@ class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Twice Plugin Help <font color='red'>#####</font></b><br> \
                         All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!uptime</b>: Returns the bot uptime."
-
+    plugin_version = "1.0.0"
+    
     start_seconds = 0
     seconds = 0
     minutes = 0
@@ -50,3 +51,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
+
+    def get_plugin_version(self):
+        return self.plugin_version

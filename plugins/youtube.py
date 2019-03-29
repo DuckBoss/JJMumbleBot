@@ -25,7 +25,8 @@ class Plugin(PluginBase):
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>\
                         <b>!clear_cache</b>: Clears the youtube temporary media cache."
-
+    plugin_version = "10.0.0"
+    
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': utils.get_temporary_media_dir()+'%(id)s.wav',
@@ -437,3 +438,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
+
+    def get_plugin_version(self):
+        return self.plugin_version
