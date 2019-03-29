@@ -92,7 +92,7 @@ class JJMumbleBot:
             if f_ext == ".py":
                 if f_name == "help":
                     continue
-                elif f_name == "bot_commands":
+                elif f_name == "bot_commands" or f_name == "uptime":
                     plugin = __import__(f_name)
                     self.bot_plugins[f_name] = plugin.Plugin()
         help_plugin = __import__('help')
@@ -124,7 +124,7 @@ class JJMumbleBot:
 
     def live_plugin_check(self):
         if self.safe_mode:
-            length_check = 2
+            length_check = 3
         else:
             length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if os.path.isfile(os.path.join(utils.get_plugin_dir(), f))])
         if length_check != len(self.bot_plugins):
