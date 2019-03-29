@@ -20,6 +20,7 @@ class JJMumbleBot:
         # Initialize configs.
         CFG.cfg_inst.read(utils.get_config_dir())
         # Initialize application logging.
+        logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
         logging.basicConfig(filename='%s/runtime.log' % CFG.cfg_inst['Bot_Directories']['LogDirectory'], format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
         logging.info("Application configs have been read succesfully.")
         # Initialize system arguments.
