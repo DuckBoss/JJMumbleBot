@@ -10,8 +10,10 @@ class Plugin(PluginBase):
                 <b>!youtube_help/!yt_help</b>: Displays the youtube plugin help screen.<br>\
                 <b>!sound_board_help/!sb_help</b>: Displays the sound_board plugin help screen.<br>\
                 <b>!images_help/!img_help</b>: Displays the images plugin help screen.<br>\
+                <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>\
                 <b>!uptime_help</b> Displays the uptime plugin help screen." % utils.get_bot_name()
-
+    plugin_prepend_text = "<br><font color='red'>Plugin Version: "
+    plugin_version = "5.0.1"
     bot_plugins = {}
 
     def __init__(self, bot_plugins):
@@ -26,33 +28,38 @@ class Plugin(PluginBase):
 
         if command == "help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.help())
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.get_plugin_version(), self.help()))
             print("Displayed general help screen in the channel.")
             return
         elif command == "bot_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.bot_plugins.get('bot_commands').help())
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('bot_commands').get_plugin_version(), self.bot_plugins.get('bot_commands').help()))
             print("Displayed bot commands plugin help screen in the channel.")
             return
         elif command == "sound_board_help" or command == "sb_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.bot_plugins.get('sound_board').help())
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('sound_board').get_plugin_version(), self.bot_plugins.get('sound_board').help()))
             print("Displayed sound_board plugin help screen in the channel.")
             return
         elif command == "youtube_help" or command == "yt_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.bot_plugins.get('youtube').help())
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('youtube').get_plugin_version(), self.bot_plugins.get('youtube').help()))
             print("Displayed youtube plugin help screen in the channel.")
             return
         elif command == "images_help" or command == "img_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.bot_plugins.get('images').help())
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('images').get_plugin_version(), self.bot_plugins.get('images').help()))
             print("Displayed images plugin help screen in the channel.")
             return
         elif command == "uptime_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.bot_plugins.get('uptime').help())
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('uptime').get_plugin_version(), self.bot_plugins.get('uptime').help()))
             print("Displayed uptime plugin help screen in the channel.")
+            return
+        elif command == "randomizer_help":
+            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('randomizer').get_plugin_version(), self.bot_plugins.get('randomizer').help()))
+            print("Displayed randomizer plugin help screen in the channel.")
             return
 
     @staticmethod
@@ -64,3 +71,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
+
+    def get_plugin_version(self):
+        return self.plugin_version
