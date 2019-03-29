@@ -32,3 +32,5 @@ A python 3 mumble bot with extensive features and a plugin based system.
 ## Legacy Branches:
 - <b>pre-v1.3</b> - A legacy branch for pre-v1.3. <br>
 v1.3 implemented a new config system that required reconfiguring the config.ini file if a user was updating to v1.3.
+- <b>pre-v1.4</b> - A legacy branch for pre-v1.4. <br>
+v1.4 implemented a new and upgraded user privilege system that required how user privileges are handled and an update to the plugin template requiring the updating of all plugins.
