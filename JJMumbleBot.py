@@ -20,6 +20,7 @@ class JJMumbleBot:
         # Initialize configs.
         CFG.cfg_inst.read(utils.get_config_dir())
         # Initialize application logging.
+        logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
         logging.basicConfig(filename='%s/runtime.log' % CFG.cfg_inst['Bot_Directories']['LogDirectory'], format='%(asctime)s - %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
         logging.info("Application configs have been read succesfully.")
         # Initialize system arguments.
@@ -55,7 +56,7 @@ class JJMumbleBot:
         utils.make_directory(CFG.cfg_inst['Media_Directories']['TemporaryImageDirectory'])
         logging.info("Initialized temporary media directories.")
         # Setup privileges.
-        utils.setup_privileges()
+        pv.setup_privileges()
         logging.info("Initialized user privileges.")
         # Initialize plugins.
         if self.safe_mode:  
@@ -91,7 +92,7 @@ class JJMumbleBot:
             if f_ext == ".py":
                 if f_name == "help":
                     continue
-                elif f_name == "bot_commands":
+                elif f_name == "bot_commands" or f_name == "uptime":
                     plugin = __import__(f_name)
                     self.bot_plugins[f_name] = plugin.Plugin()
         help_plugin = __import__('help')
@@ -118,12 +119,11 @@ class JJMumbleBot:
         self.bot_plugins.get('youtube').set_sound_board_plugin(self.bot_plugins.get('sound_board'))
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
-
         sys.path.pop(0)
 
     def live_plugin_check(self):
         if self.safe_mode:
-            length_check = 2
+            length_check = 3
         else:
             length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if os.path.isfile(os.path.join(utils.get_plugin_dir(), f))])
         if length_check != len(self.bot_plugins):
@@ -191,7 +191,7 @@ class JJMumbleBot:
                 return
 
             if command == "refresh":
-                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                     self.refresh_plugins()
                     return
                 else:
@@ -200,7 +200,7 @@ class JJMumbleBot:
                 return
 
             elif command == "exit" or command == "quit":
-                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                     print("Stopping all threads...")
                     self.exit()
                     logging.info("JJ Mumble Bot is being shut down.")
@@ -221,7 +221,7 @@ class JJMumbleBot:
                 return
 
             elif command == "system_test":
-                if utils.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.ADMIN:
+                if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                     self.plugin_callback_test()
                     logging.info("A system self-test was run.")
                     return

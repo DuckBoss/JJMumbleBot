@@ -1,4 +1,3 @@
-import privileges as pv
 import os
 from helpers.config_access import GlobalMods as CFG
 
@@ -66,77 +65,9 @@ def msg(mumble, receiver, message):
             mumble.users[user].send_message(message)
 
 
-def setup_privileges():
-    with open("%s/privileges/blacklist.txt" % get_main_dir()) as blklist:
-        line = blklist.readline()
-        pv.blacklist_names.append(line.strip())
-    with open("%s/privileges/admin.txt" % get_main_dir()) as admlist:
-        line = admlist.readline()
-        pv.admin_names.append(line.strip())
-    print("User privilege setup complete.")
-
-
-def privileges_check(user):
-    blacklist_names = pv.blacklist_names
-    admin_names = pv.admin_names
-    if user['name'] in blacklist_names:
-        print("User %s tried to enter a command. Request denied." % user['name'])
-        return pv.Privileges.BLACKLIST
-    elif user['name'] in admin_names:
-        # print("User %s is an admin." % user['name'])
-        return pv.Privileges.ADMIN
-    return pv.Privileges.NORMAL
-
-
-def get_blacklist():
-    blklist_txt = "<br><font color='red'>Blacklist:</font><br>"
-    try:
-        with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
-            lines = blklist.readlines()
-        for i, item in enumerate(lines):
-            blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, item.strip())
-        return blklist_txt
-    except Exception:
-        print("File could not be opened.")
-    return blklist_txt
-
-
-def add_to_blacklist(user_name):
-    try:
-        if user_name not in pv.blacklist_names:
-            with open("%s/privileges/blacklist.txt" % get_main_dir(), 'a') as blklist:
-                blklist.write("%s\n" % user_name)
-                pv.blacklist_names.append(user_name)
-                print("User %s added to the blacklist." % user_name)
-                return True
-    except Exception as e:
-        print("Unable to add %s to the blacklist. {%s}" % (user_name, e))
-        return False
-    print("%s is already in the blacklist." % user_name)
-    return False
-
-
-def remove_from_blacklist(user_name):
-    try:
-        if user_name in pv.blacklist_names:
-            with open("%s/privileges/blacklist.txt" % get_main_dir(), 'r') as blklist:
-                lines = blklist.readlines()
-            with open("%s/privileges/blacklist.txt" % get_main_dir(), 'w') as blklist:
-                for line in lines:
-                    if line != ("%s\n" % user_name):
-                        blklist.write(line)
-                pv.blacklist_names.remove(user_name)
-                print("User %s removed from the blacklist." % user_name)
-                return True
-    except Exception as e:
-        print("Unable to remove %s from the blacklist. {%s}" % (user_name, e))
-        return False
-    print("%s is not in the blacklist." % user_name)
-    return False
-
-
 def get_plugin_dir():
     return CFG.cfg_inst['Bot_Directories']['PluginsDirectory']
+
 
 def get_temporary_img_dir():
     return CFG.cfg_inst['Media_Directories']['TemporaryImageDirectory']

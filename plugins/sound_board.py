@@ -18,7 +18,8 @@ class Plugin(PluginBase):
                     <b>!sblist</b>: Displays all the available sound board tracks in private messages.<br>\
                     <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track."
-
+    plugin_version = "1.5.0"
+    
     exit_flag = False
     current_song = None
     audio_thread = None
@@ -42,7 +43,7 @@ class Plugin(PluginBase):
         all_messages = message[1:].split()
         command = message_parse[0]
         if command == "sbstop" or command == "sbs":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.audio_thread is not None:
@@ -53,7 +54,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "sblist":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             file_counter = 0
@@ -76,7 +77,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "sblist_echo":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             file_counter = 0
@@ -99,7 +100,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "sbreplay" or command == "sbr":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.audio_thread is not None:
@@ -138,7 +139,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "sbv":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             try:
@@ -161,7 +162,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "sb":
-            if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
@@ -227,3 +228,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
+
+    def get_plugin_version(self):
+        return self.plugin_version
