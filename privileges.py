@@ -41,7 +41,7 @@ def privileges_check(user):
 			if row['user'] == user['name']:
 				users[user['name']] = int(row['level'])
 				return int(users[user['name']])
-	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a') as csvf:
+	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a', newline='') as csvf:
 		headers = ['user','level']
 		csvw = csv.DictWriter(csvf, fieldnames=headers)
 		csvw.writerow({'user':user['name'], 'level':1})
@@ -106,14 +106,18 @@ def remove_from_blacklist(username):
 
 def set_privileges(username, val, sender):
 	if username in users.keys():
+		if username == sender['name']:
+			print("This user: [%s] tried to modify their own user privileges. Modification denied." % (username))
+			return
+
 		with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
 			csvr = csv.reader(csvf)
 			content = list(csvr)
 			ind = [(i, j.index(username)) for i,j in enumerate(content) if username in j]
-			if int(content[ind[0][0]][1]) >= 4:
+			if int(content[ind[0][0]][1]) >= privileges_check(sender):
 				if privileges_check(sender) == 4:
-					print("This administrator: [%s] tried to modify privileges for another administrator: [%s]" % (sender['name'], username))
-					logging.info("This administrator: [%s] tried to modify privileges for another administrator: [%s]" % (sender['name'], username))
+					print("This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (sender['name'], username))
+					logging.info("This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (sender['name'], username))
 					return
 			content[ind[0][0]][1] = val
 			users[username] = val
@@ -123,7 +127,7 @@ def set_privileges(username, val, sender):
 	return False
 
 def add_to_privileges(username, level):
-	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a') as csvf:
+	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a', newline='') as csvf:
 		headers = ['user','level']
 		csvw = csv.DictWriter(csvf, fieldnames=headers)
 		csvw.writerow({'user':username, 'level':level})
@@ -133,7 +137,7 @@ def add_to_privileges(username, level):
 
 def overwrite_privileges(content):
 	try:
-		with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='w') as csvf:
+		with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='w', newline='') as csvf:
 			csvr = csv.writer(csvf)
 			csvr.writerows(content)
 			return True
