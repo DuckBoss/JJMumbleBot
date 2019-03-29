@@ -13,11 +13,15 @@ A python 3 mumble bot with extensive features and a plugin based system.
   - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
   - <b>Randomizer Plugin</b> - Do custom dice rolls, coin flips, etc in the channel.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">Full list of built-in plugins</a></b>
+- <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Event logging to keep track of bot usage and command history.</b>
-- <b>Small footprint</b> - 2.6MB storage usage. 
 
-#### TODO:
+### Plans For Next Update:
+- [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
+- [ ] <b>New Built-in Plugin: Dice Roll (!random 'number_of_dice' 'dice_faces')</b>
+
+### Plans For Future:
 - [ ] <b>Rework user privilege system</b>
 
 ## Wiki
@@ -25,6 +29,9 @@ A python 3 mumble bot with extensive features and a plugin based system.
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Quick Start guide: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start</a> <br>
+
+## Extra Plugins:
+<a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
 ## Legacy Branches:
 - <b>pre-v1.3</b> - A legacy branch for pre-v1.3. <br>
