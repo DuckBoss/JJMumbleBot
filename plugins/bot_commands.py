@@ -26,7 +26,8 @@ class Plugin(PluginBase):
             <b>!refresh</b>: Refreshes all plugins.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-
+    plugin_version = "5.0.0"
+    
     def __init__(self):
         print("Bot_Commands Plugin Initialized.")
         super().__init__()
@@ -51,7 +52,7 @@ class Plugin(PluginBase):
             if utils.privileges_check(mumble.users[text.actor]) != pv.Privileges.ADMIN:
                 print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
-            logging.info("Manually Logged: [%s]" % (all_messages[1]))
+            logging.info("Manually Logged: [%s]" % (message_parse[1]))
             return
             
         elif command == "spam_test":
@@ -166,3 +167,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
+
+    def get_plugin_version(self):
+        return self.plugin_version
