@@ -1,5 +1,6 @@
 from templates.plugin_template import PluginBase
 import utils
+import os
 import random
 from datetime import datetime
 
@@ -25,7 +26,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "coinflip":
-            random.seed(datetime.now())
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,2)
             if result == 1:
                 result = "Heads"
@@ -35,31 +36,31 @@ class Plugin(PluginBase):
                        "<font color='cyan'>Coin Flip Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d4roll":
-            random.seed(datetime.now())
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,4)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d6roll":
-            random.seed(datetime.now())
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,6)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d8roll":
-            random.seed(datetime.now())
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,8)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d10roll":
-            random.seed(datetime.now())
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,10)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d12roll":
-            random.seed(datetime.now())
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,12)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>%s</font>" % result)
@@ -75,7 +76,7 @@ class Plugin(PluginBase):
                     return 
                 ret_text = "<br><font color='red'>Custom Dice Roll:</font>"
                 for i in range(number_of_dice):
-                    random.seed(datetime.now())
+                    random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
                     result = random.randint(1,number_of_faces)
                     ret_text += "<br><font color='cyan'>[Dice %s]-</font> <font color='yellow'>Rolled %s</font>" % (i, result)
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
