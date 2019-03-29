@@ -29,7 +29,7 @@ A python 3 mumble bot with extensive features and a plugin based system.
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-### Legacy Branches:
+## Legacy Branches:
 - <b>pre-v1.3</b> - A legacy branch for pre-v1.3. <br>
 v1.3 implemented a new config system that required reconfiguring the config.ini file if a user was updating to v1.3.
 - <b>pre-v1.4</b> - A legacy branch for pre-v1.4. <br>
