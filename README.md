@@ -20,9 +20,6 @@ A python 3 mumble bot with extensive features and a plugin based system.
 ### Plans For Next Update:
 - [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
 
-### Plans For Future:
-- [ ] <b>Rework user privilege system</b>
-
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
