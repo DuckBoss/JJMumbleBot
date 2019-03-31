@@ -6,8 +6,6 @@ import logging
 
 
 class Plugin(PluginBase):
-    start_time = None
-
     help_data = "<br><b><font color='red'>#####</font> Bot_Commands Plugin Help <font color='red'>#####</font></b><br> \
             All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
             <b>!echo 'message/image'</b>: Echoes a message/image in the chat.<br>\
@@ -34,7 +32,6 @@ class Plugin(PluginBase):
     def __init__(self):
         print("Bot_Commands Plugin Initialized.")
         super().__init__()
-        self.start_time = time.time()
 
     def process_command(self, mumble, text):
         message = text.message.strip()
