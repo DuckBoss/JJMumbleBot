@@ -150,7 +150,7 @@ class JJMumbleBot:
             self.initialize_plugins_safe()
         else:
             self.initialize_plugins()
-        utils.setup_privileges()
+        pv.setup_privileges()
         time.sleep(0.3)
         print("All plugins refreshed.")
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
