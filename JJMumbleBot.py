@@ -21,7 +21,7 @@ class JJMumbleBot:
 
     tick_rate = 0.1
     multi_cmd_limit = 5
-    cmd_token = '!'
+    cmd_token = None
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
