@@ -16,6 +16,9 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Event logging to keep track of bot usage and command history.</b>
+- <b>Multi-Command Input</b> - Input multiple commands in a single line.
+- <b>Custom Command Tokens</b> - Custom command recognition tokens (ex: !command, ~command, /command, etc)
+- <b>Command Tick Rates</b> - Commands in the queue are processed by the tick rate assigned in the config.
 
 ### Plans For Upcoming Updates:
 - [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
