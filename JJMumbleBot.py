@@ -209,13 +209,6 @@ class JJMumbleBot:
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
             print(all_commands)
 
-            #all_messages = message[1:].split()
-            #if all_messages:
-            #    command = all_messages[0]
-            #else:
-            #    return
-
-
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
                 # Generate command with parameters
@@ -230,6 +223,7 @@ class JJMumbleBot:
             while not self.command_queue.is_empty():
                 # Process commands in the queue
                 cur_cmd = self.command_queue.pop()
+                print(cur_cmd.command)
                 self.process_command_queue(cur_cmd)
                 time.sleep(self.tick_rate)
 
