@@ -116,14 +116,6 @@ class Plugin(PluginBase):
             GM.logger.info("Joined user: %s" % mumble.users[text.actor]['name'])
             return
 
-        elif command == "about":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
-                return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s" % utils.get_about())
-            return
-
         elif command == "privileges":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
                 print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))

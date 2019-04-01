@@ -56,7 +56,7 @@ class Plugin(PluginBase):
     # max track duration in seconds.
     max_track_duration = 900
 
-    def __init__(self, mumble):
+    def __init__(self):
         print("Music Plugin Initialized...")
         super().__init__()
         self.volume = float(GM.cfg['Plugin_Settings']['Youtube_DefaultVolume'])
@@ -64,7 +64,6 @@ class Plugin(PluginBase):
         self.max_track_duration = int(GM.cfg['Plugin_Settings']['Youtube_MaxVideoLength'])
         utils.clear_directory(utils.get_temporary_media_dir())
         self.queue_instance = qh.QueueHandler(self.max_queue_size)
-        self.audio_loop(mumble)
 
     def set_sound_board_plugin(self, sb_plugin):
         self.sound_board_plugin = sb_plugin
@@ -116,7 +115,7 @@ class Plugin(PluginBase):
                 self.queue_instance.clear()
                 self.stop_audio()
                 self.queue_instance = qh.QueueHandler(self.max_queue_size)
-                GM.logger("The youtube audio thread was stopped.")
+                GM.logger.info("The youtube audio thread was stopped.")
                 return
             return
 
@@ -273,7 +272,7 @@ class Plugin(PluginBase):
                     count = int(all_messages[2])
                     for i in range(count):
                         self.queue_instance.insert(song_data)
-                    self.audio_loop(mumble)
+                    # self.audio_loop(mumble)
                     return
             return
 
@@ -283,7 +282,7 @@ class Plugin(PluginBase):
                 return
             if self.music_thread is not None:
                 if self.current_song is not None and self.current_song_info is not None:
-                    if utils.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
+                    if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST:
                         return
                     self.queue_instance.insert_priority(self.current_song_info)
                     self.stop_audio()
@@ -418,13 +417,12 @@ class Plugin(PluginBase):
             else:
                 time.sleep(0.1)
 
-        while mumble.sound_output.get_buffer_size() > 0:
-            time.sleep(0.01)
 
     def audio_loop(self, mumble):
-        if not self.is_playing:
-            while not self.queue_instance.is_empty():
-                self.play_audio(mumble)
+        while not self.exit_flag:
+            if not self.is_playing:
+                while not self.queue_instance.is_empty():
+                    self.play_audio(mumble)
 
     def get_queue(self):
         if self.queue_instance.size() is 0:

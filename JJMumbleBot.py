@@ -9,6 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 from helpers.global_access import GlobalMods as GM
 from helpers.queue_handler import QueueHandler
 from helpers.command import Command
+import copy
 
 
 class JJMumbleBot:
@@ -133,7 +134,7 @@ class JJMumbleBot:
         help_plugin = __import__('help')
         youtube_plugin = __import__('youtube')
 
-        self.bot_plugins['youtube'] = youtube_plugin.Plugin(self.mumble)
+        self.bot_plugins['youtube'] = youtube_plugin.Plugin()
         self.bot_plugins.get('youtube').set_sound_board_plugin(self.bot_plugins.get('sound_board'))
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
@@ -212,10 +213,9 @@ class JJMumbleBot:
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
                 # Generate command with parameters
-                text.message = item
-                print(text.message)
-                print(item[1:].split()[0])
-                new_command = Command(item[1:].split()[0], text)
+                new_text = copy.deepcopy(text)
+                new_text.message = item
+                new_command = Command(item[1:].split()[0], new_text)
                 # Insert command into the command queue
                 self.command_queue.insert(new_command)
 
@@ -223,7 +223,6 @@ class JJMumbleBot:
             while not self.command_queue.is_empty():
                 # Process commands in the queue
                 cur_cmd = self.command_queue.pop()
-                print(cur_cmd.command)
                 self.process_command_queue(cur_cmd)
                 time.sleep(self.tick_rate)
 
@@ -247,10 +246,16 @@ class JJMumbleBot:
                 GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
         elif command == "status":
+            if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s is %s." % (utils.get_bot_name(), self.status()))
             return
         elif command == "version":
+            if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s is on version %s" % (utils.get_bot_name(), utils.get_version()))
             return
@@ -263,11 +268,19 @@ class JJMumbleBot:
                 print("User [%s] must be an admin to use the system_test command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
+        elif command == "about":
+            if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                return
+            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                       "%s" % utils.get_about())
+            return
         return
 
     def process_command_queue(self, com):
         command_type = com.command
         command_text = com.text
+        print("%s - %s" % (command_type, command_text.message))
         self.process_core_commands(command_type, command_text)
         for plugin in self.bot_plugins.values():
             plugin.process_command(self.mumble, command_text)
