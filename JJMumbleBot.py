@@ -20,6 +20,7 @@ class JJMumbleBot:
     bot_plugins = {}
 
     tick_rate = 0.1
+    multi_cmd_limit = 5
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
@@ -63,6 +64,8 @@ class JJMumbleBot:
         GM.logger.info("Retrieved server information from application configs.")
         # Set main logic loop tick rate.
         self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
+        # Set multi-command limit.
+        self.multi_cmd_limit = int(GM.cfg['Main_Settings']['MultiCommandLimit'])
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
                                       password=server_pass, reconnect=auto_reconnect)
@@ -208,7 +211,10 @@ class JJMumbleBot:
             # example input: !version ; !about ; !yt twice ; !p ; !status
             all_commands = [msg.strip() for msg in message.split(';')]
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
-            print(all_commands)
+            if len(all_commands) > self.multi_cmd_limit:
+                print("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                GM.logger.warning("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                return
 
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
@@ -280,7 +286,6 @@ class JJMumbleBot:
     def process_command_queue(self, com):
         command_type = com.command
         command_text = com.text
-        print("%s - %s" % (command_type, command_text.message))
         self.process_core_commands(command_type, command_text)
         for plugin in self.bot_plugins.values():
             plugin.process_command(self.mumble, command_text)
