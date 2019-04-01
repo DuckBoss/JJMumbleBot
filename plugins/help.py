@@ -1,4 +1,5 @@
 from templates.plugin_template import PluginBase
+from helpers.global_access import GlobalMods as GM
 import utils
 
 
@@ -30,36 +31,43 @@ class Plugin(PluginBase):
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.get_plugin_version(), self.help()))
             print("Displayed general help screen in the channel.")
+            GM.logger.info("Displayed general help screen in the channel.")
             return
         elif command == "bot_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('bot_commands').get_plugin_version(), self.bot_plugins.get('bot_commands').help()))
             print("Displayed bot commands plugin help screen in the channel.")
+            GM.logger.info("Displayed bot commands plugin help screen in the channel.")
             return
         elif command == "sound_board_help" or command == "sb_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('sound_board').get_plugin_version(), self.bot_plugins.get('sound_board').help()))
             print("Displayed sound_board plugin help screen in the channel.")
+            GM.logger.info("Displayed sound_board plugin help screen in the channel.")
             return
         elif command == "youtube_help" or command == "yt_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('youtube').get_plugin_version(), self.bot_plugins.get('youtube').help()))
             print("Displayed youtube plugin help screen in the channel.")
+            GM.logger.info("Displayed youtube plugin help screen in the channel.")
             return
         elif command == "images_help" or command == "img_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('images').get_plugin_version(), self.bot_plugins.get('images').help()))
             print("Displayed images plugin help screen in the channel.")
+            GM.logger.info("Displayed images plugin help screen in the channel.")
             return
         elif command == "uptime_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('uptime').get_plugin_version(), self.bot_plugins.get('uptime').help()))
             print("Displayed uptime plugin help screen in the channel.")
+            GM.logger.info("Displayed uptime plugin help screen in the channel.")
             return
         elif command == "randomizer_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('randomizer').get_plugin_version(), self.bot_plugins.get('randomizer').help()))
             print("Displayed randomizer plugin help screen in the channel.")
+            GM.logger.info("Displayed randomizer plugin help screen in the channel.")
             return
 
     @staticmethod

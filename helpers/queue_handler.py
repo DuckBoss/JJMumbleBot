@@ -7,26 +7,26 @@ class QueueHandler:
     queue_size = 0
 
     def __init__(self, max_size):
-        print("Queue Initialized...")
+        # print("Queue Initialized...")
         self.queue_storage = collections.deque([], maxlen=max_size)
 
     def insert_priority(self, item):
         if not self.is_full():
             self.queue_storage.append(item)
             self.queue_size += 1
-            print("added priority item to queue")
+            # print("added priority item to queue")
 
     def insert(self, item):
         if not self.is_full():
             self.queue_storage.appendleft(item)
             self.queue_size += 1
-            print("added item to queue")
+            # print("added item to queue")
 
     def pop(self):
         if not self.is_empty():
             item = self.queue_storage.pop()
             self.queue_size -= 1
-            print("popped item from queue")
+            # print("popped item from queue")
             return item
 
     def is_full(self):

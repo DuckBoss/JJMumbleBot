@@ -19,7 +19,6 @@ A python 3 mumble bot with extensive features and a plugin based system.
 
 ### Plans For Upcoming Updates:
 - [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
-- [ ] <b>Timed Rotating Logs</b>
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
