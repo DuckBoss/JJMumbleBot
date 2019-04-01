@@ -21,7 +21,7 @@ def setup_privileges_debug():
 		for i, row in enumerate(csvr):
 			users[row['user']] = int(row['level'])
 			print("Added [%s-%s] to the user privilege list." % (row['user'], row['level']))
-			logging.info("Added [%s-%s] to the user privilege list.")
+			logging.info("Added [%s-%s] to the user privilege list." % (row['user'], row['level']))
 
 def setup_privileges():
 	with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
@@ -29,7 +29,7 @@ def setup_privileges():
 		print("Setting up user privileges...")
 		for i, row in enumerate(csvr):
 			users[row['user']] = int(row['level'])
-			logging.info("Added [%s-%s] to the user privilege list.")
+			logging.info("Added [%s-%s] to the user privilege list." % (row['user'], row['level']))
 
 def privileges_check(user):
 	if user['name'] in users.keys():
