@@ -36,7 +36,7 @@ class JJMumbleBot:
         handler.setFormatter(log_formatter)
         GM.logger.addHandler(handler)
 
-        GM.logger.info("Application configs have been read succesfully.")
+        GM.logger.info("Application configs have been read successfully.")
         # Initialize system arguments.
         if sys.argv:
             for item in sys.argv:
@@ -85,7 +85,7 @@ class JJMumbleBot:
             GM.logger.info("Initialized plugins.")
         # Run a plugin callback test.
         self.plugin_callback_test()
-        GM.logger.info("Plugin callback test succesful.")
+        GM.logger.info("Plugin callback test successful.")
         print("JJ Mumble Bot initialized!\n")
         # Join the server after all initialization is complete.
         self.join_server()
