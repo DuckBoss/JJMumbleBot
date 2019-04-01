@@ -210,17 +210,48 @@ class Plugin(PluginBase):
                            "The youtube queue is empty.")
             return
 
+        elif command == "link":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
+            if len(message_parse) == 2:
+                stripped_url = BeautifulSoup(message_parse[1], features='lxml').get_text()
+                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if self.queue_instance.is_full():
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "The youtube queue is full!")
+                        return
+                    self.all_searches = None
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "Direct link given: %s" % stripped_url)
+                    try:
+                        song_data = self.get_downloaded_song(stripped_url)
+                        if song_data is None:
+                            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "The chosen video is too long. The maximum video length is %d minutes" % (self.max_track_duration/60))
+                            return
+                        self.sound_board_plugin.clear_audio_thread()
+                        self.can_play = False
+                        self.queue_instance.insert(song_data)
+                    except Exception:
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "The given link was not identified as a youtube video link!")
+                        return
+                    
+                    self.audio_loop(mumble)
+                    return
+
         elif command == "play" or command == "p":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.can_play:
-                self.sound_board_plugin.clear_audio_thread()
                 # self.stop_audio()
                 if self.queue_instance.is_full():
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "The youtube queue is full!")
                     return
+                self.sound_board_plugin.clear_audio_thread()
 
                 if len(all_messages) == 1:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -272,7 +303,8 @@ class Plugin(PluginBase):
                     count = int(all_messages[2])
                     for i in range(count):
                         self.queue_instance.insert(song_data)
-                    # self.audio_loop(mumble)
+                        #self.audio_loop(mumble)
+                    self.audio_loop(mumble)
                     return
             return
 
@@ -347,7 +379,7 @@ class Plugin(PluginBase):
         list_urls = "<br>"
         for i in range(10):
             completed_url = "https://www.youtube.com" + all_searches[i]['href']
-            list_urls += "[%d]: <a href='%s'>[%s]</a><br>" % (i, completed_url, all_searches[i]['title'])
+            list_urls += "<font color='yellow'>[%d]:</font> <a href='%s'>[%s]</a><br>" % (i, completed_url, all_searches[i]['title'])
         return list_urls
 
     def clear_queue(self):
@@ -397,7 +429,7 @@ class Plugin(PluginBase):
                                                            '#transcode{acodec=s16le, channels=2, '
                                                            'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                                            'mux=wav, dst=-}'],
-                                         stdout=sp.PIPE, bufsize=4096)
+                                         stdout=sp.PIPE, bufsize=480)
 
         self.is_playing = True
         utils.unmute(mumble)
@@ -409,7 +441,7 @@ class Plugin(PluginBase):
             while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:
                 time.sleep(0.01)
             if self.music_thread:
-                raw_music = self.music_thread.stdout.read(4096)
+                raw_music = self.music_thread.stdout.read(480)
                 if raw_music and self.music_thread and self.is_playing:  # raw_music and
                     mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                 else:
