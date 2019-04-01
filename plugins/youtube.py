@@ -9,7 +9,7 @@ import subprocess as sp
 import time
 import audioop
 import helpers.queue_handler as qh
-from helpers.config_access import GlobalMods
+from helpers.global_access import GlobalMods as GM
 
 
 class Plugin(PluginBase):
@@ -59,9 +59,9 @@ class Plugin(PluginBase):
     def __init__(self, mumble):
         print("Music Plugin Initialized...")
         super().__init__()
-        self.volume = float(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_DefaultVolume'])
-        self.max_queue_size = int(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_MaxQueueLength'])
-        self.max_track_duration = int(GlobalMods.cfg_inst['Plugin_Settings']['Youtube_MaxVideoLength'])
+        self.volume = float(GM.cfg['Plugin_Settings']['Youtube_DefaultVolume'])
+        self.max_queue_size = int(GM.cfg['Plugin_Settings']['Youtube_MaxQueueLength'])
+        self.max_track_duration = int(GM.cfg['Plugin_Settings']['Youtube_MaxVideoLength'])
         utils.clear_directory(utils.get_temporary_media_dir())
         self.queue_instance = qh.QueueHandler(self.max_queue_size)
         self.audio_loop(mumble)
@@ -101,6 +101,7 @@ class Plugin(PluginBase):
                     return
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Going to next available track...")
+                GM.logger.info("The youtube audio queue moved to the next available track.")
                 self.stop_audio()
                 return
             return
@@ -115,6 +116,7 @@ class Plugin(PluginBase):
                 self.queue_instance.clear()
                 self.stop_audio()
                 self.queue_instance = qh.QueueHandler(self.max_queue_size)
+                GM.logger("The youtube audio thread was stopped.")
                 return
             return
 
@@ -123,6 +125,7 @@ class Plugin(PluginBase):
                 print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
             print("Clearing youtube temporary media cache.")
+            GM.logger.info("The youtube temporary media cache was cleared.")
             self.clear_download_cache(mumble)
             return
 
@@ -134,6 +137,7 @@ class Plugin(PluginBase):
             self.clear_queue()
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Cleared youtube queue.")
+            GM.logger.info("The youtube queue was cleared.")
             return
 
         elif command == "max_duration":
@@ -145,6 +149,7 @@ class Plugin(PluginBase):
                 self.set_max_track_duration(new_max)
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Set youtube track max duration to %s" % self.max_track_duration)
+                GM.logger.info("The youtube track max duration was set to %s" % self.max_track_duration)
             except IndexError:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Current youtube track max duration: %s" % self.max_track_duration)
@@ -172,6 +177,7 @@ class Plugin(PluginBase):
             self.volume = vol
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "Set volume to %s" % self.volume)
+            GM.logger.info("The youtube audio volume was changed to %s" % self.volume)
             return
 
         elif command == "youtube" or command == "yt":

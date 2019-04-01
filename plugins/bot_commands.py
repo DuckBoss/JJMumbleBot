@@ -1,8 +1,7 @@
 import utils
 from templates.plugin_template import PluginBase
 import privileges as pv
-import time
-import logging
+from helpers.global_access import GlobalMods as GM
 
 
 class Plugin(PluginBase):
@@ -27,7 +26,7 @@ class Plugin(PluginBase):
             <b>!refresh</b>: Refreshes all plugins.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-    plugin_version = "5.0.1"
+    plugin_version = "5.1.0"
     
     def __init__(self):
         print("Bot_Commands Plugin Initialized.")
@@ -45,14 +44,14 @@ class Plugin(PluginBase):
                 return
             parameter = message_parse[1]
             utils.echo(utils.get_my_channel(mumble), parameter)
-            logging.info("Echo:[%s]" % (parameter))
+            GM.logger.info("Echo:[%s]" % parameter)
             return
 
         elif command == "log":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
                 print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
+                GM.logger.info("Manually Logged: [%s]" % (message_parse[1]))
                 return
-            logging.info("Manually Logged: [%s]" % (message_parse[1]))
             return
             
         elif command == "spam_test":
@@ -61,7 +60,7 @@ class Plugin(PluginBase):
                 return
             for i in range(10):
                 utils.echo(utils.get_my_channel(mumble), "This is a test message...")
-            logging.info("A spam_test was conducted by an administrator.")
+                GM.logger.info("A spam_test was conducted by an administrator.")
             return
 
         elif command == "msg":
@@ -69,7 +68,7 @@ class Plugin(PluginBase):
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             utils.msg(mumble, all_messages[1], message[1:].split(' ', 2)[2])
-            logging.info("Msg:[%s]->[%s]" % (all_messages[1], message[1:].split(' ', 2)[2]))
+            GM.logger.info("Msg:[%s]->[%s]" % (all_messages[1], message[1:].split(' ', 2)[2]))
             return
 
         elif command == "move":
@@ -86,7 +85,7 @@ class Plugin(PluginBase):
             else:
                 channel_search.move_in()
                 utils.echo(channel_search, "%s was moved by %s" % (utils.get_bot_name(), mumble.users[text.actor]['name']))
-                logging.info("Moved to channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
+                GM.logger.info("Moved to channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
             return
 
         elif command == "make":
@@ -96,7 +95,7 @@ class Plugin(PluginBase):
             parameter = message_parse[1]
             channel_name = parameter
             utils.make_channel(mumble, mumble.channels[mumble.users.myself['channel_id']], channel_name)
-            logging.info("Made a channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
+            GM.logger.info("Made a channel: %s by %s" % (channel_name, mumble.users[text.actor]['name']))
             return
 
         elif command == "leave":
@@ -104,7 +103,7 @@ class Plugin(PluginBase):
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             utils.leave(mumble)
-            logging.info("Returned to default channel.")
+            GM.logger.info("Returned to default channel.")
             return
 
         elif command == "joinme":
@@ -114,7 +113,7 @@ class Plugin(PluginBase):
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "Joining user: %s" % mumble.users[text.actor]['name'])
             mumble.channels[mumble.users[text.actor]['channel_id']].move_in()
-            logging.info("Joined user: %s" % mumble.users[text.actor]['name'])
+            GM.logger.info("Joined user: %s" % mumble.users[text.actor]['name'])
             return
 
         elif command == "about":
@@ -148,7 +147,7 @@ class Plugin(PluginBase):
                 if result:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s privileges have been modified." % username)
-                    logging.info("Modified user privileges for: %s" % username)
+                    GM.logger.info("Modified user privileges for: %s" % username)
             except Exception:
                 print("Incorrect format! Format: !setprivileges 'username' 'level'")
                 return
@@ -167,7 +166,7 @@ class Plugin(PluginBase):
                 if result:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "Added a new user: %s to the user privileges." % username)
-                    logging.info("Added a new user: %s to the user privileges." % username)
+                    GM.logger.info("Added a new user: %s to the user privileges." % username)
             except Exception:
                 print("Incorrect format! Format: !addprivileges 'username' 'level'")
                 return
@@ -185,7 +184,7 @@ class Plugin(PluginBase):
                 if result:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s added to the blacklist." % parameter)
-                    logging.info("Blacklisted user: %s" % parameter)
+                    GM.logger.info("Blacklisted user: %s" % parameter)
             except IndexError:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            pv.get_blacklist())
@@ -203,7 +202,7 @@ class Plugin(PluginBase):
                 if result:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User: %s removed from the blacklist." % parameter)
-                    logging.info("User: %s removed from the blacklist." % parameter)
+                    GM.logger.info("User: %s removed from the blacklist." % parameter)
             except IndexError:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "Command format: !whitelist username")
