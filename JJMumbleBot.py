@@ -21,6 +21,7 @@ class JJMumbleBot:
 
     tick_rate = 0.1
     multi_cmd_limit = 5
+    cmd_token = '!'
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
@@ -66,6 +67,12 @@ class JJMumbleBot:
         self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
         # Set multi-command limit.
         self.multi_cmd_limit = int(GM.cfg['Main_Settings']['MultiCommandLimit'])
+        # Set the command token.
+        self.cmd_token = GM.cfg['Main_Settings']['CommandToken']
+        if len(self.cmd_token) != 1:
+            print("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
+            GM.logger.critical("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
+            self.cmd_token = '!'
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
                                       password=server_pass, reconnect=auto_reconnect)
@@ -204,7 +211,7 @@ class JJMumbleBot:
         else:
             print("Message Received: [%s -> %s]" % (user['name'], message))
 
-        if message[0] == "!":
+        if message[0] == self.cmd_token:
             GM.logger.info("Commands Received: [%s -> %s]" % (user['name'], message))
             self.live_plugin_check()
 
