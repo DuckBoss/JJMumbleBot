@@ -1,5 +1,5 @@
 import os
-from helpers.config_access import GlobalMods as CFG
+from helpers.global_access import GlobalMods as GM
 
 
 def get_config_dir():
@@ -11,7 +11,7 @@ def get_main_dir():
 
 
 def get_bot_name():
-    return CFG.cfg_inst['Connection_Settings']['UserID']
+    return GM.cfg['Connection_Settings']['UserID']
 
 
 def parse_message(text):
@@ -30,7 +30,7 @@ def get_channel(mumble, channel_name):
 
 
 def get_default_channel():
-    return CFG.cfg_inst['Connection_Settings']['DefaultChannel']
+    return GM.cfg['Connection_Settings']['DefaultChannel']
 
 
 def get_my_channel(mumble):
@@ -46,7 +46,7 @@ def make_channel(mumble, root_channel, channel_name):
 
 
 def leave(mumble):
-    default_channel = get_channel(mumble, CFG.cfg_inst['Connection_Settings']['DefaultChannel'])
+    default_channel = get_channel(mumble, GM.cfg['Connection_Settings']['DefaultChannel'])
     default_channel.move_in()
     return default_channel
 
@@ -66,35 +66,35 @@ def msg(mumble, receiver, message):
 
 
 def get_plugin_dir():
-    return CFG.cfg_inst['Bot_Directories']['PluginsDirectory']
+    return GM.cfg['Bot_Directories']['PluginsDirectory']
 
 
 def get_temporary_img_dir():
-    return CFG.cfg_inst['Media_Directories']['TemporaryImageDirectory']
+    return GM.cfg['Media_Directories']['TemporaryImageDirectory']
 
 
 def get_temporary_media_dir():
-    return CFG.cfg_inst['Media_Directories']['TemporaryMediaDirectory']
+    return GM.cfg['Media_Directories']['TemporaryMediaDirectory']
 
 
 def get_permanent_media_dir():
-    return CFG.cfg_inst['Media_Directories']['PermanentMediaDirectory']
+    return GM.cfg['Media_Directories']['PermanentMediaDirectory']
 
 
 def get_vlc_dir():
-    return CFG.cfg_inst['Bot_Directories']['VLCDirectory']
+    return GM.cfg['Bot_Directories']['VLCDirectory']
 
 
 def get_about():
-    return CFG.cfg_inst['Bot_Information']['AboutText']
+    return GM.cfg['Bot_Information']['AboutText']
 
 
 def get_version():
-    return CFG.cfg_inst['Bot_Information']['BotVersion']
+    return GM.cfg['Bot_Information']['BotVersion']
 
 
 def get_known_bugs():
-    return CFG.cfg_inst['Bot_Information']['KnownBugs']
+    return GM.cfg['Bot_Information']['KnownBugs']
 
 
 def clear_directory(d):

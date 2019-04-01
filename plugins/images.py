@@ -1,4 +1,5 @@
 from templates.plugin_template import PluginBase
+from helpers.global_access import GlobalMods as GM
 import requests
 import utils
 import os
@@ -46,6 +47,7 @@ class Plugin(PluginBase):
             print("Posting to mumble!")
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        '%s' % formatted_string)
+            GM.logger.info("Posted an image to the mumble channel chat from: %s." % message_parse[1])
             return
 
         elif command == "img":
@@ -59,6 +61,7 @@ class Plugin(PluginBase):
             print("Posting to mumble!")
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        '%s' % formatted_string)
+            GM.logger.info("Posted an image to the mumble channel chat from local files.")
             return
 
         elif command == "imglist":
@@ -83,6 +86,7 @@ class Plugin(PluginBase):
                     cur_text = ""
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        '%s' % cur_text)
+            GM.logger.info("Displays a list of all local image files.")
             return
 
     def mid(self, text, begin, length):

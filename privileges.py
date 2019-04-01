@@ -83,7 +83,7 @@ def add_to_blacklist(username, sender):
 			if int(content[ind[0][0]][1]) >= 4:
 				if privileges_check(sender) == 4:
 					print("This administrator: [%s] tried to blacklist another administrator: [%s]" % (sender['name'], username))
-					logging.info("This administrator: [%s] tried to blacklist another administrator: [%s]" % (sender['name'], username))
+					logging.warning("This administrator: [%s] tried to blacklist another administrator: [%s]" % (sender['name'], username))
 					return
 			content[ind[0][0]][1] = 0
 			users[username] = 0
@@ -108,6 +108,7 @@ def set_privileges(username, val, sender):
 	if username in users.keys():
 		if username == sender['name']:
 			print("This user: [%s] tried to modify their own user privileges. Modification denied." % (username))
+			logging.warning("This user: [%s] tried to modify their own user privileges. Modification denied." % (username))
 			return
 
 		with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
@@ -117,7 +118,7 @@ def set_privileges(username, val, sender):
 			if int(content[ind[0][0]][1]) >= privileges_check(sender):
 				if privileges_check(sender) == 4:
 					print("This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (sender['name'], username))
-					logging.info("This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (sender['name'], username))
+					logging.warning("This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (sender['name'], username))
 					return
 			content[ind[0][0]][1] = val
 			users[username] = val
@@ -143,4 +144,5 @@ def overwrite_privileges(content):
 			return True
 	except Exception:
 		print("There was a problem overwriting the privileges csv file.")
+		logging.critical("There was a problem overwriting the privileges csv file.")
 		return False
