@@ -14,7 +14,8 @@ class Plugin(PluginBase):
                 <b>!d6roll</b>: A standard 6-sided dice roll.<br>\
                 <b>!d8roll</b>: A standard 8-sided dice roll.<br>\
                 <b>!d10roll</b>: A standard 10-sided dice roll.<br>\
-                <b>!d12roll</b> A standard 12-sided dice roll."
+                <b>!d12roll</b> A standard 12-sided dice roll.<br>\
+                <b>!d20roll</b> A standard 20-sided dice roll."
     plugin_version = "1.0.0"
 
     def __init__(self):
@@ -83,6 +84,15 @@ class Plugin(PluginBase):
             result = random.randint(1,12)
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>%s</font>" % result)
+            return
+        elif command == "d20roll":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
+            random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
+            result = random.randint(1,20)
+            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                       "<font color='cyan'>D20 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "customroll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
