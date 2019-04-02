@@ -26,7 +26,7 @@ class Plugin(PluginBase):
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>\
                         <b>!clear_cache</b>: Clears the youtube temporary media cache."
-    plugin_version = "10.0.0"
+    plugin_version = "10.0.1"
     
     ydl_opts = {
         'format': 'bestaudio/best',
