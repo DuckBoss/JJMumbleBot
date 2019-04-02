@@ -24,7 +24,7 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - [ ] <b>New Built-in Plugin: Voting System (!vote)</b> (I will probably be adding this to the <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">Extra plugin library repository</a>)
 
 ## Wiki
-<b> Please check out the wiki for more information </b> <br>
+<b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Quick Start guide: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start</a> <br>
