@@ -21,7 +21,7 @@ A python 3 mumble bot with extensive features and a plugin based system.
 - <b>Command Tick Rates</b> - Commands in the queue are processed by the tick rate assigned in the config.
 
 ### Plans For Upcoming Updates:
-- [ ] <b>New Built-in Plugin: Voting System (!vote)</b>
+- [ ] <b>New Built-in Plugin: Voting System (!vote)</b> (I will probably be adding this to the <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">Extra plugin library repository</a>)
 
 ## Wiki
 <b> Please check out the wiki for more information </b> <br>
