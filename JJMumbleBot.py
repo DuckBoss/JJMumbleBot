@@ -223,6 +223,13 @@ class JJMumbleBot:
                 GM.logger.warning("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
                 return
 
+            # Temporary audio command queue fix:
+            if len(all_commands) > 1: 
+                if any(x in message.strip() for x in ['!sb', '!yt', '!p']):
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                       "Audio plugins are currently not supported in multi-command inputs.")
+                    return
+
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
                 # Generate command with parameters

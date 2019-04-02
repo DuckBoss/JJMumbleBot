@@ -17,6 +17,7 @@ class Plugin(PluginBase):
                         All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!youtube/!yt 'search_term'</b>: Searches youtube for a song/video.<br>\
                         <b>!play/!p 'item_number' 'item_count'(optional)</b>: Plays the selected song from youtube.<br>\
+                        <b>!link 'youtube_link'</b>: Plays the given youtube link.<br>\
                         <b>!stop</b>: Stops the currently playing track.<br>\
                         <b>!volume/!v '0..1'</b>: Sets the bot audio volume.<br>\
                         <b>!replay/!rp</b>: Replays the last played audio track.<br>\
@@ -210,17 +211,48 @@ class Plugin(PluginBase):
                            "The youtube queue is empty.")
             return
 
+        elif command == "link":
+            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
+                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                return
+            if len(message_parse) == 2:
+                stripped_url = BeautifulSoup(message_parse[1], features='lxml').get_text()
+                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if self.queue_instance.is_full():
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "The youtube queue is full!")
+                        return
+                    self.all_searches = None
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "Direct link given: %s" % stripped_url)
+                    try:
+                        song_data = self.get_downloaded_song(stripped_url)
+                        if song_data is None:
+                            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "The chosen video is too long. The maximum video length is %d minutes" % (self.max_track_duration/60))
+                            return
+                        self.sound_board_plugin.clear_audio_thread()
+                        self.can_play = False
+                        self.queue_instance.insert(song_data)
+                    except Exception:
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "The given link was not identified as a youtube video link!")
+                        return
+                    
+                    self.audio_loop(mumble)
+                    return
+
         elif command == "play" or command == "p":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.can_play:
-                self.sound_board_plugin.clear_audio_thread()
                 # self.stop_audio()
                 if self.queue_instance.is_full():
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "The youtube queue is full!")
                     return
+                self.sound_board_plugin.clear_audio_thread()
 
                 if len(all_messages) == 1:
                     utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -234,7 +266,6 @@ class Plugin(PluginBase):
                     self.can_play = False
                     self.queue_instance.insert(song_data)
                     self.audio_loop(mumble)
-                    return
                 elif len(all_messages) == 2:
                     if 9 >= int(all_messages[1]) >= 0:
                         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -272,8 +303,7 @@ class Plugin(PluginBase):
                     count = int(all_messages[2])
                     for i in range(count):
                         self.queue_instance.insert(song_data)
-                    # self.audio_loop(mumble)
-                    return
+                    self.audio_loop(mumble)
             return
 
         elif command == "replay" or command == "rp":
@@ -347,7 +377,7 @@ class Plugin(PluginBase):
         list_urls = "<br>"
         for i in range(10):
             completed_url = "https://www.youtube.com" + all_searches[i]['href']
-            list_urls += "[%d]: <a href='%s'>[%s]</a><br>" % (i, completed_url, all_searches[i]['title'])
+            list_urls += "<font color='yellow'>[%d]:</font> <a href='%s'>[%s]</a><br>" % (i, completed_url, all_searches[i]['title'])
         return list_urls
 
     def clear_queue(self):
@@ -392,24 +422,28 @@ class Plugin(PluginBase):
         command = utils.get_vlc_dir()
         mumble.sound_output.clear_buffer()
 
+        if self.music_thread:
+            self.music_thread.terminate()
+            self.music_thread.kill()
+            self.music_thread = None
+
         if self.music_thread is None:
             self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--no-repeat', '--sout',
                                                            '#transcode{acodec=s16le, channels=2, '
                                                            'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                                            'mux=wav, dst=-}'],
-                                         stdout=sp.PIPE, bufsize=4096)
+                                         stdout=sp.PIPE, bufsize=480)
 
         self.is_playing = True
         utils.unmute(mumble)
         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                   "Now playing: <a href='%s'>%s</a>" % (
-                       self.current_song_info['main_title'], self.current_song_info['main_title']))
+                   "Now playing: %s" % self.current_song_info['main_title'])
 
         while not self.exit_flag and mumble.isAlive() and self.is_playing:
             while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:
                 time.sleep(0.01)
             if self.music_thread:
-                raw_music = self.music_thread.stdout.read(4096)
+                raw_music = self.music_thread.stdout.read(480)
                 if raw_music and self.music_thread and self.is_playing:  # raw_music and
                     mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                 else:
@@ -419,10 +453,9 @@ class Plugin(PluginBase):
 
 
     def audio_loop(self, mumble):
-        while not self.exit_flag:
-            if not self.is_playing:
-                while not self.queue_instance.is_empty():
-                    self.play_audio(mumble)
+        if not self.is_playing:
+            while not self.queue_instance.is_empty():
+                self.play_audio(mumble)
 
     def get_queue(self):
         if self.queue_instance.size() is 0:
