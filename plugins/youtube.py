@@ -216,7 +216,7 @@ class Plugin(PluginBase):
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if len(message_parse) == 2:
-                stripped_url = BeautifulSoup(message_parse[1], features='lxml').get_text()
+                stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
                 if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
                     if self.queue_instance.is_full():
                         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
