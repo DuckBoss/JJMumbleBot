@@ -225,7 +225,7 @@ class JJMumbleBot:
 
             # Temporary audio command queue fix:
             if len(all_commands) > 1: 
-                if any(x in message.strip() for x in ['!sb', '!yt', '!p']):
+                if any(x in message.strip() for x in ['!sb', '!yt', '!p', '!link']):
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "Audio plugins are currently not supported in multi-command inputs.")
                     return
