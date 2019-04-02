@@ -1,7 +1,7 @@
 opuslib==3.0.1
 youtube_dl==2019.3.18
 requests==2.21.0
-Pillow==5.4.1
+Pillow==6.0.0
 beautifulsoup4==4.7.1
 protobuf==3.7.1
 configparser==3.7.4
