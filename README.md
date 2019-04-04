@@ -3,7 +3,7 @@
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
 [![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
 
-A python 3 mumble bot with extensive features and a plugin based system.
+A plugin-based python 3 mumble bot with extensive features.
 
 
 ## Features
