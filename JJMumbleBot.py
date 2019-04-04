@@ -9,6 +9,7 @@ from logging.handlers import TimedRotatingFileHandler
 from helpers.global_access import GlobalMods as GM
 from helpers.queue_handler import QueueHandler
 from helpers.command import Command
+import threading
 import copy
 
 
@@ -224,11 +225,11 @@ class JJMumbleBot:
                 return
 
             # Temporary audio command queue fix:
-            if len(all_commands) > 1: 
-                if any(x in message.strip() for x in ['!sb', '!yt', '!p', '!link']):
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                       "Audio plugins are currently not supported in multi-command inputs.")
-                    return
+            #if len(all_commands) > 1:
+            #    if any(x in message.strip() for x in ['!yt', '!p', '!link']):
+            #        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+            #           "Audio plugins are currently not supported in multi-command inputs.")
+            #        return
 
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
@@ -243,13 +244,30 @@ class JJMumbleBot:
             while not self.command_queue.is_empty():
                 # Process commands in the queue
                 cur_cmd = self.command_queue.pop()
-                self.process_command_queue(cur_cmd)
+                thr = threading.Thread(target=self.process_command_queue, args=(cur_cmd,))
+                thr.start()
+                if cur_cmd.command == "yt" or cur_cmd.command == "youtube":
+                    thr.join()
+                # self.process_command_queue(cur_cmd)
                 time.sleep(self.tick_rate)
 
     def process_core_commands(self, command, text):
         if command == "refresh":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                 self.refresh_plugins()
+                return
+            else:
+                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+            return
+        elif command == "sleep":
+            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
+                sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
+                self.tick_rate = sleep_time
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           "sleeping for %s seconds..." % sleep_time)
+                time.sleep(sleep_time)
+                self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
                 return
             else:
                 print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
