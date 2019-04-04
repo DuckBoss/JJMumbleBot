@@ -6,6 +6,7 @@ import subprocess as sp
 import audioop
 import time
 import os
+import wave
 
 
 class Plugin(PluginBase):
@@ -103,35 +104,36 @@ class Plugin(PluginBase):
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
-            if self.audio_thread is not None:
-                if self.current_song is not None:
-                    self.youtube_plugin.clear_audio_plugin()
+            if self.youtube_plugin.is_playing:
+                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
+                return
+            if self.current_song is not None:
+                self.youtube_plugin.clear_audio_plugin()
 
-                    uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
-                    command = utils.get_vlc_dir()
-                    self.clear_audio_thread()
-                    time.sleep(0.3)
+                uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
+                command = utils.get_vlc_dir()
+                self.clear_audio_thread()
 
-                    mumble.sound_output.clear_buffer()
+                mumble.sound_output.clear_buffer()
+                if self.audio_thread is None:
                     self.audio_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--no-repeat', '--sout',
-                                                                   '#transcode{acodec=s16le, channels=2, samplerate=24000, ab=128, threads=8}:std{access=file, mux=wav, dst=-}'],
-                                                 stdout=sp.PIPE, bufsize=4096)
+                                                               '#transcode{acodec=s16le, channels=2, samplerate=24000, ab=128, threads=8}:std{access=file, mux=wav, dst=-}'],
+                                                               stdout=sp.PIPE, bufsize=4096)
 
-                    utils.unmute(mumble)
+                utils.unmute(mumble)
 
-                    while not self.exit_flag and mumble.isAlive():
-                        while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:
-                            time.sleep(0.01)
-                        if self.audio_thread:
-                            raw_music = self.audio_thread.stdout.read(4096)
-                            if raw_music and self.audio_thread:  # raw_music and
-                                mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
-                            else:
-                                time.sleep(0.1)
+                while not self.exit_flag and mumble.isAlive():
+                    while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:
+                        time.sleep(0.01)
+                    if self.audio_thread:
+                        raw_music = self.audio_thread.stdout.read(4096)
+                        if raw_music and self.audio_thread:  # raw_music and
+                            mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                         else:
                             time.sleep(0.1)
-                    while mumble.sound_output.get_buffer_size() > 0:
-                        time.sleep(0.01)
+                    else:
+                        time.sleep(0.1)
             else:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "There is no sound board track available to replay.")
@@ -168,33 +170,34 @@ class Plugin(PluginBase):
             parameter = message_parse[1]
 
             if self.youtube_plugin.clear_audio_plugin() is False:
+                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
                 return
 
             self.current_song = "%s" % parameter
             uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
             command = utils.get_vlc_dir()
             self.clear_audio_thread()
-            time.sleep(0.3)
             mumble.sound_output.clear_buffer()
             self.audio_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--no-repeat', '--sout',
-                                                               '#transcode{acodec=s16le, channels=2, samplerate=24000, ab=128, threads=8}:std{access=file, mux=wav, dst=-}'], stdout=sp.PIPE, bufsize=4096)
-
+                                                               '#transcode{acodec=s16le, channels=2, samplerate=24000, ab=128, threads=8}:std{access=file, mux=wav, dst=-}'], stdout=sp.PIPE, bufsize=480)
             utils.unmute(mumble)
-
-            while not self.exit_flag and mumble.isAlive():
+            while not self.exit_flag and self.audio_thread:
                 while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:
                     time.sleep(0.01)
                 if self.audio_thread:
-                    raw_music = self.audio_thread.stdout.read(4096)
+                    raw_music = self.audio_thread.stdout.read(480)
                     if raw_music and self.audio_thread:  # raw_music and
                         mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
-                    else:
-                        time.sleep(0.1)
-                else:
-                    time.sleep(0.1)
-            while mumble.sound_output.get_buffer_size() > 0:
-                time.sleep(0.01)
             return
+
+    def get_cur_audio_length(self):
+        wav_file = wave.open("%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song), 'r')
+        frames = wav_file.getnframes()
+        rate = wav_file.getframerate()
+        duration = frames/float(rate)
+        wav_file.close()
+        return duration
 
     def clear_audio_thread(self):
         if self.audio_thread is not None:
