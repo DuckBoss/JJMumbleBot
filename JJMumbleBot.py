@@ -4,6 +4,7 @@ import os
 import sys
 import utils
 import privileges as pv
+import aliases
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from helpers.global_access import GlobalMods as GM
@@ -18,9 +19,8 @@ class JJMumbleBot:
     safe_mode = False
     debug_mode = False
     bot_status = "Offline"
-    bot_plugins = {}
 
-    aliases = {}
+    bot_plugins = {}
 
     tick_rate = 0.1
     multi_cmd_limit = 5
@@ -90,6 +90,9 @@ class JJMumbleBot:
         # Setup privileges.
         pv.setup_privileges()
         GM.logger.info("Initialized user privileges.")
+        # Setup aliases.
+        aliases.setup_aliases()
+        GM.logger.info("Initialized aliases.")
         # Initialize plugins.
         if self.safe_mode:  
             self.initialize_plugins_safe()
@@ -227,14 +230,6 @@ class JJMumbleBot:
                 GM.logger.warning("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
                 return
 
-            # Temporary audio command queue fix:
-            #if len(all_commands) > 1:
-            #    if any(x in message.strip() for x in ['!yt', '!p', '!link']):
-            #        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-            #           "Audio plugins are currently not supported in multi-command inputs.")
-            #        return
-
-
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
                 # Generate command with parameters
@@ -242,15 +237,12 @@ class JJMumbleBot:
                 new_text.message = item
                 new_command = Command(item[1:].split()[0], new_text)
 
-                if new_command.command in self.aliases:
-                    print("Detected alias: %s" % new_command.command)
-                    alias_commands = [msg.strip() for msg in self.aliases[new_command.command].split('|')]
-                    print(alias_commands)
+                if new_command.command in aliases.aliases:
+                    alias_commands = [msg.strip() for msg in aliases.aliases[new_command.command].split('|')]
                     for x, xitem in enumerate(alias_commands):
                         new_xtext = copy.deepcopy(text)
                         new_xtext.message = xitem
                         new_xcommand = Command(xitem[1:].split()[0], new_xtext)
-                        print("alias command - [%s]-[%s]" % (new_xcommand.command, new_xcommand.text))
                         self.command_queue.insert(new_xcommand)
                 else:
                     # Insert command into the command queue
@@ -273,9 +265,15 @@ class JJMumbleBot:
                 message = text.message.strip()
                 message_parse = message[1:].split(' ', 2)
                 alias_name = message_parse[1]
-                self.aliases[alias_name] = message_parse[2]
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           "Created new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+
+                if alias_name in aliases.aliases.keys():
+                    aliases.set_alias(alias_name, message_parse[2])
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               "Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+                else:
+                    aliases.add_to_aliases(alias_name, message_parse[2])
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               "Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
                 return
             else:
                 print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
@@ -286,8 +284,8 @@ class JJMumbleBot:
         elif command == "aliases":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.DEFAULT.value:
                 cur_text = "<br><font color='red'>Registered Aliases:</font>"
-                for i, alias in enumerate(self.aliases):
-                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, self.aliases[alias])
+                for i, alias in enumerate(aliases.aliases):
+                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, aliases.aliases[alias])
                     if i % 50 == 0 and i != 0:
                         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                    '%s' % cur_text)
@@ -305,9 +303,12 @@ class JJMumbleBot:
                 message = text.message.strip()
                 message_parse = message[1:].split(' ', 2)
                 alias_name = message_parse[1]
-                self.aliases.pop(alias_name, None)
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           'Removed [%s] from registered aliases.' % alias_name)
+                if aliases.remove_from_aliases(alias_name):
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               'Removed [%s] from registered aliases.' % alias_name)
+                else:
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               'Could not remove [%s] from registered aliases.' % alias_name)
                 return
             else:
                 print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
@@ -317,14 +318,17 @@ class JJMumbleBot:
 
         elif command == "clearaliases":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                self.aliases.clear()
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           'Cleared all registered aliases.')
+                if aliases.clear_aliases():
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               'Cleared all registered aliases.')
+                else:
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               'The registered aliases could not be cleared.')
                 return
             else:
-                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning(
-                    "User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
+                    "User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
 
         elif command == "refresh":
