@@ -18,4 +18,5 @@ permanent_media/
 sound_board/
 temporary_media/
 temporary_images/
+privileges.csv
 config.ini
