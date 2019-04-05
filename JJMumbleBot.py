@@ -20,6 +20,8 @@ class JJMumbleBot:
     bot_status = "Offline"
     bot_plugins = {}
 
+    aliases = {}
+
     tick_rate = 0.1
     multi_cmd_limit = 5
     cmd_token = None
@@ -219,6 +221,7 @@ class JJMumbleBot:
             # example input: !version ; !about ; !yt twice ; !p ; !status
             all_commands = [msg.strip() for msg in message.split(';')]
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
+
             if len(all_commands) > self.multi_cmd_limit:
                 print("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
                 GM.logger.warning("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
@@ -231,14 +234,27 @@ class JJMumbleBot:
             #           "Audio plugins are currently not supported in multi-command inputs.")
             #        return
 
+
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
                 # Generate command with parameters
                 new_text = copy.deepcopy(text)
                 new_text.message = item
                 new_command = Command(item[1:].split()[0], new_text)
-                # Insert command into the command queue
-                self.command_queue.insert(new_command)
+
+                if new_command.command in self.aliases:
+                    print("Detected alias: %s" % new_command.command)
+                    alias_commands = [msg.strip() for msg in self.aliases[new_command.command].split('|')]
+                    print(alias_commands)
+                    for x, xitem in enumerate(alias_commands):
+                        new_xtext = copy.deepcopy(text)
+                        new_xtext.message = xitem
+                        new_xcommand = Command(xitem[1:].split()[0], new_xtext)
+                        print("alias command - [%s]-[%s]" % (new_xcommand.command, new_xcommand.text))
+                        self.command_queue.insert(new_xcommand)
+                else:
+                    # Insert command into the command queue
+                    self.command_queue.insert(new_command)
 
             # Process commands if the queue is not empty
             while not self.command_queue.is_empty():
@@ -252,7 +268,66 @@ class JJMumbleBot:
                 time.sleep(self.tick_rate)
 
     def process_core_commands(self, command, text):
-        if command == "refresh":
+        if command == "alias":
+            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
+                message = text.message.strip()
+                message_parse = message[1:].split(' ', 2)
+                alias_name = message_parse[1]
+                self.aliases[alias_name] = message_parse[2]
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           "Created new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+                return
+            else:
+                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                GM.logger.warning(
+                    "User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+            return
+
+        elif command == "aliases":
+            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.DEFAULT.value:
+                cur_text = "<br><font color='red'>Registered Aliases:</font>"
+                for i, alias in enumerate(self.aliases):
+                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, self.aliases[alias])
+                    if i % 50 == 0 and i != 0:
+                        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                                   '%s' % cur_text)
+                        cur_text = ""
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           '%s' % cur_text)
+                return
+            else:
+                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                GM.logger.warning("User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
+            return
+
+        elif command == "removealias":
+            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
+                message = text.message.strip()
+                message_parse = message[1:].split(' ', 2)
+                alias_name = message_parse[1]
+                self.aliases.pop(alias_name, None)
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           'Removed [%s] from registered aliases.' % alias_name)
+                return
+            else:
+                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                GM.logger.warning(
+                    "User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
+            return
+
+        elif command == "clearaliases":
+            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
+                self.aliases.clear()
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           'Cleared all registered aliases.')
+                return
+            else:
+                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                GM.logger.warning(
+                    "User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
+            return
+
+        elif command == "refresh":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                 self.refresh_plugins()
                 return
