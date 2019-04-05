@@ -19,4 +19,5 @@ sound_board/
 temporary_media/
 temporary_images/
 privileges.csv
+aliases.csv
 config.ini
