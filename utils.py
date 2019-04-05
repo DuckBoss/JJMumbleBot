@@ -52,11 +52,17 @@ def leave(mumble):
 
 
 def mute(mumble):
+    if GM.muted:
+        return
     mumble.users.myself.mute()
+    return
 
 
 def unmute(mumble):
+    if not GM.muted:
+        return
     mumble.users.myself.unmute()
+    return
 
 
 def msg(mumble, receiver, message):

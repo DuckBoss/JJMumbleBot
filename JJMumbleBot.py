@@ -200,7 +200,7 @@ class JJMumbleBot:
             "This is %s [%s].<br>%s<br>" % (utils.get_bot_name(), utils.get_version(), utils.get_known_bugs()))
         self.mumble.set_bandwidth(192000)
         self.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
-        self.mumble.users.myself.mute()
+        utils.mute(self.mumble)
         self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message("%s is Online." % utils.get_bot_name())
         print("\n\nJJMumbleBot is %s\n\n" % self.status())
 
@@ -343,8 +343,7 @@ class JJMumbleBot:
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                 sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
                 self.tick_rate = sleep_time
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           "sleeping for %s seconds..." % sleep_time)
+                # utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']], "sleeping for %s seconds..." % sleep_time)
                 time.sleep(sleep_time)
                 self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
                 return
