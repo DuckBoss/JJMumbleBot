@@ -10,6 +10,7 @@ from logging.handlers import TimedRotatingFileHandler
 from helpers.global_access import GlobalMods as GM
 from helpers.queue_handler import QueueHandler
 from helpers.command import Command
+from bs4 import BeautifulSoup
 import threading
 import copy
 
@@ -285,7 +286,7 @@ class JJMumbleBot:
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.DEFAULT.value:
                 cur_text = "<br><font color='red'>Registered Aliases:</font>"
                 for i, alias in enumerate(aliases.aliases):
-                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, aliases.aliases[alias])
+                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, BeautifulSoup(aliases.aliases[alias], "html.parser").get_text())
                     if i % 50 == 0 and i != 0:
                         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                    '%s' % cur_text)
