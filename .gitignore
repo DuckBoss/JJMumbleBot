@@ -5,6 +5,7 @@ __pycache__/
 # Ignore logs
 *.log
 # Ignore test files
+*.wav
 *.mp3
 # PyCharm files
 .idea/vcs.xml
@@ -13,6 +14,7 @@ __pycache__/
 *.pem
 *.p12
 # Media Folders
+permanent_media/
 temporary_media/
 temporary_images/
 privileges.csv
