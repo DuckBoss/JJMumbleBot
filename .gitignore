@@ -15,8 +15,8 @@ __pycache__/
 *.p12
 # Media Folders
 permanent_media/
-sound_board/
 temporary_media/
 temporary_images/
 privileges.csv
+aliases.csv
 config.ini
