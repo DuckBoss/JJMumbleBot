@@ -40,5 +40,5 @@ v1.3 implemented a new config system that required reconfiguring the config.ini 
 - <b>pre-v1.4</b> - A legacy branch for pre-v1.4. <br>
 v1.4 implemented a new and upgraded user privilege system that required how user privileges are handled and an update to the plugin template requiring the updating of all plugins.
 - <b>pre-v1.5</b> - A legacy branch for pre-v1.5. <br>
-v1.5 implemented a way to send commands to the bot, command queues, command tick rates, updated built-in plugins, and fixed some major bugs. <br>
+v1.5 implemented a way to send commands to the bot, command queues, command tick rates, updated built-in plugins, command aliases, and fixed some major bugs. <br>
 #### Need a very specific version of the legacy branches? <br>Check out the full list of tags here : <a href="https://github.com/DuckBoss/JJMumbleBot/tags">Release Tags</a>
