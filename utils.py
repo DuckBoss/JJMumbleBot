@@ -55,6 +55,7 @@ def mute(mumble):
     if GM.muted:
         return
     mumble.users.myself.mute()
+    GM.muted = True
     return
 
 
@@ -62,6 +63,7 @@ def unmute(mumble):
     if not GM.muted:
         return
     mumble.users.myself.unmute()
+    GM.muted = False
     return
 
 
