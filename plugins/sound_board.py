@@ -7,6 +7,8 @@ import audioop
 import time
 import os
 import wave
+import youtube_dl
+from bs4 import BeautifulSoup
 
 
 class Plugin(PluginBase):
@@ -20,7 +22,7 @@ class Plugin(PluginBase):
                     <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track."
     plugin_version = "1.5.0"
-    
+
     exit_flag = False
     current_song = None
     audio_thread = None
@@ -163,6 +165,32 @@ class Plugin(PluginBase):
                        "Set sound_board volume to %s" % self.volume)
             return
 
+        elif command == "sbdownload":
+            if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
+                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                return
+            all_messages_stripped = BeautifulSoup(message_parse[1], features='html.parser').get_text()
+            split_msgs = all_messages_stripped.split()
+            stripped_url = split_msgs[0]
+            if len(all_messages) >= 3:                
+                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    song_data = self.download_clip(stripped_url, split_msgs[1].strip())
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "Downloaded sound clip as : %s.wav" % split_msgs[1].strip())
+                    return
+                return
+            return
+
+        elif command == "sbdelete":
+            if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
+                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                return
+            if len(all_messages) == 2:
+                if ".wav" in all_messages[1].strip():
+                    utils.remove_file(all_messages[1].strip(), utils.get_permanent_media_dir()+"sound_board/")
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "Deleted sound clip : %s" % all_messages[1].strip())
+
         elif command == "sb":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
@@ -174,6 +202,11 @@ class Plugin(PluginBase):
                            "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
                 return
 
+
+            if not os.path.isfile(utils.get_permanent_media_dir()+"sound_board/%s.wav" % parameter):
+                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "The sound clip does not exist.")
+                return False
             self.current_song = "%s" % parameter
             uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
             command = utils.get_vlc_dir()
@@ -190,6 +223,27 @@ class Plugin(PluginBase):
                     if raw_music and self.audio_thread:  # raw_music and
                         mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
             return
+
+    def download_clip(self, url, name):
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'outtmpl': utils.get_permanent_media_dir()+'sound_board/%s.wav' % name,
+            'noplaylist': True,
+            'continue_dl': True,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'wav',
+                'preferredquality': '192', }]
+        }
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.cache.remove()
+                info_dict = ydl.extract_info(url, download=False)
+                download_target = ydl.prepare_filename(info_dict)
+                ydl.download([url])
+                return True
+        except Exception:
+            return False
 
     def get_cur_audio_length(self):
         wav_file = wave.open("%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song), 'r')

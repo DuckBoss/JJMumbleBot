@@ -115,6 +115,17 @@ def clear_directory(d):
             print(e)
 
 
+def remove_file(f, d):
+    for the_file in os.listdir(d):
+        try:
+            file_path = os.path.join(d, the_file)
+            if os.path.isfile(file_path):
+                if the_file == f:
+                    os.unlink(file_path)
+        except Exception as e:
+            print(e)
+
+
 def make_directory(d):
     if not os.path.exists(d):
         os.makedirs(d)
