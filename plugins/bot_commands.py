@@ -2,6 +2,7 @@ import utils
 from templates.plugin_template import PluginBase
 import privileges as pv
 from helpers.global_access import GlobalMods as GM
+from helpers.global_access import debug_print, reg_print
 
 
 class Plugin(PluginBase):
@@ -29,7 +30,7 @@ class Plugin(PluginBase):
     plugin_version = "5.1.0"
     
     def __init__(self):
-        print("Bot_Commands Plugin Initialized.")
+        debug_print("Bot_Commands Plugin Initialized.")
         super().__init__()
 
     def process_command(self, mumble, text):
@@ -40,7 +41,7 @@ class Plugin(PluginBase):
 
         if command == "echo":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             parameter = message_parse[1]
             utils.echo(utils.get_my_channel(mumble), parameter)
@@ -49,14 +50,14 @@ class Plugin(PluginBase):
 
         elif command == "log":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 GM.logger.info("Manually Logged: [%s]" % (message_parse[1]))
                 return
             return
             
         elif command == "spam_test":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
             for i in range(10):
                 utils.echo(utils.get_my_channel(mumble), "This is a test message...")
@@ -65,7 +66,7 @@ class Plugin(PluginBase):
 
         elif command == "msg":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             utils.msg(mumble, all_messages[1], message[1:].split(' ', 2)[2])
             GM.logger.info("Msg:[%s]->[%s]" % (all_messages[1], message[1:].split(' ', 2)[2]))
@@ -73,7 +74,7 @@ class Plugin(PluginBase):
 
         elif command == "move":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             parameter = message_parse[1]
             channel_name = parameter
@@ -90,7 +91,7 @@ class Plugin(PluginBase):
 
         elif command == "make":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             parameter = message_parse[1]
             channel_name = parameter
@@ -100,7 +101,7 @@ class Plugin(PluginBase):
 
         elif command == "leave":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             utils.leave(mumble)
             GM.logger.info("Returned to default channel.")
@@ -108,7 +109,7 @@ class Plugin(PluginBase):
 
         elif command == "joinme":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "Joining user: %s" % mumble.users[text.actor]['name'])
@@ -118,7 +119,7 @@ class Plugin(PluginBase):
 
         elif command == "privileges":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
@@ -128,7 +129,7 @@ class Plugin(PluginBase):
 
         elif command == "setprivileges":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
@@ -141,13 +142,13 @@ class Plugin(PluginBase):
                                "User: %s privileges have been modified." % username)
                     GM.logger.info("Modified user privileges for: %s" % username)
             except Exception:
-                print("Incorrect format! Format: !setprivileges 'username' 'level'")
+                reg_print("Incorrect format! Format: !setprivileges 'username' 'level'")
                 return
             return
 
         elif command == "addprivileges":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
@@ -160,13 +161,15 @@ class Plugin(PluginBase):
                                "Added a new user: %s to the user privileges." % username)
                     GM.logger.info("Added a new user: %s to the user privileges." % username)
             except Exception:
-                print("Incorrect format! Format: !addprivileges 'username' 'level'")
+                reg_print("Incorrect format! Format: !addprivileges 'username' 'level'")
+                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "Incorrect format! Format: !addprivileges 'username' 'level'")
                 return
             return
 
         elif command == "blacklist":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
@@ -184,7 +187,7 @@ class Plugin(PluginBase):
 
         elif command == "whitelist":
             if pv.privileges_check(mumble.users[text.actor]) < pv.Privileges.ADMIN.value:
-                print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                                "User [%s] must be atleast an admin to use this command." % (mumble.users[text.actor]['name']))
                 return
@@ -203,10 +206,10 @@ class Plugin(PluginBase):
 
     @staticmethod
     def plugin_test():
-        print("Bot_Commands Plugin self-test callback.")
+        debug_print("Bot_Commands Plugin self-test callback.")
 
     def quit(self):
-        print("Exiting Bot_Commands Plugin...")
+        debug_print("Exiting Bot_Commands Plugin...")
 
     def help(self):
         return self.help_data

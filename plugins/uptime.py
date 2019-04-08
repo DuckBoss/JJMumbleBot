@@ -1,5 +1,6 @@
 import time
 from templates.plugin_template import PluginBase
+from helpers.global_access import debug_print, reg_print
 import utils
 
 
@@ -16,7 +17,7 @@ class Plugin(PluginBase):
     days = 0
 
     def __init__(self):
-        print("Uptime Plugin Initialized.")
+        debug_print("Uptime Plugin Initialized.")
         super().__init__()
         self.start_seconds = time.time()
 
@@ -44,10 +45,10 @@ class Plugin(PluginBase):
             return
 
     def plugin_test(self):
-        print("Uptime Plugin self-test callback.")
+        debug_print("Uptime Plugin self-test callback.")
 
     def quit(self):
-        print("Exiting Uptime Plugin...")
+        debug_print("Exiting Uptime Plugin...")
 
     def help(self):
         return self.help_data

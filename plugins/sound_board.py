@@ -1,5 +1,6 @@
 from templates.plugin_template import PluginBase
 from helpers.global_access import GlobalMods as GM
+from helpers.global_access import debug_print, reg_print
 import utils
 import privileges as pv
 import subprocess as sp
@@ -9,7 +10,6 @@ import os
 import wave
 import youtube_dl
 from bs4 import BeautifulSoup
-
 
 class Plugin(PluginBase):
 
@@ -22,7 +22,7 @@ class Plugin(PluginBase):
                     <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track."
     plugin_version = "1.5.0"
-
+    
     exit_flag = False
     current_song = None
     audio_thread = None
@@ -33,7 +33,7 @@ class Plugin(PluginBase):
     youtube_plugin = None
 
     def __init__(self):
-        print("Sound_Board Plugin Initialized...")    
+        debug_print("Sound_Board Plugin Initialized...")
         super().__init__()
         self.volume = float(GM.cfg['Plugin_Settings']['SoundBoard_DefaultVolume'])
 
@@ -47,7 +47,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
         if command == "sbstop" or command == "sbs":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.audio_thread is not None:
                 self.stop_audio()
@@ -58,7 +58,7 @@ class Plugin(PluginBase):
 
         elif command == "sblist":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             file_counter = 0
             internal_list = []
@@ -81,7 +81,7 @@ class Plugin(PluginBase):
 
         elif command == "sblist_echo":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             file_counter = 0
             internal_list = []
@@ -104,7 +104,7 @@ class Plugin(PluginBase):
 
         elif command == "sbreplay" or command == "sbr":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             if self.youtube_plugin.is_playing:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -144,7 +144,7 @@ class Plugin(PluginBase):
 
         elif command == "sbv":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             try:
                 vol = float(message[1:].split(' ', 1)[1])
@@ -193,7 +193,7 @@ class Plugin(PluginBase):
 
         elif command == "sb":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             parameter = message_parse[1]
 
@@ -202,11 +202,11 @@ class Plugin(PluginBase):
                            "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
                 return
 
-
             if not os.path.isfile(utils.get_permanent_media_dir()+"sound_board/%s.wav" % parameter):
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "The sound clip does not exist.")
                 return False
+
             self.current_song = "%s" % parameter
             uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
             command = utils.get_vlc_dir()
@@ -255,7 +255,7 @@ class Plugin(PluginBase):
 
     def clear_audio_thread(self):
         if self.audio_thread is not None:
-            print("Clearing sound_board audio thread...")
+            debug_print("Clearing sound_board audio thread...")
             self.audio_thread.terminate()
             self.audio_thread.kill()
             self.audio_thread = None
@@ -264,7 +264,7 @@ class Plugin(PluginBase):
 
     def stop_audio(self):
         if self.audio_thread is not None:
-            print("Stopping sound_board audio thread...")
+            debug_print("Stopping sound_board audio thread...")
             self.audio_thread.terminate()
             self.audio_thread.kill()
             self.audio_thread = None
@@ -273,13 +273,13 @@ class Plugin(PluginBase):
         return False
 
     def plugin_test(self):
-        print("Sound_Board Plugin self-test callback.")
+        debug_print("Sound_Board Plugin self-test callback.")
 
     def quit(self):
         self.clear_audio_thread()
         self.stop_audio()
         self.exit_flag = True
-        print("Exiting Sound_Board Plugin...")
+        debug_print("Exiting Sound_Board Plugin...")
 
     def help(self):
         return self.help_data

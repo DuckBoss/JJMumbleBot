@@ -1,5 +1,6 @@
 from templates.plugin_template import PluginBase
 from helpers.global_access import GlobalMods as GM
+from helpers.global_access import debug_print, reg_print
 import utils
 
 
@@ -18,7 +19,7 @@ class Plugin(PluginBase):
     bot_plugins = {}
 
     def __init__(self, bot_plugins):
-        print("Help Plugin Initialized.")
+        debug_print("Help Plugin Initialized.")
         super().__init__()
         self.bot_plugins = bot_plugins
 
@@ -30,52 +31,52 @@ class Plugin(PluginBase):
         if command == "help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.get_plugin_version(), self.help()))
-            print("Displayed general help screen in the channel.")
+            reg_print("Displayed general help screen in the channel.")
             GM.logger.info("Displayed general help screen in the channel.")
             return
         elif command == "bot_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('bot_commands').get_plugin_version(), self.bot_plugins.get('bot_commands').help()))
-            print("Displayed bot commands plugin help screen in the channel.")
+            reg_print("Displayed bot commands plugin help screen in the channel.")
             GM.logger.info("Displayed bot commands plugin help screen in the channel.")
             return
         elif command == "sound_board_help" or command == "sb_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('sound_board').get_plugin_version(), self.bot_plugins.get('sound_board').help()))
-            print("Displayed sound_board plugin help screen in the channel.")
+            reg_print("Displayed sound_board plugin help screen in the channel.")
             GM.logger.info("Displayed sound_board plugin help screen in the channel.")
             return
         elif command == "youtube_help" or command == "yt_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('youtube').get_plugin_version(), self.bot_plugins.get('youtube').help()))
-            print("Displayed youtube plugin help screen in the channel.")
+            reg_print("Displayed youtube plugin help screen in the channel.")
             GM.logger.info("Displayed youtube plugin help screen in the channel.")
             return
         elif command == "images_help" or command == "img_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('images').get_plugin_version(), self.bot_plugins.get('images').help()))
-            print("Displayed images plugin help screen in the channel.")
+            reg_print("Displayed images plugin help screen in the channel.")
             GM.logger.info("Displayed images plugin help screen in the channel.")
             return
         elif command == "uptime_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('uptime').get_plugin_version(), self.bot_plugins.get('uptime').help()))
-            print("Displayed uptime plugin help screen in the channel.")
+            reg_print("Displayed uptime plugin help screen in the channel.")
             GM.logger.info("Displayed uptime plugin help screen in the channel.")
             return
         elif command == "randomizer_help":
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('randomizer').get_plugin_version(), self.bot_plugins.get('randomizer').help()))
-            print("Displayed randomizer plugin help screen in the channel.")
+            reg_print("Displayed randomizer plugin help screen in the channel.")
             GM.logger.info("Displayed randomizer plugin help screen in the channel.")
             return
 
     @staticmethod
     def plugin_test():
-        print("Help Plugin self-test callback.")
+        debug_print("Help Plugin self-test callback.")
 
     def quit(self):
-        print("Exiting Help Plugin")
+        debug_print("Exiting Help Plugin")
 
     def help(self):
         return self.help_data

@@ -1,4 +1,5 @@
 from templates.plugin_template import PluginBase
+from helpers.global_access import debug_print, reg_print
 import utils
 import privileges as pv
 import os
@@ -19,7 +20,7 @@ class Plugin(PluginBase):
     plugin_version = "1.0.0"
 
     def __init__(self):
-        print("Randomizer Plugin Initialized.")
+        debug_print("Randomizer Plugin Initialized.")
         super().__init__()
 
     def process_command(self, mumble, text):
@@ -29,7 +30,7 @@ class Plugin(PluginBase):
 
         if command == "coinflip":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,2)
@@ -42,7 +43,7 @@ class Plugin(PluginBase):
             return
         elif command == "d4roll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,4)
@@ -51,7 +52,7 @@ class Plugin(PluginBase):
             return
         elif command == "d6roll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,6)
@@ -60,7 +61,7 @@ class Plugin(PluginBase):
             return
         elif command == "d8roll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,8)
@@ -69,7 +70,7 @@ class Plugin(PluginBase):
             return
         elif command == "d10roll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,10)
@@ -78,7 +79,7 @@ class Plugin(PluginBase):
             return
         elif command == "d12roll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,12)
@@ -87,7 +88,7 @@ class Plugin(PluginBase):
             return
         elif command == "d20roll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,20)
@@ -96,7 +97,7 @@ class Plugin(PluginBase):
             return
         elif command == "customroll":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             try:
                 all_messages = message[1:].split()
@@ -118,15 +119,13 @@ class Plugin(PluginBase):
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        "Incorrect paramaters! Format: !customroll 'number_of_dice' 'dice_faces'")
                 return
-            return
-
 
     @staticmethod
     def plugin_test():
-        print("Randomizer Plugin self-test callback.")
+        debug_print("Randomizer Plugin self-test callback.")
 
     def quit(self):
-        print("Exiting Randomizer Plugin")
+        debug_print("Exiting Randomizer Plugin")
 
     def help(self):
         return self.help_data
