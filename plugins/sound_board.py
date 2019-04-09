@@ -22,7 +22,7 @@ class Plugin(PluginBase):
                     <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track.<br>\
                     <b>!sbdownload 'youtube_url' 'file_name'</b>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>\
-                    <b>!sbdelete 'file_name.wav': Deletes a clip from the sound board storage. Be sure to specify the .wav extension."
+                    <b>!sbdelete 'file_name.wav'</b>: Deletes a clip from the sound board storage. Be sure to specify the .wav extension."
     plugin_version = "1.5.0"
     
     exit_flag = False
