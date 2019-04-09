@@ -8,20 +8,22 @@ import aliases
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from helpers.global_access import GlobalMods as GM
+from helpers.global_access import debug_print, reg_print
 from helpers.queue_handler import QueueHandler
 from helpers.command import Command
+from bs4 import BeautifulSoup
 import threading
 import copy
 
 
 class JJMumbleBot:
+    # Toggles for bot states.
     exit_flag = False
-    safe_mode = False
-    debug_mode = False
+    # Bot status.
     bot_status = "Offline"
-
+    # Dictionary of registered bot plugins.
     bot_plugins = {}
-
+    # Runtime parameters.
     tick_rate = 0.1
     multi_cmd_limit = 5
     cmd_token = None
@@ -34,7 +36,7 @@ class JJMumbleBot:
         logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
         log_file_name = '%s/runtime.log' % GM.cfg['Bot_Directories']['LogDirectory']
         GM.logger = logging.getLogger(log_file_name)
-        GM.logger.setLevel(logging.INFO)
+        GM.logger.setLevel(logging.CRITICAL)
 
         log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
         handler = TimedRotatingFileHandler(log_file_name, when='midnight', backupCount=30)
@@ -48,15 +50,25 @@ class JJMumbleBot:
             for item in sys.argv:
                 # Enable safe mode.
                 if item == "-safe":
-                    self.safe_mode = True
+                    GM.safe_mode = True
+                    print('Safe mode has been enabled.')
                     GM.logger.info("Safe mode has been enabled through system arguments.")
                 if item == "-debug":
-                    self.debug_mode = True
+                    GM.debug_mode = True
+                    print('Debug mode has been enabled.')
                     GM.logger.info("Debug mode has been enabled through system arguments.")
+                if item == "-quiet":
+                    GM.quiet_mode = True
+                    print('Quiet mode has been enabled.')
+                    GM.logger.info("Quiet mode has been enabled through system arguments.")
+                if item == "-verbose":
+                    GM.verbose_mode = True
+                    print('Verbose mode has been enabled.')
+                    GM.logger.info("Verbose mode has been enabled through system arguments.")
         # Initialize command queue.
         self.command_queue = QueueHandler(25)
         # Run Debug Mode tests.
-        if self.debug_mode:
+        if GM.debug_mode:
             self.config_debug()
         # Retrieve mumble client data from configs.
         server_ip = GM.cfg['Connection_Settings']['ServerIP']
@@ -94,7 +106,7 @@ class JJMumbleBot:
         aliases.setup_aliases()
         GM.logger.info("Initialized aliases.")
         # Initialize plugins.
-        if self.safe_mode:  
+        if GM.safe_mode:
             self.initialize_plugins_safe()
             GM.logger.info("Initialized plugins with safe mode.")
         else:
@@ -109,6 +121,7 @@ class JJMumbleBot:
         GM.logger.info("JJ Mumble Bot has fully initialized and joined the server.")
         self.loop()
 
+    # Prints all the contents of the config.ini file.
     def config_debug(self):
         print("\n-------------------------------------------")
         print("Config Debug:")
@@ -118,9 +131,10 @@ class JJMumbleBot:
                 print("%s=%s" % (key, val))
         print("-------------------------------------------\n")
 
+    # Initializes only safe-mode applicable plugins.
     def initialize_plugins_safe(self):
         # Load Plugins
-        print("\n######### Initializing Plugins #########\n")
+        reg_print("\n######### Initializing Plugins #########\n")
         sys.path.insert(0, utils.get_plugin_dir())
         for p_file in os.listdir(utils.get_plugin_dir()):
             f_name, f_ext = os.path.splitext(p_file)
@@ -133,10 +147,11 @@ class JJMumbleBot:
         help_plugin = __import__('help')
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
         sys.path.pop(0)
+        reg_print("\n######### Plugins Initialized #########\n")
 
+    # Initializes all available plugins.
     def initialize_plugins(self):
-        # Load Plugins
-        print("\n######### Initializing Plugins #########\n")
+        reg_print("\n######### Initializing Plugins #########\n")
         sys.path.insert(0, utils.get_plugin_dir())
         for p_file in os.listdir(utils.get_plugin_dir()):
             f_name, f_ext = os.path.splitext(p_file)
@@ -147,47 +162,50 @@ class JJMumbleBot:
                     plugin = __import__(f_name)
                     self.bot_plugins[f_name] = plugin.Plugin()
 
+        # Import the help and youtube plugins separately.
         help_plugin = __import__('help')
         youtube_plugin = __import__('youtube')
-
+        # Assign audio plugins manually.
         self.bot_plugins['youtube'] = youtube_plugin.Plugin()
         self.bot_plugins.get('youtube').set_sound_board_plugin(self.bot_plugins.get('sound_board'))
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
         sys.path.pop(0)
+        reg_print("\n######### Plugins Initialized #########\n")
 
+    # Runs a check to add any new plugins that have been detected at runtime.
     def live_plugin_check(self):
-        if self.safe_mode:
+        if GM.safe_mode:
             length_check = 3
         else:
             length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if os.path.isfile(os.path.join(utils.get_plugin_dir(), f))])
         if length_check != len(self.bot_plugins):
-            print("Plugin change detected... adding to plugin cache.")
+            reg_print("Plugin change detected... adding to plugin cache.")
             GM.logger.warning("Plugin change detected... adding to plugin cache.")
             self.refresh_plugins()
 
+    # A callback test that prints out the test outputs of all the registered plugins.
     def plugin_callback_test(self):
         # Plugin Callback Tests
-        print("\n######### Running plugin callback tests #########\n")
+        reg_print("\n######### Running plugin callback tests #########\n")
         for plugin in self.bot_plugins.values():
             plugin.plugin_test()
+        reg_print("\n######### Plugin callback tests complete #########\n")
 
+    # Refreshes all active plugins by quitting out of them completely and restarting them.
     def refresh_plugins(self):
-        print("Refreshing all plugins...")
+        reg_print("Refreshing all plugins...")
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                    "%s is refreshing all plugins." % utils.get_bot_name())
-        time.sleep(0.3)
-        print("Refreshing plugins...")
         for plugin in self.bot_plugins.values():
             plugin.quit()
         self.bot_plugins.clear()
-        if self.safe_mode:
+        if GM.safe_mode:
             self.initialize_plugins_safe()
         else:
             self.initialize_plugins()
         pv.setup_privileges()
-        time.sleep(0.3)
-        print("All plugins refreshed.")
+        reg_print("All plugins refreshed.")
         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                    "%s has refreshed all plugins." % utils.get_bot_name())
         GM.logger.info("JJ Mumble Bot has refreshed all plugins.")
@@ -202,7 +220,7 @@ class JJMumbleBot:
         self.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
         utils.mute(self.mumble)
         self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message("%s is Online." % utils.get_bot_name())
-        print("\n\nJJMumbleBot is %s\n\n" % self.status())
+        reg_print("\n\nJJMumbleBot is %s\n\n" % self.status())
 
     def status(self):
         return self.bot_status
@@ -211,11 +229,11 @@ class JJMumbleBot:
         message = text.message.strip()
         user = self.mumble.users[text.actor]
         if "<img" in message:
-            print("Message Received: [%s -> Image Data]" % user['name'])
+            reg_print("Message Received: [%s -> Image Data]" % user['name'])
         elif "<a href=" in message:
-            print("Message Received: [%s -> Hyperlink Data]" % user['name'])
+            reg_print("Message Received: [%s -> Hyperlink Data]" % user['name'])
         else:
-            print("Message Received: [%s -> %s]" % (user['name'], message))
+            reg_print("Message Received: [%s -> %s]" % (user['name'], message))
 
         if message[0] == self.cmd_token:
             GM.logger.info("Commands Received: [%s -> %s]" % (user['name'], message))
@@ -226,7 +244,7 @@ class JJMumbleBot:
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
             if len(all_commands) > self.multi_cmd_limit:
-                print("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                reg_print("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
                 GM.logger.warning("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
                 return
 
@@ -268,15 +286,17 @@ class JJMumbleBot:
 
                 if alias_name in aliases.aliases.keys():
                     aliases.set_alias(alias_name, message_parse[2])
+                    debug_print("Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                "Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
                 else:
                     aliases.add_to_aliases(alias_name, message_parse[2])
+                    debug_print("Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                "Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
                 return
             else:
-                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning(
                     "User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
@@ -285,7 +305,7 @@ class JJMumbleBot:
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.DEFAULT.value:
                 cur_text = "<br><font color='red'>Registered Aliases:</font>"
                 for i, alias in enumerate(aliases.aliases):
-                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, aliases.aliases[alias])
+                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, BeautifulSoup(aliases.aliases[alias], "html.parser").get_text())
                     if i % 50 == 0 and i != 0:
                         utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                    '%s' % cur_text)
@@ -294,7 +314,7 @@ class JJMumbleBot:
                            '%s' % cur_text)
                 return
             else:
-                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning("User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
             return
 
@@ -304,14 +324,16 @@ class JJMumbleBot:
                 message_parse = message[1:].split(' ', 2)
                 alias_name = message_parse[1]
                 if aliases.remove_from_aliases(alias_name):
+                    debug_print('Removed [%s] from registered aliases.' % alias_name)
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                'Removed [%s] from registered aliases.' % alias_name)
                 else:
+                    debug_print('Could not remove [%s] from registered aliases.' % alias_name)
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                'Could not remove [%s] from registered aliases.' % alias_name)
                 return
             else:
-                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning(
                     "User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
             return
@@ -319,14 +341,16 @@ class JJMumbleBot:
         elif command == "clearaliases":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                 if aliases.clear_aliases():
+                    debug_print('Cleared allr egistered aliases.')
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                'Cleared all registered aliases.')
                 else:
+                    debug_print('The registered aliases could not be cleared.')
                     utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                                'The registered aliases could not be cleared.')
                 return
             else:
-                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning(
                     "User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
@@ -336,41 +360,41 @@ class JJMumbleBot:
                 self.refresh_plugins()
                 return
             else:
-                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
         elif command == "sleep":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                 sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
                 self.tick_rate = sleep_time
-                # utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']], "sleeping for %s seconds..." % sleep_time)
+                debug_print("Sleeping for %s seconds..." % sleep_time)
                 time.sleep(sleep_time)
                 self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
                 return
             else:
-                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
         elif command == "exit" or command == "quit":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                print("Stopping all threads...")
+                debug_print("Stopping all threads...")
                 self.exit()
                 GM.logger.info("JJ Mumble Bot is being shut down.")
                 return
             else:
-                print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
         elif command == "status":
             if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
                 return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s is %s." % (utils.get_bot_name(), self.status()))
             return
         elif command == "version":
             if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
                 return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s is on version %s" % (utils.get_bot_name(), utils.get_version()))
@@ -378,15 +402,16 @@ class JJMumbleBot:
         elif command == "system_test":
             if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
                 self.plugin_callback_test()
+                debug_print("A system self-test was run.")
                 GM.logger.info("A system self-test was run.")
                 return
             else:
-                print("User [%s] must be an admin to use the system_test command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be an admin to use the system_test command." % (self.mumble.users[text.actor]['name']))
                 GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
             return
         elif command == "about":
             if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
                 return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s" % utils.get_about())
@@ -407,7 +432,7 @@ class JJMumbleBot:
             plugin.quit()
         utils.clear_directory(utils.get_temporary_media_dir())
         utils.clear_directory(utils.get_temporary_img_dir())
-        print("Cleared temporary directories.")
+        reg_print("Cleared temporary directories.")
         self.exit_flag = True
         
     def loop(self):

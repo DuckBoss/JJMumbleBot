@@ -1,5 +1,6 @@
 from templates.plugin_template import PluginBase
 from helpers.global_access import GlobalMods as GM
+from helpers.global_access import debug_print, reg_print
 import requests
 import utils
 import os
@@ -21,7 +22,7 @@ class Plugin(PluginBase):
     plugin_version = "2.1.0"
     
     def __init__(self):
-        print("Images Plugin Initialized.")
+        debug_print("Images Plugin Initialized.")
         super().__init__()
 
     def process_command(self, mumble, text):
@@ -31,7 +32,7 @@ class Plugin(PluginBase):
 
         if command == "post":
             if pv.privileges_check(mumble.users[text.actor]) > pv.Privileges.MOD.value:
-                print("User [%s] must be a moderator to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must be a moderator to use this command." % (mumble.users[text.actor]['name']))
                 return
             img_url = message_parse[1]
             # Download image
@@ -44,7 +45,7 @@ class Plugin(PluginBase):
 
             # print(formatted_string)
             # print("%d characters" % len(formatted_string))
-            print("Posting to mumble!")
+            reg_print("Posting an image to the mumble channel chat.")
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        '%s' % formatted_string)
             GM.logger.info("Posted an image to the mumble channel chat from: %s." % message_parse[1])
@@ -52,13 +53,13 @@ class Plugin(PluginBase):
 
         elif command == "img":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             parameter = message_parse[1]
             # Format image
             img_data = parameter.rsplit('.', 1)
             formatted_string = self.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
-            print("Posting to mumble!")
+            reg_print("Posting an image to the mumble channel chat.")
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        '%s' % formatted_string)
             GM.logger.info("Posted an image to the mumble channel chat from local files.")
@@ -66,7 +67,7 @@ class Plugin(PluginBase):
 
         elif command == "imglist":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
             file_counter = 0
             internal_list = []
@@ -177,9 +178,9 @@ class Plugin(PluginBase):
             with open("image.%s" % img_ext, 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
-            print("Downloaded image from: %s" % img_url)
+            debug_print("Downloaded image from: %s" % img_url)
         else:
-            print("403 Error!")
+            debug_print("403 Error! - %s" % img_url)
 
     def download_image_stream(self, img_url):
         utils.clear_directory(utils.get_temporary_img_dir())
@@ -190,13 +191,13 @@ class Plugin(PluginBase):
                 if not block:
                     break
                 img_file.write(block)
-        print("Downloaded image from: %s" % img_url)
+        debug_print("Downloaded image from: %s" % img_url)
 
     def plugin_test(self):
-        print("Images Plugin self-test callback.")
+        debug_print("Images Plugin self-test callback.")
 
     def quit(self):
-        print("Exiting Images Plugin...")
+        debug_print("Exiting Images Plugin...")
 
     def help(self):
         return self.help_data
