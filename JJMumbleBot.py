@@ -36,7 +36,7 @@ class JJMumbleBot:
         logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
         log_file_name = '%s/runtime.log' % GM.cfg['Bot_Directories']['LogDirectory']
         GM.logger = logging.getLogger(log_file_name)
-        GM.logger.setLevel(logging.INFO)
+        GM.logger.setLevel(logging.CRITICAL)
 
         log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
         handler = TimedRotatingFileHandler(log_file_name, when='midnight', backupCount=30)
