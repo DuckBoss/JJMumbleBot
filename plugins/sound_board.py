@@ -58,7 +58,7 @@ class Plugin(PluginBase):
                 return
             return
 
-        elif command == "sblist":
+        elif command == "sblist" or command == "sbl":
             if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
                 reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
                 return
