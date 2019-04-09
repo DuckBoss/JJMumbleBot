@@ -18,7 +18,7 @@ class Plugin(PluginBase):
                     <b>!sb 'file_name'</b>: The file must be in wav format.<br>\
                     <b>!sbv '0..1'</b>: Sets the sound board audio volume.<br>\
                     <b>!sbreplay/!sbr</b>: Replays the last played sound board track.<br>\
-                    <b>!sblist</b>: Displays all the available sound board tracks in private messages.<br>\
+                    <b>!sblist/!sbl</b>: Displays all the available sound board tracks in private messages.<br>\
                     <b>!sblist_echo</b> Displays all the available sound board tracks in the channel chat.<br>\
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track.<br>\
                     <b>!sbdownload 'youtube_url' 'file_name'</b>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>\
