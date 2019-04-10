@@ -17,7 +17,7 @@ class Plugin(PluginBase):
                 <b>!d10roll</b>: A standard 10-sided dice roll.<br>\
                 <b>!d12roll</b> A standard 12-sided dice roll.<br>\
                 <b>!d20roll</b> A standard 20-sided dice roll."
-    plugin_version = "1.0.0"
+    plugin_version = "1.6.0"
     priv_path = "randomizer/randomizer_privileges.csv"
 
     def __init__(self):

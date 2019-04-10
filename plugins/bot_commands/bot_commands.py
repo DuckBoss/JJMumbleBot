@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             <b>!refresh</b>: Refreshes all plugins.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-    plugin_version = "5.3.0"
+    plugin_version = "1.6.0"
     priv_path = "bot_commands/bot_commands_privileges.csv"
 
     def __init__(self):

@@ -16,7 +16,7 @@ class Plugin(PluginBase):
                 <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>\
                 <b>!uptime_help</b> Displays the uptime plugin help screen." % utils.get_bot_name()
     plugin_prepend_text = "<br><font color='red'>Plugin Version: "
-    plugin_version = "5.1.0"
+    plugin_version = "1.6.0"
     priv_path = "help/help_privileges.csv"
     bot_plugins = {}
 
