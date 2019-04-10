@@ -1,1 +1,15 @@
-alias,command
+alias,command
+sb_help,!sound_board_help
+yt_help,!youtube_help
+img_help,!images_help
+sbs,!sbstop
+sbl,!sblist
+sble,!sblist_echo
+sbr,!sbreplay
+skip,!skip
+v,!volume
+yt,!youtube
+q,!queue
+p,!play
+rp,!replay
+quit,!exit

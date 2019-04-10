@@ -1,6 +1,7 @@
 import time
 from templates.plugin_template import PluginBase
 from helpers.global_access import debug_print, reg_print
+import privileges as pv
 import utils
 
 
@@ -8,7 +9,8 @@ class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Uptime Plugin Help <font color='red'>#####</font></b><br> \
                         All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!uptime</b>: Returns the bot uptime."
-    plugin_version = "1.0.0"
+    plugin_version = "1.6.0"
+    priv_path = "uptime/uptime_privileges.csv"
     
     start_seconds = 0
     seconds = 0
@@ -40,6 +42,8 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "uptime":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                        self.check_time())
             return
@@ -55,3 +59,6 @@ class Plugin(PluginBase):
 
     def get_plugin_version(self):
         return self.plugin_version
+
+    def get_priv_path(self):
+        return self.priv_path

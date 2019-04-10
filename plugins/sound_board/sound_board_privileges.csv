@@ -1,0 +1,9 @@
+command,level
+sb,2
+sbv,2
+sbreplay,2
+sblist,2
+sblist_echo,2
+sbstop,2
+sbdownload,4
+sbdelete,4
