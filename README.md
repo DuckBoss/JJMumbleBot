@@ -21,6 +21,7 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Custom Command Tokens</b> - Custom command recognition tokens (ex: !command, ~command, /command, etc)
 - <b>Command Tick Rates</b> - Commands in the queue are processed by the tick rate assigned in the config.
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
+- <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
 ## Wiki
 <b> Please check out the wiki for documentation </b> <br>
@@ -38,4 +39,6 @@ v1.3 implemented a new config system that required reconfiguring the config.ini 
 v1.4 implemented a new and upgraded user privilege system that required how user privileges are handled and an update to the plugin template requiring the updating of all plugins.
 - <b>pre-v1.5</b> - A legacy branch for pre-v1.5. <br>
 v1.5 implemented a way to send commands to the bot, command queues, command tick rates, updated built-in plugins, command aliases, and fixed some major bugs. <br>
+- <b>pre-v1.6</b> - A legacy branch for pre-v1.5. <br>
+v1.6 implemented a restructured plugin system, updated aliases, and reconfigurable user privileges for all built-in commands. <br>
 #### Need a very specific version of the legacy branches? <br>Check out the full list of tags here : <a href="https://github.com/DuckBoss/JJMumbleBot/tags">Release Tags</a>
