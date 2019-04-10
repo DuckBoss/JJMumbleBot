@@ -52,7 +52,8 @@ class Plugin(PluginBase):
         elif command == "log":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            GM.logger.info("Manually Logged: [%s]" % (message_parse[1]))
+            debug_print("Manually Logged: [%s]" % message_parse[1])
+            GM.logger.info("Manually Logged: [%s]" % message_parse[1])
             return
 
         elif command == "spam_test":
