@@ -62,4 +62,3 @@ class Plugin(PluginBase):
 
     def get_priv_path(self):
         return self.priv_path
-
