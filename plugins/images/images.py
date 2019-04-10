@@ -19,7 +19,8 @@ class Plugin(PluginBase):
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "2.1.0"
+    plugin_version = "2.2.0"
+    priv_path = "images/images_privileges.csv"
     
     def __init__(self):
         debug_print("Images Plugin Initialized.")
@@ -31,8 +32,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "post":
-            if pv.privileges_check(mumble.users[text.actor]) > pv.Privileges.MOD.value:
-                reg_print("User [%s] must be a moderator to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             img_url = message_parse[1]
             # Download image
@@ -52,8 +52,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "img":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             parameter = message_parse[1]
             # Format image
@@ -66,8 +65,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "imglist":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
             internal_list = []
@@ -204,3 +202,9 @@ class Plugin(PluginBase):
 
     def get_plugin_version(self):
         return self.plugin_version
+
+    def get_priv_path(self):
+        return self.priv_path
+
+    def get_priv_path(self):
+        return self.priv_path

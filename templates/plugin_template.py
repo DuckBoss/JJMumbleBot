@@ -24,6 +24,10 @@ class PluginBase(ABC):
     def get_plugin_version(self):
         return plugin_version
 
+    @abstractmethod
+    def get_priv_path(self):
+        return priv_path
+
     @property
     @abstractmethod
     def help_data(self):
@@ -32,4 +36,8 @@ class PluginBase(ABC):
     @property
     @abstractmethod
     def plugin_version(self):
+        pass
+
+    @property
+    def priv_path(self):
         pass

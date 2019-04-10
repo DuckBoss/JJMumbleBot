@@ -27,6 +27,7 @@ class JJMumbleBot:
     tick_rate = 0.1
     multi_cmd_limit = 5
     cmd_token = None
+    priv_path = "bot_commands/bot_commands_privileges.csv"
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
@@ -53,20 +54,24 @@ class JJMumbleBot:
                     GM.safe_mode = True
                     print('Safe mode has been enabled.')
                     GM.logger.info("Safe mode has been enabled through system arguments.")
+                # Enable debug mode.
                 if item == "-debug":
                     GM.debug_mode = True
                     print('Debug mode has been enabled.')
                     GM.logger.info("Debug mode has been enabled through system arguments.")
+                # Enable quiet mode.
                 if item == "-quiet":
                     GM.quiet_mode = True
                     print('Quiet mode has been enabled.')
                     GM.logger.info("Quiet mode has been enabled through system arguments.")
+                # Enable verbose mode.
                 if item == "-verbose":
                     GM.verbose_mode = True
                     print('Verbose mode has been enabled.')
                     GM.logger.info("Verbose mode has been enabled through system arguments.")
         # Initialize command queue.
-        self.command_queue = QueueHandler(25)
+        cmd_queue_lim = int(GM.cfg['Main_Settings']['CommandQueueLimit'])
+        self.command_queue = QueueHandler(cmd_queue_lim)
         # Run Debug Mode tests.
         if GM.debug_mode:
             self.config_debug()
@@ -136,40 +141,36 @@ class JJMumbleBot:
         # Load Plugins
         reg_print("\n######### Initializing Plugins #########\n")
         sys.path.insert(0, utils.get_plugin_dir())
-        for p_file in os.listdir(utils.get_plugin_dir()):
-            f_name, f_ext = os.path.splitext(p_file)
-            if f_ext == ".py":
-                if f_name == "help":
-                    continue
-                elif f_name == "bot_commands" or f_name == "uptime":
-                    plugin = __import__(f_name)
-                    self.bot_plugins[f_name] = plugin.Plugin()
-        help_plugin = __import__('help')
+        all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if
+                       os.path.isdir(os.path.join(utils.get_plugin_dir(), name))]
+        for p_file in all_imports:
+            if p_file == "help":
+                continue
+            elif p_file == "bot_commands" or p_file == "uptime":
+                self.bot_plugins[p_file] = __import__('plugins.%s.%s' % (p_file, p_file), fromlist=['*']).Plugin()
+        help_plugin = __import__('plugins.help.help')
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
         sys.path.pop(0)
         reg_print("\n######### Plugins Initialized #########\n")
 
     # Initializes all available plugins.
     def initialize_plugins(self):
+        # Load Plugins
         reg_print("\n######### Initializing Plugins #########\n")
         sys.path.insert(0, utils.get_plugin_dir())
-        for p_file in os.listdir(utils.get_plugin_dir()):
-            f_name, f_ext = os.path.splitext(p_file)
-            if f_ext == ".py":
-                if f_name == "help" or f_name == "youtube":
-                    continue
-                else:
-                    plugin = __import__(f_name)
-                    self.bot_plugins[f_name] = plugin.Plugin()
-
+        all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if os.path.isdir(os.path.join(utils.get_plugin_dir(), name)) and name != "__pycache__"]
+        for p_file in all_imports:
+            if p_file == "youtube" or p_file == "help":
+                continue
+            self.bot_plugins[p_file] = __import__('%s.%s' % (p_file, p_file), fromlist=['*']).Plugin()
         # Import the help and youtube plugins separately.
-        help_plugin = __import__('help')
-        youtube_plugin = __import__('youtube')
+        help_plugin = __import__('help.help')
+        youtube_plugin = __import__('youtube.youtube')
         # Assign audio plugins manually.
-        self.bot_plugins['youtube'] = youtube_plugin.Plugin()
+        self.bot_plugins['youtube'] = youtube_plugin.youtube.Plugin()
         self.bot_plugins.get('youtube').set_sound_board_plugin(self.bot_plugins.get('sound_board'))
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
-        self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
+        self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
         reg_print("\n######### Plugins Initialized #########\n")
 
@@ -178,7 +179,7 @@ class JJMumbleBot:
         if GM.safe_mode:
             length_check = 3
         else:
-            length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if os.path.isfile(os.path.join(utils.get_plugin_dir(), f))])
+            length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if f != "__pycache__"])
         if length_check != len(self.bot_plugins):
             reg_print("Plugin change detected... adding to plugin cache.")
             GM.logger.warning("Plugin change detected... adding to plugin cache.")
@@ -257,11 +258,17 @@ class JJMumbleBot:
 
                 if new_command.command in aliases.aliases:
                     alias_commands = [msg.strip() for msg in aliases.aliases[new_command.command].split('|')]
-                    for x, xitem in enumerate(alias_commands):
-                        new_xtext = copy.deepcopy(text)
-                        new_xtext.message = xitem
-                        new_xcommand = Command(xitem[1:].split()[0], new_xtext)
-                        self.command_queue.insert(new_xcommand)
+                    if len(alias_commands) > self.multi_cmd_limit:
+                        reg_print(
+                            "The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                        GM.logger.warning(
+                            "The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                        return
+                    for x, sub_item in enumerate(alias_commands):
+                        sub_text = copy.deepcopy(text)
+                        sub_text.message = sub_item
+                        sub_command = Command(sub_item[1:].split()[0], sub_text)
+                        self.command_queue.insert(sub_command)
                 else:
                     # Insert command into the command queue
                     self.command_queue.insert(new_command)
@@ -279,144 +286,119 @@ class JJMumbleBot:
 
     def process_core_commands(self, command, text):
         if command == "alias":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                message = text.message.strip()
-                message_parse = message[1:].split(' ', 2)
-                alias_name = message_parse[1]
-
-                if alias_name in aliases.aliases.keys():
-                    aliases.set_alias(alias_name, message_parse[2])
-                    debug_print("Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               "Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
-                else:
-                    aliases.add_to_aliases(alias_name, message_parse[2])
-                    debug_print("Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               "Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
+            message = text.message.strip()
+            message_parse = message[1:].split(' ', 2)
+            alias_name = message_parse[1]
+
+            if alias_name in aliases.aliases.keys():
+                aliases.set_alias(alias_name, message_parse[2])
+                debug_print("Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           "Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
             else:
-                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning(
-                    "User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+                aliases.add_to_aliases(alias_name, message_parse[2])
+                debug_print("Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           "Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
             return
 
         elif command == "aliases":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.DEFAULT.value:
-                cur_text = "<br><font color='red'>Registered Aliases:</font>"
-                for i, alias in enumerate(aliases.aliases):
-                    cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, BeautifulSoup(aliases.aliases[alias], "html.parser").get_text())
-                    if i % 50 == 0 and i != 0:
-                        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                                   '%s' % cur_text)
-                        cur_text = ""
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           '%s' % cur_text)
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            else:
-                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning("User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
+            cur_text = "<br><font color='red'>Registered Aliases:</font>"
+            for i, alias in enumerate(aliases.aliases):
+                cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, BeautifulSoup(aliases.aliases[alias], "html.parser").get_text())
+                if i % 50 == 0 and i != 0:
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               '%s' % cur_text)
+                    cur_text = ""
+            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                       '%s' % cur_text)
             return
 
         elif command == "removealias":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                message = text.message.strip()
-                message_parse = message[1:].split(' ', 2)
-                alias_name = message_parse[1]
-                if aliases.remove_from_aliases(alias_name):
-                    debug_print('Removed [%s] from registered aliases.' % alias_name)
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               'Removed [%s] from registered aliases.' % alias_name)
-                else:
-                    debug_print('Could not remove [%s] from registered aliases.' % alias_name)
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               'Could not remove [%s] from registered aliases.' % alias_name)
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
+            message = text.message.strip()
+            message_parse = message[1:].split(' ', 2)
+            alias_name = message_parse[1]
+            if aliases.remove_from_aliases(alias_name):
+                debug_print('Removed [%s] from registered aliases.' % alias_name)
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           'Removed [%s] from registered aliases.' % alias_name)
             else:
-                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning(
-                    "User [%s] tried to enter an non-blacklisted command." % (self.mumble.users[text.actor]['name']))
+                debug_print('Could not remove [%s] from registered aliases.' % alias_name)
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           'Could not remove [%s] from registered aliases.' % alias_name)
             return
 
         elif command == "clearaliases":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                if aliases.clear_aliases():
-                    debug_print('Cleared allr egistered aliases.')
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               'Cleared all registered aliases.')
-                else:
-                    debug_print('The registered aliases could not be cleared.')
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               'The registered aliases could not be cleared.')
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
+            if aliases.clear_aliases():
+                debug_print('Cleared allr egistered aliases.')
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           'Cleared all registered aliases.')
             else:
-                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning(
-                    "User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+                debug_print('The registered aliases could not be cleared.')
+                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           'The registered aliases could not be cleared.')
             return
 
         elif command == "refresh":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                self.refresh_plugins()
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            else:
-                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+            self.refresh_plugins()
             return
+
         elif command == "sleep":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
-                self.tick_rate = sleep_time
-                debug_print("Sleeping for %s seconds..." % sleep_time)
-                time.sleep(sleep_time)
-                self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            else:
-                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+            sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
+            self.tick_rate = sleep_time
+            debug_print("Sleeping for %s seconds..." % sleep_time)
+            time.sleep(sleep_time)
+            self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
             return
-        elif command == "exit" or command == "quit":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                debug_print("Stopping all threads...")
-                self.exit()
-                GM.logger.info("JJ Mumble Bot is being shut down.")
+
+        elif command == "exit":
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            else:
-                reg_print("User [%s] must be an admin to use this command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+            debug_print("Stopping all threads...")
+            self.exit()
+            GM.logger.info("JJ Mumble Bot is being shut down.")
             return
+
         elif command == "status":
-            if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s is %s." % (utils.get_bot_name(), self.status()))
             return
+
         elif command == "version":
-            if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s is on version %s" % (utils.get_bot_name(), utils.get_version()))
             return
+
         elif command == "system_test":
-            if pv.privileges_check(self.mumble.users[text.actor]) >= pv.Privileges.ADMIN.value:
-                self.plugin_callback_test()
-                debug_print("A system self-test was run.")
-                GM.logger.info("A system self-test was run.")
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            else:
-                reg_print("User [%s] must be an admin to use the system_test command." % (self.mumble.users[text.actor]['name']))
-                GM.logger.warning("User [%s] tried to enter an admin-only command." % (self.mumble.users[text.actor]['name']))
+            self.plugin_callback_test()
+            debug_print("A system self-test was run.")
+            GM.logger.info("A system self-test was run.")
             return
+
         elif command == "about":
-            if pv.privileges_check(self.mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (self.mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
             utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
                        "%s" % utils.get_about())
             return
-        return
 
     def process_command_queue(self, com):
         command_type = com.command

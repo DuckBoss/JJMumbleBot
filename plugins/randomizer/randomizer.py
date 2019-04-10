@@ -18,6 +18,7 @@ class Plugin(PluginBase):
                 <b>!d12roll</b> A standard 12-sided dice roll.<br>\
                 <b>!d20roll</b> A standard 20-sided dice roll."
     plugin_version = "1.0.0"
+    priv_path = "randomizer/randomizer_privileges.csv"
 
     def __init__(self):
         debug_print("Randomizer Plugin Initialized.")
@@ -29,8 +30,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "coinflip":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,2)
@@ -42,8 +42,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>Coin Flip Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d4roll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,4)
@@ -51,8 +50,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d6roll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,6)
@@ -60,8 +58,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d8roll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,8)
@@ -69,8 +66,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d10roll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,10)
@@ -78,8 +74,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d12roll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,12)
@@ -87,8 +82,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "d20roll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1,20)
@@ -96,8 +90,7 @@ class Plugin(PluginBase):
                        "<font color='cyan'>D20 Roll Result:</font> <font color='yellow'>%s</font>" % result)
             return
         elif command == "customroll":
-            if pv.privileges_check(mumble.users[text.actor]) == pv.Privileges.BLACKLIST.value:
-                reg_print("User [%s] must not be blacklisted to use this command." % (mumble.users[text.actor]['name']))
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             try:
                 all_messages = message[1:].split()
@@ -132,3 +125,6 @@ class Plugin(PluginBase):
 
     def get_plugin_version(self):
         return self.plugin_version
+
+    def get_priv_path(self):
+        return self.priv_path
