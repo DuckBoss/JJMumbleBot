@@ -31,13 +31,16 @@ class Plugin(PluginBase):
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
+        'quiet': True,
+        'matchfilter': '!is_live',
         'format': 'bestaudio/best',
         'outtmpl': utils.get_temporary_media_dir()+'%(id)s.wav',
         'noplaylist': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'wav',
-            'preferredquality': '192', }]
+            'preferredquality': '192', }],
+        'logger': GM.logger
     }
 
     queue_instance = None
@@ -205,6 +208,34 @@ class Plugin(PluginBase):
                            "The youtube queue is empty.")
             return
 
+        elif command == "stream":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            if len(message_parse) == 2:
+                stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
+                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if self.queue_instance.is_full():
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "The youtube queue is full!")
+                        return
+                    song_data = self.download_song_name(stripped_url)
+                    if song_data is None:
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                           "ERROR: The chosen stream was either too long or a live stream.")
+                        return
+                    song_data['main_id'] = stripped_url
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                       "Stream link given: %s" % stripped_url)
+                    self.sound_board_plugin.clear_audio_thread()
+                    self.queue_instance.insert(song_data)
+                    self.audio_loop(mumble)
+                    return
+                else:
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "The given link was not identified as a youtube video link!")
+                    return
+
+
         elif command == "link":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
@@ -307,6 +338,7 @@ class Plugin(PluginBase):
                         return
                     self.queue_instance.insert_priority(self.current_song_info)
                     self.stop_audio()
+                    self.audio_loop(mumble)
             else:
                 utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "There is no track available to replay.")
@@ -382,6 +414,21 @@ class Plugin(PluginBase):
         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "Cleared youtube temporary media cache.")
 
+    def download_song_name(self, url):
+        with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
+            ydl.cache.remove()
+            info_dict = ydl.extract_info(url, download=False)
+            if info_dict['duration'] >= self.max_track_duration:
+                return None
+            if info_dict['duration'] <= 0.1:
+                return None
+
+            prep_struct = {
+                    'main_id': info_dict['url'],
+                    'main_title': info_dict['title'],
+            }
+            return prep_struct
+
     def download_song(self, url):
         with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
             ydl.cache.remove()
@@ -407,9 +454,14 @@ class Plugin(PluginBase):
 
     def play_audio(self, mumble):
         self.current_song_info = self.queue_instance.pop()
-        self.current_song = self.current_song_info['main_id']
+        self.current_song = self.current_song_info.get('main_id')
 
-        uri = "file:///%s%s.wav" % (utils.get_temporary_media_dir(), self.current_song)
+        stripped_url = BeautifulSoup(self.current_song, features='html.parser').get_text()
+        if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+            uri = stripped_url
+        else:
+            uri = "file:///%s%s.wav" % (utils.get_temporary_media_dir(), self.current_song)
+
         command = utils.get_vlc_dir()
         mumble.sound_output.clear_buffer()
 
@@ -419,7 +471,7 @@ class Plugin(PluginBase):
             self.music_thread = None
 
         if self.music_thread is None:
-            self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--no-repeat', '--sout',
+            self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--quiet', '--no-repeat', '--sout',
                                                            '#transcode{acodec=s16le, channels=2, '
                                                            'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                                            'mux=wav, dst=-}'],
