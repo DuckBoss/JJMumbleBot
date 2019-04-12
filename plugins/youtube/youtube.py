@@ -27,7 +27,7 @@ class Plugin(PluginBase):
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>\
                         <b>!clear_cache</b>: Clears the youtube temporary media cache."
-    plugin_version = "1.6.0"
+    plugin_version = "1.6.2"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
