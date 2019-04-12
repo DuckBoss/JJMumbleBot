@@ -23,6 +23,9 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
+## Future Updates:
+__NOTE: With v1.7.0 I plan on removing the current download system to play youtube videos and instead migrate to a fully streaming pattern so that no videos are downloaded. This future change will not be noticeable to any users and will be a purely back-end design change. I will create a legacy branch so that users that wish to use the download-system can still use it.__
+
 ## Wiki
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
