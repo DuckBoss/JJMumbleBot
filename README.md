@@ -24,7 +24,13 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
 ## Future Updates:
-__NOTE: With v1.7.0 I plan on removing the current download system to play youtube videos and instead migrate to a fully streaming pattern so that no videos are downloaded. This future change will not be noticeable to any users and will be a purely back-end design change. I will create a legacy branch so that users that wish to use the download-system can still use it.__
+NOTE: With v1.7.0 I plan on removing the current download system to play youtube videos and instead migrate to a fully streaming pattern so that no videos are downloaded. <br>This future change will not be noticeable to any users and will be a purely back-end design change. <br>I will create a legacy branch so that users that wish to use the download-system can still use it.
+<br>
+<b>TL;DR:
+- The current youtube plugin downloads videos to a temporary folder (in the config.ini file) before playing it through a vlc instance.
+- This can be streamlined by allowing vlc to stream the youtube link directly instead of downloading it first.
+- After much testing, the audio quality hasn't been affected and it saved hard drive space.
+Got any questions or concerns about this upcoming update? Please post an issue report!</b>
 
 ## Wiki
 <b> Please check out the wiki for documentation </b> <br>
