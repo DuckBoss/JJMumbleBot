@@ -6,7 +6,7 @@ sbs,!sbstop
 sbl,!sblist
 sble,!sblist_echo
 sbr,!sbreplay
-skip,!skip
+skip,!next
 v,!volume
 yt,!youtube
 q,!queue
