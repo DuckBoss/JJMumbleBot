@@ -35,16 +35,19 @@ class JJMumbleBot:
         GM.cfg.read(utils.get_config_dir())
         # Initialize application logging.
         logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
-        log_file_name = '%s/runtime.log' % GM.cfg['Bot_Directories']['LogDirectory']
-        GM.logger = logging.getLogger(log_file_name)
-        GM.logger.setLevel(logging.CRITICAL)
 
-        log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
+        log_file_name = '%s/runtime.log' % GM.cfg['Bot_Directories']['LogDirectory']
+        GM.logger = logging.getLogger("RuntimeLogging")
+        GM.logger.setLevel(logging.DEBUG)
+   
         handler = TimedRotatingFileHandler(log_file_name, when='midnight', backupCount=30)
         handler.setLevel(logging.INFO)
+        log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
         handler.setFormatter(log_formatter)
         GM.logger.addHandler(handler)
 
+        GM.logger.info("######################################")
+        GM.logger.info("Initializing JJMumbleBot...")
         GM.logger.info("Application configs have been read successfully.")
         # Initialize system arguments.
         if sys.argv:
@@ -373,6 +376,7 @@ class JJMumbleBot:
             debug_print("Stopping all threads...")
             self.exit()
             GM.logger.info("JJ Mumble Bot is being shut down.")
+            GM.logger.info("######################################")
             return
 
         elif command == "status":
