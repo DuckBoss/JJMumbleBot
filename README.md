@@ -30,7 +30,7 @@ NOTE: With v1.7.0 I plan on removing the current download system to play youtube
 - The current youtube plugin downloads videos to a temporary folder (in the config.ini file) before playing it through a vlc instance.
 - This can be streamlined by allowing vlc to stream the youtube link directly instead of downloading it first.
 - After much testing, the audio quality hasn't been affected and it saved hard drive space.
-Got any questions or concerns about this upcoming update? Please post an issue report!</b>
+<br>Got any questions or concerns about this upcoming update? Please post an issue report!</b>
 
 ## Wiki
 <b> Please check out the wiki for documentation </b> <br>
