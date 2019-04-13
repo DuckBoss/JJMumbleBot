@@ -34,6 +34,4 @@ A plugin-based python 3 mumble bot with extensive features.
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-#### Need a very specific version of the legacy branches? <br>Check out the full list of tags here : <a href="https://github.com/DuckBoss/JJMumbleBot/tags">Release Tags</a>
-
 ### Got any questions or concerns about this upcoming update? Please post an issue report!
