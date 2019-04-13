@@ -13,3 +13,4 @@ q,!queue
 p,!play
 rp,!replay
 quit,!exit
+stream,!link

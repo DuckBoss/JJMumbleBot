@@ -11,6 +11,7 @@ import audioop
 import helpers.queue_handler as qh
 from helpers.global_access import GlobalMods as GM
 from helpers.global_access import debug_print, reg_print
+import warnings
 
 
 class Plugin(PluginBase):
@@ -25,16 +26,13 @@ class Plugin(PluginBase):
                         <b>!next/!skip</b>: Goes to the next song in the queue.<br>\
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
-                        <b>!clear</b>: Clears the current youtube queue.<br>\
-                        <b>!clear_cache</b>: Clears the youtube temporary media cache."
-    plugin_version = "1.6.2"
+                        <b>!clear</b>: Clears the current youtube queue.<br>"
+    plugin_version = "1.7.0"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
         'quiet': True,
-        'matchfilter': '!is_live',
         'format': 'bestaudio/best',
-        'outtmpl': utils.get_temporary_media_dir()+'%(id)s.wav',
         'noplaylist': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
@@ -56,7 +54,6 @@ class Plugin(PluginBase):
 
     sound_board_plugin = None
 
-    config = None
     # max number of tracks in the queue.
     max_queue_size = 25
     # max track duration in seconds.
@@ -65,10 +62,10 @@ class Plugin(PluginBase):
     def __init__(self):
         debug_print("Music Plugin Initialized...")
         super().__init__()
+        warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
         self.volume = float(GM.cfg['Plugin_Settings']['Youtube_DefaultVolume'])
         self.max_queue_size = int(GM.cfg['Plugin_Settings']['Youtube_MaxQueueLength'])
         self.max_track_duration = int(GM.cfg['Plugin_Settings']['Youtube_MaxVideoLength'])
-        utils.clear_directory(utils.get_temporary_media_dir())
         self.queue_instance = qh.QueueHandler(self.max_queue_size)
 
     def set_sound_board_plugin(self, sb_plugin):
@@ -121,14 +118,6 @@ class Plugin(PluginBase):
                 self.queue_instance = qh.QueueHandler(self.max_queue_size)
                 GM.logger.info("The youtube audio thread was stopped.")
                 return
-            return
-
-        elif command == "clear_cache":
-            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
-                return
-            reg_print("Clearing youtube temporary media cache.")
-            GM.logger.info("The youtube temporary media cache was cleared.")
-            self.clear_download_cache(mumble)
             return
 
         elif command == "clear":
@@ -208,7 +197,7 @@ class Plugin(PluginBase):
                            "The youtube queue is empty.")
             return
 
-        elif command == "stream":
+        elif command == "link":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             if len(message_parse) == 2:
@@ -235,37 +224,6 @@ class Plugin(PluginBase):
                                "The given link was not identified as a youtube video link!")
                     return
 
-
-        elif command == "link":
-            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
-                return
-            if len(message_parse) == 2:
-                stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
-                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
-                    if self.queue_instance.is_full():
-                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                                   "The youtube queue is full!")
-                        return
-                    # self.all_searches = None
-                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                                   "Direct link given: %s" % stripped_url)
-                    try:
-                        song_data = self.get_downloaded_song(stripped_url)
-                        if song_data is None:
-                            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                               "The chosen video is too long. The maximum video length is %d minutes" % (self.max_track_duration/60))
-                            return
-                        self.sound_board_plugin.clear_audio_thread()
-                        # self.can_play = False
-                        self.queue_instance.insert(song_data)
-                    except Exception:
-                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                               "The given link was not identified as a youtube video link!")
-                        return
-                    
-                    self.audio_loop(mumble)
-                    return
-
         elif command == "play":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
@@ -278,27 +236,29 @@ class Plugin(PluginBase):
                 self.sound_board_plugin.clear_audio_thread()
 
                 if len(all_messages) == 1:
-                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                               "Automatically chosen: %s" % self.all_searches[0]['title'])
-                    song_data = self.get_downloaded_song(
+                    song_data = self.download_song_name(
                         "https://www.youtube.com" + self.all_searches[0]['href'])
                     if song_data is None:
                         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "The chosen video is too long. The maximum video length is %d minutes" % (self.max_track_duration/60))
                         return
+                    song_data['main_id'] = "https://www.youtube.com" + self.all_searches[0]['href']
+                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                               "Automatically chosen: %s" % self.all_searches[0]['title'])
                     self.can_play = False
                     self.queue_instance.insert(song_data)
                     self.audio_loop(mumble)
                 elif len(all_messages) == 2:
                     if 9 >= int(all_messages[1]) >= 0:
-                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                                   "You've chosen: %s" % (self.all_searches[int(all_messages[1])]['title']))
-                        song_data = self.get_downloaded_song(
+                        song_data = self.download_song_name(
                             "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href'])
                         if song_data is None:
                             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "The chosen video is too long. The maximum video length is %d minutes" % (self.max_track_duration/60))
                             return
+                        song_data['main_id'] = "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href']
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "You've chosen: %s" % (self.all_searches[int(all_messages[1])]['title']))
                         self.can_play = False
                     else:
                         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -309,14 +269,15 @@ class Plugin(PluginBase):
                     self.audio_loop(mumble)
                 elif len(all_messages) == 3:
                     if 9 >= int(all_messages[1]) >= 0:
-                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                                   "You've chosen: %s" % (self.all_searches[int(all_messages[1])]['title']))
-                        song_data = self.get_downloaded_song(
+                        song_data = self.download_song_name(
                             "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href'])
                         if song_data is None:
                             utils.echo(mumble.channels[mumble.users.myself['channel_id']],
                            "The chosen video is too long. The maximum video length is %d minutes" % (self.max_track_duration/60))
                             return
+                        song_data['main_id'] = "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href']
+                        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                                   "You've chosen: %s" % (self.all_searches[int(all_messages[1])]['title']))
                         self.can_play = False
                     else:
                         utils.echo(mumble.channels[mumble.users.myself['channel_id']],
@@ -378,9 +339,6 @@ class Plugin(PluginBase):
     def get_search_results(self, search_term):
         return self.get_vid_list(search_term)
 
-    def get_downloaded_song(self, url):
-        return self.download_song(url)
-
     def get_vid_list(self, search):
         url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
         req = urllib.request.Request(url)
@@ -406,14 +364,6 @@ class Plugin(PluginBase):
     def clear_queue(self):
         self.queue_instance.clear()
 
-    def clear_download_cache(self, mumble):
-        self.stop_audio()
-        time.sleep(1)
-        utils.clear_directory(utils.get_temporary_media_dir())
-        reg_print("youtube temporary media cache cleared.")
-        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Cleared youtube temporary media cache.")
-
     def download_song_name(self, url):
         with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
             ydl.cache.remove()
@@ -429,38 +379,12 @@ class Plugin(PluginBase):
             }
             return prep_struct
 
-    def download_song(self, url):
-        with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
-            ydl.cache.remove()
-            info_dict = ydl.extract_info(url, download=False)
-            if info_dict['duration'] >= self.max_track_duration:
-                return None
-
-            if os.path.isfile(utils.get_temporary_media_dir()+"%s.wav" % info_dict['id']):
-                debug_print("File exists, skipping download...")
-                prep_struct = {
-                    'main_id': info_dict['id'],
-                    'main_title': info_dict['title'],
-                }
-                return prep_struct
-
-            download_target = ydl.prepare_filename(info_dict)
-            ydl.download([url])
-            prep_struct = {
-                'main_id': info_dict['id'],
-                'main_title': info_dict['title'],
-            }
-            return prep_struct
-
     def play_audio(self, mumble):
         self.current_song_info = self.queue_instance.pop()
         self.current_song = self.current_song_info.get('main_id')
 
         stripped_url = BeautifulSoup(self.current_song, features='html.parser').get_text()
-        if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
-            uri = stripped_url
-        else:
-            uri = "file:///%s%s.wav" % (utils.get_temporary_media_dir(), self.current_song)
+        uri = stripped_url
 
         command = utils.get_vlc_dir()
         mumble.sound_output.clear_buffer()

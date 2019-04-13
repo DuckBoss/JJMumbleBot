@@ -81,10 +81,6 @@ def get_temporary_img_dir():
     return GM.cfg['Media_Directories']['TemporaryImageDirectory']
 
 
-def get_temporary_media_dir():
-    return GM.cfg['Media_Directories']['TemporaryMediaDirectory']
-
-
 def get_permanent_media_dir():
     return GM.cfg['Media_Directories']['PermanentMediaDirectory']
 
