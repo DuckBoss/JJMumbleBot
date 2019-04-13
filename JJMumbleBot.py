@@ -110,6 +110,10 @@ class JJMumbleBot:
         # Create temporary directories.
         utils.make_directory(GM.cfg['Media_Directories']['TemporaryImageDirectory'])
         GM.logger.info("Initialized temporary directories.")
+        # Create any missing permanent directories.
+        utils.make_directory(GM.cfg['Media_Directories']['PermanentMediaDirectory']+"sound_board/")
+        utils.make_directory(GM.cfg['Media_Directories']['PermanentMediaDirectory']+"images/")
+        GM.logger.info("Initialized permanent directories.")
         # Setup privileges.
         pv.setup_privileges()
         GM.logger.info("Initialized user privileges.")
@@ -145,7 +149,7 @@ class JJMumbleBot:
     # Initializes only safe-mode applicable plugins.
     def initialize_plugins_safe(self):
         # Load Plugins
-        reg_print("\n######### Initializing Plugins #########\n")
+        reg_print("######### Initializing Plugins #########")
         sys.path.insert(0, utils.get_plugin_dir())
         all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if
                        os.path.isdir(os.path.join(utils.get_plugin_dir(), name))]
@@ -157,12 +161,12 @@ class JJMumbleBot:
         help_plugin = __import__('help.help')
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
         sys.path.pop(0)
-        reg_print("\n######### Plugins Initialized #########\n")
+        reg_print("######### Plugins Initialized #########")
 
     # Initializes all available plugins.
     def initialize_plugins(self):
         # Load Plugins
-        reg_print("\n######### Initializing Plugins #########\n")
+        reg_print("######### Initializing Plugins #########")
         sys.path.insert(0, utils.get_plugin_dir())
         all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if os.path.isdir(os.path.join(utils.get_plugin_dir(), name)) and name != "__pycache__"]
         for p_file in all_imports:
@@ -178,7 +182,7 @@ class JJMumbleBot:
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
         self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
-        reg_print("\n######### Plugins Initialized #########\n")
+        reg_print("######### Plugins Initialized #########")
 
     # Runs a check to add any new plugins that have been detected at runtime.
     def live_plugin_check(self):
@@ -194,10 +198,10 @@ class JJMumbleBot:
     # A callback test that prints out the test outputs of all the registered plugins.
     def plugin_callback_test(self):
         # Plugin Callback Tests
-        reg_print("\n######### Running plugin callback tests #########\n")
+        reg_print("######### Running plugin callback tests #########")
         for plugin in self.bot_plugins.values():
             plugin.plugin_test()
-        reg_print("\n######### Plugin callback tests complete #########\n")
+        reg_print("######### Plugin callback tests complete #########")
 
     # Refreshes all active plugins by quitting out of them completely and restarting them.
     def refresh_plugins(self):
@@ -227,7 +231,7 @@ class JJMumbleBot:
         self.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
         utils.mute(self.mumble)
         self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message("%s is Online." % utils.get_bot_name())
-        reg_print("\n\nJJMumbleBot is %s\n\n" % self.status())
+        reg_print("\nJJMumbleBot is %s\n" % self.status())
 
     def status(self):
         return self.bot_status
