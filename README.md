@@ -41,7 +41,7 @@ v1.4 implemented a new and upgraded user privilege system that required how user
 v1.5 implemented a way to send commands to the bot, command queues, command tick rates, updated built-in plugins, command aliases, and fixed some major bugs. <br>
 - <b>pre-v1.6</b> - A legacy branch for pre-v1.6. <br>
 v1.6 implemented a restructured plugin system, updated aliases, and reconfigurable user privileges for all built-in commands. <br>
-- <b>pre-v1.7</b> - A legacy branch for pre-v1.6. <br>
+- <b>pre-v1.7</b> - A legacy branch for pre-v1.7. <br>
 v1.7 implemented a reworked youtube plugin which removed the need to download videos before streaming them. It also introduced a command history.<br>
 
 #### Need a very specific version of the legacy branches? <br>Check out the full list of tags here : <a href="https://github.com/DuckBoss/JJMumbleBot/tags">Release Tags</a>
