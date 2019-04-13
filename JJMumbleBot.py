@@ -91,7 +91,7 @@ class JJMumbleBot:
         auto_reconnect = GM.cfg.getboolean('Connection_Settings', 'AutoReconnect', fallback=False)
         GM.logger.info("Retrieved server information from application configs.")
         # Set main logic loop tick rate.
-        self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
+        self.tick_rate = float(GM.cfg['Main_Settings']['CommandTickRate'])
         # Set multi-command limit.
         self.multi_cmd_limit = int(GM.cfg['Main_Settings']['MultiCommandLimit'])
         # Set the command token.
