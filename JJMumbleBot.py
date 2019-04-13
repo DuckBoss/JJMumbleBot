@@ -11,6 +11,7 @@ from helpers.global_access import GlobalMods as GM
 from helpers.global_access import debug_print, reg_print
 from helpers.queue_handler import QueueHandler
 from helpers.command import Command
+from helpers.cmd_history import CMDQueue
 from bs4 import BeautifulSoup
 import threading
 import copy
@@ -75,6 +76,9 @@ class JJMumbleBot:
         # Initialize command queue.
         cmd_queue_lim = int(GM.cfg['Main_Settings']['CommandQueueLimit'])
         self.command_queue = QueueHandler(cmd_queue_lim)
+        # Initialize command history tracker.
+        cmd_history_lim = int(GM.cfg['Main_Settings']['CommandHistoryLimit'])
+        self.cmd_history = CMDQueue(cmd_history_lim)
         # Run Debug Mode tests.
         if GM.debug_mode:
             self.config_debug()
@@ -104,9 +108,8 @@ class JJMumbleBot:
         # Set mumble codec profile.
         self.mumble.set_codec_profile("audio")
         # Create temporary directories.
-        utils.make_directory(GM.cfg['Media_Directories']['TemporaryMediaDirectory'])
         utils.make_directory(GM.cfg['Media_Directories']['TemporaryImageDirectory'])
-        GM.logger.info("Initialized temporary media directories.")
+        GM.logger.info("Initialized temporary directories.")
         # Setup privileges.
         pv.setup_privileges()
         GM.logger.info("Initialized user privileges.")
@@ -246,6 +249,9 @@ class JJMumbleBot:
             # example input: !version ; !about ; !yt twice ; !p ; !status
             all_commands = [msg.strip() for msg in message.split(';')]
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
+
+            # add to command history
+            cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
                 reg_print("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
@@ -408,6 +414,19 @@ class JJMumbleBot:
                        "%s" % utils.get_about())
             return
 
+        elif command == "history":
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+                return
+            cur_text = "<br><font color='red'>Command History:</font>"
+            for i, item in enumerate(self.cmd_history.queue_storage):
+                cur_text += "<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (i, item)
+                if i % 50 == 0 and i != 0:
+                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                               '%s' % cur_text)
+                    cur_text = ""
+            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                           "%s" % cur_text)
+
     def process_command_queue(self, com):
         command_type = com.command
         command_text = com.text
@@ -420,7 +439,6 @@ class JJMumbleBot:
                    "%s was manually disconnected." % utils.get_bot_name())
         for plugin in self.bot_plugins.values():
             plugin.quit()
-        utils.clear_directory(utils.get_temporary_media_dir())
         utils.clear_directory(utils.get_temporary_img_dir())
         reg_print("Cleared temporary directories.")
         self.exit_flag = True
