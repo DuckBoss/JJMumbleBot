@@ -153,8 +153,8 @@ class JJMumbleBot:
             if p_file == "help":
                 continue
             elif p_file == "bot_commands" or p_file == "uptime":
-                self.bot_plugins[p_file] = __import__('plugins.%s.%s' % (p_file, p_file), fromlist=['*']).Plugin()
-        help_plugin = __import__('plugins.help.help')
+                self.bot_plugins[p_file] = __import__('%s.%s' % (p_file, p_file), fromlist=['*']).Plugin()
+        help_plugin = __import__('help.help')
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
         sys.path.pop(0)
         reg_print("\n######### Plugins Initialized #########\n")
