@@ -6,7 +6,7 @@ import utils
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> %s General Help Commands <font color='red'>#####</font></b><br> \
+    help_data = f"<br><b><font color='red'>#####</font> {utils.get_bot_name()} General Help Commands <font color='red'>#####</font></b><br> \
                 All commands can be run by typing it in the chat or privately messaging JJMumbleBot.<br>\
                 <b>!help</b>: Displays this general help screen.<br>\
                 <b>!bot_help</b>: Displays the bot_commands plugin help screen.<br>\
@@ -14,9 +14,9 @@ class Plugin(PluginBase):
                 <b>!sound_board_help/!sb_help</b>: Displays the sound_board plugin help screen.<br>\
                 <b>!images_help/!img_help</b>: Displays the images plugin help screen.<br>\
                 <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>\
-                <b>!uptime_help</b> Displays the uptime plugin help screen." % utils.get_bot_name()
+                <b>!uptime_help</b> Displays the uptime plugin help screen."
     plugin_prepend_text = "<br><font color='red'>Plugin Version: "
-    plugin_version = "1.6.0"
+    plugin_version = "1.7.1"
     priv_path = "help/help_privileges.csv"
     bot_plugins = {}
 
@@ -33,8 +33,8 @@ class Plugin(PluginBase):
         if command == "help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.get_plugin_version(), self.help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.get_plugin_version()}{self.help()}")
             reg_print("Displayed general help screen in the channel.")
             GM.logger.info("Displayed general help screen in the channel.")
             return
@@ -42,8 +42,8 @@ class Plugin(PluginBase):
         elif command == "bot_help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('bot_commands').get_plugin_version(), self.bot_plugins.get('bot_commands').help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('bot_commands').get_plugin_version()}{self.bot_plugins.get('bot_commands').help()}")
             reg_print("Displayed bot commands plugin help screen in the channel.")
             GM.logger.info("Displayed bot commands plugin help screen in the channel.")
             return
@@ -51,8 +51,8 @@ class Plugin(PluginBase):
         elif command == "sound_board_help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('sound_board').get_plugin_version(), self.bot_plugins.get('sound_board').help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('sound_board').get_plugin_version()}{self.bot_plugins.get('sound_board').help()}")
             reg_print("Displayed sound_board plugin help screen in the channel.")
             GM.logger.info("Displayed sound_board plugin help screen in the channel.")
             return
@@ -60,8 +60,8 @@ class Plugin(PluginBase):
         elif command == "youtube_help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('youtube').get_plugin_version(), self.bot_plugins.get('youtube').help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('youtube').get_plugin_version()}{self.bot_plugins.get('youtube').help()}")
             reg_print("Displayed youtube plugin help screen in the channel.")
             GM.logger.info("Displayed youtube plugin help screen in the channel.")
             return
@@ -69,8 +69,8 @@ class Plugin(PluginBase):
         elif command == "images_help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('images').get_plugin_version(), self.bot_plugins.get('images').help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('images').get_plugin_version()}{self.bot_plugins.get('images').help()}")
             reg_print("Displayed images plugin help screen in the channel.")
             GM.logger.info("Displayed images plugin help screen in the channel.")
             return
@@ -78,8 +78,8 @@ class Plugin(PluginBase):
         elif command == "uptime_help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('uptime').get_plugin_version(), self.bot_plugins.get('uptime').help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('uptime').get_plugin_version()}{self.bot_plugins.get('uptime').help()}")
             reg_print("Displayed uptime plugin help screen in the channel.")
             GM.logger.info("Displayed uptime plugin help screen in the channel.")
             return
@@ -87,8 +87,8 @@ class Plugin(PluginBase):
         elif command == "randomizer_help":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "%s</font>%s%s" % (self.plugin_prepend_text, self.bot_plugins.get('randomizer').get_plugin_version(), self.bot_plugins.get('randomizer').help()))
+            utils.echo(utils.get_my_channel(mumble),
+                       f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('randomizer').get_plugin_version()}{self.bot_plugins.get('randomizer').help()}")
             reg_print("Displayed randomizer plugin help screen in the channel.")
             GM.logger.info("Displayed randomizer plugin help screen in the channel.")
             return

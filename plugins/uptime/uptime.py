@@ -9,7 +9,7 @@ class Plugin(PluginBase):
     help_data = "<br><b><font color='red'>#####</font> Uptime Plugin Help <font color='red'>#####</font></b><br> \
                         All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!uptime</b>: Returns the bot uptime."
-    plugin_version = "1.6.0"
+    plugin_version = "1.7.1"
     priv_path = "uptime/uptime_privileges.csv"
     
     start_seconds = 0
