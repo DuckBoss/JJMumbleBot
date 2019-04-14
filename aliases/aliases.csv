@@ -12,5 +12,6 @@ yt,!youtube
 q,!queue
 p,!play
 rp,!replay
+restart,!reboot
 quit,!exit
 stream,!link
