@@ -23,27 +23,15 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
-## Wiki
+## Documentation
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Quick Start guide: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start</a> <br>
+<b> Legacy Branches: </b> <br>
+<a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions</a>
 
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-## Legacy Branches:
-- <b>pre-v1.3</b> - A legacy branch for pre-v1.3. <br>
-v1.3 implemented a new config system that required reconfiguring the config.ini file if a user was updating to v1.3.
-- <b>pre-v1.4</b> - A legacy branch for pre-v1.4. <br>
-v1.4 implemented a new and upgraded user privilege system that required how user privileges are handled and an update to the plugin template requiring the updating of all plugins.
-- <b>pre-v1.5</b> - A legacy branch for pre-v1.5. <br>
-v1.5 implemented a way to send commands to the bot, command queues, command tick rates, updated built-in plugins, command aliases, and fixed some major bugs. <br>
-- <b>pre-v1.6</b> - A legacy branch for pre-v1.6. <br>
-v1.6 implemented a restructured plugin system, updated aliases, and reconfigurable user privileges for all built-in commands. <br>
-- <b>pre-v1.7</b> - A legacy branch for pre-v1.7. <br>
-v1.7 implemented a reworked youtube plugin which removed the need to download videos before streaming them. It also introduced a command history.<br>
-
-#### Need a very specific version of the legacy branches? <br>Check out the full list of tags here : <a href="https://github.com/DuckBoss/JJMumbleBot/tags">Release Tags</a>
-
-### Got any questions or concerns about this upcoming update? Please post an issue report!
+### Got any questions or concerns? Please post an issue report!
