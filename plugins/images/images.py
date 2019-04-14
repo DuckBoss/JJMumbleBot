@@ -19,7 +19,7 @@ class Plugin(PluginBase):
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "1.6.0"
+    plugin_version = "1.7.1"
     priv_path = "images/images_privileges.csv"
     
     def __init__(self):
@@ -46,9 +46,8 @@ class Plugin(PluginBase):
             # print(formatted_string)
             # print("%d characters" % len(formatted_string))
             reg_print("Posting an image to the mumble channel chat.")
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       '%s' % formatted_string)
-            GM.logger.info("Posted an image to the mumble channel chat from: %s." % message_parse[1])
+            utils.echo(utils.get_my_channel(mumble), formatted_string)
+            GM.logger.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             return
 
         elif command == "img":
@@ -59,8 +58,7 @@ class Plugin(PluginBase):
             img_data = parameter.rsplit('.', 1)
             formatted_string = self.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
             reg_print("Posting an image to the mumble channel chat.")
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       '%s' % formatted_string)
+            utils.echo(utils.get_my_channel(mumble), formatted_string)
             GM.logger.info("Posted an image to the mumble channel chat from local files.")
             return
 
@@ -73,18 +71,16 @@ class Plugin(PluginBase):
             for file_item in os.listdir(utils.get_permanent_media_dir() + "images/"):
                 if file_item.endswith(".jpg"):
                     internal_list.append(
-                        "<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file_item))
+                        f"<br><font color='cyan'>[{file_counter}]:</font> <font color='yellow'>{file_item}</font>")
                     file_counter += 1
 
             cur_text = "<br><font color='red'>Local Image Files</font>"
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                               '%s' % cur_text)
+                    utils.echo(utils.get_my_channel(mumble), cur_text)
                     cur_text = ""
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       '%s' % cur_text)
+            utils.echo(utils.get_my_channel(mumble), cur_text)
             GM.logger.info("Displays a list of all local image files.")
             return
 
@@ -117,11 +113,11 @@ class Plugin(PluginBase):
             encoded.append(quote(mid_raw_base, safe=''))
             i += 1
 
-        return "<img src='data:image/%s;base64,%s' />" % (img_ext, ''.join(encoded))
+        return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
 
     def format_image(self, img_name, img_ext, img_dir):
         # Open image
-        img = Image.open("%s%s.%s" % (img_dir, img_name, img_ext))
+        img = Image.open(f"{img_dir}{img_name}.{img_ext}")
         img.load()
         img_width = img.size[0]
         img_height = img.size[1]
@@ -129,21 +125,21 @@ class Plugin(PluginBase):
         if img_width > 480 or img_height > 270:
             img.thumbnail((480, 270), Image.ANTIALIAS)
         # Save and close image
-        img.save("%s%s.%s" % (img_dir, img_name, img_ext))
+        img.save(f"{img_dir}{img_name}.{img_ext}")
         img.close()
         # Convert image to byte array
-        with open("%s%s.%s" % (img_dir, img_name, img_ext), "rb") as img_read:
+        with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_read:
             img_data = img_read.read()
             img_byte_arr = bytearray(img_data)
         # Keep lowering quality until it fits within the size restrictions.
         img_quality = 100
         while len(img_byte_arr) >= 65536 and img_quality > 0:
             img_byte_arr.clear()
-            with open("%s%s.%s" % (img_dir, img_name, img_ext), "rb") as img_file:
+            with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_file:
                 img_data = img_file.read()
                 img_byte_arr = bytearray(img_data)
-            img = Image.open("%s%s.%s" % (img_dir, img_name, img_ext))
-            img.save("%s%s.%s" % (img_dir, img_name, img_ext), quality=img_quality)
+            img = Image.open(f"{img_dir}{img_name}.{img_ext}")
+            img.save(f"{img_dir}{img_name}.{img_ext}", quality=img_quality)
             img.close()
             img_quality -= 10
         if len(img_byte_arr) < 65536:
@@ -173,23 +169,23 @@ class Plugin(PluginBase):
         s = requests.Session()
         r = s.get(img_url, headers={'User-Agent': 'Mozilla/5.0'})
         if r.status_code == 200:
-            with open("image.%s" % img_ext, 'wb') as f:
+            with open(f"image.{img_ext}", 'wb') as f:
                 r.raw.decode_content = True
                 shutil.copyfileobj(r.raw, f)
-            debug_print("Downloaded image from: %s" % img_url)
+            debug_print(f"Downloaded image from: {img_url}")
         else:
-            debug_print("403 Error! - %s" % img_url)
+            debug_print(f"403 Error! - {img_url}")
 
     def download_image_stream(self, img_url):
         utils.clear_directory(utils.get_temporary_img_dir())
         img_ext = img_url.rsplit('.', 1)[1]
-        with open('%simage.%s' % (utils.get_temporary_img_dir(), img_ext), 'wb') as img_file:
+        with open(f"{utils.get_temporary_img_dir()}image.{img_ext}", 'wb') as img_file:
             resp = requests.get(img_url, stream=True)
             for block in resp.iter_content(1024):
                 if not block:
                     break
                 img_file.write(block)
-        debug_print("Downloaded image from: %s" % img_url)
+        debug_print(f"Downloaded image from: {img_url}")
 
     def plugin_test(self):
         debug_print("Images Plugin self-test callback.")

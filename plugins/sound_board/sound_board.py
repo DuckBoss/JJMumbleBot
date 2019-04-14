@@ -23,7 +23,7 @@ class Plugin(PluginBase):
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track.<br>\
                     <b>!sbdownload 'youtube_url' 'file_name'</b>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>\
                     <b>!sbdelete 'file_name.wav'</b>: Deletes a clip from the sound board storage. Be sure to specify the .wav extension."
-    plugin_version = "1.6.0"
+    plugin_version = "1.7.1"
     priv_path = "sound_board/sound_board_privileges.csv"
     
     exit_flag = False
@@ -53,7 +53,7 @@ class Plugin(PluginBase):
                 return
             if self.audio_thread is not None:
                 self.stop_audio()
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(mumble),
                            "Stopping sound board audio thread...")
                 return
             return
@@ -66,18 +66,16 @@ class Plugin(PluginBase):
 
             for file_item in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
                 if file_item.endswith(".wav"):
-                    internal_list.append("<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file_item))
+                    internal_list.append(f"<br><font color='cyan'>[{file_counter}]:</font> <font color='yellow'>{file_item}</font>")
                     file_counter += 1
 
             cur_text = "<br><font color='red'>Local Sound Board Files</font>"
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    utils.msg(mumble, mumble.users[text.actor]['name'],
-                       "%s" % cur_text)
+                    utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
                     cur_text = ""
-            utils.msg(mumble, mumble.users[text.actor]['name'],
-                       "%s" % cur_text)
+            utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
             return
 
         elif command == "sblist_echo":
@@ -88,31 +86,29 @@ class Plugin(PluginBase):
 
             for file_item in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
                 if file_item.endswith(".wav"):
-                    internal_list.append("<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (file_counter, file_item))
+                    internal_list.append(f"<br><font color='cyan'>[{file_counter}]:</font> <font color='yellow'>{file_item}</font>")
                     file_counter += 1
 
             cur_text = "<br><font color='red'>Local Sound Board Files</font>"
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                               '%s' % cur_text)
+                    utils.echo(utils.get_my_channel(mumble), cur_text)
                     cur_text = ""
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       '%s' % cur_text)
+            utils.echo(utils.get_my_channel(mumble), cur_text)
             return
 
         elif command == "sbreplay":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             if self.youtube_plugin.is_playing:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(mumble),
                            "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
                 return
             if self.current_song is not None:
                 self.youtube_plugin.clear_audio_plugin()
 
-                uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
+                uri = f"file:///{utils.get_permanent_media_dir()}/sound_board/{self.current_song}.wav"
                 command = utils.get_vlc_dir()
                 self.clear_audio_thread()
 
@@ -136,7 +132,7 @@ class Plugin(PluginBase):
                     else:
                         time.sleep(0.1)
             else:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(mumble),
                            "There is no sound board track available to replay.")
                 return
             return
@@ -147,20 +143,20 @@ class Plugin(PluginBase):
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Current sound board volume: %s" % self.volume)
+                utils.echo(utils.get_my_channel(mumble),
+                           f"Current sound board volume: {self.volume}")
                 return
             if vol > 1:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(mumble),
                            "Invalid sound_board volume Input: [0-1]")
                 return
             if vol < 0:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(mumble),
                            "Invalid sound_board volume Input: [0-1]")
                 return
             self.volume = vol
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       "Set sound_board volume to %s" % self.volume)
+            utils.echo(utils.get_my_channel(mumble),
+                       f"Set sound_board volume to {self.volume}")
             return
 
         elif command == "sbdownload":
@@ -172,8 +168,8 @@ class Plugin(PluginBase):
             if len(all_messages) >= 3:                
                 if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
                     song_data = self.download_clip(stripped_url, split_msgs[1].strip())
-                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Downloaded sound clip as : %s.wav" % split_msgs[1].strip())
+                    utils.echo(utils.get_my_channel(mumble),
+                           f"Downloaded sound clip as : {split_msgs[1].strip()}.wav")
                     return
                 return
             return
@@ -184,8 +180,8 @@ class Plugin(PluginBase):
             if len(all_messages) == 2:
                 if ".wav" in all_messages[1].strip():
                     utils.remove_file(all_messages[1].strip(), utils.get_permanent_media_dir()+"sound_board/")
-                    utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                           "Deleted sound clip : %s" % all_messages[1].strip())
+                    utils.echo(utils.get_my_channel(mumble),
+                           f"Deleted sound clip : {all_messages[1].strip()}")
 
         elif command == "sb":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
@@ -193,17 +189,17 @@ class Plugin(PluginBase):
             parameter = message_parse[1]
 
             if self.youtube_plugin.clear_audio_plugin() is False:
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(mumble),
                            "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
                 return
 
-            if not os.path.isfile(utils.get_permanent_media_dir()+"sound_board/%s.wav" % parameter):
-                utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+            if not os.path.isfile(utils.get_permanent_media_dir()+f"sound_board/{parameter}.wav"):
+                utils.echo(utils.get_my_channel(mumble),
                            "The sound clip does not exist.")
                 return False
 
-            self.current_song = "%s" % parameter
-            uri = "file:///%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song)
+            self.current_song = parameter
+            uri = f"file:///{utils.get_permanent_media_dir()}/sound_board/{self.current_song}.wav"
             command = utils.get_vlc_dir()
             self.clear_audio_thread()
             mumble.sound_output.clear_buffer()
@@ -222,7 +218,7 @@ class Plugin(PluginBase):
     def download_clip(self, url, name):
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': utils.get_permanent_media_dir()+'sound_board/%s.wav' % name,
+            'outtmpl': utils.get_permanent_media_dir()+f'sound_board/{name}.wav',
             'noplaylist': True,
             'continue_dl': True,
             'postprocessors': [{
@@ -241,7 +237,7 @@ class Plugin(PluginBase):
             return False
 
     def get_cur_audio_length(self):
-        wav_file = wave.open("%s/sound_board/%s.wav" % (utils.get_permanent_media_dir(), self.current_song), 'r')
+        wav_file = wave.open(f"{utils.get_permanent_media_dir()}/sound_board/{elf.current_song}.wav", 'r')
         frames = wav_file.getnframes()
         rate = wav_file.getframerate()
         duration = frames/float(rate)

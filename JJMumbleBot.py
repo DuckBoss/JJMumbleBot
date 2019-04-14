@@ -24,6 +24,8 @@ class JJMumbleBot:
     bot_status = "Offline"
     # Dictionary of registered bot plugins.
     bot_plugins = {}
+    # Command history.
+    cmd_history = None
     # Runtime parameters.
     tick_rate = 0.1
     multi_cmd_limit = 5
@@ -37,7 +39,7 @@ class JJMumbleBot:
         # Initialize application logging.
         logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
 
-        log_file_name = '%s/runtime.log' % GM.cfg['Bot_Directories']['LogDirectory']
+        log_file_name = f"{GM.cfg['Bot_Directories']['LogDirectory']}/runtime.log"
         GM.logger = logging.getLogger("RuntimeLogging")
         GM.logger.setLevel(logging.DEBUG)
    
@@ -88,7 +90,6 @@ class JJMumbleBot:
         server_port = int(GM.cfg['Connection_Settings']['ServerPort'])
         user_id = GM.cfg['Connection_Settings']['UserID']
         user_cert = GM.cfg['Connection_Settings']['UserCertification']
-        auto_reconnect = GM.cfg.getboolean('Connection_Settings', 'AutoReconnect', fallback=False)
         GM.logger.info("Retrieved server information from application configs.")
         # Set main logic loop tick rate.
         self.tick_rate = float(GM.cfg['Main_Settings']['CommandTickRate'])
@@ -102,7 +103,7 @@ class JJMumbleBot:
             self.cmd_token = '!'
         # Initialize mumble client.
         self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
-                                      password=server_pass, reconnect=auto_reconnect)
+                                      password=server_pass)
         # Initialize mumble callbacks.
         self.mumble.callbacks.set_callback("text_received", self.message_received)
         # Set mumble codec profile.
@@ -141,9 +142,9 @@ class JJMumbleBot:
         print("\n-------------------------------------------")
         print("Config Debug:")
         for sect in GM.cfg.sections():
-            print("[%s]" % sect)
+            print(f"[{sect}]")
             for (key, val) in GM.cfg.items(sect):
-                print("%s=%s" % (key, val))
+                print(f"{key}={val}")
         print("-------------------------------------------\n")
 
     # Initializes only safe-mode applicable plugins.
@@ -157,7 +158,7 @@ class JJMumbleBot:
             if p_file == "help":
                 continue
             elif p_file == "bot_commands" or p_file == "uptime":
-                self.bot_plugins[p_file] = __import__('%s.%s' % (p_file, p_file), fromlist=['*']).Plugin()
+                self.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         help_plugin = __import__('help.help')
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
         sys.path.pop(0)
@@ -172,7 +173,7 @@ class JJMumbleBot:
         for p_file in all_imports:
             if p_file == "youtube" or p_file == "help":
                 continue
-            self.bot_plugins[p_file] = __import__('%s.%s' % (p_file, p_file), fromlist=['*']).Plugin()
+            self.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         # Import the help and youtube plugins separately.
         help_plugin = __import__('help.help')
         youtube_plugin = __import__('youtube.youtube')
@@ -206,8 +207,8 @@ class JJMumbleBot:
     # Refreshes all active plugins by quitting out of them completely and restarting them.
     def refresh_plugins(self):
         reg_print("Refreshing all plugins...")
-        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                   "%s is refreshing all plugins." % utils.get_bot_name())
+        utils.echo(utils.get_my_channel(self.mumble),
+                   f"{utils.get_bot_name()} is refreshing all plugins.")
         for plugin in self.bot_plugins.values():
             plugin.quit()
         self.bot_plugins.clear()
@@ -217,8 +218,8 @@ class JJMumbleBot:
             self.initialize_plugins()
         pv.setup_privileges()
         reg_print("All plugins refreshed.")
-        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                   "%s has refreshed all plugins." % utils.get_bot_name())
+        utils.echo(utils.get_my_channel(self.mumble),
+                   f"{utils.get_bot_name()} has refreshed all plugins.")
         GM.logger.info("JJ Mumble Bot has refreshed all plugins.")
 
     def join_server(self):
@@ -226,12 +227,12 @@ class JJMumbleBot:
         self.mumble.is_ready()
         self.bot_status = "Online"
         self.mumble.users.myself.comment(
-            "This is %s [%s].<br>%s<br>" % (utils.get_bot_name(), utils.get_version(), utils.get_known_bugs()))
+            f"This is {utils.get_bot_name()} [{utils.get_version()}].<br>{utils.get_known_bugs()}<br>")
         self.mumble.set_bandwidth(192000)
         self.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
         utils.mute(self.mumble)
-        self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message("%s is Online." % utils.get_bot_name())
-        reg_print("\nJJMumbleBot is %s\n" % self.status())
+        self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message(f"{utils.get_bot_name()} is Online.")
+        reg_print(f"\nJJMumbleBot is {self.status()}\n")
 
     def status(self):
         return self.bot_status
@@ -240,14 +241,14 @@ class JJMumbleBot:
         message = text.message.strip()
         user = self.mumble.users[text.actor]
         if "<img" in message:
-            reg_print("Message Received: [%s -> Image Data]" % user['name'])
+            reg_print(f"Message Received: [{user['name']} -> Image Data]")
         elif "<a href=" in message:
-            reg_print("Message Received: [%s -> Hyperlink Data]" % user['name'])
+            reg_print(f"Message Received: [{user['name']} -> Hyperlink Data]")
         else:
-            reg_print("Message Received: [%s -> %s]" % (user['name'], message))
+            reg_print(f"Message Received: [{user['name']} -> {message}]")
 
         if message[0] == self.cmd_token:
-            GM.logger.info("Commands Received: [%s -> %s]" % (user['name'], message))
+            GM.logger.info(f"Commands Received: [{user['name']} -> {message}]")
             self.live_plugin_check()
 
             # example input: !version ; !about ; !yt twice ; !p ; !status
@@ -258,8 +259,8 @@ class JJMumbleBot:
             cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
-                reg_print("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
-                GM.logger.warning("The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                reg_print(f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                GM.logger.warning(f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
                 return
 
             # Iterate through all commands provided and generate commands.
@@ -273,16 +274,16 @@ class JJMumbleBot:
                     alias_commands = [msg.strip() for msg in aliases.aliases[new_command.command].split('|')]
                     if len(alias_commands) > self.multi_cmd_limit:
                         reg_print(
-                            "The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                            f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
                         GM.logger.warning(
-                            "The multi-command limit was reached! The multi-command limit is %d commands per line." % self.multi_cmd_limit)
+                            f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
                         return
                     for x, sub_item in enumerate(alias_commands):
                         sub_text = copy.deepcopy(text)
                         if len(item[1:].split()) > 1:
-                            sub_text.message = "%s %s" % (sub_item, item[1:].split(' ', 1)[1])
+                            sub_text.message = f"{sub_item} %{item[1:].split(' ', 1)[1]}"
                         else:
-                            sub_text.message = "%s" % (sub_item)
+                            sub_text.message = sub_item
                         sub_command = Command(sub_item[1:].split()[0], sub_text)
                         self.command_queue.insert(sub_command)
                 else:
@@ -295,7 +296,6 @@ class JJMumbleBot:
                 cur_cmd = self.command_queue.pop()
                 thr = threading.Thread(target=self.process_command_queue, args=(cur_cmd,))
                 thr.start()
-                # Manually join the youtube thread since it can be overwritten before a play command goes through
                 if cur_cmd.command == "yt" or cur_cmd.command == "youtube":
                     thr.join()
                 # self.process_command_queue(cur_cmd)
@@ -311,14 +311,14 @@ class JJMumbleBot:
 
             if alias_name in aliases.aliases.keys():
                 aliases.set_alias(alias_name, message_parse[2])
-                debug_print("Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           "Registered alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+                debug_print(f"Registered alias: [{alias_name}] - [{message_parse[2]}]")
+                utils.echo(utils.get_my_channel(self.mumble),
+                           f"Registered alias: [{alias_name}] - [{message_parse[2]}]")
             else:
                 aliases.add_to_aliases(alias_name, message_parse[2])
-                debug_print("Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           "Registered new alias: [%s] - [%s]" % (alias_name, message_parse[2]))
+                debug_print(f"Registered new alias: [{alias_name}] - [{message_parse[2]}]")
+                utils.echo(utils.get_my_channel(self.mumble),
+                           f"Registered new alias: [{alias_name}] - [{message_parse[2]}]")
             return
 
         elif command == "aliases":
@@ -326,13 +326,11 @@ class JJMumbleBot:
                 return
             cur_text = "<br><font color='red'>Registered Aliases:</font>"
             for i, alias in enumerate(aliases.aliases):
-                cur_text += "<br><font color='cyan'>[%s]</font><font color='yellow'> - [%s]</font>" % (alias, BeautifulSoup(aliases.aliases[alias], "html.parser").get_text())
+                cur_text += f"<br><font color='cyan'>[{alias}]</font><font color='yellow'> - [{BeautifulSoup(aliases.aliases[alias], 'html.parser').get_text()}]</font>"
                 if i % 50 == 0 and i != 0:
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               '%s' % cur_text)
+                    utils.echo(utils.get_my_channel(self.mumble), cur_text)
                     cur_text = ""
-            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                       '%s' % cur_text)
+            utils.echo(utils.get_my_channel(self.mumble), cur_text)
             return
 
         elif command == "removealias":
@@ -342,25 +340,25 @@ class JJMumbleBot:
             message_parse = message[1:].split(' ', 2)
             alias_name = message_parse[1]
             if aliases.remove_from_aliases(alias_name):
-                debug_print('Removed [%s] from registered aliases.' % alias_name)
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           'Removed [%s] from registered aliases.' % alias_name)
+                debug_print(f'Removed [{alias_name}] from registered aliases.')
+                utils.echo(utils.get_my_channel(self.mumble),
+                           f'Removed [{alias_name}] from registered aliases.')
             else:
-                debug_print('Could not remove [%s] from registered aliases.' % alias_name)
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           'Could not remove [%s] from registered aliases.' % alias_name)
+                debug_print(f'Could not remove [{alias_name}] from registered aliases.')
+                utils.echo(utils.get_my_channel(self.mumble),
+                           f'Could not remove [{alias_name}] from registered aliases.')
             return
 
         elif command == "clearaliases":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
             if aliases.clear_aliases():
-                debug_print('Cleared allr egistered aliases.')
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                debug_print('Cleared all registered aliases.')
+                utils.echo(utils.get_my_channel(self.mumble),
                            'Cleared all registered aliases.')
             else:
                 debug_print('The registered aliases could not be cleared.')
-                utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
+                utils.echo(utils.get_my_channel(self.mumble),
                            'The registered aliases could not be cleared.')
             return
 
@@ -375,7 +373,7 @@ class JJMumbleBot:
                 return
             sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
             self.tick_rate = sleep_time
-            debug_print("Sleeping for %s seconds..." % sleep_time)
+            debug_print(f"Sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
             self.tick_rate = float(GM.cfg['Main_Settings']['TickRate'])
             return
@@ -392,15 +390,15 @@ class JJMumbleBot:
         elif command == "status":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                       "%s is %s." % (utils.get_bot_name(), self.status()))
+            utils.echo(utils.get_my_channel(self.mumble),
+                       f"{utils.get_bot_name()} is {self.status()}.")
             return
 
         elif command == "version":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                       "%s is on version %s" % (utils.get_bot_name(), utils.get_version()))
+            utils.echo(utils.get_my_channel(self.mumble),
+                       f"{utils.get_bot_name()} is on version {utils.get_version()}")
             return
 
         elif command == "system_test":
@@ -414,8 +412,7 @@ class JJMumbleBot:
         elif command == "about":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                       "%s" % utils.get_about())
+            utils.echo(utils.get_my_channel(self.mumble), utils.get_about())
             return
 
         elif command == "history":
@@ -423,13 +420,11 @@ class JJMumbleBot:
                 return
             cur_text = "<br><font color='red'>Command History:</font>"
             for i, item in enumerate(self.cmd_history.queue_storage):
-                cur_text += "<br><font color='cyan'>[%d]:</font> <font color='yellow'>%s</font>" % (i, item)
+                cur_text += f"<br><font color='cyan'>[{i}]:</font> <font color='yellow'>{item}</font>"
                 if i % 50 == 0 and i != 0:
-                    utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                               '%s' % cur_text)
+                    utils.echo(utils.get_my_channel(self.mumble), cur_text)
                     cur_text = ""
-            utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                           "%s" % cur_text)
+            utils.echo(utils.get_my_channel(self.mumble), cur_text)
 
     def process_command_queue(self, com):
         command_type = com.command
@@ -439,8 +434,8 @@ class JJMumbleBot:
             plugin.process_command(self.mumble, command_text)
 
     def exit(self):
-        utils.echo(self.mumble.channels[self.mumble.users.myself['channel_id']],
-                   "%s was manually disconnected." % utils.get_bot_name())
+        utils.echo(utils.get_my_channel(self.mumble),
+                   f"{utils.get_bot_name()} was manually disconnected.")
         for plugin in self.bot_plugins.values():
             plugin.quit()
         utils.clear_directory(utils.get_temporary_img_dir())
