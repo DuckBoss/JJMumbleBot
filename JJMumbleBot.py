@@ -426,6 +426,14 @@ class JJMumbleBot:
                     cur_text = ""
             utils.echo(utils.get_my_channel(self.mumble), cur_text)
 
+        elif command == "reboot":
+            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+                return
+            self.exit()
+            GM.logger.info("JJ Mumble Bot is being rebooted.")
+            os.execv(sys.executable, ['python3'] + sys.argv)
+            return
+
     def process_command_queue(self, com):
         command_type = com.command
         command_text = com.text
