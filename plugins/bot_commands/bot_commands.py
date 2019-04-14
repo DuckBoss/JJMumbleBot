@@ -26,6 +26,7 @@ class Plugin(PluginBase):
             <b>!version</b>: Displays the bot version.<br>\
             <b>!status</b>: Displays the bots current status.<br>\
             <b>!refresh</b>: Refreshes all plugins.<br>\
+            <b>!reboot/!restart</b>: Completely stops the bot and restarts it.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test</b>: Spams 10 test messages in the channel. This is an admin-only command.<br>"
     plugin_version = "1.7.1"
