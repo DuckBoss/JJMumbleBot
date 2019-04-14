@@ -33,7 +33,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,2)
+            result = random.randint(1, 2)
             if result == 1:
                 result = "Heads"
             else:
@@ -45,7 +45,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,4)
+            result = random.randint(1, 4)
             utils.echo(utils.get_my_channel(mumble),
                        f"<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>{result}</font>")
             return
@@ -53,7 +53,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,6)
+            result = random.randint(1, 6)
             utils.echo(utils.get_my_channel(mumble),
                        f"<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>{result}</font>")
             return
@@ -61,7 +61,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,8)
+            result = random.randint(1, 8)
             utils.echo(utils.get_my_channel(mumble),
                        f"<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>{result}</font>")
             return
@@ -69,7 +69,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,10)
+            result = random.randint(1, 10)
             utils.echo(utils.get_my_channel(mumble),
                        f"<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>{result}</font>")
             return
@@ -77,7 +77,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,12)
+            result = random.randint(1, 12)
             utils.echo(utils.get_my_channel(mumble),
                        f"<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>{result}</font>")
             return
@@ -85,7 +85,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-            result = random.randint(1,20)
+            result = random.randint(1, 20)
             utils.echo(utils.get_my_channel(mumble),
                        f"<font color='cyan'>D20 Roll Result:</font> <font color='yellow'>{result}</font>")
             return
@@ -103,7 +103,7 @@ class Plugin(PluginBase):
                 ret_text = "<br><font color='red'>Custom Dice Roll:</font>"
                 for i in range(number_of_dice):
                     random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
-                    result = random.randint(1,number_of_faces)
+                    result = random.randint(1, number_of_faces)
                     ret_text += f"<br><font color='cyan'>[Dice {i}]-</font> <font color='yellow'>Rolled {result}</font>"
                 utils.echo(utils.get_my_channel(mumble),
                     "%s" % ret_text) 
