@@ -373,7 +373,6 @@ class JJMumbleBot:
                 return
             sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
             self.tick_rate = sleep_time
-            debug_print(f"Sleeping for {sleep_time} seconds...")
             time.sleep(sleep_time)
             self.tick_rate = float(GM.cfg['Main_Settings']['CommandTickRate'])
             return
