@@ -281,7 +281,7 @@ class JJMumbleBot:
                     for x, sub_item in enumerate(alias_commands):
                         sub_text = copy.deepcopy(text)
                         if len(item[1:].split()) > 1:
-                            sub_text.message = f"{sub_item} %{item[1:].split(' ', 1)[1]}"
+                            sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
                         else:
                             sub_text.message = sub_item
                         sub_command = Command(sub_item[1:].split()[0], sub_text)
@@ -296,6 +296,7 @@ class JJMumbleBot:
                 cur_cmd = self.command_queue.pop()
                 thr = threading.Thread(target=self.process_command_queue, args=(cur_cmd,))
                 thr.start()
+                # Manually join the youtube plugin since the track-chooser can be overriden
                 if cur_cmd.command == "yt" or cur_cmd.command == "youtube":
                     thr.join()
                 # self.process_command_queue(cur_cmd)
