@@ -13,12 +13,12 @@ class PseudoGUI:
         self.mumble = mumble
         debug_print("Pseudo-GUI initialized.")
 
-    def quick_gui(self, content, text_type="data", text_color='white', text_font='Calibri', text_align="center", bgcolor="black", border="0", box_align="center", row_align="center", channel=None, user=None):
+    def quick_gui(self, content, text_type="data", text_color='white', text_font='Calibri', text_align="center", bgcolor="black", border="0", box_align="center", row_align="center", cellspacing="5", channel=None, user=None):
         if self.box_open:
             return False
         if channel is None:
             channel = utils.get_my_channel(self.mumble)
-        self.open_box(bgcolor=bgcolor, border=border, align=box_align)
+        self.open_box(bgcolor=bgcolor, border=border, align=box_align, cellspacing=cellspacing)
         content = self.make_content(content, text_type=text_type, text_color=text_color, text_font=text_font, text_align=text_align)
         self.append_row(content, align=row_align)
 
@@ -28,10 +28,10 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user)
         self.clear_display()
 
-    def open_box(self, bgcolor="black", border="0", align="center"):
+    def open_box(self, bgcolor="black", border="0", align="center", cellspacing="5"):
         if self.box_open:
             return False
-        self.content = f'<table bgcolor="{bgcolor}" border="{border}" align="{align}" cellpadding="15">'
+        self.content = f'<table bgcolor="{bgcolor}" border="{border}" align="{align}" cellspacing="{cellspacing}">'
         self.box_open = True
         return True
 
