@@ -1,7 +1,7 @@
 import unittest
 import sys
-sys.path.append("..")
 import utils
+sys.path.append("..")
 from helpers.global_access import GlobalMods as GM
 
 
