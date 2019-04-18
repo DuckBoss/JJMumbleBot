@@ -19,11 +19,11 @@ class Tests(unittest.TestCase):
         user_id = GM.cfg['Connection_Settings']['UserID']
         self.assertEqual(user_id, "USERNAME")
         server_pass = GM.cfg['Connection_Settings']['ServerPassword']
-        self.assertEqual(user_id, "PASSWORD")
+        self.assertEqual(server_pass, "PASSWORD")
         server_port = int(GM.cfg['Connection_Settings']['ServerPort'])
-        self.assertEqual(user_id, "PORT_NUMBER")
+        self.assertEqual(server_port, "PORT_NUMBER")
         user_cert = GM.cfg['Connection_Settings']['UserCertification']
-        self.assertEqual(user_id, "CERT_FILE_PATH")
+        self.assertEqual(user_cert, "CERT_FILE_PATH")
         default_channel = GM.cfg['Connection_Settings']['DefaultChannel']
         self.assertEqual(default_channel, "DEFAULT_CHANNEL_NAME")
 
