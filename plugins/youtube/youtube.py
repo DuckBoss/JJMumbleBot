@@ -26,7 +26,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.8.0"
+    plugin_version = "1.8.1"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
@@ -467,10 +467,10 @@ class Plugin(PluginBase):
         return search_results_list
 
     def get_choices(self, all_searches):
-        list_urls = "<font color='red'>Search Results:</font><br>"
+        list_urls = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Search Results:</font><br>"
         for i in range(10):
             completed_url = "https://www.youtube.com" + all_searches[i]['href']
-            list_urls += f"<font color='yellow'>[{i}]:</font> <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
+            list_urls += f"<font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
         return list_urls
 
     def clear_queue(self):

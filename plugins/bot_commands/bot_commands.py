@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             <b>!reboot/!restart</b>: Completely stops the bot and restarts it.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test</b>: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-    plugin_version = "1.8.0"
+    plugin_version = "1.8.1"
     priv_path = "bot_commands/bot_commands_privileges.csv"
 
     def __init__(self):
@@ -123,7 +123,7 @@ class Plugin(PluginBase):
                 return
             # utils.echo(utils.get_my_channel(mumble),
             #            f"{pv.get_all_privileges()}")
-            GM.gui.quick_gui(f"{pv.get_all_privileges()}", text_type='header', box_align='center')
+            GM.gui.quick_gui(f"{pv.get_all_privileges()}", text_type='header', box_align='left', text_align='left')
             return
 
         elif command == "setprivileges":
@@ -179,13 +179,13 @@ class Plugin(PluginBase):
                     # utils.echo(utils.get_my_channel(mumble),
                     #           "<br>User: {parameter} added to the blacklist.<br>Reason: {reason}")
                     GM.gui.quick_gui(f"User: {parameter} added to the blacklist.<br>Reason: {reason}", text_type='header',
-                                     box_align='left')
+                                     box_align='left', text_align='left')
                     GM.logger.info(f"<br>Blacklisted user: {parameter} <br>Reason: {reason}")
             except IndexError:
-                utils.echo(utils.get_my_channel(mumble),
-                           pv.get_blacklist())
+                # utils.echo(utils.get_my_channel(mumble),
+                #           pv.get_blacklist())
                 GM.gui.quick_gui(pv.get_blacklist(), text_type='header',
-                                 box_align='center')
+                                 box_align='left', text_align='left')
             return
 
         elif command == "whitelist":

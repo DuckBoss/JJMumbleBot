@@ -3,6 +3,7 @@ import csv
 import utils
 import logging
 from helpers.global_access import debug_print, reg_print
+from helpers.global_access import GlobalMods as GM
 
 users = {}
 
@@ -17,12 +18,12 @@ class Privileges(Enum):
 
 
 def setup_privileges():
-    with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
+    with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='r') as csvf:
         csvr = csv.DictReader(csvf)
         debug_print("Setting up user privileges...")
         for i, row in enumerate(csvr):
             users[row['user']] = int(row['level'])
-            logging.info("Added [%s-%s] to the user privilege list." % (row['user'], row['level']))
+            logging.info(f"Added [{row['user']}-{row['level']}] to the user privilege list.")
 
 
 def privileges_check(user):
@@ -30,23 +31,23 @@ def privileges_check(user):
         return int(users[user['name']])
 
     priv_path = "privileges/privileges.csv"
-    with open("%s/%s" % (utils.get_main_dir(), priv_path), mode='r') as csvf:
+    with open(f"{utils.get_main_dir()}/{priv_path}", mode='r') as csvf:
         csvr = csv.DictReader(csvf)
         for i, row in enumerate(csvr):
             if row['user'] == user['name']:
                 users[user['name']] = int(row['level'])
                 return int(users[user['name']])
-    with open("%s/%s" % (utils.get_main_dir(), priv_path), mode='a', newline='') as csvf:
+    with open(f"{utils.get_main_dir()}/{priv_path}", mode='a', newline='') as csvf:
         headers = ['user', 'level']
         csvw = csv.DictWriter(csvf, fieldnames=headers)
         csvw.writerow({'user': user['name'], 'level': 1})
         users[user['name']] = 1
-        debug_print("Added [%s-%s] to the user list." % (user['name'], 1))
+        debug_print(f"Added [{user['name']}-{user['level']}] to the user list.")
     return int(users[user['name']])
 
 
 def plugin_privileges_check(command, priv_path):
-    with open("%s/%s" % (utils.get_plugin_dir(), priv_path), mode='r') as csvf:
+    with open(f"{utils.get_plugin_dir()}/{priv_path}", mode='r') as csvf:
         csvr = csv.DictReader(csvf)
         for i, row in enumerate(csvr):
             if row['command'] == command:
@@ -56,38 +57,38 @@ def plugin_privileges_check(command, priv_path):
 
 def plugin_privilege_checker(mumble, text, command, priv_path):
     if not privileges_check(mumble.users[text.actor]) >= plugin_privileges_check(command, priv_path):
-        reg_print("User [%s] does not have the user privileges to use this command: [%s]" % (
-            mumble.users[text.actor]['name'], command))
-        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                   "User [%s] does not have the user privileges to use this command: [%s]" % (
-            mumble.users[text.actor]['name'], command))
+        reg_print(f"User [{mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]")
+        # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+        #           f"User [{mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]")
+        GM.gui.quick_gui(f"User [{mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]", text_type='header', box_align='left')
         return False
     return True
 
 
 def get_all_privileges():
-    priv_text = "<br><font color='red'>All user privileges:</font><br>"
-    with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
+    priv_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>All User Privileges:</font>"
+    with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='r') as csvf:
         csvr = csv.DictReader(csvf)
         for i, row in enumerate(csvr):
-            priv_text += "<font color='cyan'>[%s]: </font><font color='yellow'>%s</font><br>" % (
-            row['user'], row['level'])
+            priv_text += f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{row['user']}]</font> - {row['level']}"
     return priv_text
 
 
 def get_all_active_privileges():
-    priv_text = "<br><font color='red'>All user privileges:</font><br>"
+    priv_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>All User Privileges:</font>"
     for i, user in enumerate(users.keys()):
-        priv_text += "<font color='cyan'>[%s]: </font><font color='yellow'>%s</font><br>" % (row['user'], row['level'])
+        priv_text += f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{row['user']}]</font> - {row['level']}"
     return priv_text
 
 
 def get_blacklist():
-    blklist_txt = "<br><font color='red'>Blacklist:</font><br>"
+    blklist_txt = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Blacklisted Users:</font>"
+    counter = 0
     for i, user in enumerate(users.keys()):
         if users[user] == 0:
-            blklist_txt += "<font color='cyan'>[%d]: </font><font color='yellow'>%s</font><br>" % (i, user)
-    if blklist_txt == "<br><font color='red'>Blacklist:</font><br>":
+            blklist_txt += f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{counter}]</font> - {user}"
+            counter += 1
+    if blklist_txt == f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Blacklisted Users:</font>":
         blklist_txt += "The blacklist is empty!"
     return blklist_txt
 
@@ -96,16 +97,14 @@ def add_to_blacklist(username, sender):
     if username in users.keys():
         if users[username] == 0:
             return False
-        with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
+        with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='r') as csvf:
             csvr = csv.reader(csvf)
             content = list(csvr)
             ind = [(i, j.index(username)) for i, j in enumerate(content) if username in j]
             if int(content[ind[0][0]][1]) >= 4:
                 if privileges_check(sender) == 4:
-                    debug_print("This administrator: [%s] tried to blacklist another administrator: [%s]" % (
-                    sender['name'], username))
-                    logging.warning("This administrator: [%s] tried to blacklist another administrator: [%s]" % (
-                    sender['name'], username))
+                    debug_print(f"This administrator: [{sender['name']}] tried to blacklist another administrator: [{username}]")
+                    logging.warning(f"This administrator: [{sender['name']}] tried to blacklist another administrator: [{username}]")
                     return
             content[ind[0][0]][1] = 0
             users[username] = 0
@@ -116,7 +115,7 @@ def add_to_blacklist(username, sender):
 def remove_from_blacklist(username):
     if username in users.keys():
         if users[username] == 0:
-            with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
+            with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='r') as csvf:
                 csvr = csv.reader(csvf)
                 content = list(csvr)
                 ind = [(i, j.index(username)) for i, j in enumerate(content) if username in j]
@@ -131,23 +130,21 @@ def remove_from_blacklist(username):
 def set_privileges(username, val, sender):
     if username in users.keys():
         if username == sender['name']:
-            debug_print("This user: [%s] tried to modify their own user privileges. Modification denied." % (username))
+            debug_print(f"This user: [{username}] tried to modify their own user privileges. Modification denied.")
             logging.warning(
-                "This user: [%s] tried to modify their own user privileges. Modification denied." % (username))
+                f"This user: [{username}] tried to modify their own user privileges. Modification denied.")
             return
 
-        with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='r') as csvf:
+        with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='r') as csvf:
             csvr = csv.reader(csvf)
             content = list(csvr)
             ind = [(i, j.index(username)) for i, j in enumerate(content) if username in j]
             if int(content[ind[0][0]][1]) >= privileges_check(sender):
                 if privileges_check(sender) == 4:
                     debug_print(
-                        "This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (
-                        sender['name'], username))
+                        f"This administrator: [{sender['name']}] tried to modify privileges for a user with equal/higher privileges: [{username}]")
                     logging.warning(
-                        "This administrator: [%s] tried to modify privileges for a user with equal/higher privileges: [%s]" % (
-                        sender['name'], username))
+                        f"This administrator: [{sender['name']}] tried to modify privileges for a user with equal/higher privileges: [{username}]")
                     return
             content[ind[0][0]][1] = val
             users[username] = val
@@ -157,18 +154,18 @@ def set_privileges(username, val, sender):
 
 
 def add_to_privileges(username, level):
-    with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='a', newline='') as csvf:
+    with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='a', newline='') as csvf:
         headers = ['user', 'level']
         csvw = csv.DictWriter(csvf, fieldnames=headers)
         csvw.writerow({'user': username, 'level': level})
         users[username] = level
-        debug_print("Added [%s-%s] to the user list." % (username, level))
+        debug_print(f"Added [{username}-{level}] to the user list.")
         return True
 
 
 def overwrite_privileges(content):
     try:
-        with open("%s/privileges/privileges.csv" % utils.get_main_dir(), mode='w', newline='') as csvf:
+        with open(f"{utils.get_main_dir()}/privileges/privileges.csv", mode='w', newline='') as csvf:
             csvr = csv.writer(csvf)
             csvr.writerows(content)
             return True

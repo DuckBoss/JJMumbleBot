@@ -355,9 +355,9 @@ class JJMumbleBot:
         elif command == "aliases":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            cur_text = "<font color='red'>Registered Aliases:</font>"
+            cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Registered Aliases:</font>"
             for i, alias in enumerate(aliases.aliases):
-                cur_text += f"<br><font color='cyan'>[{alias}]</font><font color='yellow'> - [{BeautifulSoup(aliases.aliases[alias], 'html.parser').get_text()}]</font>"
+                cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{alias}]</font> - [{BeautifulSoup(aliases.aliases[alias], 'html.parser').get_text()}]"
                 if i % 50 == 0 and i != 0:
                     # utils.echo(utils.get_my_channel(self.mumble), cur_text)
                     GM.gui.quick_gui(
@@ -478,7 +478,7 @@ class JJMumbleBot:
                 return
             # utils.echo(utils.get_my_channel(self.mumble), utils.get_about())
             GM.gui.quick_gui(
-                utils.get_about(),
+                f"{utils.get_about()}<br>{utils.get_bot_name()} is on version {utils.get_version()}",
                 text_type='header',
                 box_align='left')
             return
@@ -486,9 +486,9 @@ class JJMumbleBot:
         elif command == "history":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
                 return
-            cur_text = "<font color='red'>Command History:</font>"
+            cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Command History:</font>"
             for i, item in enumerate(self.cmd_history.queue_storage):
-                cur_text += f"<br><font color='cyan'>[{i}]:</font> <font color='yellow'>{item}</font>"
+                cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{i}]</font> - {item}"
                 if i % 50 == 0 and i != 0:
                     # utils.echo(utils.get_my_channel(self.mumble), cur_text)
                     GM.gui.quick_gui(
