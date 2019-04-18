@@ -65,7 +65,6 @@ class PseudoGUI:
             self.clear_display()
             return
         utils.echo(channel, self.content)
-        print(self.content)
         self.clear_display()
 
     def clear_display(self):
