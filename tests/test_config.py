@@ -20,7 +20,7 @@ class Tests(unittest.TestCase):
         self.assertEqual(user_id, "USERNAME")
         server_pass = GM.cfg['Connection_Settings']['ServerPassword']
         self.assertEqual(server_pass, "PASSWORD")
-        server_port = int(GM.cfg['Connection_Settings']['ServerPort'])
+        server_port = GM.cfg['Connection_Settings']['ServerPort']
         self.assertEqual(server_port, "PORT_NUMBER")
         user_cert = GM.cfg['Connection_Settings']['UserCertification']
         self.assertEqual(user_cert, "CERT_FILE_PATH")
