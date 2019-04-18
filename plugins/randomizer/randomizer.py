@@ -1,5 +1,6 @@
 from templates.plugin_template import PluginBase
 from helpers.global_access import debug_print, reg_print
+from helpers.global_access import GlobalMods as GM
 import utils
 import privileges as pv
 import os
@@ -7,8 +8,7 @@ import random
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> Randomizer General Help Commands <font color='red'>#####</font></b><br> \
-                All commands can be run by typing it in the chat or privately messaging JJMumbleBot.<br>\
+    help_data = "All commands can be run by typing it in the chat or privately messaging JJMumbleBot.<br>\
                 <b>!customroll 'number_of_dice' 'dice_faces'</b>: A custom dice roll with multiple dice and custom face counts.<br>\
                 <b>!coinflip</b>: A coin flip 2-sided roll.<br>\
                 <b>!d4roll</b>: A standard 4-sided dice roll.<br>\
@@ -17,7 +17,7 @@ class Plugin(PluginBase):
                 <b>!d10roll</b>: A standard 10-sided dice roll.<br>\
                 <b>!d12roll</b> A standard 12-sided dice roll.<br>\
                 <b>!d20roll</b> A standard 20-sided dice roll."
-    plugin_version = "1.7.1"
+    plugin_version = "1.8.0"
     priv_path = "randomizer/randomizer_privileges.csv"
 
     def __init__(self):
@@ -38,56 +38,70 @@ class Plugin(PluginBase):
                 result = "Heads"
             else:
                 result = "Tails"
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>Coin Flip Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>Coin Flip Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>Coin Flip Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "d4roll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1, 4)
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>D4 Roll Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "d6roll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1, 6)
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>D6 Roll Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "d8roll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1, 8)
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>D8 Roll Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "d10roll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1, 10)
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>D10 Roll Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "d12roll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1, 12)
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>D12 Roll Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "d20roll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
             result = random.randint(1, 20)
-            utils.echo(utils.get_my_channel(mumble),
-                       f"<font color='cyan'>D20 Roll Result:</font> <font color='yellow'>{result}</font>")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"<font color='cyan'>D20 Roll Result:</font> <font color='yellow'>{result}</font>")
+            GM.gui.quick_gui(f"<font color='cyan'>D20 Roll Result:</font> <font color='yellow'>{result}</font>",
+                             text_type='header', box_align='left')
             return
         elif command == "customroll":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
@@ -96,21 +110,26 @@ class Plugin(PluginBase):
                 all_messages = message[1:].split()
                 number_of_dice = int(all_messages[1])
                 number_of_faces = int(all_messages[2])
-                if(number_of_dice > 20):
-                    utils.echo(utils.get_my_channel(mumble),
-                    "Too many dice! Dice Limit: 20")
+                if number_of_dice > 20:
+                    # utils.echo(utils.get_my_channel(mumble),
+                    # "Too many dice! Dice Limit: 20")
+                    GM.gui.quick_gui("Too many dice! Dice Limit: 20",
+                                     text_type='header', box_align='left')
                     return 
                 ret_text = "<br><font color='red'>Custom Dice Roll:</font>"
                 for i in range(number_of_dice):
                     random.seed(int.from_bytes(os.urandom(8), byteorder="big"))
                     result = random.randint(1, number_of_faces)
                     ret_text += f"<br><font color='cyan'>[Dice {i}]-</font> <font color='yellow'>Rolled {result}</font>"
-                utils.echo(utils.get_my_channel(mumble),
-                    "%s" % ret_text) 
+                # utils.echo(utils.get_my_channel(mumble),
+                #    "%s" % ret_text)
+                GM.gui.quick_gui(ret_text, text_type='header', box_align='left')
                 return
-            except (Exception):
-                utils.echo(utils.get_my_channel(mumble),
-                       "Incorrect paramaters! Format: !customroll 'number_of_dice' 'dice_faces'")
+            except Exception:
+                # utils.echo(utils.get_my_channel(mumble),
+                #       "Incorrect paramaters! Format: !customroll 'number_of_dice' 'dice_faces'")
+                GM.gui.quick_gui("Incorrect paramaters! Format: !customroll 'number_of_dice' 'dice_faces'",
+                                 text_type='header', box_align='left')
                 return
 
     @staticmethod

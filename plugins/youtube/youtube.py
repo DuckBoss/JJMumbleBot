@@ -15,8 +15,7 @@ import warnings
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> Youtube Plugin Help <font color='red'>#####</font></b><br> \
-                        All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
+    help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!youtube/!yt 'search_term'</b>: Searches youtube for a song/video.<br>\
                         <b>!play/!p 'item_number' 'item_count'(optional)</b>: Plays the selected song from youtube.<br>\
                         <b>!link 'youtube_link'</b>: Plays the given youtube link.<br>\
@@ -27,7 +26,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.7.1"
+    plugin_version = "1.8.0"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
@@ -84,11 +83,19 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             if self.current_song_info is not None:
-                utils.echo(utils.get_my_channel(mumble),
-                           f"Now playing: {self.current_song_info['main_title']}")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"Now playing: {self.current_song_info['main_title']}")
+                GM.gui.quick_gui(
+                    f"Now playing: {self.current_song_info['main_title']}",
+                    text_type='header',
+                    box_align='left')
             else:
-                utils.echo(utils.get_my_channel(mumble),
-                           f"{utils.get_bot_name()} is not playing anything right now.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"{utils.get_bot_name()} is not playing anything right now.")
+                GM.gui.quick_gui(
+                    f"{utils.get_bot_name()} is not playing anything right now.",
+                    text_type='header',
+                    box_align='left')
             return
 
         elif command == "next":
@@ -96,11 +103,19 @@ class Plugin(PluginBase):
                 return
             if self.music_thread is not None:
                 if self.queue_instance.is_empty():
-                    utils.echo(utils.get_my_channel(mumble),
-                               "The youtube queue is empty, so I can't go to the next song.")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           "The youtube queue is empty, so I can't go to the next song.")
+                    GM.gui.quick_gui(
+                        "The youtube queue is empty, so I can't go to the next song.",
+                        text_type='header',
+                        box_align='left')
                     return
-                utils.echo(utils.get_my_channel(mumble),
-                           "Going to next available track...")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Going to next available track...")
+                GM.gui.quick_gui(
+                    "Going to next available track...",
+                    text_type='header',
+                    box_align='left')
                 GM.logger.info("The youtube audio queue moved to the next available track.")
                 self.stop_audio()
                 self.audio_loop(mumble)
@@ -111,8 +126,12 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             if self.music_thread is not None:
-                utils.echo(utils.get_my_channel(mumble),
-                           "Stopping youtube audio thread...")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Stopping youtube audio thread...")
+                GM.gui.quick_gui(
+                    "Stopping youtube audio thread...",
+                    text_type='header',
+                    box_align='left')
                 self.queue_instance.clear()
                 self.stop_audio()
                 self.queue_instance = qh.QueueHandler(self.max_queue_size)
@@ -125,8 +144,12 @@ class Plugin(PluginBase):
                 return
             reg_print("Clearing youtube queue.")
             self.clear_queue()
-            utils.echo(utils.get_my_channel(mumble),
-                           "Cleared youtube queue.")
+            # utils.echo(utils.get_my_channel(mumble),
+            #               "Cleared youtube queue.")
+            GM.gui.quick_gui(
+                "Cleared youtube queue.",
+                text_type='header',
+                box_align='left')
             GM.logger.info("The youtube queue was cleared.")
             return
 
@@ -136,12 +159,20 @@ class Plugin(PluginBase):
             try:
                 new_max = int(message[1:].split(' ', 1)[1])
                 self.set_max_track_duration(new_max)
-                utils.echo(utils.get_my_channel(mumble),
-                           f"Set youtube track max duration to {self.max_track_duration}")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"Set youtube track max duration to {self.max_track_duration}")
+                GM.gui.quick_gui(
+                    f"Set youtube track max duration to {self.max_track_duration}",
+                    text_type='header',
+                    box_align='left')
                 GM.logger.info(f"The youtube track max duration was set to {self.max_track_duration}")
             except IndexError:
-                utils.echo(utils.get_my_channel(mumble),
-                           f"Current youtube track max duration: {self.max_track_duration}")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"Current youtube track max duration: {self.max_track_duration}")
+                GM.gui.quick_gui(
+                    f"Current youtube track max duration: {self.max_track_duration}",
+                    text_type='header',
+                    box_align='left')
                 return
 
         elif command == "volume":
@@ -150,21 +181,37 @@ class Plugin(PluginBase):
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
-                utils.echo(utils.get_my_channel(mumble),
-                           f"Current youtube volume: {self.volume}")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"Current youtube volume: {self.volume}")
+                GM.gui.quick_gui(
+                    f"Current youtube volume: {self.volume}",
+                    text_type='header',
+                    box_align='left')
                 return
 
             if vol > 1:
-                utils.echo(utils.get_my_channel(mumble),
-                           "Invalid Volume Input: [0-1]")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Invalid Volume Input: [0-1]")
+                GM.gui.quick_gui(
+                    "Invalid Volume Input: [0-1]",
+                    text_type='header',
+                    box_align='left')
                 return
             if vol < 0:
-                utils.echo(utils.get_my_channel(mumble),
-                           "Invalid Volume Input: [0-1]")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Invalid Volume Input: [0-1]")
+                GM.gui.quick_gui(
+                    "Invalid Volume Input: [0-1]",
+                    text_type='header',
+                    box_align='left')
                 return
             self.volume = vol
-            utils.echo(utils.get_my_channel(mumble),
-                       f"Set volume to {self.volume}")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"Set volume to {self.volume}")
+            GM.gui.quick_gui(
+                f"Set volume to {self.volume}",
+                text_type='header',
+                box_align='left')
             GM.logger.info(f"The youtube audio volume was changed to {self.volume}")
             return
 
@@ -179,8 +226,13 @@ class Plugin(PluginBase):
             self.all_searches = self.get_search_results(search_term)
             search_results = self.get_choices(self.all_searches)
 
-            utils.echo(utils.get_my_channel(mumble),
-                       f"{search_results}\nWhich one would you like to play?")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"{search_results}\nWhich one would you like to play?")
+            GM.gui.quick_gui(
+                f"{search_results}\nWhich one would you like to play?",
+                text_type='header',
+                box_align='left',
+                text_align='left')
             self.can_play = True
             return
 
@@ -189,12 +241,20 @@ class Plugin(PluginBase):
                 return
             queue_results = self.get_queue()
             if queue_results is not None:
-                utils.echo(utils.get_my_channel(mumble),
-                           f"<br>{self.get_queue()}")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"<br>{self.get_queue()}")
+                GM.gui.quick_gui(
+                    f"<br>{self.get_queue()}",
+                    text_type='header',
+                    box_align='left')
                 return
             else:
-                utils.echo(utils.get_my_channel(mumble),
-                           "The youtube queue is empty.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "The youtube queue is empty.")
+                GM.gui.quick_gui(
+                    "The youtube queue is empty.",
+                    text_type='header',
+                    box_align='left')
             return
 
         elif command == "link":
@@ -204,24 +264,40 @@ class Plugin(PluginBase):
                 stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
                 if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
                     if self.queue_instance.is_full():
-                        utils.echo(utils.get_my_channel(mumble),
-                                   "The youtube queue is full!")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #           "The youtube queue is full!")
+                        GM.gui.quick_gui(
+                            "The youtube queue is full!",
+                            text_type='header',
+                            box_align='left')
                         return
                     song_data = self.download_song_name(stripped_url)
                     if song_data is None:
-                        utils.echo(utils.get_my_channel(mumble),
-                           "ERROR: The chosen stream was either too long or a live stream.")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #   "ERROR: The chosen stream was either too long or a live stream.")
+                        GM.gui.quick_gui(
+                            "ERROR: The chosen stream was either too long or a live stream.",
+                            text_type='header',
+                            box_align='left')
                         return
                     song_data['main_id'] = stripped_url
-                    utils.echo(utils.get_my_channel(mumble),
-                                       f"Stream link given: {stripped_url}")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #                   f"Stream link given: {stripped_url}")
+                    GM.gui.quick_gui(
+                        f"Stream link given: {stripped_url}",
+                        text_type='header',
+                        box_align='left')
                     self.sound_board_plugin.clear_audio_thread()
                     self.queue_instance.insert(song_data)
                     self.audio_loop(mumble)
                     return
                 else:
-                    utils.echo(utils.get_my_channel(mumble),
-                               "The given link was not identified as a youtube video link!")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           "The given link was not identified as a youtube video link!")
+                    GM.gui.quick_gui(
+                        "The given link was not identified as a youtube video link!",
+                        text_type='header',
+                        box_align='left')
                     return
 
         elif command == "play":
@@ -230,8 +306,12 @@ class Plugin(PluginBase):
             if self.can_play:
                 # self.stop_audio()
                 if self.queue_instance.is_full():
-                    utils.echo(utils.get_my_channel(mumble),
-                               "The youtube queue is full!")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           "The youtube queue is full!")
+                    GM.gui.quick_gui(
+                        "The youtube queue is full!",
+                        text_type='header',
+                        box_align='left')
                     return
                 self.sound_board_plugin.clear_audio_thread()
 
@@ -239,12 +319,20 @@ class Plugin(PluginBase):
                     song_data = self.download_song_name(
                         "https://www.youtube.com" + self.all_searches[0]['href'])
                     if song_data is None:
-                        utils.echo(utils.get_my_channel(mumble),
-                           f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #   f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes")
+                        GM.gui.quick_gui(
+                            f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes",
+                            text_type='header',
+                            box_align='left')
                         return
                     song_data['main_id'] = "https://www.youtube.com" + self.all_searches[0]['href']
-                    utils.echo(utils.get_my_channel(mumble),
-                               f"Automatically chosen: {self.all_searches[0]['title']}")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           f"Automatically chosen: {self.all_searches[0]['title']}")
+                    GM.gui.quick_gui(
+                        f"Automatically chosen: {self.all_searches[0]['title']}",
+                        text_type='header',
+                        box_align='left')
                     self.can_play = False
                     self.queue_instance.insert(song_data)
                     self.audio_loop(mumble)
@@ -257,12 +345,20 @@ class Plugin(PluginBase):
                                 f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes")
                             return
                         song_data['main_id'] = "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href']
-                        utils.echo(utils.get_my_channel(mumble),
-                                   f"You've chosen: {self.all_searches[int(all_messages[1])]['title']}")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #           f"You've chosen: {self.all_searches[int(all_messages[1])]['title']}")
+                        GM.gui.quick_gui(
+                            f"You've chosen: {self.all_searches[int(all_messages[1])]['title']}",
+                            text_type='header',
+                            box_align='left')
                         self.can_play = False
                     else:
-                        utils.echo(utils.get_my_channel(mumble),
-                               "Invalid choice! Valid Range [0-9]")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #       "Invalid choice! Valid Range [0-9]")
+                        GM.gui.quick_gui(
+                            "Invalid choice! Valid Range [0-9]",
+                            text_type='header',
+                            box_align='left')
                         self.can_play = False
                         return
                     self.queue_instance.insert(song_data)
@@ -272,16 +368,28 @@ class Plugin(PluginBase):
                         song_data = self.download_song_name(
                             "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href'])
                         if song_data is None:
-                            utils.echo(utils.get_my_channel(mumble), 
-                                f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes")
+                            # utils.echo(utils.get_my_channel(mumble),
+                            #    f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes")
+                            GM.gui.quick_gui(
+                                f"The chosen video is too long. The maximum video length is {(self.max_track_duration/60)} minutes",
+                                text_type='header',
+                                box_align='left')
                             return
                         song_data['main_id'] = "https://www.youtube.com" + self.all_searches[int(all_messages[1])]['href']
-                        utils.echo(utils.get_my_channel(mumble),
-                                   f"You've chosen: {self.all_searches[int(all_messages[1])]['title']}")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #           f"You've chosen: {self.all_searches[int(all_messages[1])]['title']}")
+                        GM.gui.quick_gui(
+                            f"You've chosen: {self.all_searches[int(all_messages[1])]['title']}",
+                            text_type='header',
+                            box_align='left')
                         self.can_play = False
                     else:
-                        utils.echo(utils.get_my_channel(mumble),
-                               "Invalid choice! Valid Range [0-9]")
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #       "Invalid choice! Valid Range [0-9]")
+                        GM.gui.quick_gui(
+                            "Invalid choice! Valid Range [0-9]",
+                            text_type='header',
+                            box_align='left')
                         self.can_play = False
                         return
                     count = int(all_messages[2])
@@ -301,8 +409,12 @@ class Plugin(PluginBase):
                     self.stop_audio()
                     self.audio_loop(mumble)
             else:
-                utils.echo(utils.get_my_channel(mumble),
-                           "There is no track available to replay.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "There is no track available to replay.")
+                GM.gui.quick_gui(
+                    "There is no track available to replay.",
+                    text_type='header',
+                    box_align='left')
                 return
             return
 
@@ -355,7 +467,7 @@ class Plugin(PluginBase):
         return search_results_list
 
     def get_choices(self, all_searches):
-        list_urls = "<br>"
+        list_urls = "<font color='red'>Search Results:</font><br>"
         for i in range(10):
             completed_url = "https://www.youtube.com" + all_searches[i]['href']
             list_urls += f"<font color='yellow'>[{i}]:</font> <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
@@ -403,8 +515,12 @@ class Plugin(PluginBase):
 
         self.is_playing = True
         utils.unmute(mumble)
-        utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                   f"Now playing: {self.current_song_info['main_title']}")
+        # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+        #          f"Now playing: {self.current_song_info['main_title']}")
+        GM.gui.quick_gui(
+            f"Now playing: {self.current_song_info['main_title']}",
+            text_type='header',
+            box_align='left')
 
         while not self.exit_flag and mumble.isAlive():
             while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:

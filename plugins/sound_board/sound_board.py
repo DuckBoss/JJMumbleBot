@@ -13,8 +13,7 @@ from bs4 import BeautifulSoup
 
 class Plugin(PluginBase):
 
-    help_data = "<br><b><font color='red'>#####</font> Sound_Board Plugin Help <font color='red'>#####</font></b><br> \
-                    All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
+    help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                     <b>!sb 'file_name'</b>: The file must be in wav format.<br>\
                     <b>!sbv '0..1'</b>: Sets the sound board audio volume.<br>\
                     <b>!sbreplay/!sbr</b>: Replays the last played sound board track.<br>\
@@ -23,7 +22,7 @@ class Plugin(PluginBase):
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track.<br>\
                     <b>!sbdownload 'youtube_url' 'file_name'</b>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>\
                     <b>!sbdelete 'file_name.wav'</b>: Deletes a clip from the sound board storage. Be sure to specify the .wav extension."
-    plugin_version = "1.7.1"
+    plugin_version = "1.8.0"
     priv_path = "sound_board/sound_board_privileges.csv"
     
     exit_flag = False
@@ -53,8 +52,9 @@ class Plugin(PluginBase):
                 return
             if self.audio_thread is not None:
                 self.stop_audio()
-                utils.echo(utils.get_my_channel(mumble),
-                           "Stopping sound board audio thread...")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Stopping sound board audio thread...")
+                GM.gui.quick_gui("Stopping sound board audio thread...", text_type='header', box_align='left')
                 return
             return
 
@@ -69,13 +69,23 @@ class Plugin(PluginBase):
                     internal_list.append(f"<br><font color='cyan'>[{file_counter}]:</font> <font color='yellow'>{file_item}</font>")
                     file_counter += 1
 
-            cur_text = "<br><font color='red'>Local Sound Board Files</font>"
+            cur_text = "<font color='red'>Local Sound Board Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local sound board files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local sound board files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
+                    # utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
-            utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
+            # utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
+            GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
+                             user=mumble.users[text.actor]['name'])
+            GM.logger.info("Displayed a list of all local sound board files.")
             return
 
         elif command == "sblist_echo":
@@ -90,20 +100,30 @@ class Plugin(PluginBase):
                     file_counter += 1
 
             cur_text = "<br><font color='red'>Local Sound Board Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local sound board files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local sound board files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    utils.echo(utils.get_my_channel(mumble), cur_text)
+                    # utils.echo(utils.get_my_channel(mumble), cur_text)
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='center', text_align='left')
                     cur_text = ""
-            utils.echo(utils.get_my_channel(mumble), cur_text)
+            # utils.echo(utils.get_my_channel(mumble), cur_text)
+            GM.gui.quick_gui(cur_text, text_type='header', box_align='center', text_align='left')
+            GM.logger.info("Displayed a list of all local sound board files.")
             return
 
         elif command == "sbreplay":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             if self.youtube_plugin.is_playing:
-                utils.echo(utils.get_my_channel(mumble),
-                           "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
+                GM.gui.quick_gui("The youtube audio plugin is currently live. Use !stop before using the sound board plugin.", text_type='header', box_align='left')
                 return
             if self.current_song is not None:
                 self.youtube_plugin.clear_audio_plugin()
@@ -132,8 +152,9 @@ class Plugin(PluginBase):
                     else:
                         time.sleep(0.1)
             else:
-                utils.echo(utils.get_my_channel(mumble),
-                           "There is no sound board track available to replay.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "There is no sound board track available to replay.")
+                GM.gui.quick_gui("There is no sound board track available to replay.", text_type='header', box_align='left')
                 return
             return
 
@@ -143,20 +164,28 @@ class Plugin(PluginBase):
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
-                utils.echo(utils.get_my_channel(mumble),
-                           f"Current sound board volume: {self.volume}")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           f"Current sound board volume: {self.volume}")
+                GM.gui.quick_gui(f"Current sound board volume: {self.volume}", text_type='header',
+                                 box_align='left')
                 return
             if vol > 1:
-                utils.echo(utils.get_my_channel(mumble),
-                           "Invalid sound_board volume Input: [0-1]")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Invalid sound_board volume Input: [0-1]")
+                GM.gui.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
+                                 box_align='left')
                 return
             if vol < 0:
-                utils.echo(utils.get_my_channel(mumble),
-                           "Invalid sound_board volume Input: [0-1]")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Invalid sound_board volume Input: [0-1]")
+                GM.gui.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
+                                 box_align='left')
                 return
             self.volume = vol
-            utils.echo(utils.get_my_channel(mumble),
-                       f"Set sound_board volume to {self.volume}")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"Set sound_board volume to {self.volume}")
+            GM.gui.quick_gui(f"Set sound_board volume to {self.volume}", text_type='header',
+                             box_align='left')
             return
 
         elif command == "sbdownload":
@@ -168,8 +197,10 @@ class Plugin(PluginBase):
             if len(all_messages) >= 3:                
                 if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
                     song_data = self.download_clip(stripped_url, split_msgs[1].strip())
-                    utils.echo(utils.get_my_channel(mumble),
-                           f"Downloaded sound clip as : {split_msgs[1].strip()}.wav")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #       f"Downloaded sound clip as : {split_msgs[1].strip()}.wav")
+                    GM.gui.quick_gui(f"Downloaded sound clip as : {split_msgs[1].strip()}.wav", text_type='header',
+                                     box_align='left')
                     return
                 return
             return
@@ -180,8 +211,10 @@ class Plugin(PluginBase):
             if len(all_messages) == 2:
                 if ".wav" in all_messages[1].strip():
                     utils.remove_file(all_messages[1].strip(), utils.get_permanent_media_dir()+"sound_board/")
-                    utils.echo(utils.get_my_channel(mumble),
-                           f"Deleted sound clip : {all_messages[1].strip()}")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #       f"Deleted sound clip : {all_messages[1].strip()}")
+                    GM.gui.quick_gui(f"Deleted sound clip : {all_messages[1].strip()}", text_type='header',
+                                     box_align='left')
 
         elif command == "sb":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
@@ -189,13 +222,19 @@ class Plugin(PluginBase):
             parameter = message_parse[1]
 
             if self.youtube_plugin.clear_audio_plugin() is False:
-                utils.echo(utils.get_my_channel(mumble),
-                           "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "The youtube audio plugin is currently live. Use !stop before using the sound board plugin.")
+                GM.gui.quick_gui("The youtube audio plugin is currently live. Use !stop before using the sound board plugin.", text_type='header',
+                                 box_align='left')
                 return
 
             if not os.path.isfile(utils.get_permanent_media_dir()+f"sound_board/{parameter}.wav"):
-                utils.echo(utils.get_my_channel(mumble),
-                           "The sound clip does not exist.")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "The sound clip does not exist.")
+                GM.gui.quick_gui(
+                    "The sound clip does not exist.",
+                    text_type='header',
+                    box_align='left')
                 return False
 
             self.current_song = parameter

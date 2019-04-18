@@ -14,12 +14,11 @@ import shutil
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> Images Plugin Help <font color='red'>#####</font></b><br> \
-                        All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
+    help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "1.7.1"
+    plugin_version = "1.8.0"
     priv_path = "images/images_privileges.csv"
     
     def __init__(self):
@@ -74,14 +73,52 @@ class Plugin(PluginBase):
                         f"<br><font color='cyan'>[{file_counter}]:</font> <font color='yellow'>{file_item}</font>")
                     file_counter += 1
 
-            cur_text = "<br><font color='red'>Local Image Files</font>"
+            cur_text = "<font color='red'>Local Image Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local image files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local image files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    utils.echo(utils.get_my_channel(mumble), cur_text)
+                    # utils.echo(utils.get_my_channel(mumble), cur_text)
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
-            utils.echo(utils.get_my_channel(mumble), cur_text)
-            GM.logger.info("Displays a list of all local image files.")
+            # utils.echo(utils.get_my_channel(mumble), cur_text)
+            GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=mumble.users[text.actor]['name'])
+            GM.logger.info("Displayed a list of all local image files.")
+            return
+
+        elif command == "imglist_echo":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            file_counter = 0
+            internal_list = []
+
+            for file_item in os.listdir(utils.get_permanent_media_dir() + "images/"):
+                if file_item.endswith(".jpg"):
+                    internal_list.append(
+                        f"<br><font color='cyan'>[{file_counter}]:</font> <font color='yellow'>{file_item}</font>")
+                    file_counter += 1
+
+            cur_text = "<font color='red'>Local Image Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local image files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local image files.")
+                return
+
+            for i, item in enumerate(internal_list):
+                cur_text += item
+                if i % 50 == 0 and i != 0:
+                    # utils.echo(utils.get_my_channel(mumble), cur_text)
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                    cur_text = ""
+            # utils.echo(utils.get_my_channel(mumble), cur_text)
+            GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+            GM.logger.info("Displayed a list of all local image files.")
             return
 
     def mid(self, text, begin, length):
@@ -202,5 +239,3 @@ class Plugin(PluginBase):
     def get_priv_path(self):
         return self.priv_path
 
-    def get_priv_path(self):
-        return self.priv_path
