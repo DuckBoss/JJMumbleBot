@@ -5,4 +5,4 @@ install:
 
 # Run Tests
 # Built-in Plugin Tests
-script: python tests/core_tests.py
+script: python tests/test_config.py
