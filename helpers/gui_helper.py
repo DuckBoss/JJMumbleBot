@@ -27,11 +27,16 @@ class GUIHelper:
         txt_color = GUIHelper.color(tc)
         txt_face = GUIHelper.face(tf)
         if tt == 'data':
-            content = f'<td align={ta}>{GUIHelper.font_mod(text, params=[txt_color, txt_face])}</td>'
+            content = f'<td align="{ta}">{GUIHelper.font_mod(text, params=[txt_color, txt_face])}</td>'
             return content
         elif tt == 'header':
-            content = f'<th align={ta}>{GUIHelper.font_mod(text, params=[txt_color, txt_face])}</th>'
+            content = f'<th align="{ta}">{GUIHelper.font_mod(text, params=[txt_color, txt_face])}</th>'
             return content
         return None
+
+    @staticmethod
+    def img_content(text):
+        content = f'<td align="left">{text}</td>'
+        return content
 
 
