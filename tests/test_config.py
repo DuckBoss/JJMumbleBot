@@ -11,7 +11,9 @@ class Tests(unittest.TestCase):
         # Initialize configs.
         GM.cfg.read(f"{utils.get_tests_dir()}/sample_config.ini")
     def test_version(self):
-        self.assertEqual(GM.cfg['Bot_Information']['BotVersion'], "v1.8.2")
+    	GM.cfg.read(f"{utils.get_tests_dir()}/sample_config.ini")
+    	bot_version = GM.cfg['Bot_Information']['BotVersion']
+        self.assertEqual(bot_version, "v1.8.2")
 
 
 if __name__ == '__main__':
