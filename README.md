@@ -15,6 +15,7 @@ A plugin-based python 3 mumble bot with extensive features.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">Full list of built-in plugins</a></b>
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
+- <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
 - <b>Event logging to keep track of bot usage and command history.</b>
 - <b>Multi-Command Input</b> - Input multiple commands in a single line.
 - <b>Command Aliases</b> - Register custom aliases to shorten command calls.
