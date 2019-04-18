@@ -363,13 +363,15 @@ class JJMumbleBot:
                     GM.gui.quick_gui(
                         cur_text,
                         text_type='header',
-                        box_align='left')
+                        box_align='left',
+                        text_align='left')
                     cur_text = ""
             # utils.echo(utils.get_my_channel(self.mumble), cur_text)
             GM.gui.quick_gui(
                 cur_text,
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                text_align='left')
             return
 
         elif command == "removealias":
@@ -492,13 +494,15 @@ class JJMumbleBot:
                     GM.gui.quick_gui(
                         cur_text,
                         text_type='header',
-                        box_align='left')
+                        box_align='left',
+                        text_align='left')
                     cur_text = ""
             # utils.echo(utils.get_my_channel(self.mumble), cur_text)
             GM.gui.quick_gui(
                 cur_text,
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                text_align='left')
 
         elif command == "reboot":
             if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):

@@ -231,7 +231,8 @@ class Plugin(PluginBase):
             GM.gui.quick_gui(
                 f"{search_results}\nWhich one would you like to play?",
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                text_align='left')
             self.can_play = True
             return
 
