@@ -15,7 +15,7 @@ def get_bot_name():
 
 
 def get_tests_dir():
-    return os.path.join(os.path.dirname(__file__), "/templates/sample_config.ini")
+    return os.path.join(os.path.dirname(__file__), "/templates")
 
 
 def parse_message(text):
