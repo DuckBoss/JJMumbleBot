@@ -15,7 +15,6 @@ class Plugin(PluginBase):
                 <b>!images_help/!img_help</b>: Displays the images plugin help screen.<br>\
                 <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>\
                 <b>!uptime_help</b> Displays the uptime plugin help screen.<br>"
-    plugin_prepend_text = "<br><font color='red'>Plugin Version: "
     plugin_version = "1.8.0"
     priv_path = "help/help_privileges.csv"
     bot_plugins = {}

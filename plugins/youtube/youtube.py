@@ -467,10 +467,10 @@ class Plugin(PluginBase):
         return search_results_list
 
     def get_choices(self, all_searches):
-        list_urls = "<font color='red'>Search Results:</font><br>"
+        list_urls = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Search Results:</font><br>"
         for i in range(10):
             completed_url = "https://www.youtube.com" + all_searches[i]['href']
-            list_urls += f"<font color='yellow'>[{i}]:</font> <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
+            list_urls += f"<font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
         return list_urls
 
     def clear_queue(self):

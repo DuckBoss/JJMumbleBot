@@ -123,7 +123,7 @@ class Plugin(PluginBase):
                 return
             # utils.echo(utils.get_my_channel(mumble),
             #            f"{pv.get_all_privileges()}")
-            GM.gui.quick_gui(f"{pv.get_all_privileges()}", text_type='header', box_align='center')
+            GM.gui.quick_gui(f"{pv.get_all_privileges()}", text_type='header', box_align='left', text_align='left')
             return
 
         elif command == "setprivileges":
@@ -179,13 +179,13 @@ class Plugin(PluginBase):
                     # utils.echo(utils.get_my_channel(mumble),
                     #           "<br>User: {parameter} added to the blacklist.<br>Reason: {reason}")
                     GM.gui.quick_gui(f"User: {parameter} added to the blacklist.<br>Reason: {reason}", text_type='header',
-                                     box_align='left')
+                                     box_align='left', text_align='left')
                     GM.logger.info(f"<br>Blacklisted user: {parameter} <br>Reason: {reason}")
             except IndexError:
-                utils.echo(utils.get_my_channel(mumble),
-                           pv.get_blacklist())
+                # utils.echo(utils.get_my_channel(mumble),
+                #           pv.get_blacklist())
                 GM.gui.quick_gui(pv.get_blacklist(), text_type='header',
-                                 box_align='center')
+                                 box_align='left', text_align='left')
             return
 
         elif command == "whitelist":
