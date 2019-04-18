@@ -304,7 +304,8 @@ class Plugin(PluginBase):
             return True
         return False
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Sound_Board Plugin self-test callback.")
 
     def quit(self):

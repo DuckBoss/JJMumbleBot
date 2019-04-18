@@ -563,7 +563,8 @@ class Plugin(PluginBase):
             counter += 1
         return queue_titles
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Youtube Plugin self-test callback.")
 
     def quit(self):

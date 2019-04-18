@@ -226,7 +226,8 @@ class Plugin(PluginBase):
                 img_file.write(block)
         debug_print(f"Downloaded image from: {img_url}")
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Images Plugin self-test callback.")
 
     def quit(self):
