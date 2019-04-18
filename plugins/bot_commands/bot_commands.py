@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             <b>!reboot/!restart</b>: Completely stops the bot and restarts it.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test</b>: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-    plugin_version = "1.8.0"
+    plugin_version = "1.8.1"
     priv_path = "bot_commands/bot_commands_privileges.csv"
 
     def __init__(self):

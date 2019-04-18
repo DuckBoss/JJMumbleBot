@@ -26,7 +26,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.8.0"
+    plugin_version = "1.8.1"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {

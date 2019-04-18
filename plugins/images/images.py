@@ -18,7 +18,7 @@ class Plugin(PluginBase):
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "1.8.0"
+    plugin_version = "1.8.1"
     priv_path = "images/images_privileges.csv"
     
     def __init__(self):

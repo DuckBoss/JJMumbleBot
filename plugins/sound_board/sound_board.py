@@ -22,7 +22,7 @@ class Plugin(PluginBase):
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track.<br>\
                     <b>!sbdownload 'youtube_url' 'file_name'</b>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>\
                     <b>!sbdelete 'file_name.wav'</b>: Deletes a clip from the sound board storage. Be sure to specify the .wav extension."
-    plugin_version = "1.8.0"
+    plugin_version = "1.8.1"
     priv_path = "sound_board/sound_board_privileges.csv"
     
     exit_flag = False
