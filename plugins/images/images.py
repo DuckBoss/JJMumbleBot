@@ -18,7 +18,7 @@ class Plugin(PluginBase):
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "1.8.1"
+    plugin_version = "1.8.2"
     priv_path = "images/images_privileges.csv"
     
     def __init__(self):
@@ -65,13 +65,19 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
+            gather_list = []
             internal_list = []
 
             for file_item in os.listdir(utils.get_permanent_media_dir() + "images/"):
                 if file_item.endswith(".jpg"):
-                    internal_list.append(
-                        f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{file_counter}]</font> - {file_item}")
+                    gather_list.append(
+                        f"{file_item}")
                     file_counter += 1
+
+            gather_list.sort(key=str.lower)
+            for i, item in enumerate(gather_list):
+                internal_list.append(
+                    f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - [{item}]")
 
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Local Image Files:</font>"
             if len(internal_list) == 0:
@@ -96,13 +102,19 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
+            gather_list = []
             internal_list = []
 
             for file_item in os.listdir(utils.get_permanent_media_dir() + "images/"):
                 if file_item.endswith(".jpg"):
-                    internal_list.append(
-                        f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{file_counter}]</font> - {file_item}")
+                    gather_list.append(
+                        f"{file_item}")
                     file_counter += 1
+
+            gather_list.sort(key=str.lower)
+            for i, item in enumerate(gather_list):
+                internal_list.append(
+                    f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - [{item}]")
 
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Local Image Files:</font>"
             if len(internal_list) == 0:
@@ -226,7 +238,8 @@ class Plugin(PluginBase):
                 img_file.write(block)
         debug_print(f"Downloaded image from: {img_url}")
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Images Plugin self-test callback.")
 
     def quit(self):

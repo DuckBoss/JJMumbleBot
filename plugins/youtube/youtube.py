@@ -4,7 +4,6 @@ import utils
 import youtube_dl
 import urllib.request
 from bs4 import BeautifulSoup
-import os
 import subprocess as sp
 import time
 import audioop
@@ -26,7 +25,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.8.1"
+    plugin_version = "1.8.2"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
@@ -37,7 +36,10 @@ class Plugin(PluginBase):
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'wav',
             'preferredquality': '192', }],
-        'logger': GM.logger
+        'logger': GM.logger,
+        'outtmpl': f'{utils.get_temporary_img_dir()}%(id)s.jpg',
+        'skip_download': True,
+        'writethumbnail': True
     }
 
     queue_instance = None
@@ -85,10 +87,15 @@ class Plugin(PluginBase):
             if self.current_song_info is not None:
                 # utils.echo(utils.get_my_channel(mumble),
                 #           f"Now playing: {self.current_song_info['main_title']}")
-                GM.gui.quick_gui(
-                    f"Now playing: {self.current_song_info['main_title']}",
-                    text_type='header',
-                    box_align='left')
+                # formatted_string = self.format_image(f"{self.current_song_info['img_id']}", "jpg", utils.get_temporary_img_dir())
+                #GM.gui.quick_gui(
+                #    f"Now playing: {self.current_song_info['main_title']}",
+                #    text_type='header',
+                #    box_align='left')
+                GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
+                                     f"{utils.get_temporary_img_dir()}",
+                                     f"{self.current_song_info['img_id']}")
+                # utils.echo(utils.get_my_channel(mumble), formatted_string)
             else:
                 # utils.echo(utils.get_my_channel(mumble),
                 #           f"{utils.get_bot_name()} is not playing anything right now.")
@@ -113,7 +120,7 @@ class Plugin(PluginBase):
                 # utils.echo(utils.get_my_channel(mumble),
                 #           "Going to next available track...")
                 GM.gui.quick_gui(
-                    "Going to next available track...",
+                    "Going to next available track.",
                     text_type='header',
                     box_align='left')
                 GM.logger.info("The youtube audio queue moved to the next available track.")
@@ -129,7 +136,7 @@ class Plugin(PluginBase):
                 # utils.echo(utils.get_my_channel(mumble),
                 #           "Stopping youtube audio thread...")
                 GM.gui.quick_gui(
-                    "Stopping youtube audio thread...",
+                    "Stopping youtube audio thread.",
                     text_type='header',
                     box_align='left')
                 self.queue_instance.clear()
@@ -244,9 +251,10 @@ class Plugin(PluginBase):
                 # utils.echo(utils.get_my_channel(mumble),
                 #           f"<br>{self.get_queue()}")
                 GM.gui.quick_gui(
-                    f"<br>{self.get_queue()}",
+                    f"{queue_results}",
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    text_align='left')
                 return
             else:
                 # utils.echo(utils.get_my_channel(mumble),
@@ -420,7 +428,7 @@ class Plugin(PluginBase):
 
     def clear_audio_thread(self):
         if self.music_thread is not None:
-            debug_print("Stopping audio thread...")
+            debug_print("Stopping audio thread.")
             self.music_thread.terminate()
             self.music_thread.kill()
             self.music_thread = None
@@ -440,7 +448,7 @@ class Plugin(PluginBase):
 
     def stop_audio(self):
         if self.music_thread is not None:
-            debug_print("Stopping audio thread...")
+            debug_print("Stopping audio thread.")
             self.music_thread.terminate()
             self.music_thread.kill()
             self.music_thread = None
@@ -479,7 +487,7 @@ class Plugin(PluginBase):
     def download_song_name(self, url):
         with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
             ydl.cache.remove()
-            info_dict = ydl.extract_info(url, download=False)
+            info_dict = ydl.extract_info(url, download=True)
             if info_dict['duration'] >= self.max_track_duration:
                 return None
             if info_dict['duration'] <= 0.1:
@@ -488,6 +496,7 @@ class Plugin(PluginBase):
             prep_struct = {
                     'main_id': info_dict['url'],
                     'main_title': info_dict['title'],
+                    'img_id': info_dict['id']
             }
             return prep_struct
 
@@ -517,10 +526,13 @@ class Plugin(PluginBase):
         utils.unmute(mumble)
         # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
         #          f"Now playing: {self.current_song_info['main_title']}")
-        GM.gui.quick_gui(
-            f"Now playing: {self.current_song_info['main_title']}",
-            text_type='header',
-            box_align='left')
+        # GM.gui.quick_gui(
+        #     f"Now playing: {self.current_song_info['main_title']}",
+        #     text_type='header',
+        #     box_align='left')
+        GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
+                             f"{utils.get_temporary_img_dir()}",
+                             f"{self.current_song_info['img_id']}")
 
         while not self.exit_flag and mumble.isAlive():
             while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:
@@ -543,15 +555,16 @@ class Plugin(PluginBase):
     def get_queue(self):
         if self.queue_instance.size() is 0:
             return None
-        queue_titles = "<font color='red'>Youtube Queue:</font><br>"
+        queue_titles = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Youtube Queue:</font>"
         queue_list = list(self.queue_instance.queue_storage)
         counter = 0
         for i in range(len(queue_list)-1, -1, -1):
-            queue_titles += f"<font color='cyan'>[{counter}]: </font><font color='yellow'>{queue_list[i]['main_title']}</font><br>"
+            queue_titles += f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{counter}]</font> - {queue_list[i]['main_title']}"
             counter += 1
         return queue_titles
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Youtube Plugin self-test callback.")
 
     def quit(self):

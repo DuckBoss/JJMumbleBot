@@ -14,6 +14,14 @@ def get_bot_name():
     return GM.cfg['Connection_Settings']['UserID']
 
 
+def get_tests_dir():
+    return os.path.join(os.path.dirname(__file__), "/tests")
+
+
+def get_templates_dir():
+    return os.path.join(os.path.dirname(__file__), "/templates")
+
+
 def parse_message(text):
     message = text.message.strip()
     return message

@@ -52,7 +52,8 @@ class Plugin(PluginBase):
                 box_align='left')
             return
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Uptime Plugin self-test callback.")
 
     def quit(self):

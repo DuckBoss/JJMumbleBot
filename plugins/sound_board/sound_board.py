@@ -22,7 +22,7 @@ class Plugin(PluginBase):
                     <b>!sbstop/!sbs</b>: Stops the currently playing sound board track.<br>\
                     <b>!sbdownload 'youtube_url' 'file_name'</b>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>\
                     <b>!sbdelete 'file_name.wav'</b>: Deletes a clip from the sound board storage. Be sure to specify the .wav extension."
-    plugin_version = "1.8.1"
+    plugin_version = "1.8.2"
     priv_path = "sound_board/sound_board_privileges.csv"
     
     exit_flag = False
@@ -62,12 +62,17 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
+            gather_list = []
             internal_list = []
-
             for file_item in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
                 if file_item.endswith(".wav"):
-                    internal_list.append(f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{file_counter}]</font> - {file_item}")
+                    gather_list.append(f"{file_item}")
                     file_counter += 1
+
+            gather_list.sort(key=str.lower)
+            for i, item in enumerate(gather_list):
+                internal_list.append(f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - [{item}]")
+
 
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Local Sound Board Files:</font>"
             if len(internal_list) == 0:
@@ -93,12 +98,18 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
+            gather_list = []
             internal_list = []
 
             for file_item in os.listdir(utils.get_permanent_media_dir()+"sound_board/"):
                 if file_item.endswith(".wav"):
-                    internal_list.append(f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{file_counter}]</font> - {file_item}")
+                    gather_list.append(f"{file_item}")
                     file_counter += 1
+
+            gather_list.sort(key=str.lower)
+            for i, item in enumerate(gather_list):
+                internal_list.append(
+                    f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - [{item}]")
 
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Local Sound Board Files:</font>"
             if len(internal_list) == 0:
@@ -304,7 +315,8 @@ class Plugin(PluginBase):
             return True
         return False
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Sound_Board Plugin self-test callback.")
 
     def quit(self):
