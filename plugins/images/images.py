@@ -76,7 +76,7 @@ class Plugin(PluginBase):
             cur_text = "<font color='red'>Local Image Files</font>"
             if len(internal_list) == 0:
                 cur_text += "<br>There are no local image files available."
-                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=mumble.users[text.actor]['name'])
                 GM.logger.info("Displayed a list of all local image files.")
                 return
 
@@ -84,10 +84,10 @@ class Plugin(PluginBase):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
                     # utils.echo(utils.get_my_channel(mumble), cur_text)
-                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=mumble.users[text.actor]['name'])
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
             # utils.echo(utils.get_my_channel(mumble), cur_text)
-            GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=mumble.users[text.actor]['name'])
+            GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
             GM.logger.info("Displayed a list of all local image files.")
             return
 
@@ -114,10 +114,10 @@ class Plugin(PluginBase):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
                     # utils.echo(utils.get_my_channel(mumble), cur_text)
-                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
                     cur_text = ""
             # utils.echo(utils.get_my_channel(mumble), cur_text)
-            GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+            GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
             GM.logger.info("Displayed a list of all local image files.")
             return
 
