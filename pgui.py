@@ -21,10 +21,7 @@ class PseudoGUI:
         self.open_box(bgcolor=bgcolor, border=border, align=box_align, cellspacing=cellspacing)
         content = self.make_content(content, text_type=text_type, text_color=text_color, text_font=text_font, text_align=text_align)
         self.append_row(content, align=row_align)
-
         self.close_box()
-        print(self.content)
-
         self.display_box(channel=channel, user=user)
         self.clear_display()
 
