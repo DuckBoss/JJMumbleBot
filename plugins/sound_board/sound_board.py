@@ -83,7 +83,8 @@ class Plugin(PluginBase):
                     GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
             # utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
-            GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
+            if cur_text != "":
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
                              user=mumble.users[text.actor]['name'])
             GM.logger.info("Displayed a list of all local sound board files.")
             return
@@ -113,7 +114,8 @@ class Plugin(PluginBase):
                     GM.gui.quick_gui(cur_text, text_type='header', box_align='center', text_align='left')
                     cur_text = ""
             # utils.echo(utils.get_my_channel(mumble), cur_text)
-            GM.gui.quick_gui(cur_text, text_type='header', box_align='center', text_align='left')
+            if cur_text != "":
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='center', text_align='left')
             GM.logger.info("Displayed a list of all local sound board files.")
             return
 
