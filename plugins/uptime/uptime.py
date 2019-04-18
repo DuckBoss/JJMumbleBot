@@ -1,15 +1,15 @@
 import time
 from templates.plugin_template import PluginBase
 from helpers.global_access import debug_print, reg_print
+from helpers.global_access import GlobalMods as GM
 import privileges as pv
 import utils
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> Uptime Plugin Help <font color='red'>#####</font></b><br> \
-                        All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
+    help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!uptime</b>: Returns the bot uptime."
-    plugin_version = "1.7.1"
+    plugin_version = "1.8.0"
     priv_path = "uptime/uptime_privileges.csv"
     
     start_seconds = 0
@@ -44,8 +44,12 @@ class Plugin(PluginBase):
         if command == "uptime":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-                       self.check_time())
+            # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
+            #           self.check_time())
+            GM.gui.quick_gui(
+                self.check_time(),
+                text_type='header',
+                box_align='left')
             return
 
     def plugin_test(self):

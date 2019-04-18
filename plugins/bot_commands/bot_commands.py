@@ -6,8 +6,7 @@ from helpers.global_access import debug_print, reg_print
 
 
 class Plugin(PluginBase):
-    help_data = "<br><b><font color='red'>#####</font> Bot_Commands Plugin Help <font color='red'>#####</font></b><br> \
-            All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
+    help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
             <b>!echo 'message/image'</b>: Echoes a message/image in the chat.<br>\
             <b>!log 'message'</b>: Manually logs a message by an administrator.<br>\
             <b>!make 'channel_name'</b>: Creates a channel with the given name.<br>\
@@ -29,7 +28,7 @@ class Plugin(PluginBase):
             <b>!reboot/!restart</b>: Completely stops the bot and restarts it.<br>\
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!spam_test</b>: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-    plugin_version = "1.7.1"
+    plugin_version = "1.8.0"
     priv_path = "bot_commands/bot_commands_privileges.csv"
 
     def __init__(self):
@@ -46,7 +45,7 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             parameter = message_parse[1]
-            utils.echo(utils.get_my_channel(mumble), parameter)
+            GM.gui.quick_gui(parameter, text_type='header', box_align='left')
             GM.logger.info(f"Echo:[{parameter}]")
             return
 
@@ -61,14 +60,16 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             for i in range(10):
-                utils.echo(utils.get_my_channel(mumble), "This is a spam_test message...")
-                GM.logger.info(f"A spam_test was conducted by: {mumble.users[text.actor]['name']}.")
+                # utils.echo(utils.get_my_channel(mumble), "This is a spam_test message...")
+                GM.gui.quick_gui("This is a spam test message...", text_type='header', box_align='left')
+            GM.logger.info(f"A spam_test was conducted by: {mumble.users[text.actor]['name']}.")
             return
 
         elif command == "msg":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.msg(mumble, all_messages[1], message[1:].split(' ', 2)[2])
+            # utils.msg(mumble, all_messages[1], message[1:].split(' ', 2)[2])
+            GM.gui.quick_gui(message[1:].split(' ', 2)[2], text_type='header', box_align='left', user=all_messages[1])
             GM.logger.info(f"Msg:[{all_messages[1]}]->[{message[1:].split(' ', 2)[2]}]")
             return
 
@@ -84,8 +85,9 @@ class Plugin(PluginBase):
                 return
             else:
                 channel_search.move_in()
-                utils.echo(channel_search,
-                           f"{utils.get_bot_name()} was moved by {mumble.users[text.actor]['name']}")
+                # utils.echo(channel_search,
+                #           f"{utils.get_bot_name()} was moved by {mumble.users[text.actor]['name']}")
+                GM.gui.quick_gui(f"{utils.get_bot_name()} was moved by {mumble.users[text.actor]['name']}", text_type='header', box_align='left')
                 GM.logger.info(f"Moved to channel: {channel_name} by {mumble.users[text.actor]['name']}")
             return
 
@@ -108,8 +110,10 @@ class Plugin(PluginBase):
         elif command == "joinme":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(utils.get_my_channel(mumble),
-                       f"Joining user: {mumble.users[text.actor]['name']}")
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"Joining user: {mumble.users[text.actor]['name']}")
+            GM.gui.quick_gui(f"Joining user: {mumble.users[text.actor]['name']}", text_type='header', box_align='left')
+
             mumble.channels[mumble.users[text.actor]['channel_id']].move_in()
             GM.logger.info(f"Joined user: {mumble.users[text.actor]['name']}")
             return
@@ -117,8 +121,9 @@ class Plugin(PluginBase):
         elif command == "privileges":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
-            utils.echo(utils.get_my_channel(mumble),
-                       f"{pv.get_all_privileges()}")
+            # utils.echo(utils.get_my_channel(mumble),
+            #            f"{pv.get_all_privileges()}")
+            GM.gui.quick_gui(f"{pv.get_all_privileges()}", text_type='header', box_align='center')
             return
 
         elif command == "setprivileges":
@@ -129,8 +134,9 @@ class Plugin(PluginBase):
                 level = int(all_messages[2])
                 result = pv.set_privileges(username, level, mumble.users[text.actor])
                 if result:
-                    utils.echo(utils.get_my_channel(mumble),
-                               f"User: {username} privileges have been modified.")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           f"User: {username} privileges have been modified.")
+                    GM.gui.quick_gui(f"User: {username} privileges have been modified.", text_type='header', box_align='left')
                     GM.logger.info(f"Modified user privileges for: {username}")
             except Exception:
                 reg_print("Incorrect format! Format: !setprivileges 'username' 'level'")
@@ -145,13 +151,17 @@ class Plugin(PluginBase):
                 level = int(all_messages[2])
                 result = pv.add_to_privileges(username, level)
                 if result:
-                    utils.echo(utils.get_my_channel(mumble),
-                               f"Added a new user: {username} to the user privileges.")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           f"Added a new user: {username} to the user privileges.")
+                    GM.gui.quick_gui(f"Added a new user: {username} to the user privileges.", text_type='header',
+                                     box_align='left')
                     GM.logger.info(f"Added a new user: {username} to the user privileges.")
             except Exception:
                 reg_print("Incorrect format! Format: !addprivileges 'username' 'level'")
-                utils.echo(utils.get_my_channel(mumble),
-                           "Incorrect format! Format: !addprivileges 'username' 'level'")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Incorrect format! Format: !addprivileges 'username' 'level'")
+                GM.gui.quick_gui("Incorrect format! Format: !addprivileges 'username' 'level'", text_type='header',
+                                 box_align='left')
                 return
             return
 
@@ -166,12 +176,16 @@ class Plugin(PluginBase):
                     reason = message[1:].split(' ', 2)[2]
                 result = pv.add_to_blacklist(parameter, mumble.users[text.actor])
                 if result:
-                    utils.echo(utils.get_my_channel(mumble),
-                               "<br>User: {parameter} added to the blacklist.<br>Reason: {reason}")
-                    GM.logger.info("<br>Blacklisted user: {parameter} <br>Reason: {reason}")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           "<br>User: {parameter} added to the blacklist.<br>Reason: {reason}")
+                    GM.gui.quick_gui(f"User: {parameter} added to the blacklist.<br>Reason: {reason}", text_type='header',
+                                     box_align='left')
+                    GM.logger.info(f"<br>Blacklisted user: {parameter} <br>Reason: {reason}")
             except IndexError:
                 utils.echo(utils.get_my_channel(mumble),
                            pv.get_blacklist())
+                GM.gui.quick_gui(pv.get_blacklist(), text_type='header',
+                                 box_align='center')
             return
 
         elif command == "whitelist":
@@ -181,12 +195,16 @@ class Plugin(PluginBase):
                 parameter = message_parse[1]
                 result = pv.remove_from_blacklist(parameter)
                 if result:
-                    utils.echo(utils.get_my_channel(mumble),
-                               "User: {parameter} removed from the blacklist.")
-                    GM.logger.info("<br>User: {parameter} removed from the blacklist.")
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           "User: {parameter} removed from the blacklist.")
+                    GM.gui.quick_gui(f"User: {parameter} removed from the blacklist.", text_type='header',
+                                     box_align='left')
+                    GM.logger.info(f"<br>User: {parameter} removed from the blacklist.")
             except IndexError:
-                utils.echo(utils.get_my_channel(mumble),
-                           "Command format: !whitelist username")
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Command format: !whitelist username")
+                GM.gui.quick_gui("Command format: !whitelist username", text_type='header',
+                                 box_align='left')
                 return
             return
 

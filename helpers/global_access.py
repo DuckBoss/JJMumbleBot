@@ -3,6 +3,7 @@ import configparser
 
 class GlobalMods:
     cfg = configparser.ConfigParser()
+    gui = None
     logger = None
     muted = True
     debug_mode = False
