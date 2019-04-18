@@ -74,6 +74,12 @@ class Plugin(PluginBase):
                     file_counter += 1
 
             cur_text = "<font color='red'>Local Image Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local image files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local image files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
@@ -98,6 +104,12 @@ class Plugin(PluginBase):
                     file_counter += 1
 
             cur_text = "<font color='red'>Local Image Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local image files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local image files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:

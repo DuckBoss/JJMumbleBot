@@ -70,6 +70,12 @@ class Plugin(PluginBase):
                     file_counter += 1
 
             cur_text = "<font color='red'>Local Sound Board Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local sound board files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local sound board files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
@@ -79,6 +85,7 @@ class Plugin(PluginBase):
             # utils.msg(mumble, mumble.users[text.actor]['name'], cur_text)
             GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
                              user=mumble.users[text.actor]['name'])
+            GM.logger.info("Displayed a list of all local sound board files.")
             return
 
         elif command == "sblist_echo":
@@ -93,6 +100,12 @@ class Plugin(PluginBase):
                     file_counter += 1
 
             cur_text = "<br><font color='red'>Local Sound Board Files</font>"
+            if len(internal_list) == 0:
+                cur_text += "<br>There are no local sound board files available."
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left')
+                GM.logger.info("Displayed a list of all local sound board files.")
+                return
+
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
@@ -101,6 +114,7 @@ class Plugin(PluginBase):
                     cur_text = ""
             # utils.echo(utils.get_my_channel(mumble), cur_text)
             GM.gui.quick_gui(cur_text, text_type='header', box_align='center', text_align='left')
+            GM.logger.info("Displayed a list of all local sound board files.")
             return
 
         elif command == "sbreplay":
