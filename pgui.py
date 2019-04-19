@@ -36,13 +36,13 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user)
         self.clear_display()
 
-    def quick_gui_img(self, directory, img_data, format=False, caption=None, channel=None, user=None, img_size=65536):
+    def quick_gui_img(self, directory, img_data, format=False, caption=None, bgcolor="black", channel=None, user=None, img_size=65536):
         if self.box_open:
             return False
         if channel is None:
             channel = utils.get_my_channel(self.mumble)
 
-        self.open_box(align='left')
+        self.open_box(align='left', bgcolor=bgcolor)
 
         if format:
             formatted_string = IH.format_image(f"{img_data}", "jpg", directory, size_goal=img_size)
