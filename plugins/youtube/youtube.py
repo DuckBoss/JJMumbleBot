@@ -95,6 +95,7 @@ class Plugin(PluginBase):
                 GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
                                      f"{utils.get_temporary_img_dir()}",
                                      f"{self.current_song_info['img_id']}",
+                                     format=True,
                                      img_size=32768)
                 # utils.echo(utils.get_my_channel(mumble), formatted_string)
             else:
@@ -534,6 +535,7 @@ class Plugin(PluginBase):
         GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
                              f"{utils.get_temporary_img_dir()}",
                              f"{self.current_song_info['img_id']}",
+                             format=True,
                              img_size=32768)
 
         while not self.exit_flag and mumble.isAlive():
