@@ -293,12 +293,15 @@ class Plugin(PluginBase):
                     song_data['main_id'] = stripped_url
                     # utils.echo(utils.get_my_channel(mumble),
                     #                   f"Stream link given: {stripped_url}")
-                    GM.gui.quick_gui(
-                        f"Stream link given: {stripped_url}",
-                        text_type='header',
-                        box_align='left')
+                    
                     self.sound_board_plugin.clear_audio_thread()
                     self.queue_instance.insert(song_data)
+                    
+                    GM.gui.quick_gui(
+                        f"Added to queue: {stripped_url}",
+                        text_type='header',
+                        box_align='left')
+
                     self.audio_loop(mumble)
                     return
                 else:
