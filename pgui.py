@@ -36,7 +36,7 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user)
         self.clear_display()
 
-    def quick_gui_img(self, caption, directory, img_name, channel=None, user=None, img_size=65536):
+    def quick_gui_img(self, caption, directory, img_name, include_caption=False, channel=None, user=None, img_size=65536):
         if self.box_open:
             return False
         if channel is None:
@@ -48,8 +48,9 @@ class PseudoGUI:
         content = self.make_content(formatted_string, image=True, text_align='center')
         self.append_row(content)
 
-        caption = self.make_content(caption, text_type="header", text_font='Calibri', image=False)
-        self.append_row(caption)
+        if include_caption:
+            caption = self.make_content(caption, text_type="header", text_font='Calibri', image=False)
+            self.append_row(caption)
 
         self.close_box()
 
