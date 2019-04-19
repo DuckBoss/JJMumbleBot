@@ -92,9 +92,9 @@ class Plugin(PluginBase):
                 #    f"Now playing: {self.current_song_info['main_title']}",
                 #    text_type='header',
                 #    box_align='left')
-                GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
-                                     f"{utils.get_temporary_img_dir()}",
+                GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
                                      f"{self.current_song_info['img_id']}",
+                                     caption=f"Now playing: {self.current_song_info['main_title']}",
                                      format=True,
                                      img_size=32768)
                 # utils.echo(utils.get_my_channel(mumble), formatted_string)
@@ -532,9 +532,9 @@ class Plugin(PluginBase):
         #     f"Now playing: {self.current_song_info['main_title']}",
         #     text_type='header',
         #     box_align='left')
-        GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
-                             f"{utils.get_temporary_img_dir()}",
+        GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
                              f"{self.current_song_info['img_id']}",
+                             caption=f"Now playing: {self.current_song_info['main_title']}",
                              format=True,
                              img_size=32768)
 
