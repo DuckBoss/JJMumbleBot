@@ -49,6 +49,12 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             parameter = message_parse[1]
+            if not os.path.isfile(utils.get_permanent_media_dir()+f"images/{parameter}.jpg"):
+                GM.gui.quick_gui(
+                    "The image does not exist.",
+                    text_type='header',
+                    box_align='left')
+                return False
             # Format image
             img_data = parameter.rsplit('.', 1)
             formatted_string = IH.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
