@@ -41,7 +41,8 @@ class Plugin(PluginBase):
             # print(formatted_string)
             # print("%d characters" % len(formatted_string))
             reg_print("Posting an image to the mumble channel chat.")
-            utils.echo(utils.get_my_channel(mumble), formatted_string)
+            # utils.echo(utils.get_my_channel(mumble), formatted_string)
+            GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}", formatted_string, format=False)
             GM.logger.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             return
 
@@ -59,7 +60,8 @@ class Plugin(PluginBase):
             img_data = parameter.rsplit('.', 1)
             formatted_string = IH.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
             reg_print("Posting an image to the mumble channel chat.")
-            utils.echo(utils.get_my_channel(mumble), formatted_string)
+            # utils.echo(utils.get_my_channel(mumble), formatted_string)
+            GM.gui.quick_gui_img(f"{utils.get_permanent_media_dir()}images/", formatted_string, format=False)
             GM.logger.info("Posted an image to the mumble channel chat from local files.")
             return
 
