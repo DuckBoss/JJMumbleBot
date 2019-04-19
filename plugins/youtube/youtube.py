@@ -25,7 +25,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.8.2"
+    plugin_version = "1.8.3"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
@@ -94,7 +94,8 @@ class Plugin(PluginBase):
                 #    box_align='left')
                 GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
                                      f"{utils.get_temporary_img_dir()}",
-                                     f"{self.current_song_info['img_id']}")
+                                     f"{self.current_song_info['img_id']}",
+                                     img_size=32768)
                 # utils.echo(utils.get_my_channel(mumble), formatted_string)
             else:
                 # utils.echo(utils.get_my_channel(mumble),
@@ -532,7 +533,8 @@ class Plugin(PluginBase):
         #     box_align='left')
         GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
                              f"{utils.get_temporary_img_dir()}",
-                             f"{self.current_song_info['img_id']}")
+                             f"{self.current_song_info['img_id']}",
+                             img_size=32768)
 
         while not self.exit_flag and mumble.isAlive():
             while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:

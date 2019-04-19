@@ -2,11 +2,7 @@ from helpers.gui_helper import GUIHelper
 from helpers.global_access import debug_print, reg_print
 from helpers.global_access import GlobalMods as GM
 import utils
-
-from urllib.parse import quote
-from PIL import Image
-from binascii import b2a_base64
-from bs4 import BeautifulSoup
+import helpers.image_helper as IH
 
 
 class PseudoGUI:
@@ -40,7 +36,7 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user)
         self.clear_display()
 
-    def quick_gui_img(self, caption, dir, img_name, channel=None, user=None):
+    def quick_gui_img(self, caption, directory, img_name, channel=None, user=None, img_size=65536):
         if self.box_open:
             return False
         if channel is None:
@@ -48,7 +44,7 @@ class PseudoGUI:
 
         self.open_box(align='left')
 
-        formatted_string = self.format_image(f"{img_name}", "jpg", dir)
+        formatted_string = IH.format_image(f"{img_name}", "jpg", directory, size_goal=img_size)
         content = self.make_content(formatted_string, image=True, text_align='center')
         self.append_row(content)
 
@@ -116,82 +112,6 @@ class PseudoGUI:
     def clear_display(self):
         self.content = None
 
-    def mid(self, text, begin, length):
-        return text[begin:begin+length]
 
-    def format_image_html(self, img_ext, byte_arr):
-        if img_ext == "jpg":
-            img_ext = "JPEG"
-        elif img_ext == "jpeg":
-            img_ext = "JPEG"
-        elif img_ext == "png":
-            img_ext = "PNG"
 
-        raw_base = self.encode_b64(byte_arr)
-        encoded = []
-        i = 0
-        begin = 0
-        end = 0
-
-        begin = i * 72
-        end = i * 72
-        mid_raw_base = self.mid(raw_base, begin, 72)
-        encoded.append(quote(mid_raw_base, safe=''))
-        i += 1
-        while end < len(raw_base):
-            begin = i * 72
-            end = i * 72
-            mid_raw_base = self.mid(raw_base, begin, 72)
-            encoded.append(quote(mid_raw_base, safe=''))
-            i += 1
-
-        return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
-
-    def format_image(self, img_name, img_ext, img_dir):
-        # Open image
-        img = Image.open(f"{img_dir}{img_name}.{img_ext}")
-        img.load()
-        img_width = img.size[0]
-        img_height = img.size[1]
-        # Scale image down with aspect ratio
-        if img_width > 272 or img_height > 163:
-            img.thumbnail((272, 163), Image.ANTIALIAS)
-        # Save and close image
-        img.save(f"{img_dir}{img_name}.{img_ext}")
-        img.close()
-        # Convert image to byte array
-        with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_read:
-            img_data = img_read.read()
-            img_byte_arr = bytearray(img_data)
-        # Keep lowering quality until it fits within the size restrictions.
-        img_quality = 100
-        while len(img_byte_arr) >= 32768 and img_quality > 0:
-            img_byte_arr.clear()
-            with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_file:
-                img_data = img_file.read()
-                img_byte_arr = bytearray(img_data)
-            img = Image.open(f"{img_dir}{img_name}.{img_ext}")
-            img.save(f"{img_dir}{img_name}.{img_ext}", quality=img_quality)
-            img.close()
-            img_quality -= 10
-        if len(img_byte_arr) < 32768:
-            # return formatted html img string
-            return self.format_image_html(img_ext=img_ext, byte_arr=img_byte_arr)
-        return ""
-
-    def encode_b64(self, byte_arr):
-        encvec = []
-        eol = '\n'
-        max_unencoded = 76 * 3 // 4
-        s = byte_arr
-        for i in range(0, len(s), max_unencoded):
-            # BAW: should encode() inherit b2a_base64()'s dubious behavior in
-            # adding a newline to the encoded string?
-            enc = b2a_base64(s[i:i + max_unencoded]).decode("ascii")
-            if enc.endswith('\n') and eol != '\n':
-                enc = enc[:-1] + eol
-            encvec.append(enc)
-
-        b64_img = ''.join(encvec)
-        return b64_img
 
