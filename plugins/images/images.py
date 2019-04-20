@@ -39,7 +39,10 @@ class Plugin(PluginBase):
             formatted_string = IH.format_image("image", img_ext, utils.get_temporary_img_dir())
             reg_print("Posting an image to the mumble channel chat.")
             # Display image with PGUI system
-            GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}", formatted_string, bgcolor=GM.cfg['Plugin_Settings']['Images_BGColor'], format=False)
+            GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}", formatted_string,
+                bgcolor=GM.cfg['Plugin_Settings']['Images_FrameColor'],
+                cellspacing=GM.cfg['Plugin_Settings']['Images_FrameSize'],
+                format=False)
             GM.logger.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             return
 
@@ -58,7 +61,10 @@ class Plugin(PluginBase):
             formatted_string = IH.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
             reg_print("Posting an image to the mumble channel chat.")
             # Display image with PGUI system
-            GM.gui.quick_gui_img(f"{utils.get_permanent_media_dir()}images/", formatted_string, bgcolor=GM.cfg['Plugin_Settings']['Images_BGColor'], format=False)
+            GM.gui.quick_gui_img(f"{utils.get_permanent_media_dir()}images/", formatted_string,
+                bgcolor=GM.cfg['Plugin_Settings']['Images_FrameColor'],
+                cellspacing=GM.cfg['Plugin_Settings']['Images_FrameSize'],
+                format=False)
             GM.logger.info("Posted an image to the mumble channel chat from local files.")
             return
 
