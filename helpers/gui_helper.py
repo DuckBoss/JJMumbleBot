@@ -23,6 +23,14 @@ class GUIHelper:
         return f'<b>{text}</b>'
 
     @staticmethod
+    def italicize(text):
+        return f'<i>{text}</i>'
+
+    @staticmethod
+    def underline(text):
+        return f'<u>{text}</u>'
+
+    @staticmethod
     def content(text, tt="data", tc='white', tf='Calibri', ta="center"):
         txt_color = GUIHelper.color(tc)
         txt_face = GUIHelper.face(tf)

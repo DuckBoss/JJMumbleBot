@@ -20,3 +20,4 @@ temporary_images/
 privileges.csv
 aliases.csv
 config.ini
+tests/img_test.jpg

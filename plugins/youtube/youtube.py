@@ -25,7 +25,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.8.2"
+    plugin_version = "1.8.3"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
@@ -92,9 +92,11 @@ class Plugin(PluginBase):
                 #    f"Now playing: {self.current_song_info['main_title']}",
                 #    text_type='header',
                 #    box_align='left')
-                GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
-                                     f"{utils.get_temporary_img_dir()}",
-                                     f"{self.current_song_info['img_id']}")
+                GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
+                                     f"{self.current_song_info['img_id']}",
+                                     caption=f"Now playing: {self.current_song_info['main_title']}",
+                                     format=True,
+                                     img_size=32768)
                 # utils.echo(utils.get_my_channel(mumble), formatted_string)
             else:
                 # utils.echo(utils.get_my_channel(mumble),
@@ -291,12 +293,15 @@ class Plugin(PluginBase):
                     song_data['main_id'] = stripped_url
                     # utils.echo(utils.get_my_channel(mumble),
                     #                   f"Stream link given: {stripped_url}")
-                    GM.gui.quick_gui(
-                        f"Stream link given: {stripped_url}",
-                        text_type='header',
-                        box_align='left')
+                    
                     self.sound_board_plugin.clear_audio_thread()
                     self.queue_instance.insert(song_data)
+                    
+                    GM.gui.quick_gui(
+                        f"Added to queue: {stripped_url}",
+                        text_type='header',
+                        box_align='left')
+
                     self.audio_loop(mumble)
                     return
                 else:
@@ -530,9 +535,11 @@ class Plugin(PluginBase):
         #     f"Now playing: {self.current_song_info['main_title']}",
         #     text_type='header',
         #     box_align='left')
-        GM.gui.quick_gui_img(f"Now playing: {self.current_song_info['main_title']}",
-                             f"{utils.get_temporary_img_dir()}",
-                             f"{self.current_song_info['img_id']}")
+        GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
+                             f"{self.current_song_info['img_id']}",
+                             caption=f"Now playing: {self.current_song_info['main_title']}",
+                             format=True,
+                             img_size=32768)
 
         while not self.exit_flag and mumble.isAlive():
             while mumble.sound_output.get_buffer_size() > 0.5 and not self.exit_flag:

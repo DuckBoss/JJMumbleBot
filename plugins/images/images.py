@@ -1,16 +1,12 @@
 from templates.plugin_template import PluginBase
 from helpers.global_access import GlobalMods as GM
 from helpers.global_access import debug_print, reg_print
-import requests
+import helpers.image_helper as IH
 import utils
 import os
 import privileges as pv
-from urllib.parse import quote
 from bs4 import BeautifulSoup
-from PIL import Image
-from binascii import b2a_base64
 import time
-import shutil
 
 
 class Plugin(PluginBase):
@@ -18,7 +14,7 @@ class Plugin(PluginBase):
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "1.8.2"
+    plugin_version = "1.8.3"
     priv_path = "images/images_privileges.csv"
     
     def __init__(self):
@@ -36,16 +32,17 @@ class Plugin(PluginBase):
             img_url = message_parse[1]
             # Download image
             img_url = ''.join(BeautifulSoup(img_url, 'html.parser').findAll(text=True))
-            self.download_image_stream(img_url)
+            IH.download_image_stream(img_url)
             # Format image
             time.sleep(1)
             img_ext = img_url.rsplit('.', 1)[1]
-            formatted_string = self.format_image("image", img_ext, utils.get_temporary_img_dir())
-
-            # print(formatted_string)
-            # print("%d characters" % len(formatted_string))
+            formatted_string = IH.format_image("image", img_ext, utils.get_temporary_img_dir())
             reg_print("Posting an image to the mumble channel chat.")
-            utils.echo(utils.get_my_channel(mumble), formatted_string)
+            # Display image with PGUI system
+            GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}", formatted_string,
+                bgcolor=GM.cfg['Plugin_Settings']['Images_FrameColor'],
+                cellspacing=GM.cfg['Plugin_Settings']['Images_FrameSize'],
+                format=False)
             GM.logger.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             return
 
@@ -53,11 +50,21 @@ class Plugin(PluginBase):
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             parameter = message_parse[1]
+            if not os.path.isfile(utils.get_permanent_media_dir()+f"images/{parameter}.jpg"):
+                GM.gui.quick_gui(
+                    "The image does not exist.",
+                    text_type='header',
+                    box_align='left')
+                return False
             # Format image
             img_data = parameter.rsplit('.', 1)
-            formatted_string = self.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
+            formatted_string = IH.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
             reg_print("Posting an image to the mumble channel chat.")
-            utils.echo(utils.get_my_channel(mumble), formatted_string)
+            # Display image with PGUI system
+            GM.gui.quick_gui_img(f"{utils.get_permanent_media_dir()}images/", formatted_string,
+                bgcolor=GM.cfg['Plugin_Settings']['Images_FrameColor'],
+                cellspacing=GM.cfg['Plugin_Settings']['Images_FrameSize'],
+                format=False)
             GM.logger.info("Posted an image to the mumble channel chat from local files.")
             return
 
@@ -89,10 +96,8 @@ class Plugin(PluginBase):
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    # utils.echo(utils.get_my_channel(mumble), cur_text)
                     GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
-            # utils.echo(utils.get_my_channel(mumble), cur_text)
             if cur_text != "":
                 GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
             GM.logger.info("Displayed a list of all local image files.")
@@ -126,117 +131,12 @@ class Plugin(PluginBase):
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    # utils.echo(utils.get_my_channel(mumble), cur_text)
                     GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
                     cur_text = ""
-            # utils.echo(utils.get_my_channel(mumble), cur_text)
             if cur_text != "":
                 GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
             GM.logger.info("Displayed a list of all local image files.")
             return
-
-    def mid(self, text, begin, length):
-        return text[begin:begin+length]
-
-    def format_image_html(self, img_ext, byte_arr):
-        if img_ext == "jpg":
-            img_ext = "JPEG"
-        elif img_ext == "jpeg":
-            img_ext = "JPEG"
-        elif img_ext == "png":
-            img_ext = "PNG"
-
-        raw_base = self.encode_b64(byte_arr)
-        encoded = []
-        i = 0
-        begin = 0
-        end = 0
-
-        begin = i * 72
-        end = i * 72
-        mid_raw_base = self.mid(raw_base, begin, 72)
-        encoded.append(quote(mid_raw_base, safe=''))
-        i += 1
-        while end < len(raw_base):
-            begin = i * 72
-            end = i * 72
-            mid_raw_base = self.mid(raw_base, begin, 72)
-            encoded.append(quote(mid_raw_base, safe=''))
-            i += 1
-
-        return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
-
-    def format_image(self, img_name, img_ext, img_dir):
-        # Open image
-        img = Image.open(f"{img_dir}{img_name}.{img_ext}")
-        img.load()
-        img_width = img.size[0]
-        img_height = img.size[1]
-        # Scale image down with aspect ratio
-        if img_width > 480 or img_height > 270:
-            img.thumbnail((480, 270), Image.ANTIALIAS)
-        # Save and close image
-        img.save(f"{img_dir}{img_name}.{img_ext}")
-        img.close()
-        # Convert image to byte array
-        with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_read:
-            img_data = img_read.read()
-            img_byte_arr = bytearray(img_data)
-        # Keep lowering quality until it fits within the size restrictions.
-        img_quality = 100
-        while len(img_byte_arr) >= 65536 and img_quality > 0:
-            img_byte_arr.clear()
-            with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_file:
-                img_data = img_file.read()
-                img_byte_arr = bytearray(img_data)
-            img = Image.open(f"{img_dir}{img_name}.{img_ext}")
-            img.save(f"{img_dir}{img_name}.{img_ext}", quality=img_quality)
-            img.close()
-            img_quality -= 10
-        if len(img_byte_arr) < 65536:
-            # return formatted html img string
-            return self.format_image_html(img_ext=img_ext, byte_arr=img_byte_arr)
-        return ""
-
-    def encode_b64(self, byte_arr):
-        encvec = []
-        eol = '\n'
-        max_unencoded = 76 * 3 // 4
-        s = byte_arr
-        for i in range(0, len(s), max_unencoded):
-            # BAW: should encode() inherit b2a_base64()'s dubious behavior in
-            # adding a newline to the encoded string?
-            enc = b2a_base64(s[i:i + max_unencoded]).decode("ascii")
-            if enc.endswith('\n') and eol != '\n':
-                enc = enc[:-1] + eol
-            encvec.append(enc)
-
-        b64_img = ''.join(encvec)
-        return b64_img
-
-    def download_image_requests(self, img_url):
-        utils.clear_directory(utils.get_temporary_img_dir())
-        img_ext = img_url.rsplit('.', 1)[1]
-        s = requests.Session()
-        r = s.get(img_url, headers={'User-Agent': 'Mozilla/5.0'})
-        if r.status_code == 200:
-            with open(f"image.{img_ext}", 'wb') as f:
-                r.raw.decode_content = True
-                shutil.copyfileobj(r.raw, f)
-            debug_print(f"Downloaded image from: {img_url}")
-        else:
-            debug_print(f"403 Error! - {img_url}")
-
-    def download_image_stream(self, img_url):
-        utils.clear_directory(utils.get_temporary_img_dir())
-        img_ext = img_url.rsplit('.', 1)[1]
-        with open(f"{utils.get_temporary_img_dir()}image.{img_ext}", 'wb') as img_file:
-            resp = requests.get(img_url, stream=True)
-            for block in resp.iter_content(1024):
-                if not block:
-                    break
-                img_file.write(block)
-        debug_print(f"Downloaded image from: {img_url}")
 
     @staticmethod
     def plugin_test():
