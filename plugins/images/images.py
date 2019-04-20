@@ -37,12 +37,9 @@ class Plugin(PluginBase):
             time.sleep(1)
             img_ext = img_url.rsplit('.', 1)[1]
             formatted_string = IH.format_image("image", img_ext, utils.get_temporary_img_dir())
-
-            # print(formatted_string)
-            # print("%d characters" % len(formatted_string))
             reg_print("Posting an image to the mumble channel chat.")
-            # utils.echo(utils.get_my_channel(mumble), formatted_string)
-            GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}", formatted_string, format=False)
+
+            GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}", formatted_string, bgcolor=GM.cfg['Plugin_Settings']['Images_BGColor'], format=False)
             GM.logger.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             return
 
@@ -60,8 +57,8 @@ class Plugin(PluginBase):
             img_data = parameter.rsplit('.', 1)
             formatted_string = IH.format_image(img_data[0], "jpg", utils.get_permanent_media_dir()+"images/")
             reg_print("Posting an image to the mumble channel chat.")
-            # utils.echo(utils.get_my_channel(mumble), formatted_string)
-            GM.gui.quick_gui_img(f"{utils.get_permanent_media_dir()}images/", formatted_string, format=False)
+            
+            GM.gui.quick_gui_img(f"{utils.get_permanent_media_dir()}images/", formatted_string, bgcolor=GM.cfg['Plugin_Settings']['Images_BGColor'], format=False)
             GM.logger.info("Posted an image to the mumble channel chat from local files.")
             return
 
@@ -93,10 +90,8 @@ class Plugin(PluginBase):
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    # utils.echo(utils.get_my_channel(mumble), cur_text)
                     GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
-            # utils.echo(utils.get_my_channel(mumble), cur_text)
             if cur_text != "":
                 GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
             GM.logger.info("Displayed a list of all local image files.")
