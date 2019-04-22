@@ -22,10 +22,11 @@ class Plugin(PluginBase):
                         <b>!volume/!v '0..1'</b>: Sets the bot audio volume.<br>\
                         <b>!replay/!rp</b>: Replays the last played audio track.<br>\
                         <b>!next/!skip</b>: Goes to the next song in the queue.<br>\
+                        <b>!skipto 'number'</b>: Skips ahead in the queue by the provided number.<br>\
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "1.8.3"
+    plugin_version = "1.8.4"
     priv_path = "youtube/youtube_privileges.csv"
 
     ydl_opts = {
@@ -52,6 +53,8 @@ class Plugin(PluginBase):
     exit_flag = False
     # default volume
     volume = 0.5
+    # autplay
+    autoplay = True
 
     sound_board_plugin = None
 
@@ -125,6 +128,40 @@ class Plugin(PluginBase):
                     "Going to next available track.",
                     text_type='header',
                     box_align='left')
+                GM.logger.info("The youtube audio queue moved to the next available track.")
+                self.stop_audio()
+                self.audio_loop(mumble)
+                return
+            return
+
+        elif command == "skipto":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            if self.music_thread is not None:
+                if self.queue_instance.is_empty():
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #           "The youtube queue is empty, so I can't go to the next song.")
+                    GM.gui.quick_gui(
+                        "The youtube queue is empty, so I can't go to the next song.",
+                        text_type='header',
+                        box_align='left')
+                    return
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "Going to next available track...")
+                skip_val = int(message[1:].split(' ', 1)[1])
+                if skip_val > self.queue_instance.size()-1:
+                    GM.gui.quick_gui(
+                    f"You can't skip beyond the length of the current queue.",
+                    text_type='header',
+                    box_align='left')
+                    return
+                GM.gui.quick_gui(
+                    f"Skipping to track {skip_val} in the queue",
+                    text_type='header',
+                    box_align='left')
+                for i in range(skip_val):
+                    self.queue_instance.pop()
+
                 GM.logger.info("The youtube audio queue moved to the next available track.")
                 self.stop_audio()
                 self.audio_loop(mumble)
@@ -266,6 +303,48 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
             return
+
+        elif command == "playlist":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            if len(message_parse) == 2:
+                stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
+                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if self.queue_instance.is_full():
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #           "The youtube queue is full!")
+                        GM.gui.quick_gui(
+                            "The youtube queue is full!",
+                            text_type='header',
+                            box_align='left')
+                        return
+                    all_song_data = self.download_playlist(stripped_url)
+                    if all_song_data is None:
+                        # utils.echo(utils.get_my_channel(mumble),
+                        #   "ERROR: The chosen stream was either too long or a live stream.")
+                        return
+                    # utils.echo(utils.get_my_channel(mumble),
+                    #                   f"Stream link given: {stripped_url}")
+                    
+                    self.sound_board_plugin.clear_audio_thread()
+                    for i, song_data in enumerate(all_song_data):
+                        self.queue_instance.insert(song_data)
+                    
+                    GM.gui.quick_gui(
+                        f"Added playlist to queue: {stripped_url}",
+                        text_type='header',
+                        box_align='left')
+
+                    self.audio_loop(mumble)
+                    return
+            else:
+                # utils.echo(utils.get_my_channel(mumble),
+                #           "The given link was not identified as a youtube video link!")
+                GM.gui.quick_gui(
+                    "The given link was not identified as a youtube video link!",
+                    text_type='header',
+                    box_align='left')
+                return
 
         elif command == "link":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
@@ -488,6 +567,88 @@ class Plugin(PluginBase):
 
     def clear_queue(self):
         self.queue_instance.clear()
+        utils.clear_directory(utils.get_temporary_img_dir())
+
+    def download_playlist(self, url):
+        ydl_opts = {
+            'quiet': True,
+            'format': 'bestaudio/best',
+            'noplaylist': False,
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'wav',
+                'preferredquality': '192', }],
+            'logger': GM.logger,
+            'outtmpl': f'{utils.get_temporary_img_dir()}%(id)s.jpg',
+            'skip_download': True,
+            'writethumbnail': True,
+            'ignoreerrors': True
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.cache.remove()
+            playlist_dict_check = ydl.extract_info(url, download=False, process=False)
+            if playlist_dict_check is None:
+                GM.gui.quick_gui(
+                            f"ERROR: This playlist is private. Only unlisted/public playlists can be played.",
+                            text_type='header',
+                            box_align='left')
+                return None
+            if 'entries' in playlist_dict_check:
+                count = 0
+                for entry in playlist_dict_check['entries']:
+                    count += 1
+                # print(f"Playlist length: {count}")
+                if count > int(GM.cfg['Plugin_Settings']['Youtube_MaxPlaylistLength']):
+                    if not GM.cfg.getboolean('Plugin_Settings', 'Youtube_AllowPlaylistMax'):
+                        GM.gui.quick_gui(
+                                f"ERROR: This playlist is longer than the limit set in the config.<br>The current limit is {GM.cfg['Plugin_Settings']['Youtube_MaxPlaylistLength']}.",
+                                text_type='header',
+                                box_align='left')
+                        return None
+        if GM.cfg.getboolean('Plugin_Settings', 'Youtube_AllowPlaylistMax'):
+            ydl_opts = {
+                'quiet': True,
+                'format': 'bestaudio/best',
+                'noplaylist': False,
+                'postprocessors': [{
+                    'key': 'FFmpegExtractAudio',
+                    'preferredcodec': 'wav',
+                    'preferredquality': '192', }],
+                'logger': GM.logger,
+                'outtmpl': f'{utils.get_temporary_img_dir()}%(id)s.jpg',
+                'skip_download': True,
+                'writethumbnail': True,
+                'ignoreerrors': True,
+                'playlistend': int(GM.cfg['Plugin_Settings']['Youtube_MaxPlaylistLength'])
+            }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            GM.gui.quick_gui(
+                                "The playlist is being generated...",
+                                text_type='header',
+                                box_align='left')
+            playlist_dict = ydl.extract_info(url, download=True)
+            all_videos = []
+            if not playlist_dict['entries']:
+                GM.gui.quick_gui(
+                            "ERROR: Unable to get playlist information.",
+                            text_type='header',
+                            box_align='left')
+                return None
+            for video in playlist_dict['entries']:
+                if not video:
+                    debug_print("Unable to get video information...skipping.")
+                    continue
+                if video['duration'] >= self.max_track_duration or video['duration'] <= 0.1:
+                    debug_print("Video length exceeds limit...skipping.")
+                    continue
+
+                prep_struct = {
+                    'main_id': video['url'],
+                    'main_title': video['title'],
+                    'img_id': video['id']
+                }
+                all_videos.append(prep_struct)
+            return all_videos
 
     def download_song_name(self, url):
         with youtube_dl.YoutubeDL(self.ydl_opts) as ydl:
