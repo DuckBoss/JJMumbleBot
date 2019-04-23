@@ -201,7 +201,7 @@ class Plugin(PluginBase):
                 for i in range(skip_val):
                     self.queue_instance.pop()
 
-                GM.logger.info("The youtube audio queue moved to the next available track.")
+                GM.logger.info("The youtube audio queue skipped tracks.")
                 self.stop_audio()
                 self.audio_loop(mumble)
                 return
@@ -751,14 +751,16 @@ class Plugin(PluginBase):
                 if raw_music and self.music_thread and self.is_playing:
                     mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                 else:
-                    while not self.autoplay:
-                        sleep(0.1)
-                    print("Song Complete_0")
-                    return
+                    if not self.autoplay:
+                        time.sleep(0.1)
+                    else:
+                        print("Song Complete_0")
+                        mumble.sound_output.clear_buffer()
+                        return
             else:
                 print("Song Complete_1")
+                mumble.sound_output.clear_buffer()
                 return
-        print("Song Complete_2")
         return
 
     def audio_loop(self, mumble):
