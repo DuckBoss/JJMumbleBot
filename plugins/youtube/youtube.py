@@ -772,7 +772,7 @@ class Plugin(PluginBase):
                 time.sleep(0.01)
             if self.music_thread:
                 raw_music = self.music_thread.stdout.read(480)
-                if raw_music and self.music_thread and self.is_playing:  # raw_music and
+                if raw_music and self.music_thread and self.is_playing:
                     mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                 else:
                     time.sleep(0.1)
