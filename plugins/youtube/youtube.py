@@ -727,7 +727,7 @@ class Plugin(PluginBase):
             self.music_thread = None
 
         if self.music_thread is None:
-            self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--quiet', '--no-repeat', '--sout',
+            self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
                                                            '#transcode{acodec=s16le, channels=2, '
                                                            'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                                            'mux=wav, dst=-}',
@@ -758,9 +758,7 @@ class Plugin(PluginBase):
                         mumble.sound_output.clear_buffer()
                         return
             else:
-                print("Song Complete_1")
-                mumble.sound_output.clear_buffer()
-                return
+                time.sleep(0.1)
         return
 
     def audio_loop(self, mumble):
