@@ -1,5 +1,5 @@
 import collections
-
+from random import shuffle
 
 class QueueHandler:
 
@@ -36,6 +36,12 @@ class QueueHandler:
 
     def is_empty(self):
         if self.queue_size <= 0:
+            return True
+        return False
+
+    def shuffle(self):
+        if not self.is_empty():
+            shuffle(self.queue_storage)
             return True
         return False
 

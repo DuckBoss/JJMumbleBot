@@ -110,6 +110,18 @@ class Plugin(PluginBase):
                     box_align='left')
             return
 
+        elif command == "shuffle":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            if self.music_thread is not None:
+                if not self.queue_instance.is_empty():
+                    self.queue_instance.shuffle()
+                    GM.gui.quick_gui(
+                    "The youtube queue has been shuffled.",
+                    text_type='header',
+                    box_align='left')
+                    return
+
         elif command == "next":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
@@ -331,7 +343,7 @@ class Plugin(PluginBase):
                         self.queue_instance.insert(song_data)
                     
                     GM.gui.quick_gui(
-                        f"Added playlist to queue: {stripped_url}",
+                        f"Playlist generated: {stripped_url}",
                         text_type='header',
                         box_align='left')
 
