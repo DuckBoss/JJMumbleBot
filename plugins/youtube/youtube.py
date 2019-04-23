@@ -24,6 +24,7 @@ class Plugin(PluginBase):
                         <b>!replay/!rp</b>: Replays the last played audio track.<br>\
                         <b>!next/!skip</b>: Goes to the next song in the queue.<br>\
                         <b>!skipto 'number'</b>: Skips ahead in the queue by the provided number.<br>\
+                        <b>!remove 'number'</b>: Removes the track in the queue by the provided number.<br>\
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
@@ -147,6 +148,30 @@ class Plugin(PluginBase):
                 return
             return
 
+        elif command == "remove":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            if self.music_thread is not None:
+                if self.queue_instance.is_empty():
+                    GM.gui.quick_gui(
+                        "The youtube queue is empty, so I can't remove tracks.",
+                        text_type='header',
+                        box_align='left')
+                    return
+                rem_val = int(message[1:].split(' ', 1)[1])
+                if rem_val > self.queue_instance.size()-1 or rem_val < 0:
+                    GM.gui.quick_gui(
+                    f"You can't remove tracks beyond the length of the current queue.",
+                    text_type='header',
+                    box_align='left')
+                    return
+                removed_item = self.queue_instance.remove(rem_val)
+                GM.gui.quick_gui(
+                    f"Removed track: [{rem_val}]-{removed_item['main_title']} from the queue.",
+                    text_type='header',
+                    box_align='left')
+                return
+
         elif command == "skipto":
             if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
@@ -155,7 +180,7 @@ class Plugin(PluginBase):
                     # utils.echo(utils.get_my_channel(mumble),
                     #           "The youtube queue is empty, so I can't go to the next song.")
                     GM.gui.quick_gui(
-                        "The youtube queue is empty, so I can't go to the next song.",
+                        "The youtube queue is empty, so I can't skip tracks.",
                         text_type='header',
                         box_align='left')
                     return
@@ -169,7 +194,7 @@ class Plugin(PluginBase):
                     box_align='left')
                     return
                 GM.gui.quick_gui(
-                    f"Skipping to track {skip_val} in the queue",
+                    f"Skipping to track {skip_val} in the queue.",
                     text_type='header',
                     box_align='left')
                 for i in range(skip_val):
