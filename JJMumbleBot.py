@@ -35,8 +35,6 @@ class JJMumbleBot:
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
-        # Set self in GM.
-        GM.jjmumblebot = self
         # Initialize configs.
         GM.cfg.read(utils.get_config_dir())
         # Initialize application logging.
@@ -520,10 +518,6 @@ class JJMumbleBot:
         self.process_core_commands(command_type, command_text)
         for plugin in self.bot_plugins.values():
             plugin.process_command(self.mumble, command_text)
-
-    def process_remote_command(self, com_text):
-        for plugin in self.bot_plugins.values():
-            plugin.process_command(self.mumble, com_text)
 
     def exit(self):
         # utils.echo(utils.get_my_channel(self.mumble),

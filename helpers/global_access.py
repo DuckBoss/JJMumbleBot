@@ -15,8 +15,6 @@ class GlobalMods:
     safe_mode = False
     verbose_mode = False
     quiet_mode = False
-    # Main Class Access
-    jjmumblebot = None
 
 
 def debug_print(msg):

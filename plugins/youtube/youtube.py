@@ -11,8 +11,7 @@ import helpers.queue_handler as qh
 from helpers.global_access import GlobalMods as GM
 from helpers.global_access import debug_print, reg_print
 import warnings
-import threading
-import helpers.youtube_helper as yh
+
 
 class Plugin(PluginBase):
     help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
@@ -744,23 +743,13 @@ class Plugin(PluginBase):
             self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--quiet', '--no-repeat', '--sout',
                                                            '#transcode{acodec=s16le, channels=2, '
                                                            'samplerate=24000, ab=192, threads=8}:std{access=file, '
-                                                           'mux=wav, dst=-}'],
+                                                           'mux=wav, dst=-}',
+                                                           'vlc://quit'],
                                          stdout=sp.PIPE, bufsize=480)
 
         self.is_playing = True
         utils.unmute(mumble)
 
-        # start a thread to calculate time until next song.
-        self.current_song_info['text_info'] = text
-        thr = threading.Thread(target=yh.next_track, args=(self.current_song_info,))
-        thr.start()
-
-        # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-        #          f"Now playing: {self.current_song_info['main_title']}")
-        # GM.gui.quick_gui(
-        #     f"Now playing: {self.current_song_info['main_title']}",
-        #     text_type='header',
-        #     box_align='left')
         GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
                              f"{self.current_song_info['img_id']}",
                              caption=f"Now playing: {self.current_song_info['main_title']}",
@@ -775,9 +764,9 @@ class Plugin(PluginBase):
                 if raw_music and self.music_thread and self.is_playing:
                     mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                 else:
-                    time.sleep(0.1)
+                    return
             else:
-                time.sleep(0.1)
+                return
         return
 
     def audio_loop(self, mumble, text):
