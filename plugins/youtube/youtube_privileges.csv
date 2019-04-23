@@ -10,3 +10,6 @@ queue,1
 play,2
 replay,2
 link,2
+playlist,3
+skipto,2
+shuffle,2
