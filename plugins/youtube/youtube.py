@@ -55,8 +55,10 @@ class Plugin(PluginBase):
     exit_flag = False
     # default volume
     volume = 0.5
-    # autplay
+    # autoplay
     autoplay = True
+    # text history
+    text = None
 
     sound_board_plugin = None
 
@@ -144,7 +146,19 @@ class Plugin(PluginBase):
                     box_align='left')
                 GM.logger.info("The youtube audio queue moved to the next available track.")
                 self.stop_audio()
-                self.audio_loop(mumble)
+                self.audio_loop(mumble, self.text)
+                return
+            return
+
+        elif command == "snext":
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
+                return
+            if self.music_thread is not None:
+                if self.queue_instance.is_empty():
+                    return
+                GM.logger.info("The youtube audio queue moved to the next available track.")
+                self.stop_audio()
+                self.audio_loop(mumble, self.text)
                 return
             return
 
@@ -202,7 +216,7 @@ class Plugin(PluginBase):
 
                 GM.logger.info("The youtube audio queue moved to the next available track.")
                 self.stop_audio()
-                self.audio_loop(mumble)
+                self.audio_loop(mumble, self.text)
                 return
             return
 
@@ -372,8 +386,8 @@ class Plugin(PluginBase):
                         f"Playlist generated: {stripped_url}",
                         text_type='header',
                         box_align='left')
-
-                    self.audio_loop(mumble)
+                    self.text = text
+                    self.audio_loop(mumble, self.text)
                     return
             else:
                 # utils.echo(utils.get_my_channel(mumble),
@@ -418,8 +432,8 @@ class Plugin(PluginBase):
                         f"Added to queue: {stripped_url}",
                         text_type='header',
                         box_align='left')
-
-                    self.audio_loop(mumble)
+                    self.text = text
+                    self.audio_loop(mumble, self.text)
                     return
                 else:
                     # utils.echo(utils.get_my_channel(mumble),
@@ -465,7 +479,8 @@ class Plugin(PluginBase):
                         box_align='left')
                     self.can_play = False
                     self.queue_instance.insert(song_data)
-                    self.audio_loop(mumble)
+                    self.text = text
+                    self.audio_loop(mumble, self.text)
                 elif len(all_messages) == 2:
                     if 9 >= int(all_messages[1]) >= 0:
                         song_data = self.download_song_name(
@@ -492,7 +507,8 @@ class Plugin(PluginBase):
                         self.can_play = False
                         return
                     self.queue_instance.insert(song_data)
-                    self.audio_loop(mumble)
+                    self.text = text
+                    self.audio_loop(mumble, self.text)
                 elif len(all_messages) == 3:
                     if 9 >= int(all_messages[1]) >= 0:
                         song_data = self.download_song_name(
@@ -525,7 +541,8 @@ class Plugin(PluginBase):
                     count = int(all_messages[2])
                     for i in range(count):
                         self.queue_instance.insert(song_data)
-                    self.audio_loop(mumble)
+                    self.text = text
+                    self.audio_loop(mumble, self.text)
             return
 
         elif command == "replay":
@@ -537,7 +554,8 @@ class Plugin(PluginBase):
                         return
                     self.queue_instance.insert_priority(self.current_song_info)
                     self.stop_audio()
-                    self.audio_loop(mumble)
+                    self.text = text
+                    self.audio_loop(mumble, self.text)
             else:
                 # utils.echo(utils.get_my_channel(mumble),
                 #           "There is no track available to replay.")
@@ -683,7 +701,8 @@ class Plugin(PluginBase):
                 prep_struct = {
                     'main_id': video['url'],
                     'main_title': video['title'],
-                    'img_id': video['id']
+                    'img_id': video['id'],
+                    'main_dur': video['duration']
                 }
                 all_videos.append(prep_struct)
             return all_videos
@@ -700,11 +719,12 @@ class Plugin(PluginBase):
             prep_struct = {
                     'main_id': info_dict['url'],
                     'main_title': info_dict['title'],
-                    'img_id': info_dict['id']
+                    'img_id': info_dict['id'],
+                    'main_dur': info_dict['duration']
             }
             return prep_struct
 
-    def play_audio(self, mumble):
+    def play_audio(self, mumble, text):
         self.current_song_info = self.queue_instance.pop()
         self.current_song = self.current_song_info.get('main_id')
 
@@ -723,17 +743,13 @@ class Plugin(PluginBase):
             self.music_thread = sp.Popen([command, uri] + ['-I', 'dummy', '--quiet', '--no-repeat', '--sout',
                                                            '#transcode{acodec=s16le, channels=2, '
                                                            'samplerate=24000, ab=192, threads=8}:std{access=file, '
-                                                           'mux=wav, dst=-}'],
+                                                           'mux=wav, dst=-}',
+                                                           'vlc://quit'],
                                          stdout=sp.PIPE, bufsize=480)
 
         self.is_playing = True
         utils.unmute(mumble)
-        # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-        #          f"Now playing: {self.current_song_info['main_title']}")
-        # GM.gui.quick_gui(
-        #     f"Now playing: {self.current_song_info['main_title']}",
-        #     text_type='header',
-        #     box_align='left')
+
         GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
                              f"{self.current_song_info['img_id']}",
                              caption=f"Now playing: {self.current_song_info['main_title']}",
@@ -745,18 +761,18 @@ class Plugin(PluginBase):
                 time.sleep(0.01)
             if self.music_thread:
                 raw_music = self.music_thread.stdout.read(480)
-                if raw_music and self.music_thread and self.is_playing:  # raw_music and
+                if raw_music and self.music_thread and self.is_playing:
                     mumble.sound_output.add_sound(audioop.mul(raw_music, 2, self.volume))
                 else:
-                    time.sleep(0.1)
+                    return
             else:
-                time.sleep(0.1)
+                return
         return
 
-    def audio_loop(self, mumble):
+    def audio_loop(self, mumble, text):
         if not self.is_playing:
             while not self.queue_instance.is_empty() and mumble.isAlive():
-                self.play_audio(mumble)
+                self.play_audio(mumble, text)
 
     def get_queue(self):
         if self.queue_instance.size() is 0:
