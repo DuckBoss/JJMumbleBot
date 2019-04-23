@@ -19,6 +19,7 @@ class Plugin(PluginBase):
                         <b>!play/!p 'item_number' 'item_count'(optional)</b>: Plays the selected song from youtube.<br>\
                         <b>!link 'youtube_link'</b>: Plays the given youtube link.<br>\
                         <b>!stop</b>: Stops the currently playing track and clears the queue.<br>\
+                        <b>!shuffle</b>: Shuffles all the tracks in the queue.<br>\
                         <b>!volume/!v '0..1'</b>: Sets the bot audio volume.<br>\
                         <b>!replay/!rp</b>: Replays the last played audio track.<br>\
                         <b>!next/!skip</b>: Goes to the next song in the queue.<br>\
