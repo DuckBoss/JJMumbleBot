@@ -40,7 +40,7 @@ class Tests(unittest.TestCase):
 
     def test_version_youtube(self):
         cur_plugin = self.bot_plugins.get('youtube')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.4")
+        self.assertEqual(cur_plugin.get_plugin_version(), "1.9.0")
 
     def test_version_sound_board(self):
         cur_plugin = self.bot_plugins.get('sound_board')

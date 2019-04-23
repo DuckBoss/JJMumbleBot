@@ -12,7 +12,7 @@ class Tests(unittest.TestCase):
         GM.cfg.read(f"{utils.get_main_dir()}{utils.get_templates_dir()}/sample_config.ini")
     def test_version(self):
         bot_version = GM.cfg['Bot_Information']['BotVersion']
-        self.assertEqual(bot_version, "v1.8.4")
+        self.assertEqual(bot_version, "v1.9.0")
     def test_server_ip(self):
         server_ip = GM.cfg['Connection_Settings']['ServerIP']
         self.assertEqual(server_ip, "SERVER_IP")
