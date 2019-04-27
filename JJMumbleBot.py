@@ -9,7 +9,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from pgui import PseudoGUI
 from helpers.global_access import GlobalMods as GM
-from helpers.global_access import debug_print, reg_print
+from helpers.global_access import debug_print, reg_print, check_time
 from helpers.queue_handler import QueueHandler
 from helpers.command import Command
 from helpers.cmd_history import CMDQueue
@@ -37,13 +37,15 @@ class JJMumbleBot:
         print("JJ Mumble Bot Initializing...")
         # Initialize configs.
         GM.cfg.read(utils.get_config_dir())
+        # Initialize up-time tracker.
+        GM.start_seconds = time.time()
         # Initialize application logging.
         logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
 
         log_file_name = f"{GM.cfg['Bot_Directories']['LogDirectory']}/runtime.log"
         GM.logger = logging.getLogger("RuntimeLogging")
         GM.logger.setLevel(logging.DEBUG)
-   
+
         handler = TimedRotatingFileHandler(log_file_name, when='midnight', backupCount=30)
         handler.setLevel(logging.INFO)
         log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
@@ -100,21 +102,22 @@ class JJMumbleBot:
         self.cmd_token = GM.cfg['Main_Settings']['CommandToken']
         if len(self.cmd_token) != 1:
             print("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
-            GM.logger.critical("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
+            GM.logger.critical(
+                "ERROR: The command token must be a single character! Reverting to the default: '!' token.")
             self.cmd_token = '!'
         # Initialize mumble client.
-        self.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
-                                      password=server_pass)
+        GM.mumble = pymumble.Mumble(server_ip, user=user_id, port=server_port, certfile=user_cert,
+                                    password=server_pass)
         # Initialize mumble callbacks.
-        self.mumble.callbacks.set_callback("text_received", self.message_received)
+        GM.mumble.callbacks.set_callback("text_received", self.message_received)
         # Set mumble codec profile.
-        self.mumble.set_codec_profile("audio")
+        GM.mumble.set_codec_profile("audio")
         # Create temporary directories.
         utils.make_directory(GM.cfg['Media_Directories']['TemporaryImageDirectory'])
         GM.logger.info("Initialized temporary directories.")
         # Create any missing permanent directories.
-        utils.make_directory(GM.cfg['Media_Directories']['PermanentMediaDirectory']+"sound_board/")
-        utils.make_directory(GM.cfg['Media_Directories']['PermanentMediaDirectory']+"images/")
+        utils.make_directory(GM.cfg['Media_Directories']['PermanentMediaDirectory'] + "sound_board/")
+        utils.make_directory(GM.cfg['Media_Directories']['PermanentMediaDirectory'] + "images/")
         GM.logger.info("Initialized permanent directories.")
         # Setup privileges.
         pv.setup_privileges()
@@ -123,7 +126,7 @@ class JJMumbleBot:
         aliases.setup_aliases()
         GM.logger.info("Initialized aliases.")
         # Initialize PGUI.
-        GM.gui = PseudoGUI(self.mumble)
+        GM.gui = PseudoGUI()
         GM.logger.info("Initialized pseudo graphical user interface.")
         # Initialize plugins.
         if GM.safe_mode:
@@ -161,7 +164,7 @@ class JJMumbleBot:
         for p_file in all_imports:
             if p_file == "help":
                 continue
-            elif p_file == "bot_commands" or p_file == "uptime":
+            elif p_file == "bot_commands":
                 self.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         help_plugin = __import__('help.help')
         self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
@@ -173,7 +176,8 @@ class JJMumbleBot:
         # Load Plugins
         reg_print("######### Initializing Plugins #########")
         sys.path.insert(0, utils.get_plugin_dir())
-        all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if os.path.isdir(os.path.join(utils.get_plugin_dir(), name)) and name != "__pycache__"]
+        all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if
+                       os.path.isdir(os.path.join(utils.get_plugin_dir(), name)) and name != "__pycache__"]
         for p_file in all_imports:
             if p_file == "youtube" or p_file == "help":
                 continue
@@ -187,12 +191,13 @@ class JJMumbleBot:
         self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
         self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
+
         reg_print("######### Plugins Initialized #########")
 
     # Runs a check to add any new plugins that have been detected at runtime.
     def live_plugin_check(self):
         if GM.safe_mode:
-            length_check = 3
+            length_check = 2
         else:
             length_check = len([f for f in os.listdir(utils.get_plugin_dir()) if f != "__pycache__"])
         if length_check != len(self.bot_plugins):
@@ -211,8 +216,6 @@ class JJMumbleBot:
     # Refreshes all active plugins by quitting out of them completely and restarting them.
     def refresh_plugins(self):
         reg_print("Refreshing all plugins...")
-        # utils.echo(utils.get_my_channel(self.mumble),
-        #           f"{utils.get_bot_name()} is refreshing all plugins.")
         GM.gui.quick_gui(
             f"{utils.get_bot_name()} is refreshing all plugins.",
             text_type='header',
@@ -226,8 +229,6 @@ class JJMumbleBot:
             self.initialize_plugins()
         pv.setup_privileges()
         reg_print("All plugins refreshed.")
-        # utils.echo(utils.get_my_channel(self.mumble),
-        #           f"{utils.get_bot_name()} has refreshed all plugins.")
         GM.gui.quick_gui(
             f"{utils.get_bot_name()} has refreshed all plugins.",
             text_type='header',
@@ -235,15 +236,15 @@ class JJMumbleBot:
         GM.logger.info("JJ Mumble Bot has refreshed all plugins.")
 
     def join_server(self):
-        self.mumble.start()
-        self.mumble.is_ready()
+        GM.mumble.start()
+        GM.mumble.is_ready()
         self.bot_status = "Online"
-        self.mumble.users.myself.comment(
+        GM.mumble.users.myself.comment(
             f"This is {utils.get_bot_name()} [{utils.get_version()}].<br>{utils.get_known_bugs()}<br>")
-        self.mumble.set_bandwidth(192000)
-        self.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
-        utils.mute(self.mumble)
-        self.mumble.channels[self.mumble.users.myself['channel_id']].send_text_message(f"{utils.get_bot_name()} is Online.")
+        GM.mumble.set_bandwidth(192000)
+        GM.mumble.channels.find_by_name(utils.get_default_channel()).move_in()
+        utils.mute()
+        GM.mumble.channels[GM.mumble.users.myself['channel_id']].send_text_message(f"{utils.get_bot_name()} is Online.")
         reg_print(f"\nJJMumbleBot is {self.status()}\n")
 
     def status(self):
@@ -251,7 +252,7 @@ class JJMumbleBot:
 
     def message_received(self, text):
         message = text.message.strip()
-        user = self.mumble.users[text.actor]
+        user = GM.mumble.users[text.actor]
         if "<img" in message:
             reg_print(f"Message Received: [{user['name']} -> Image Data]")
         elif "<a href=" in message:
@@ -271,8 +272,10 @@ class JJMumbleBot:
             cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
-                reg_print(f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
-                GM.logger.warning(f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                reg_print(
+                    f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                GM.logger.warning(
+                    f"The multi-command      d! The multi-command limit is {self.multi_cmd_limit} commands per line.")
                 return
 
             # Iterate through all commands provided and generate commands.
@@ -315,18 +318,12 @@ class JJMumbleBot:
             # Process commands if the queue is not empty
             while not self.command_queue.is_empty():
                 # Process commands in the queue
-                cur_cmd = self.command_queue.pop()
-                thr = threading.Thread(target=self.process_command_queue, args=(cur_cmd,))
-                thr.start()
-                # Manually join the youtube plugin since the track-chooser can be overriden
-                if cur_cmd.command == "yt" or cur_cmd.command == "youtube":
-                    thr.join()
-                # self.process_command_queue(cur_cmd)
+                self.process_command_queue(self.command_queue.pop())
                 time.sleep(self.tick_rate)
 
     def process_core_commands(self, command, text):
         if command == "alias":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             message = text.message.strip()
             message_parse = message[1:].split(' ', 2)
@@ -335,8 +332,6 @@ class JJMumbleBot:
             if alias_name in aliases.aliases.keys():
                 aliases.set_alias(alias_name, message_parse[2])
                 debug_print(f"Registered alias: [{alias_name}] - [{message_parse[2]}]")
-                # utils.echo(utils.get_my_channel(self.mumble),
-                #           f"Registered alias: [{alias_name}] - [{message_parse[2]}]")
                 GM.gui.quick_gui(
                     f"Registered alias: [{alias_name}] - [{message_parse[2]}]",
                     text_type='header',
@@ -344,8 +339,6 @@ class JJMumbleBot:
             else:
                 aliases.add_to_aliases(alias_name, message_parse[2])
                 debug_print(f"Registered new alias: [{alias_name}] - [{message_parse[2]}]")
-                # utils.echo(utils.get_my_channel(self.mumble),
-                #           f"Registered new alias: [{alias_name}] - [{message_parse[2]}]")
                 GM.gui.quick_gui(
                     f"Registered alias: [{alias_name}] - [{message_parse[2]}]",
                     text_type='header',
@@ -353,20 +346,19 @@ class JJMumbleBot:
             return
 
         elif command == "aliases":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Registered Aliases:</font>"
             for i, alias in enumerate(aliases.aliases):
-                cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{alias}]</font> - [{BeautifulSoup(aliases.aliases[alias], 'html.parser').get_text()}]"
+                cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{alias}]</font> - " \
+                            f"[{BeautifulSoup(aliases.aliases[alias], 'html.parser').get_text()}] "
                 if i % 50 == 0 and i != 0:
-                    # utils.echo(utils.get_my_channel(self.mumble), cur_text)
                     GM.gui.quick_gui(
                         cur_text,
                         text_type='header',
                         box_align='left',
                         text_align='left')
                     cur_text = ""
-            # utils.echo(utils.get_my_channel(self.mumble), cur_text)
             GM.gui.quick_gui(
                 cur_text,
                 text_type='header',
@@ -375,23 +367,19 @@ class JJMumbleBot:
             return
 
         elif command == "removealias":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             message = text.message.strip()
             message_parse = message[1:].split(' ', 2)
             alias_name = message_parse[1]
             if aliases.remove_from_aliases(alias_name):
                 debug_print(f'Removed [{alias_name}] from registered aliases.')
-                # utils.echo(utils.get_my_channel(self.mumble),
-                #           f'Removed [{alias_name}] from registered aliases.')
                 GM.gui.quick_gui(
                     f'Removed [{alias_name}] from registered aliases.',
                     text_type='header',
                     box_align='left')
             else:
                 debug_print(f'Could not remove [{alias_name}] from registered aliases.')
-                # utils.echo(utils.get_my_channel(self.mumble),
-                #           f'Could not remove [{alias_name}] from registered aliases.')
                 GM.gui.quick_gui(
                     f'Could not remove [{alias_name}] from registered aliases.',
                     text_type='header',
@@ -399,20 +387,16 @@ class JJMumbleBot:
             return
 
         elif command == "clearaliases":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             if aliases.clear_aliases():
                 debug_print('Cleared all registered aliases.')
-                # utils.echo(utils.get_my_channel(self.mumble),
-                #           'Cleared all registered aliases.')
                 GM.gui.quick_gui(
                     'Cleared all registered aliases.',
                     text_type='header',
                     box_align='left')
             else:
                 debug_print('The registered aliases could not be cleared.')
-                # utils.echo(utils.get_my_channel(self.mumble),
-                #           'The registered aliases could not be cleared.')
                 GM.gui.quick_gui(
                     'The registered aliases could not be cleared.',
                     text_type='header',
@@ -420,13 +404,13 @@ class JJMumbleBot:
             return
 
         elif command == "refresh":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             self.refresh_plugins()
             return
 
         elif command == "sleep":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             sleep_time = float(text.message[1:].split(' ', 1)[1].strip())
             self.tick_rate = sleep_time
@@ -435,7 +419,7 @@ class JJMumbleBot:
             return
 
         elif command == "exit":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             debug_print("Stopping all threads...")
             self.exit()
@@ -444,10 +428,8 @@ class JJMumbleBot:
             return
 
         elif command == "status":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            # utils.echo(utils.get_my_channel(self.mumble),
-            #           f"{utils.get_bot_name()} is {self.status()}.")
             GM.gui.quick_gui(
                 f"{utils.get_bot_name()} is {self.status()}.",
                 text_type='header',
@@ -455,10 +437,8 @@ class JJMumbleBot:
             return
 
         elif command == "version":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            # utils.echo(utils.get_my_channel(self.mumble),
-            #           f"{utils.get_bot_name()} is on version {utils.get_version()}")
             GM.gui.quick_gui(
                 f"{utils.get_bot_name()} is on version {utils.get_version()}",
                 text_type='header',
@@ -466,7 +446,7 @@ class JJMumbleBot:
             return
 
         elif command == "system_test":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             self.plugin_callback_test()
             debug_print("A system self-test was run.")
@@ -474,9 +454,8 @@ class JJMumbleBot:
             return
 
         elif command == "about":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            # utils.echo(utils.get_my_channel(self.mumble), utils.get_about())
             GM.gui.quick_gui(
                 f"{utils.get_about()}<br>{utils.get_bot_name()} is on version {utils.get_version()}",
                 text_type='header',
@@ -484,28 +463,35 @@ class JJMumbleBot:
             return
 
         elif command == "history":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Command History:</font>"
             for i, item in enumerate(self.cmd_history.queue_storage):
                 cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{i}]</font> - {item}"
                 if i % 50 == 0 and i != 0:
-                    # utils.echo(utils.get_my_channel(self.mumble), cur_text)
                     GM.gui.quick_gui(
                         cur_text,
                         text_type='header',
                         box_align='left',
                         text_align='left')
                     cur_text = ""
-            # utils.echo(utils.get_my_channel(self.mumble), cur_text)
             GM.gui.quick_gui(
                 cur_text,
                 text_type='header',
                 box_align='left',
                 text_align='left')
 
+        elif command == "uptime":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            GM.gui.quick_gui(
+                check_time(),
+                text_type='header',
+                box_align='left')
+            return
+
         elif command == "reboot":
-            if not pv.plugin_privilege_checker(self.mumble, text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             self.exit()
             GM.logger.info("JJ Mumble Bot is being rebooted.")
@@ -517,11 +503,13 @@ class JJMumbleBot:
         command_text = com.text
         self.process_core_commands(command_type, command_text)
         for plugin in self.bot_plugins.values():
-            plugin.process_command(self.mumble, command_text)
+            if plugin.is_audio_plugin():
+                plugin.process_command(command_text)
+            else:
+                thr = threading.Thread(target=plugin.process_command, args=(command_text,))
+                thr.start()
 
     def exit(self):
-        # utils.echo(utils.get_my_channel(self.mumble),
-        #           f"{utils.get_bot_name()} was manually disconnected.")
         GM.gui.quick_gui(
             f"{utils.get_bot_name()} was manually disconnected.",
             text_type='header',
@@ -531,7 +519,7 @@ class JJMumbleBot:
         utils.clear_directory(utils.get_temporary_img_dir())
         reg_print("Cleared temporary directories.")
         self.exit_flag = True
-        
+
     def loop(self):
         while not self.exit_flag:
             time.sleep(self.tick_rate)
