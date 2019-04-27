@@ -1,13 +1,13 @@
-from templates.plugin_template import PluginBase
-import privileges as pv
-import utils
+import warnings
 from bs4 import BeautifulSoup
 import helpers.queue_handler as qh
+import plugins.youtube.youtube_helper as YM
+import privileges as pv
+import utils
 from helpers.global_access import GlobalMods as GM
 from helpers.global_access import debug_print, reg_print
-import warnings
 from plugins.youtube.youtube_helper import YoutubeHelper as YH
-import plugins.youtube.youtube_helper as YM
+from templates.plugin_template import PluginBase
 
 
 class Plugin(PluginBase):
@@ -71,6 +71,7 @@ class Plugin(PluginBase):
             if YH.music_thread is not None:
                 if not YH.queue_instance.is_empty():
                     YH.queue_instance.shuffle()
+                    YM.download_next()
                     GM.gui.quick_gui(
                         "The youtube queue has been shuffled.",
                         text_type='header',
