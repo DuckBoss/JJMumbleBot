@@ -4,6 +4,8 @@ import datetime
 
 
 class GlobalMods:
+    # JJMumbleBot Version
+    version = "v2.0.0"
     # Mumble instance
     mumble = None
     # Config Access
