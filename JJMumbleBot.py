@@ -131,6 +131,7 @@ class JJMumbleBot:
         # Initialize plugins.
         if GM.safe_mode:
             self.initialize_plugins_safe()
+            self.tick_rate = 0.2
             GM.logger.info("Initialized plugins with safe mode.")
         else:
             self.initialize_plugins()
