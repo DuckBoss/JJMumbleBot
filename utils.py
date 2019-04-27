@@ -102,7 +102,7 @@ def get_about():
 
 
 def get_version():
-    return GM.cfg['Bot_Information']['BotVersion']
+    return GM.version
 
 
 def get_known_bugs():
