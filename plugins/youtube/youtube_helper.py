@@ -348,7 +348,11 @@ def play_audio():
                 GM.mumble.sound_output.add_sound(audioop.mul(raw_music, 2, YoutubeHelper.volume))
             else:
                 if not YoutubeHelper.autoplay:
-                    time.sleep(0.1)
+                    #time.sleep(0.1)
+                    YoutubeHelper.is_playing = False
+                    if thr:
+                        thr.join()
+                    return
                 else:
                     YoutubeHelper.is_playing = False
                     if thr:
