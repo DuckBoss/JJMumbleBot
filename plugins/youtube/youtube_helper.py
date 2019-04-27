@@ -16,10 +16,6 @@ class YoutubeHelper:
         'quiet': True,
         'format': 'bestaudio/best',
         'noplaylist': True,
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'wav',
-            'preferredquality': '192', }],
         'logger': GM.logger,
         'outtmpl': f'{utils.get_temporary_img_dir()}%(id)s.jpg',
         'skip_download': True,
