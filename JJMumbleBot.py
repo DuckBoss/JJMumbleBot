@@ -505,10 +505,10 @@ class JJMumbleBot:
         self.process_core_commands(command_type, command_text)
         for plugin in self.bot_plugins.values():
             # if plugin.is_audio_plugin():
-            plugin.process_command(command_text)
+            #plugin.process_command(command_text)
             # else:
-            #     thr = threading.Thread(target=plugin.process_command, args=(command_text,))
-            #     thr.start()
+            thr = threading.Thread(target=plugin.process_command, args=(command_text,))
+            thr.start()
 
     def exit(self):
         GM.gui.quick_gui(

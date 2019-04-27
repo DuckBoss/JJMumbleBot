@@ -295,6 +295,9 @@ def get_choices(all_searches):
 
 
 def play_audio():
+    GM.mumble.sound_output.clear_buffer()
+    time.sleep(0.1)
+
     YoutubeHelper.current_song_info = YoutubeHelper.queue_instance.pop()
     if YoutubeHelper.current_song_info is None:
         stop_audio()
@@ -307,28 +310,27 @@ def play_audio():
     uri = stripped_url
 
     command = utils.get_vlc_dir()
-    GM.mumble.sound_output.clear_buffer()
 
     thr = None
     if not YoutubeHelper.queue_instance.is_empty():
         thr = threading.Thread(target=download_next)
         thr.start()
 
-    if YoutubeHelper.music_thread:
-        YoutubeHelper.music_thread.terminate()
-        YoutubeHelper.music_thread.kill()
-        YoutubeHelper.music_thread = None
+    #if YoutubeHelper.music_thread:
+    #    YoutubeHelper.music_thread.terminate()
+    #    YoutubeHelper.music_thread.kill()
+    #    YoutubeHelper.music_thread = None
 
-    if YoutubeHelper.music_thread is None:
-        YoutubeHelper.music_thread = sp.Popen(
-            [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
-                              '#transcode{acodec=s16le, channels=2, '
-                              'samplerate=24000, ab=192, threads=8}:std{access=file, '
-                              'mux=wav, dst=-}',
-                              'vlc://quit'],
-            stdout=sp.PIPE, bufsize=480)
+    #if YoutubeHelper.music_thread is None:
+    YoutubeHelper.music_thread = sp.Popen(
+        [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
+                          '#transcode{acodec=s16le, channels=2, '
+                          'samplerate=24000, ab=192, threads=8}:std{access=file, '
+                          'mux=wav, dst=-}',
+                          'vlc://quit'],
+        stdout=sp.PIPE, bufsize=480)
         # YoutubeHelper.music_thread.wait()
-        YoutubeHelper.is_playing = True
+    YoutubeHelper.is_playing = True
     utils.unmute()
 
     GM.gui.quick_gui_img(f"{utils.get_temporary_img_dir()}",
