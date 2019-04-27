@@ -1,4 +1,4 @@
-from helpers.global_access import debug_print, reg_print
+from helpers.global_access import debug_print
 from urllib.parse import quote
 from PIL import Image
 from binascii import b2a_base64
@@ -22,8 +22,6 @@ def format_image_html(img_ext, byte_arr):
     raw_base = encode_b64(byte_arr)
     encoded = []
     i = 0
-    begin = 0
-    end = 0
 
     begin = i * 72
     end = i * 72
