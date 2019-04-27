@@ -13,8 +13,9 @@ class Plugin(PluginBase):
                 <b>!youtube_help/!yt_help</b>: Displays the youtube plugin help screen.<br>\
                 <b>!sound_board_help/!sb_help</b>: Displays the sound_board plugin help screen.<br>\
                 <b>!images_help/!img_help</b>: Displays the images plugin help screen.<br>\
-                <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>"
-    plugin_version = "2.0.0"
+                <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>\
+                <b>!uptime_help</b> Displays the uptime plugin help screen.<br>"
+    plugin_version = "1.8.1"
     priv_path = "help/help_privileges.csv"
     bot_plugins = {}
 
@@ -23,14 +24,16 @@ class Plugin(PluginBase):
         super().__init__()
         self.bot_plugins = bot_plugins
 
-    def process_command(self, text):
+    def process_command(self, mumble, text):
         message = text.message.strip()
         message_parse = message[1:].split(' ', 1)
         command = message_parse[0]
 
         if command == "help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #            f"{self.plugin_prepend_text}</font>{self.get_plugin_version()}{self.help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.help_data.split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -44,15 +47,17 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed general help screen in the channel.")
             GM.logger.info("Displayed general help screen in the channel.")
             return
 
         elif command == "bot_help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #            f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('bot_commands').get_plugin_version()}{self.bot_plugins.get('bot_commands').help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.bot_plugins.get("bot_commands").help().split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -66,15 +71,17 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed bot commands plugin help screen in the channel.")
             GM.logger.info("Displayed bot commands plugin help screen in the channel.")
             return
 
         elif command == "sound_board_help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('sound_board').get_plugin_version()}{self.bot_plugins.get('sound_board').help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.bot_plugins.get("sound_board").help().split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -89,15 +96,17 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed sound_board plugin help screen in the channel.")
             GM.logger.info("Displayed sound_board plugin help screen in the channel.")
             return
 
         elif command == "youtube_help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('youtube').get_plugin_version()}{self.bot_plugins.get('youtube').help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.bot_plugins.get("youtube").help().split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -112,15 +121,17 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed youtube plugin help screen in the channel.")
             GM.logger.info("Displayed youtube plugin help screen in the channel.")
             return
 
         elif command == "images_help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('images').get_plugin_version()}{self.bot_plugins.get('images').help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.bot_plugins.get("images").help().split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -135,15 +146,17 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed images plugin help screen in the channel.")
             GM.logger.info("Displayed images plugin help screen in the channel.")
             return
 
         elif command == "uptime_help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('uptime').get_plugin_version()}{self.bot_plugins.get('uptime').help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.bot_plugins.get("uptime").help().split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -158,15 +171,17 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed uptime plugin help screen in the channel.")
             GM.logger.info("Displayed uptime plugin help screen in the channel.")
             return
 
         elif command == "randomizer_help":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
+            # utils.echo(utils.get_my_channel(mumble),
+            #           f"{self.plugin_prepend_text}</font>{self.bot_plugins.get('randomizer').get_plugin_version()}{self.bot_plugins.get('randomizer').help()}")
             GM.gui.open_box()
             all_help_lines = [msg.strip() for msg in self.bot_plugins.get("randomizer").help().split('<br>')]
             content = GM.gui.make_content(f'<font color="red">#####</font> '
@@ -181,13 +196,14 @@ class Plugin(PluginBase):
                 content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
                 GM.gui.append_row(content)
             GM.gui.close_box()
-            GM.gui.display_box(channel=utils.get_my_channel())
+            GM.gui.display_box(channel=utils.get_my_channel(mumble))
 
             reg_print("Displayed randomizer plugin help screen in the channel.")
             GM.logger.info("Displayed randomizer plugin help screen in the channel.")
             return
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Help Plugin self-test callback.")
 
     def quit(self):
@@ -195,9 +211,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
-
-    def is_audio_plugin(self):
-        return False
 
     def get_plugin_version(self):
         return self.plugin_version

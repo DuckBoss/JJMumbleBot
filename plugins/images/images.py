@@ -14,20 +14,20 @@ class Plugin(PluginBase):
                         <b>!post 'image_url'</b>: Posts the image from the url in the channel chat.<br>\
                         <b>!img 'image_name'</b>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>\
                         <b>!imglist</b>: Lists all locally hosted images."
-    plugin_version = "2.0.0"
+    plugin_version = "1.8.3"
     priv_path = "images/images_privileges.csv"
     
     def __init__(self):
         debug_print("Images Plugin Initialized.")
         super().__init__()
 
-    def process_command(self, text):
+    def process_command(self, mumble, text):
         message = text.message.strip()
         message_parse = message[1:].split(' ', 1)
         command = message_parse[0]
 
         if command == "post":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             img_url = message_parse[1]
             # Download image
@@ -47,7 +47,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "img":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             parameter = message_parse[1]
             if not os.path.isfile(utils.get_permanent_media_dir()+f"images/{parameter}.jpg"):
@@ -69,7 +69,7 @@ class Plugin(PluginBase):
             return
 
         elif command == "imglist":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
             gather_list = []
@@ -89,22 +89,22 @@ class Plugin(PluginBase):
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Local Image Files:</font>"
             if len(internal_list) == 0:
                 cur_text += "<br>There are no local image files available."
-                GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=GM.mumble.users[text.actor]['name'])
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left', user=mumble.users[text.actor]['name'])
                 GM.logger.info("Displayed a list of all local image files.")
                 return
 
             for i, item in enumerate(internal_list):
                 cur_text += item
                 if i % 50 == 0 and i != 0:
-                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=GM.mumble.users[text.actor]['name'])
+                    GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
                     cur_text = ""
             if cur_text != "":
-                GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=GM.mumble.users[text.actor]['name'])
+                GM.gui.quick_gui(cur_text, text_type='header', box_align='left', text_align='left', user=mumble.users[text.actor]['name'])
             GM.logger.info("Displayed a list of all local image files.")
             return
 
         elif command == "imglist_echo":
-            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+            if not pv.plugin_privilege_checker(mumble, text, command, self.priv_path):
                 return
             file_counter = 0
             gather_list = []
@@ -138,7 +138,8 @@ class Plugin(PluginBase):
             GM.logger.info("Displayed a list of all local image files.")
             return
 
-    def plugin_test(self):
+    @staticmethod
+    def plugin_test():
         debug_print("Images Plugin self-test callback.")
 
     def quit(self):
@@ -146,9 +147,6 @@ class Plugin(PluginBase):
 
     def help(self):
         return self.help_data
-
-    def is_audio_plugin(self):
-        return False
 
     def get_plugin_version(self):
         return self.plugin_version
