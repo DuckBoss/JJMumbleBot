@@ -58,12 +58,33 @@ class Plugin(PluginBase):
                                      caption=f"Now playing: {YH.current_song_info['main_title']}",
                                      format=True,
                                      img_size=32768)
+                GM.logger.info("Displayed current song in the youtube plugin.")
             else:
                 GM.gui.quick_gui(
                     f"{utils.get_bot_name()} is not playing anything right now.",
                     text_type='header',
                     box_align='left')
             return
+
+        elif command == "autoplay":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            if YH.music_thread is not None:
+                if YH.autoplay:
+                    YH.autoplay = False;
+                    GM.gui.quick_gui(
+                        "Autoplay has been disabled.",
+                        text_type='header',
+                        box_align='left')
+                    GM.logger.info("Autoplay has been disabled in the youtube plugin.")
+                else:
+                    YH.autoplay = True
+                    GM.gui.quick_gui(
+                        "Autoplay has been enabled.",
+                        text_type='header',
+                        box_align='left')
+                    GM.logger.info("Autoplay has been enabled in the youtube plugin.")
+                return
 
         elif command == "shuffle":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
@@ -76,6 +97,7 @@ class Plugin(PluginBase):
                         "The youtube queue has been shuffled.",
                         text_type='header',
                         box_align='left')
+                    GM.logger.info("The youtube audio queue was shuffled.")
                     return
 
         elif command == "next":
@@ -106,6 +128,7 @@ class Plugin(PluginBase):
                     f"Removed track: [{rem_val}]-{removed_item['main_title']} from the queue.",
                     text_type='header',
                     box_align='left')
+                GM.logger.info(f"Removed track #{rem_val} from the youtube audio queue.")
                 return
 
         elif command == "skipto":
@@ -113,6 +136,7 @@ class Plugin(PluginBase):
                 return
             skip_val = int(message[1:].split(' ', 1)[1])
             YM.skipto(skip_val)
+            GM.logger.info(f"The youtube audio queue skipped to track #{skip_val}.")
             return
 
         elif command == "stop":
@@ -152,7 +176,7 @@ class Plugin(PluginBase):
                     f"Set youtube track max duration to {YH.max_track_duration}",
                     text_type='header',
                     box_align='left')
-                GM.logger.info(f"The youtube track max duration was set to {YH.max_track_duration}")
+                GM.logger.info(f"The youtube track max duration was set to {YH.max_track_duration}.")
             except IndexError:
                 GM.gui.quick_gui(
                     f"Current youtube track max duration: {YH.max_track_duration}",
@@ -189,7 +213,7 @@ class Plugin(PluginBase):
                 f"Set volume to {YH.volume}",
                 text_type='header',
                 box_align='left')
-            GM.logger.info(f"The youtube audio volume was changed to {YH.volume}")
+            GM.logger.info(f"The youtube audio volume was changed to {YH.volume}.")
             return
 
         elif command == "youtube":
@@ -208,6 +232,7 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left',
                 text_align='left')
+            GM.logger.info("Displayed youtube search results.")
             YH.can_play = True
             return
 
@@ -232,6 +257,7 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left',
                         text_align='left')
+                GM.logger.info("Displayed current youtube queue.")
                 return
             else:
                 GM.gui.quick_gui(
@@ -264,6 +290,7 @@ class Plugin(PluginBase):
                         f"Playlist generated: {stripped_url}",
                         text_type='header',
                         box_align='left')
+                    GM.logger.info(f"Generated playlist: {stripped_url}")
                     if not YH.is_playing:
                         YM.download_next()
                         YM.play_audio()
@@ -274,6 +301,46 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return
+
+        elif command == "linkfront":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            if len(message_parse) == 2:
+                stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
+                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if YH.queue_instance.is_full():
+                        GM.gui.quick_gui(
+                            "The youtube queue is full!",
+                            text_type='header',
+                            box_align='left')
+                        return
+                    song_data = YM.download_song_name(stripped_url)
+                    if song_data is None:
+                        GM.gui.quick_gui(
+                            "ERROR: The chosen stream was either too long or a live stream.",
+                            text_type='header',
+                            box_align='left')
+                        return
+                    song_data['main_url'] = stripped_url
+
+                    self.sound_board_plugin.clear_audio_thread()
+                    YH.queue_instance.insert_priority(song_data)
+
+                    GM.gui.quick_gui(
+                        f"Added to front of queue: {stripped_url}",
+                        text_type='header',
+                        box_align='left')
+                    GM.logger.info("Direct link added to the front of the youtube queue.")
+                    if not YH.is_playing:
+                        YM.download_next()
+                        YM.play_audio()
+                    return
+                else:
+                    GM.gui.quick_gui(
+                        "The given link was not identified as a youtube video link!",
+                        text_type='header',
+                        box_align='left')
+                    return
 
         elif command == "link":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
@@ -303,6 +370,7 @@ class Plugin(PluginBase):
                         f"Added to queue: {stripped_url}",
                         text_type='header',
                         box_align='left')
+                    GM.logger.info("Direct link added to youtube queue.")
                     if not YH.is_playing:
                         YM.download_next()
                         YM.play_audio()
