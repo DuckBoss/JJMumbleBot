@@ -158,19 +158,19 @@ class JJMumbleBot:
     # Initializes only safe-mode applicable plugins.
     def initialize_plugins_safe(self):
         # Load Plugins
-        reg_print("######### Initializing Plugins #########")
+        reg_print("######### Initializing Plugins - Safe Mode #########")
         sys.path.insert(0, utils.get_plugin_dir())
         all_imports = [name for name in os.listdir(utils.get_plugin_dir()) if
-                       os.path.isdir(os.path.join(utils.get_plugin_dir(), name))]
+                       os.path.isdir(os.path.join(utils.get_plugin_dir(), name)) and name != "__pycache__"]
         for p_file in all_imports:
             if p_file == "help":
                 continue
             elif p_file == "bot_commands":
                 self.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         help_plugin = __import__('help.help')
-        self.bot_plugins['help'] = help_plugin.Plugin(self.bot_plugins)
+        self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
-        reg_print("######### Plugins Initialized #########")
+        reg_print("######### Plugins Initialized - Safe Mode #########")
 
     # Initializes all available plugins.
     def initialize_plugins(self):
