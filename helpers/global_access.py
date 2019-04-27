@@ -1,5 +1,6 @@
 import configparser
 import time
+import datetime
 
 
 class GlobalMods:
@@ -38,13 +39,4 @@ def reg_print(msg):
 
 def check_time():
     GlobalMods.seconds = time.time() - GlobalMods.start_seconds
-    while GlobalMods.seconds >= 60:
-        GlobalMods.minutes += 1
-        GlobalMods.seconds -= 60
-    while GlobalMods.minutes >= 60:
-        GlobalMods.hours += 1
-        GlobalMods.minutes -= 60
-    while GlobalMods.hours >= 24:
-        GlobalMods.days += 1
-        GlobalMods.hours -= 24
-    return "Up-time: {%dd : %dh : %dm : %ds}" % (int(GlobalMods.days), int(GlobalMods.hours), int(GlobalMods.minutes), int(GlobalMods.seconds))
+    return f"Up-time: {str(datetime.timedelta(seconds=GlobalMods.seconds)).split('.')[0]}"
