@@ -45,6 +45,17 @@ class QueueHandler:
             return True
         return False
 
+    def remove(self, index):
+        if not self.is_empty():
+            temp_list = []
+            while not self.is_empty():
+                temp_list.append(self.pop())
+            ret_val = temp_list.pop(index)
+            for i, item in enumerate(temp_list):
+                self.insert(item)
+            return ret_val
+        return None
+
     def size(self):
         return self.queue_size
 

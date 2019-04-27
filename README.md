@@ -11,9 +11,21 @@ A plugin-based python 3 mumble bot with extensive features.
 ## Features
 - <b>Built-in Plugins</b> - Fast, responsive, plugin-based system for easy expandability.
   - <b>Youtube Plugin</b> - Streams youtube songs in the channel.
+    - Playlist Support
+    - Video Thumbnails
+    - Queue System
+    - Direct Youtube Link Support
+    - Search/Browse Youtube Support
   - <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
+    - Local Images Support
+    - Direct Link Images Support
   - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
+    - Local Audio Clips Support
+    - Download and Play Support
   - <b>Randomizer Plugin</b> - Do custom dice rolls, coin flips, etc in the channel.
+    - Dice Rolls
+    - Coin Flips
+  - <b>Bot Commands Plugin</b> - Enhanced interactivity and management commands.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">Full list of built-in plugins</a></b>
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>

@@ -33,52 +33,52 @@ def echo(channel, message_text):
     channel.send_text_message(message_text)
 
 
-def get_channel(mumble, channel_name):
-    return mumble.channels.find_by_name(channel_name)
+def get_channel(channel_name):
+    return GM.mumble.channels.find_by_name(channel_name)
 
 
 def get_default_channel():
     return GM.cfg['Connection_Settings']['DefaultChannel']
 
 
-def get_my_channel(mumble):
-    return mumble.channels[mumble.users.myself['channel_id']]
+def get_my_channel():
+    return GM.mumble.channels[GM.mumble.users.myself['channel_id']]
 
 
-def get_all_users(mumble):
-    return mumble.users
+def get_all_users():
+    return GM.mumble.users
 
 
-def make_channel(mumble, root_channel, channel_name):
-    return mumble.channels.new_channel(root_channel.get_id(), channel_name)
+def make_channel(root_channel, channel_name):
+    return GM.mumble.channels.new_channel(root_channel.get_id(), channel_name)
 
 
-def leave(mumble):
-    default_channel = get_channel(mumble, GM.cfg['Connection_Settings']['DefaultChannel'])
+def leave():
+    default_channel = get_channel(GM.cfg['Connection_Settings']['DefaultChannel'])
     default_channel.move_in()
     return default_channel
 
 
-def mute(mumble):
+def mute():
     if GM.muted:
         return
-    mumble.users.myself.mute()
+    GM.mumble.users.myself.mute()
     GM.muted = True
     return
 
 
-def unmute(mumble):
+def unmute():
     if not GM.muted:
         return
-    mumble.users.myself.unmute()
+    GM.mumble.users.myself.unmute()
     GM.muted = False
     return
 
 
-def msg(mumble, receiver, message):
-    for user in mumble.users:
-        if mumble.users[user]['name'] == receiver:
-            mumble.users[user].send_message(message)
+def msg(receiver, message):
+    for user in GM.mumble.users:
+        if GM.mumble.users[user]['name'] == receiver:
+            GM.mumble.users[user].send_message(message)
 
 
 def get_plugin_dir():
@@ -102,7 +102,7 @@ def get_about():
 
 
 def get_version():
-    return GM.cfg['Bot_Information']['BotVersion']
+    return GM.version
 
 
 def get_known_bugs():

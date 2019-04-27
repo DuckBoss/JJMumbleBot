@@ -1,25 +1,22 @@
 from helpers.gui_helper import GUIHelper
-from helpers.global_access import debug_print, reg_print
+from helpers.global_access import debug_print
 from helpers.global_access import GlobalMods as GM
-import utils
 import helpers.image_helper as IH
+import utils
 
 
 class PseudoGUI:
-
-    mumble = None
     content = None
     box_open = False
 
-    def __init__(self, mumble):
-        self.mumble = mumble
+    def __init__(self):
         debug_print("Pseudo-GUI initialized.")
 
     def quick_gui(self, content, text_type="data", text_color=None, text_font='Calibri', text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None):
         if self.box_open:
             return False
         if channel is None:
-            channel = utils.get_my_channel(self.mumble)
+            channel = utils.get_my_channel()
         if bgcolor is None:
             bgcolor = GM.cfg['PGUI_Settings']['CanvasBGColor']
         if box_align is None:
@@ -40,17 +37,19 @@ class PseudoGUI:
         if self.box_open:
             return False
         if channel is None:
-            channel = utils.get_my_channel(self.mumble)
+            channel = utils.get_my_channel()
 
         self.open_box(align='left', bgcolor=bgcolor, cellspacing=cellspacing)
 
         if format:
             formatted_string = IH.format_image(f"{img_data}", "jpg", directory, size_goal=img_size)
             content = self.make_content(formatted_string, image=True, text_align='center')
-            self.append_row(content)
+            if content is not None:
+                self.append_row(content)
         else:
             content = self.make_content(img_data, image=True, text_align='center')
-            self.append_row(content)
+            if content is not None:
+                self.append_row(content)
 
         if caption is not None:
             caption = self.make_content(caption, text_type="header", text_font='Calibri', image=False)
@@ -108,7 +107,7 @@ class PseudoGUI:
         if self.content is None or self.box_open:
             return
         if user is not None:
-            utils.msg(self.mumble, user, self.content)
+            utils.msg(user, self.content)
             self.clear_display()
             return
         utils.echo(channel, self.content)
