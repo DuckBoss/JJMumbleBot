@@ -14,7 +14,9 @@ class Plugin(PluginBase):
     help_data = "All commands can be run by typing it in the channel or privately messaging JJMumbleBot.<br>\
                         <b>!youtube/!yt 'search_term'</b>: Searches youtube for a song/video.<br>\
                         <b>!play/!p 'item_number' 'item_count'(optional)</b>: Plays the selected song from youtube.<br>\
-                        <b>!link 'youtube_link'</b>: Plays the given youtube link.<br>\
+                        <b>!autoplay</b>: Toggles the youtube queue autoplay functionality<br>\
+                        <b>!link 'youtube_link'</b>: Adds the given youtube link to the queue.<br>\
+                        <b>!linkfront 'youtube_link'</b>: Priority inserts the given link to the front of the queue.<br>\
                         <b>!stop</b>: Stops the currently playing track and clears the queue.<br>\
                         <b>!shuffle</b>: Shuffles all the tracks in the queue.<br>\
                         <b>!volume/!v '0..1'</b>: Sets the bot audio volume.<br>\
@@ -69,22 +71,21 @@ class Plugin(PluginBase):
         elif command == "autoplay":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            if YH.music_thread is not None:
-                if YH.autoplay:
-                    YH.autoplay = False;
-                    GM.gui.quick_gui(
-                        "Autoplay has been disabled.",
-                        text_type='header',
-                        box_align='left')
-                    GM.logger.info("Autoplay has been disabled in the youtube plugin.")
-                else:
-                    YH.autoplay = True
-                    GM.gui.quick_gui(
-                        "Autoplay has been enabled.",
-                        text_type='header',
-                        box_align='left')
-                    GM.logger.info("Autoplay has been enabled in the youtube plugin.")
-                return
+            if YH.autoplay:
+                YH.autoplay = False;
+                GM.gui.quick_gui(
+                    "Autoplay has been disabled.",
+                    text_type='header',
+                    box_align='left')
+                GM.logger.info("Autoplay has been disabled in the youtube plugin.")
+            else:
+                YH.autoplay = True
+                GM.gui.quick_gui(
+                    "Autoplay has been enabled.",
+                    text_type='header',
+                    box_align='left')
+                GM.logger.info("Autoplay has been enabled in the youtube plugin.")
+            return
 
         elif command == "shuffle":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
