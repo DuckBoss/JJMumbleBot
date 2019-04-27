@@ -46,13 +46,13 @@ class YoutubeHelper:
 def get_queue():
     if YoutubeHelper.queue_instance.size() is 0:
         return None
-    queue_titles = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Youtube Queue:</font>"
+    list_queue = [f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Youtube Queue:</font>"]
     queue_list = list(YoutubeHelper.queue_instance.queue_storage)
     counter = 0
     for i in range(len(queue_list) - 1, -1, -1):
-        queue_titles += f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{counter}]</font> - {queue_list[i]['main_title']}"
+        list_queue.append(f"<br><font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{counter}]</font> - {queue_list[i]['main_title']}")
         counter += 1
-    return queue_titles
+    return list_queue
 
 
 def next():
@@ -107,20 +107,23 @@ def skipto(skip_val):
 
 
 def download_song_name(url):
-    with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
-        ydl.cache.remove()
-        info_dict = ydl.extract_info(url, download=True)
-        if info_dict['duration'] >= YoutubeHelper.max_track_duration:
-            return None
-        if info_dict['duration'] <= 0.1:
-            return None
+    try:
+        with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
+            ydl.cache.remove()
+            info_dict = ydl.extract_info(url, download=True)
+            if info_dict['duration'] >= YoutubeHelper.max_track_duration:
+                return None
+            if info_dict['duration'] <= 0.1:
+                return None
 
-        prep_struct = {
-            'main_url': info_dict['url'],
-            'main_title': info_dict['title'],
-            'img_id': info_dict['id']
-        }
-        return prep_struct
+            prep_struct = {
+                'main_url': info_dict['url'],
+                'main_title': info_dict['title'],
+                'img_id': info_dict['id']
+            }
+            return prep_struct
+    except youtube_dl.utils.DownloadError:
+        return None
 
 
 def clear_queue():
@@ -139,11 +142,14 @@ def download_next():
     if os.path.isfile(utils.get_temporary_img_dir() + f"{queue_list[-1]['img_id']}.jpg"):
         # print("Thumbnail exists...skipping")
         return
-    with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
-        ydl.extract_info(youtube_url, download=True)
-        #if video['duration'] >= YoutubeHelper.max_track_duration or video['duration'] <= 0.1:
-        #    debug_print("Video length exceeds limit...skipping.")
-        #    YoutubeHelper.queue_instance.pop()
+    try:
+        with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
+            ydl.extract_info(youtube_url, download=True)
+            #if video['duration'] >= YoutubeHelper.max_track_duration or video['duration'] <= 0.1:
+            #    debug_print("Video length exceeds limit...skipping.")
+            #    YoutubeHelper.queue_instance.pop()
+    except youtube_dl.utils.DownloadError:
+        return
     return
 
 
@@ -156,8 +162,11 @@ def download_specific(index):
         return
     if os.path.isfile(utils.get_temporary_img_dir() + f"{queue_list[index]['img_id']}.jpg"):
         return
-    with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
-        ydl.extract_info(youtube_url, download=True)
+    try:
+        with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
+            ydl.extract_info(youtube_url, download=True)
+    except youtube_dl.utils.DownloadError:
+        return
     return
 
 
@@ -285,7 +294,7 @@ def get_choices(all_searches):
     list_urls = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Search Results:</font><br>"
     for i in range(10):
         completed_url = "https://www.youtube.com" + all_searches[i]['href']
-        list_urls += f"<font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
+        list_urls = f"<font color='{GM.cfg['PGUI_Settings']['IndexTextColor']}'>[{i}]</font> - <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
     return list_urls
 
 
