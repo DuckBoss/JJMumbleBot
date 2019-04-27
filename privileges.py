@@ -55,12 +55,10 @@ def plugin_privileges_check(command, priv_path):
     return -1
 
 
-def plugin_privilege_checker(mumble, text, command, priv_path):
-    if not privileges_check(mumble.users[text.actor]) >= plugin_privileges_check(command, priv_path):
-        reg_print(f"User [{mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]")
-        # utils.echo(mumble.channels[mumble.users.myself['channel_id']],
-        #           f"User [{mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]")
-        GM.gui.quick_gui(f"User [{mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]", text_type='header', box_align='left')
+def plugin_privilege_checker(text, command, priv_path):
+    if not privileges_check(GM.mumble.users[text.actor]) >= plugin_privileges_check(command, priv_path):
+        reg_print(f"User [{GM.mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]")
+        GM.gui.quick_gui(f"User [{GM.mumble.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]", text_type='header', box_align='left')
         return False
     return True
 

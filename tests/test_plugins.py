@@ -22,33 +22,29 @@ class Tests(unittest.TestCase):
             self.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         sys.path.pop(0)
 
-    def test_version_uptime(self):
-        cur_plugin = self.bot_plugins.get('uptime')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.0")
-
     def test_version_help(self):
         cur_plugin = self.bot_plugins.get('help')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.1")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
     def test_version_randomizer(self):
         cur_plugin = self.bot_plugins.get('randomizer')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.0")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
     def test_version_bot_commands(self):
         cur_plugin = self.bot_plugins.get('bot_commands')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.1")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
     def test_version_youtube(self):
         cur_plugin = self.bot_plugins.get('youtube')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.9.0")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
     def test_version_sound_board(self):
         cur_plugin = self.bot_plugins.get('sound_board')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.2")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
     def test_version_images(self):
         cur_plugin = self.bot_plugins.get('images')
-        self.assertEqual(cur_plugin.get_plugin_version(), "1.8.3")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
 
 if __name__ == '__main__':

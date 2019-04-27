@@ -21,3 +21,5 @@ privileges.csv
 aliases.csv
 config.ini
 tests/img_test.jpg
+venv/
+logs/
