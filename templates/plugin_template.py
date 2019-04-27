@@ -1,11 +1,12 @@
 from abc import ABC, abstractmethod
 
+
 class PluginBase(ABC):
     def __init__(self):
         super().__init__()
 
     @abstractmethod
-    def process_command(self, mumble, text):
+    def process_command(self, text):
         pass
 
     @abstractmethod
@@ -18,15 +19,19 @@ class PluginBase(ABC):
 
     @abstractmethod
     def help(self):
-        return help_data
+        pass
 
-    @abstractmethod 
+    @abstractmethod
+    def is_audio_plugin(self):
+        return False
+
+    @abstractmethod
     def get_plugin_version(self):
-        return plugin_version
+        pass
 
     @abstractmethod
     def get_priv_path(self):
-        return priv_path
+        pass
 
     @property
     @abstractmethod
