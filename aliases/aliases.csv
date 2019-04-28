@@ -11,6 +11,7 @@ v,!volume
 yt,!youtube
 q,!queue
 p,!play
+pl,!playlist
 rp,!replay
 restart,!reboot
 quit,!exit
