@@ -2,6 +2,7 @@ alias,command
 sb_help,!sound_board_help
 yt_help,!youtube_help
 img_help,!images_help
+rand_help,!randomizer_help
 sbs,!sbstop
 sbl,!sblist
 sble,!sblist_echo
