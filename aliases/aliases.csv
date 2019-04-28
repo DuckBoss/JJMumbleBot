@@ -5,6 +5,8 @@ img_help,!images_help
 sbs,!sbstop
 sbl,!sblist
 sble,!sblist_echo
+imgl,!imglist
+imgle,!imglist_echo
 sbr,!sbreplay
 skip,!next
 v,!volume
