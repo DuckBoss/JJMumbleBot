@@ -2,6 +2,7 @@ from templates.plugin_template import PluginBase
 from helpers.global_access import GlobalMods as GM
 from helpers.global_access import debug_print
 from plugins.sound_board.sound_board_helper import SoundBoardHelper as SBH
+from plugins.youtube.youtube_helper import YoutubeHelper as YH
 import plugins.sound_board.sound_board_helper as SBM
 import utils
 import privileges as pv
@@ -119,7 +120,7 @@ class Plugin(PluginBase):
         elif command == "sbreplay":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            if self.youtube_plugin.is_playing:
+            if YH.is_playing:
                 GM.gui.quick_gui("The youtube audio plugin is currently live. "
                                  "Use !stop before using the sound board plugin.",
                                  text_type='header', box_align='left')
