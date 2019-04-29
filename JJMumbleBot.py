@@ -16,6 +16,8 @@ from helpers.cmd_history import CMDQueue
 from bs4 import BeautifulSoup
 import threading
 import copy
+from helpers.global_access import RemoteTextMessage
+from helpers.web_handler import init_web, stop_web
 
 
 class JJMumbleBot:
@@ -25,6 +27,8 @@ class JJMumbleBot:
     bot_status = "Offline"
     # Dictionary of registered bot plugins.
     bot_plugins = {}
+    # Web thread.
+    web_thr = None
     # Command history.
     cmd_history = None
     # Runtime parameters.
@@ -35,6 +39,8 @@ class JJMumbleBot:
 
     def __init__(self):
         print("JJ Mumble Bot Initializing...")
+        # Core access.
+        GM.jjmumblebot = self
         # Initialize configs.
         GM.cfg.read(utils.get_config_dir())
         # Initialize up-time tracker.
@@ -140,6 +146,12 @@ class JJMumbleBot:
         self.plugin_callback_test()
         GM.logger.info("Plugin callback test successful.")
         print("JJ Mumble Bot initialized!\n")
+        # Initialize the web interface.
+        if GM.cfg.getboolean('Connection_Settings', 'EnableWebInterface'):
+            self.web_thr = threading.Thread(target=init_web)
+            self.web_thr.start()
+            reg_print("JJMumbleBot Web Service was initialized.")
+            GM.logger.info("JJMumbleBot Web Service was initialized.")
         # Join the server after all initialization is complete.
         self.join_server()
         GM.logger.info("JJ Mumble Bot has fully initialized and joined the server.")
@@ -510,15 +522,85 @@ class JJMumbleBot:
             thr = threading.Thread(target=plugin.process_command, args=(command_text,))
             thr.start()
 
+    def remote_command(self, message):
+        if message[0] == self.cmd_token:
+            GM.logger.info(f"Commands Received: [RemoteWebCall] -> {message}]")
+            self.live_plugin_check()
+
+            text = RemoteTextMessage(channel_id=GM.mumble.users.myself['channel_id'], session=GM.mumble.users.myself['session'], message=message, actor=GM.mumble.users.myself['session'])
+            # example input: !version ; !about ; !yt twice ; !p ; !status
+            all_commands = [msg.strip() for msg in message.split(';')]
+            # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
+
+            # add to command history
+            cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
+
+            if len(all_commands) > self.multi_cmd_limit:
+                reg_print(
+                    f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                GM.logger.warning(
+                    f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                return
+
+            # Iterate through all commands provided and generate commands.
+            for i, item in enumerate(all_commands):
+                # Generate command with parameters
+                #new_text = copy.deepcopy(text)
+                new_text = text
+                new_text.message = item
+                new_command = None
+                try:
+                    new_command = Command(item[1:].split()[0], new_text)
+                except IndexError:
+                    continue
+
+                if new_command.command in aliases.aliases:
+                    alias_commands = [msg.strip() for msg in aliases.aliases[new_command.command].split('|')]
+                    if len(alias_commands) > self.multi_cmd_limit:
+                        reg_print(
+                            f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                        GM.logger.warning(
+                            f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
+                        return
+                    for x, sub_item in enumerate(alias_commands):
+                        #sub_text = copy.deepcopy(text)
+                        sub_text = text
+                        if len(item[1:].split()) > 1:
+                            sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
+                        else:
+                            sub_text.message = sub_item
+
+                        sub_command = None
+                        try:
+                            sub_command = Command(sub_item[1:].split()[0], sub_text)
+                        except IndexError:
+                            continue
+
+                        self.command_queue.insert(sub_command)
+                else:
+                    # Insert command into the command queue
+                    self.command_queue.insert(new_command)
+
+            # Process commands if the queue is not empty
+            while not self.command_queue.is_empty():
+                # Process commands in the queue
+                self.process_command_queue(self.command_queue.pop())
+                time.sleep(self.tick_rate)
+
     def exit(self):
         GM.gui.quick_gui(
-            f"{utils.get_bot_name()} was manually disconnected.",
+            f"{utils.get_bot_name()} is being shutdown.",
             text_type='header',
             box_align='left')
         for plugin in self.bot_plugins.values():
             plugin.quit()
         utils.clear_directory(utils.get_temporary_img_dir())
         reg_print("Cleared temporary directories.")
+        if self.web_thr:
+            stop_web()
+            self.web_thr.join()
+            reg_print("JJMumbleBot Web Interface was disconnected.")
+            GM.logger.info("JJMumbleBot Web Interface was disconnected.")
         self.exit_flag = True
 
     def loop(self):
