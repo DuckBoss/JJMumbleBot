@@ -589,7 +589,7 @@ class JJMumbleBot:
 
     def exit(self):
         GM.gui.quick_gui(
-            f"{utils.get_bot_name()} was manually disconnected.",
+            f"{utils.get_bot_name()} is being shutdown.",
             text_type='header',
             box_align='left')
         for plugin in self.bot_plugins.values():
