@@ -17,6 +17,7 @@ __pycache__/
 permanent_media/
 temporary_media/
 temporary_images/
+privileges.csv
 aliases.csv
 config.ini
 tests/img_test.jpg
