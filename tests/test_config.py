@@ -13,7 +13,7 @@ class Tests(unittest.TestCase):
 
     def test_version(self):
         bot_version = GM.version
-        self.assertEqual(bot_version, "v2.0.1")
+        self.assertEqual(bot_version, "v2.1.0")
 
     def test_server_ip(self):
         server_ip = GM.cfg['Connection_Settings']['ServerIP']
