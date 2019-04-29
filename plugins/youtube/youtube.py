@@ -227,7 +227,6 @@ class Plugin(PluginBase):
 
             YH.all_searches = YM.get_search_results(search_term)
             search_results = YM.get_choices(YH.all_searches)
-
             GM.gui.quick_gui(
                 f"{search_results}\nWhich one would you like to play?",
                 text_type='header',
