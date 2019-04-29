@@ -1,3 +1,6 @@
+wtforms==2.2.1
+cheroot==6.5.4
+flask==1.0.2
 opuslib==3.0.1
 youtube_dl==2019.4.24
 requests==2.21.0
