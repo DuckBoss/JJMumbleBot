@@ -1,11 +1,16 @@
 import configparser
 import time
 import datetime
+from pymumble.pymumble_py3.messages import Cmd as PyMessages
+from pymumble.pymumble_py3.constants import *
 
 
 class GlobalMods:
-    # JJMumbleBot Version
-    version = "v2.0.1"
+    # JJMumbleBot data
+    version = "v2.1.0"
+    jjmumblebot = None
+    # Web interface
+    web_server = None
     # Mumble instance
     mumble = None
     # Config Access
@@ -27,6 +32,18 @@ class GlobalMods:
     minutes = 0
     hours = 0
     days = 0
+
+
+class RemoteTextMessage(PyMessages):
+    def __init__(self, session, channel_id, message, actor):
+        PyMessages.__init__(self)
+
+        self.cmd = PYMUMBLE_CMD_TEXTMESSAGE
+        self.actor = actor
+        self.parameters = {"session": session,
+                           "channel_id": channel_id,
+                           "message": message,
+                           "actor": actor}
 
 
 def debug_print(msg):
