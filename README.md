@@ -5,7 +5,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
 [![Build Status](https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=master)](https://travis-ci.com/DuckBoss/JJMumbleBot)
 
-A plugin-based python 3 mumble bot with extensive features and a basic web interface.
+A plugin-based python 3 mumble bot with extensive features.
 
 
 ## Features
