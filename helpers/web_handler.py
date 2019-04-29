@@ -1,7 +1,7 @@
 from flask import Flask, render_template, flash, request, redirect
 from wtforms import Form, validators, StringField
 from helpers.global_access import GlobalMods as GM
-from cheroot.wsgi import Server as wsgiserver, PathInfoDispatcher
+from cheroot.wsgi import Server as WsgiServer, PathInfoDispatcher
 from os import urandom
 
 web_app = Flask(__name__)
@@ -28,7 +28,7 @@ def main():
 
 def init_web():
     d = PathInfoDispatcher({'/': web_app})
-    GM.web_server = wsgiserver((GM.cfg['Web_Interface']['WebIP'], int(GM.cfg['Web_Interface']['WebPort'])), d)
+    GM.web_server = WsgiServer((GM.cfg['Web_Interface']['WebIP'], int(GM.cfg['Web_Interface']['WebPort'])), d)
     GM.web_server.start()
 
 
