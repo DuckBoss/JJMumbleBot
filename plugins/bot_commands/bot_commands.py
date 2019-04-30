@@ -71,7 +71,7 @@ class Plugin(PluginBase):
         elif command == "msg":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            GM.gui.quick_gui(message[1:].split(' ', 2)[2], text_type='header', box_align='left', user=all_messages[1])
+            GM.gui.quick_gui(message[1:].split(' ', 2)[2], text_type='header', box_align='left', user=all_messages[1], ignore_whisper=True)
             GM.logger.info(f"Msg:[{all_messages[1]}]->[{message[1:].split(' ', 2)[2]}]")
             return
 
