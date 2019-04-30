@@ -50,10 +50,10 @@ def parse_message(text):
     return message
 
 
-def echo(channel, message_text, check_whisper=True):
+def echo(channel, message_text, ignore_whisper=False):
     if channel is None:
         return
-    if GM.whisper_target is not None and check_whisper:
+    if GM.whisper_target is not None and not ignore_whisper:
         if GM.whisper_target["type"] == 0:
             GM.mumble.channels[GM.whisper_target["id"]].send_text_message(message_text)
         elif GM.whisper_target["type"] == 1:
