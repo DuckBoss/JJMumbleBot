@@ -26,6 +26,7 @@ class Plugin(PluginBase):
             <b>!setwhisperme</b>: Sets the whisper target to the command sender.<br>\
             <b>!setwhisperchannel 'channelname'</b>: Sets the whisper target to the given channel<br>\
             <b>!clearwhisper</b>: Clears any previously set whisper target<br>\
+            <b>!getwhisper</b>: Displays the current whisper target<br>\
             <b>!version</b>: Displays the bot version.<br>\
             <b>!status</b>: Displays the bots current status.<br>\
             <b>!refresh</b>: Refreshes all plugins.<br>\
@@ -192,6 +193,36 @@ class Plugin(PluginBase):
                                  box_align='left')
                 return
             return
+
+        elif command == "getwhisper":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            if GM.whisper_target is None:
+                GM.gui.quick_gui("There is no whisper target set", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                return
+            if GM.whisper_target["type"] == 0:
+                ch = GM.mumble.channels[GM.whisper_target['id']]['name']
+                GM.gui.quick_gui(f"Current whisper channel: {ch}", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                return
+            elif GM.whisper_target["type"] == 1:
+                us = ""
+                for user in GM.mumble.users:
+                    if GM.mumble.users[user]['session'] == GM.whisper_target['id']:
+                        us = GM.mumble.users[user]['name']
+                GM.gui.quick_gui(f"Current whisper user: {us}", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                return
+            elif GM.whisper_target["type"] == 2:
+                users = ""
+                for i, user in enumerate(GM.mumble.users):
+                    if GM.mumble.users[user]['session'] == GM.whisper_target['id']:
+                        users += f"<br>[{i}] - GM.mumble.users[user]['name']"
+                GM.gui.quick_gui(f"Current whisper users: {users}", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                return
+
 
         elif command == "setwhisperuser":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
