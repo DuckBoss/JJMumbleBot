@@ -29,8 +29,6 @@ class JJMumbleBot:
     bot_plugins = {}
     # Web thread.
     web_thr = None
-    # Command history.
-    cmd_history = None
     # Runtime parameters.
     tick_rate = 0.1
     multi_cmd_limit = 5
@@ -89,7 +87,7 @@ class JJMumbleBot:
         self.command_queue = QueueHandler(cmd_queue_lim)
         # Initialize command history tracker.
         cmd_history_lim = int(GM.cfg['Main_Settings']['CommandHistoryLimit'])
-        self.cmd_history = CMDQueue(cmd_history_lim)
+        GM.cmd_history = CMDQueue(cmd_history_lim)
         # Run Debug Mode tests.
         if GM.debug_mode:
             self.config_debug()
@@ -282,7 +280,7 @@ class JJMumbleBot:
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
             # add to command history
-            cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
+            cmd_list = [GM.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
                 reg_print(
@@ -479,7 +477,7 @@ class JJMumbleBot:
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Command History:</font>"
-            for i, item in enumerate(self.cmd_history.queue_storage):
+            for i, item in enumerate(GM.cmd_history.queue_storage):
                 cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{i}]</font> - {item}"
                 if i % 50 == 0 and i != 0:
                     GM.gui.quick_gui(
@@ -533,7 +531,7 @@ class JJMumbleBot:
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
             # add to command history
-            cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
+            cmd_list = [GM.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
                 reg_print(

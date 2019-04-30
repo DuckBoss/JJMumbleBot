@@ -26,6 +26,8 @@ class GlobalMods:
     safe_mode = False
     verbose_mode = False
     quiet_mode = False
+    # Command history.
+    cmd_history = None
     # Up-time Tracker
     start_seconds = None
     seconds = 0
