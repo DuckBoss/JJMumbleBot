@@ -555,6 +555,8 @@ class JJMumbleBot:
             # else:
             thr = threading.Thread(target=plugin.process_command, args=(command_text,))
             thr.start()
+            if command_type == "yt" or command_type == "youtube":
+                thr.join()
 
     def remote_command(self, message):
         if message[0] == self.cmd_token:
@@ -562,9 +564,7 @@ class JJMumbleBot:
             self.live_plugin_check()
 
             text = RemoteTextMessage(channel_id=GM.mumble.users.myself['channel_id'], session=GM.mumble.users.myself['session'], message=message, actor=GM.mumble.users.myself['session'])
-            # example input: !version ; !about ; !yt twice ; !p ; !status
             all_commands = [msg.strip() for msg in message.split(';')]
-            # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
             # add to command history
             cmd_list = [GM.cmd_history.insert(cmd) for cmd in all_commands]
