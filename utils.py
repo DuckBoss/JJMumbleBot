@@ -78,7 +78,7 @@ def unmute():
 def msg(receiver, message):
     for user in GM.mumble.users:
         if GM.mumble.users[user]['name'] == receiver:
-            GM.mumble.users[user].send_message(message)
+            GM.mumble.users[user].send_text_message(message)
 
 
 def get_plugin_dir():
