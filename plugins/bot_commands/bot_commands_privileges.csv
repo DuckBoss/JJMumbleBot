@@ -26,3 +26,7 @@ sleep,2
 history,2
 reboot,4
 uptime,1
+setwhisperuser,4
+setwhisperchannel,4
+clearwhisper,4
+

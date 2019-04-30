@@ -29,7 +29,7 @@ class Plugin(PluginBase):
             <b>!about</b>: Displays the bots about screen.<br>\
             <b>!uptime</b>: Displays the amount of time the bot has been online.<br>\
             <b>!spam_test</b>: Spams 10 test messages in the channel. This is an admin-only command.<br>"
-    plugin_version = "2.0.0"
+    plugin_version = "2.2.0"
     priv_path = "bot_commands/bot_commands_privileges.csv"
 
     def __init__(self):
@@ -165,7 +165,7 @@ class Plugin(PluginBase):
                 if result:
                     GM.gui.quick_gui(f"User: {parameter} added to the blacklist.<br>Reason: {reason}", text_type='header',
                                      box_align='left', text_align='left')
-                    GM.logger.info(f"<br>Blacklisted user: {parameter} <br>Reason: {reason}")
+                    GM.logger.info(f"Blacklisted user: {parameter} <br>Reason: {reason}")
             except IndexError:
                 GM.gui.quick_gui(pv.get_blacklist(), text_type='header',
                                  box_align='left', text_align='left')
@@ -180,11 +180,55 @@ class Plugin(PluginBase):
                 if result:
                     GM.gui.quick_gui(f"User: {parameter} removed from the blacklist.", text_type='header',
                                      box_align='left')
-                    GM.logger.info(f"<br>User: {parameter} removed from the blacklist.")
+                    GM.logger.info(f"User: {parameter} removed from the blacklist.")
             except IndexError:
                 GM.gui.quick_gui("Command format: !whitelist username", text_type='header',
                                  box_align='left')
                 return
+            return
+
+        elif command == "setwhisperuser":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            try:
+                parameter = message_parse[1]
+                utils.set_whisper_user(parameter)
+
+                GM.gui.quick_gui(f"Set whisper to User: {parameter}", text_type='header',
+                                 box_align='left')
+                GM.logger.info(f"Set whisper to User: {parameter}.")
+            except Exception:
+                GM.gui.quick_gui("Command format: !setwhisperuser username", text_type='header',
+                                 box_align='left')
+                return
+            return
+
+        elif command == "setwhisperchannel":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            try:
+                parameter = message_parse[1]
+                utils.set_whisper_channel(parameter)
+
+                GM.gui.quick_gui(f"Set whisper to Channel: {parameter}", text_type='header',
+                                 box_align='left')
+                GM.logger.info(f"Set whisper to Channel: {parameter}.")
+            except Exception:
+                GM.gui.quick_gui("Command format: !setwhisperchannel channel_name", text_type='header',
+                                 box_align='left')
+                return
+            return
+
+        elif command == "clearwhisper":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            utils.clear_whisper()
+            if GM.whisper_target is None:
+                GM.gui.quick_gui(f"Cleared current whisper", text_type='header',
+                                 box_align='left')
+                return
+            GM.gui.quick_gui("Unable to remove current whisper!", text_type='header',
+                             box_align='left')
             return
 
     def plugin_test(self):
