@@ -22,6 +22,9 @@ class Plugin(PluginBase):
             <b>!blacklist</b>: Displays the current list of users in the blacklist.<br>\
             <b>!blacklist 'username'</b>: Blacklists specific users from using certain plugin commands.<br>\
             <b>!whitelist 'username'</b>: Removes an existing user from the blacklist.<br>\
+            <b>!setwhisperuser 'username'</b>: Sets the whisper target to the given user<br>\
+            <b>!setwhisperchannel 'channelname'</b>: Sets the whisper target to the given channel<br>\
+            <b>!clearwhisper</b>: Clears any previously set whisper target<br>\
             <b>!version</b>: Displays the bot version.<br>\
             <b>!status</b>: Displays the bots current status.<br>\
             <b>!refresh</b>: Refreshes all plugins.<br>\
