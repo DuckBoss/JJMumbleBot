@@ -1,6 +1,6 @@
 <html>
   <head>
-     <title>JJMumbleBot Web Interface Form</title>
+     <title>JJMumbleBot Web Interface - Command Page</title>
      <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,7 +10,7 @@
 
     <div class="container"><br>
       <center>
-        <h2>JJMumbleBot Web Interface</h2>
+        <h2>JJMumbleBot - Command Page</h2>
       </center>
     </div>
 
@@ -25,17 +25,12 @@
 	    <br>
 	</div>
         <br>
-        <center>
-          <button type="submit" class="btn btn-success">Submit</button>
-        </center>
-      </form>
-      <br>
-        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
         {% for message in messages %}
             {% if "Error" not in message[1]: %}
                 <div class="alert alert-info">
-                <strong>Success! </strong> {{ message[1] }}
+                <strong>Command Sent: </strong> {{ message[1] }}
                 </div>
             {% endif %}
             {% if "Error" in message[1]: %}
@@ -46,6 +41,19 @@
         {% endfor %}
             {% endif %}
         {% endwith %}
+          <br>
+        <center>
+          <button type="submit" class="btn btn-success">Submit</button>
+        </center>
+      </form>
+
+
+        <br>
+        <form method="post" action="/history">
+        <center>
+            <button type="submit" class="btn btn-success">Command History</button>
+        </center>
+        </form>
     </div>
     <br>
     </div>
