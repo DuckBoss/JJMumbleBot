@@ -200,7 +200,7 @@ class Plugin(PluginBase):
                 parameter = message_parse[1]
                 if parameter == GM.cfg['Connection_Settings']['UserID']:
                     GM.logger.info("I can't set the whisper target to myself!")
-                    GM.gui.quick_gui("I Can't set the whisper target to myself!", text_type='header',
+                    GM.gui.quick_gui("I can't set the whisper target to myself!", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                     return
                 utils.set_whisper_user(parameter)
