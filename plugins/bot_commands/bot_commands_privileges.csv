@@ -29,4 +29,4 @@ uptime,1
 setwhisperuser,4
 setwhisperchannel,4
 clearwhisper,4
-
+setwhisperme,4
