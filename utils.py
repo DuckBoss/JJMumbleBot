@@ -22,15 +22,51 @@ def get_templates_dir():
     return os.path.join(os.path.dirname(__file__), "/templates")
 
 
+def set_whisper_user(username):
+    for user in GM.mumble.users:
+        if GM.mumble.users[user]['name'] == username:
+            GM.whisper_target = {"id": GM.mumble.users[user]['session'], "type": 1}
+            GM.mumble.sound_output.set_whisper(GM.whisper_target["id"], channel=False)
+
+
+def set_whisper_multi_user(users_list):
+    GM.whisper_target = {"id": users_list, "type": 2}
+    GM.mumble.sound_output.set_whisper(GM.whisper_target)
+
+
+def set_whisper_channel(channel_name):
+    channel_id = get_channel(channel_name)['channel_id']
+    GM.whisper_target = {"id": channel_id, "type": 0}
+    GM.mumble.sound_output.set_whisper(GM.whisper_target["id"], channel=True)
+
+
+def clear_whisper():
+    GM.whisper_target = None
+    GM.mumble.sound_output.remove_whisper()
+
+
 def parse_message(text):
     message = text.message.strip()
     return message
 
 
-def echo(channel, message_text):
+def echo(channel, message_text, check_whisper=True):
     if channel is None:
         return
+    if GM.whisper_target is not None and check_whisper:
+        if GM.whisper_target["type"] == 0:
+            GM.mumble.channels[GM.whisper_target["id"]].send_text_message(message_text)
+        elif GM.whisper_target["type"] == 1:
+            msg_id(GM.whisper_target["id"], message_text)
+        elif GM.whisper_target["type"] == 2:
+            for person in GM.whisper_target["id"]:
+                msg_id(person, message_text)
+        return
     channel.send_text_message(message_text)
+
+
+def echo_my_channel(message_text):
+    get_my_channel().send_text_message(message_text)
 
 
 def get_channel(channel_name):
@@ -78,6 +114,12 @@ def unmute():
 def msg(receiver, message):
     for user in GM.mumble.users:
         if GM.mumble.users[user]['name'] == receiver:
+            GM.mumble.users[user].send_text_message(message)
+
+
+def msg_id(receiver_id, message):
+    for user in GM.mumble.users:
+        if GM.mumble.users[user]['session'] == receiver_id:
             GM.mumble.users[user].send_text_message(message)
 
 
