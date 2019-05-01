@@ -20,3 +20,4 @@ restart,!reboot
 quit,!exit
 stream,!link
 streamfront,!linkfront
+whisperme,!setwhisperme
