@@ -24,7 +24,7 @@ class Tests(unittest.TestCase):
 
     def test_version_help(self):
         cur_plugin = self.bot_plugins.get('help')
-        self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.2.0")
 
     def test_version_randomizer(self):
         cur_plugin = self.bot_plugins.get('randomizer')
