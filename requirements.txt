@@ -1,10 +1,10 @@
 opuslib==3.0.1
-youtube_dl==2019.4.24
+youtube_dl==2019.4.30
 requests==2.21.0
 Pillow==6.0.0
 beautifulsoup4==4.7.1
 protobuf==3.7.1
 configparser==3.7.4
 wtforms==2.2.1
-cheroot==6.5.4
+cheroot==6.5.5
 flask==1.0.2

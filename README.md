@@ -16,12 +16,14 @@ A plugin-based python 3 mumble bot with extensive features.
     - Queue System
     - Direct Youtube Link Support
     - Search/Browse Youtube Support
+    - Whisper Support
   - <b>Images Plugin</b> - Posts images from urls or from a local directory in the channel.
     - Local Images Support
     - Direct Link Images Support
   - <b>Sound Board Plugin</b> - Sound Board that plays short wav audio clips in the channel.
     - Local Audio Clips Support
     - Download and Play Support
+    - Whisper Support
   - <b>Randomizer Plugin</b> - Do custom dice rolls, coin flips, etc in the channel.
     - Dice Rolls
     - Coin Flips
@@ -30,6 +32,7 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Web Interface</b> - A basic web interface using flask/cheroot to interface with the bot remotely.
+- <b>Whisper Support</b> - Mumble whisper support for audio and text data.
 - <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
 - <b>Event logging to keep track of bot usage and command history.</b>
 - <b>Multi-Command Input</b> - Input multiple commands in a single line.
