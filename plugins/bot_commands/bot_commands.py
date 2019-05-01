@@ -243,7 +243,7 @@ class Plugin(PluginBase):
                 GM.gui.quick_gui(f"Set whisper to User: {parameter}", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 GM.logger.info(f"Set whisper to User: {parameter}.")
-            except Exception:
+            except IndexError:
                 GM.gui.quick_gui("Invalid whisper command!<br>Command format: !setwhisperuser username", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 return
@@ -252,38 +252,46 @@ class Plugin(PluginBase):
         elif command == "removewhisperuser":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
+            try:
+                username = message_parse[1]
+                if GM.whisper_target is not None:
+                    if not isinstance(GM.whisper_target['id'], list):
+                        GM.gui.quick_gui("<br>The current whisper mode is set to single user/channel."
+                                         "<br>You can only remove a user from a multi-user whisper mode."
+                                         "<br>Did you mean to use the 'clearwhisper' command?", text_type='header',
+                                         box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                        return
+                else:
+                    return
 
-            username = message_parse[1]
-            if not isinstance(GM.whisper_target['id'], list):
-                GM.gui.quick_gui("<br>The current whisper mode is set to single user/channel."
-                                 "<br>You can only remove a user from a multi-user whisper mode."
-                                 "<br>Did you mean to use the 'clearwhisper' command?", text_type='header',
-                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
-                return
-
-            user_id = None
-            for user in GM.mumble.users:
-                if GM.mumble.users[user]['name'] == username:
-                    user_id = GM.mumble.users[user]['session']
-            if user_id is not None:
-                if user_id in GM.whisper_target['id']:
-                    GM.whisper_target['id'].remove(user_id)
+                user_id = None
+                for user in GM.mumble.users:
+                    if GM.mumble.users[user]['name'] == username:
+                        user_id = GM.mumble.users[user]['session']
+                if user_id is not None:
+                    if user_id in GM.whisper_target['id']:
+                        GM.whisper_target['id'].remove(user_id)
+                    else:
+                        GM.gui.quick_gui(f"Could not find user: {username} in the whisper targets!", text_type='header',
+                                         box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                        return
                 else:
                     GM.gui.quick_gui(f"Could not find user: {username} in the whisper targets!", text_type='header',
                                      box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                     return
-            else:
-                GM.gui.quick_gui(f"Could not find user: {username} in the whisper targets!", text_type='header',
+                if len(GM.whisper_target['id']) < 1:
+                    utils.clear_whisper()
+                else:
+                    utils.set_whisper_multi_user(GM.whisper_target['id'])
+
+                GM.gui.quick_gui(f"Removed user: {username} from the whisper targets!", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                GM.logger.info(f"Removed user: {username} from the whisper targets!")
+            except IndexError:
+                GM.gui.quick_gui("Invalid whisper command!<br>Command format: !removewhisperuser username", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 return
-            if len(GM.whisper_target['id']) < 1:
-                utils.clear_whisper()
-            else:
-                utils.set_whisper_multi_user(GM.whisper_target['id'])
-
-            GM.gui.quick_gui(f"Removed user: {username} from the whisper targets!", text_type='header',
-                             box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
-            GM.logger.info(f"Removed user: {username} from the whisper targets!")
+            return
 
         elif command == "addwhisperuser":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
@@ -295,9 +303,12 @@ class Plugin(PluginBase):
                     GM.gui.quick_gui("I can't add myself to the whisper targets!", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                     return
-                if not isinstance(GM.whisper_target['id'], list):
-                    GM.gui.quick_gui("<br>The current whisper mode is set to single user.<br>Use the 'setwhisperusers' command for multi-user whispers.", text_type='header',
-                                     box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                if GM.whisper_target is not None:
+                    if not isinstance(GM.whisper_target['id'], list):
+                        GM.gui.quick_gui("<br>The current whisper mode is set to single user.<br>Use the 'setwhisperusers' command for multi-user whispers.", text_type='header',
+                                         box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                        return
+                else:
                     return
                 for user in GM.mumble.users:
                     if GM.mumble.users[user]['name'] == username:
@@ -314,7 +325,7 @@ class Plugin(PluginBase):
                 GM.gui.quick_gui(f"Added new user: {username} to the whisper targets!", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 GM.logger.info(f"Added new user: {username} to the whisper targets!")
-            except Exception:
+            except IndexError:
                 GM.gui.quick_gui("Invalid whisper command!<br>Command format: !addwhisperuser username", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 return
@@ -337,7 +348,7 @@ class Plugin(PluginBase):
                 GM.gui.quick_gui(f"Added whisper to multiple users!", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 GM.logger.info(f"Added whisper to multiple users!")
-            except Exception:
+            except IndexError:
                 GM.gui.quick_gui("Invalid whisper command!<br>Command format: !setwhisperusers username0,username1,...", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 return
@@ -346,21 +357,16 @@ class Plugin(PluginBase):
         elif command == "setwhisperme":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
-            try:
-                parameter = GM.mumble.users[text.actor]['name']
-                if parameter == GM.cfg['Connection_Settings']['UserID']:
-                    GM.logger.info("I can't set the whisper target to myself!")
-                    return
-
-                utils.set_whisper_user(parameter)
-
-                GM.gui.quick_gui(f"Set whisper to User: {parameter}", text_type='header',
-                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
-                GM.logger.info(f"Set whisper to User: {parameter}.")
-            except Exception:
-                GM.gui.quick_gui("Invalid whisper command!<br>Command format: !setwhisperuser username", text_type='header',
-                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+            parameter = GM.mumble.users[text.actor]['name']
+            if parameter == GM.cfg['Connection_Settings']['UserID']:
+                GM.logger.info("I can't set the whisper target to myself!")
                 return
+
+            utils.set_whisper_user(parameter)
+
+            GM.gui.quick_gui(f"Set whisper to user: {parameter}", text_type='header',
+                             box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+            GM.logger.info(f"Set whisper to user: {parameter}.")
             return
 
         elif command == "setwhisperchannel":
@@ -370,10 +376,10 @@ class Plugin(PluginBase):
                 parameter = message_parse[1]
                 utils.set_whisper_channel(parameter)
 
-                GM.gui.quick_gui(f"Set whisper to Channel: {parameter}", text_type='header',
+                GM.gui.quick_gui(f"Set whisper to channel: {parameter}", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
-                GM.logger.info(f"Set whisper to Channel: {parameter}.")
-            except Exception:
+                GM.logger.info(f"Set whisper to channel: {parameter}.")
+            except IndexError:
                 GM.gui.quick_gui("Command format: !setwhisperchannel channel_name", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 return
