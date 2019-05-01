@@ -10,11 +10,12 @@ class Plugin(PluginBase):
     help_data = "All commands can be run by typing it in the chat or privately messaging JJMumbleBot.<br>\
                 <b>!help</b>: Displays this general help screen.<br>\
                 <b>!bot_help</b>: Displays the bot_commands plugin help screen.<br>\
+                <b>!whisper_help</b>: Displays the whisper plugin help screen.<br>\
                 <b>!youtube_help/!yt_help</b>: Displays the youtube plugin help screen.<br>\
                 <b>!sound_board_help/!sb_help</b>: Displays the sound_board plugin help screen.<br>\
                 <b>!images_help/!img_help</b>: Displays the images plugin help screen.<br>\
                 <b>!randomizer_help</b>: Displays the randomizer plugin help screen.<br>"
-    plugin_version = "2.0.0"
+    plugin_version = "2.2.0"
     priv_path = "help/help_privileges.csv"
     bot_plugins = {}
 
@@ -70,6 +71,28 @@ class Plugin(PluginBase):
 
             reg_print("Displayed bot commands plugin help screen in the channel.")
             GM.logger.info("Displayed bot commands plugin help screen in the channel.")
+            return
+
+        elif command == "whisper_help":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            GM.gui.open_box()
+            all_help_lines = [msg.strip() for msg in self.bot_plugins.get("whisper").help().split('<br>')]
+            content = GM.gui.make_content(f'<font color="red">#####</font> '
+                                          f'{GUIHelper.bold("Whisper Plugin Help")} '
+                                          f'<font color="red">#####</font>')
+            GM.gui.append_row(content)
+            content = GM.gui.make_content(f'Plugin Version: {self.bot_plugins.get("whisper").get_plugin_version()}<br>', text_color='cyan')
+            GM.gui.append_row(content)
+
+            for i, item in enumerate(all_help_lines):
+                content = GM.gui.make_content(f'{item}', 'header', text_color='yellow', text_align="left")
+                GM.gui.append_row(content)
+            GM.gui.close_box()
+            GM.gui.display_box(channel=utils.get_my_channel())
+
+            reg_print("Displayed whisper plugin help screen in the channel.")
+            GM.logger.info("Displayed whisper plugin help screen in the channel.")
             return
 
         elif command == "sound_board_help":

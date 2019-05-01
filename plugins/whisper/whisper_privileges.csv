@@ -1,5 +1,9 @@
 command,level
-post,3
-img,2
-imglist,2
-imglist_echo,2
+setwhisperuser,4
+setwhisperchannel,4
+clearwhisper,4
+setwhisperme,4
+getwhisper,4
+setwhisperusers,4
+addwhisperuser,4
+removewhisperuser,4
