@@ -6,12 +6,15 @@ from pymumble.pymumble_py3.constants import *
 
 
 class GlobalMods:
-    # JJMumbleBot data
-    version = "v2.1.0"
+    # JJMumbleBot Data
+    version = "v2.2.0"
     jjmumblebot = None
-    # Web interface
-    web_server = None
-    # Mumble instance
+    # Whisper Target
+    whisper_target = None
+    # Audio Instance
+    audio_thread = None
+    audio_lock = False
+    # Mumble Instance
     mumble = None
     # Config Access
     cfg = configparser.ConfigParser()
@@ -26,6 +29,8 @@ class GlobalMods:
     safe_mode = False
     verbose_mode = False
     quiet_mode = False
+    # Command history.
+    cmd_history = None
     # Up-time Tracker
     start_seconds = None
     seconds = 0

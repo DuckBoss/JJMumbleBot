@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, request, redirect
+from flask import Flask, render_template, flash, request, redirect, url_for
 from wtforms import Form, validators, StringField
 from helpers.global_access import GlobalMods as GM
 from cheroot.wsgi import Server as WsgiServer, PathInfoDispatcher
@@ -19,11 +19,17 @@ def main():
         command = request.form['commandField']
         if form.validate():
             GM.jjmumblebot.remote_command(command)
-            flash(f'Command Sent: {command}')
+            flash(command)
             return redirect('/')
         else:
             flash("Error: A command is required!")
     return render_template('index.html', form=form)
+
+
+@web_app.route("/history", methods=['GET', 'POST'])
+def cmd_history():
+    cmd_strings = list(GM.cmd_history.queue_storage)
+    return render_template('history.html', cmd_strings=cmd_strings)
 
 
 def init_web():

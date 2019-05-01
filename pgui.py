@@ -12,7 +12,7 @@ class PseudoGUI:
     def __init__(self):
         debug_print("Pseudo-GUI initialized.")
 
-    def quick_gui(self, content, text_type="data", text_color=None, text_font='Calibri', text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None):
+    def quick_gui(self, content, text_type="data", text_color=None, text_font='Calibri', text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None, ignore_whisper=False):
         if self.box_open:
             return False
         if channel is None:
@@ -30,7 +30,7 @@ class PseudoGUI:
         content = self.make_content(content, text_type=text_type, text_color=text_color, text_font=text_font, text_align=text_align)
         self.append_row(content, align=row_align)
         self.close_box()
-        self.display_box(channel=channel, user=user)
+        self.display_box(channel=channel, user=user, ignore_whisper=ignore_whisper)
         self.clear_display()
 
     def quick_gui_img(self, directory, img_data, format=False, caption=None, bgcolor="black", channel=None, user=None, img_size=65536, cellspacing="5"):
@@ -103,14 +103,14 @@ class PseudoGUI:
         new_content = GUIHelper.content(text, tt=text_type, tc=text_color, tf=text_font, ta=text_align)
         return new_content
 
-    def display_box(self, channel, user=None):
+    def display_box(self, channel, user=None, ignore_whisper=False):
         if self.content is None or self.box_open:
             return
         if user is not None:
             utils.msg(user, self.content)
             self.clear_display()
             return
-        utils.echo(channel, self.content)
+        utils.echo(channel, self.content, ignore_whisper=ignore_whisper)
         self.clear_display()
 
     def clear_display(self):

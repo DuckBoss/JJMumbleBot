@@ -29,8 +29,6 @@ class JJMumbleBot:
     bot_plugins = {}
     # Web thread.
     web_thr = None
-    # Command history.
-    cmd_history = None
     # Runtime parameters.
     tick_rate = 0.1
     multi_cmd_limit = 5
@@ -89,7 +87,7 @@ class JJMumbleBot:
         self.command_queue = QueueHandler(cmd_queue_lim)
         # Initialize command history tracker.
         cmd_history_lim = int(GM.cfg['Main_Settings']['CommandHistoryLimit'])
-        self.cmd_history = CMDQueue(cmd_history_lim)
+        GM.cmd_history = CMDQueue(cmd_history_lim)
         # Run Debug Mode tests.
         if GM.debug_mode:
             self.config_debug()
@@ -232,7 +230,8 @@ class JJMumbleBot:
         GM.gui.quick_gui(
             f"{utils.get_bot_name()} is refreshing all plugins.",
             text_type='header',
-            box_align='left')
+            box_align='left',
+            ignore_whisper=True)
         for plugin in self.bot_plugins.values():
             plugin.quit()
         self.bot_plugins.clear()
@@ -245,7 +244,8 @@ class JJMumbleBot:
         GM.gui.quick_gui(
             f"{utils.get_bot_name()} has refreshed all plugins.",
             text_type='header',
-            box_align='left')
+            box_align='left',
+            ignore_whisper=True)
         GM.logger.info("JJ Mumble Bot has refreshed all plugins.")
 
     def join_server(self):
@@ -282,7 +282,7 @@ class JJMumbleBot:
             # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
             # add to command history
-            cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
+            cmd_list = [GM.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
                 reg_print(
@@ -348,14 +348,18 @@ class JJMumbleBot:
                 GM.gui.quick_gui(
                     f"Registered alias: [{alias_name}] - [{message_parse[2]}]",
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GM.mumble.users[text.actor]['name'])
             else:
                 aliases.add_to_aliases(alias_name, message_parse[2])
                 debug_print(f"Registered new alias: [{alias_name}] - [{message_parse[2]}]")
                 GM.gui.quick_gui(
                     f"Registered alias: [{alias_name}] - [{message_parse[2]}]",
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GM.mumble.users[text.actor]['name'])
             return
 
         elif command == "aliases":
@@ -370,13 +374,19 @@ class JJMumbleBot:
                         cur_text,
                         text_type='header',
                         box_align='left',
-                        text_align='left')
+                        text_align='left',
+                        ignore_whisper=True,
+                        user=GM.mumble.users[text.actor]['name']
+                        )
                     cur_text = ""
             GM.gui.quick_gui(
                 cur_text,
                 text_type='header',
                 box_align='left',
-                text_align='left')
+                text_align='left',
+                ignore_whisper=True,
+                user=GM.mumble.users[text.actor]['name']
+                )
             return
 
         elif command == "removealias":
@@ -390,13 +400,19 @@ class JJMumbleBot:
                 GM.gui.quick_gui(
                     f'Removed [{alias_name}] from registered aliases.',
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GM.mumble.users[text.actor]['name']
+                )
             else:
                 debug_print(f'Could not remove [{alias_name}] from registered aliases.')
                 GM.gui.quick_gui(
                     f'Could not remove [{alias_name}] from registered aliases.',
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GM.mumble.users[text.actor]['name']
+                )
             return
 
         elif command == "clearaliases":
@@ -407,13 +423,19 @@ class JJMumbleBot:
                 GM.gui.quick_gui(
                     'Cleared all registered aliases.',
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GM.mumble.users[text.actor]['name']
+                )
             else:
                 debug_print('The registered aliases could not be cleared.')
                 GM.gui.quick_gui(
                     'The registered aliases could not be cleared.',
                     text_type='header',
-                    box_align='left')
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GM.mumble.users[text.actor]['name']
+                )
             return
 
         elif command == "refresh":
@@ -446,7 +468,8 @@ class JJMumbleBot:
             GM.gui.quick_gui(
                 f"{utils.get_bot_name()} is {self.status()}.",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             return
 
         elif command == "version":
@@ -455,7 +478,8 @@ class JJMumbleBot:
             GM.gui.quick_gui(
                 f"{utils.get_bot_name()} is on version {utils.get_version()}",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             return
 
         elif command == "system_test":
@@ -472,27 +496,34 @@ class JJMumbleBot:
             GM.gui.quick_gui(
                 f"{utils.get_about()}<br>{utils.get_bot_name()} is on version {utils.get_version()}",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             return
 
         elif command == "history":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             cur_text = f"<font color='{GM.cfg['PGUI_Settings']['HeaderTextColor']}'>Command History:</font>"
-            for i, item in enumerate(self.cmd_history.queue_storage):
+            for i, item in enumerate(GM.cmd_history.queue_storage):
                 cur_text += f"<br><font color={GM.cfg['PGUI_Settings']['IndexTextColor']}>[{i}]</font> - {item}"
                 if i % 50 == 0 and i != 0:
                     GM.gui.quick_gui(
                         cur_text,
                         text_type='header',
                         box_align='left',
-                        text_align='left')
+                        text_align='left',
+                        ignore_whisper=True,
+                        user=GM.mumble.users[text.actor]['name']
+                    )
                     cur_text = ""
             GM.gui.quick_gui(
                 cur_text,
                 text_type='header',
                 box_align='left',
-                text_align='left')
+                text_align='left',
+                ignore_whisper=True,
+                user=GM.mumble.users[text.actor]['name']
+            )
 
         elif command == "uptime":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
@@ -500,7 +531,10 @@ class JJMumbleBot:
             GM.gui.quick_gui(
                 check_time(),
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                ignore_whisper=True,
+                user=GM.mumble.users[text.actor]['name']
+            )
             return
 
         elif command == "reboot":
@@ -517,10 +551,12 @@ class JJMumbleBot:
         self.process_core_commands(command_type, command_text)
         for plugin in self.bot_plugins.values():
             # if plugin.is_audio_plugin():
-            #plugin.process_command(command_text)
+            # plugin.process_command(command_text)
             # else:
             thr = threading.Thread(target=plugin.process_command, args=(command_text,))
             thr.start()
+            if command_type == "yt" or command_type == "youtube":
+                thr.join()
 
     def remote_command(self, message):
         if message[0] == self.cmd_token:
@@ -528,12 +564,10 @@ class JJMumbleBot:
             self.live_plugin_check()
 
             text = RemoteTextMessage(channel_id=GM.mumble.users.myself['channel_id'], session=GM.mumble.users.myself['session'], message=message, actor=GM.mumble.users.myself['session'])
-            # example input: !version ; !about ; !yt twice ; !p ; !status
             all_commands = [msg.strip() for msg in message.split(';')]
-            # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
             # add to command history
-            cmd_list = [self.cmd_history.insert(cmd) for cmd in all_commands]
+            cmd_list = [GM.cmd_history.insert(cmd) for cmd in all_commands]
 
             if len(all_commands) > self.multi_cmd_limit:
                 reg_print(
@@ -545,7 +579,7 @@ class JJMumbleBot:
             # Iterate through all commands provided and generate commands.
             for i, item in enumerate(all_commands):
                 # Generate command with parameters
-                #new_text = copy.deepcopy(text)
+                # new_text = copy.deepcopy(text)
                 new_text = text
                 new_text.message = item
                 new_command = None
@@ -563,7 +597,7 @@ class JJMumbleBot:
                             f"The multi-command limit was reached! The multi-command limit is {self.multi_cmd_limit} commands per line.")
                         return
                     for x, sub_item in enumerate(alias_commands):
-                        #sub_text = copy.deepcopy(text)
+                        # sub_text = copy.deepcopy(text)
                         sub_text = text
                         if len(item[1:].split()) > 1:
                             sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
@@ -591,7 +625,9 @@ class JJMumbleBot:
         GM.gui.quick_gui(
             f"{utils.get_bot_name()} is being shutdown.",
             text_type='header',
-            box_align='left')
+            box_align='left',
+            ignore_whisper=True,
+        )
         for plugin in self.bot_plugins.values():
             plugin.quit()
         utils.clear_directory(utils.get_temporary_img_dir())
