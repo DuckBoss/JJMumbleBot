@@ -31,3 +31,4 @@ setwhisperchannel,4
 clearwhisper,4
 setwhisperme,4
 getwhisper,4
+setwhisperusers,4

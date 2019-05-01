@@ -30,8 +30,10 @@ def set_whisper_user(username):
 
 
 def set_whisper_multi_user(users_list):
+    if not isinstance(users_list, list):
+        return
     GM.whisper_target = {"id": users_list, "type": 2}
-    GM.mumble.sound_output.set_whisper(GM.whisper_target)
+    GM.mumble.sound_output.set_whisper(GM.whisper_target["id"], channel=False)
 
 
 def set_whisper_channel(channel_name):
