@@ -46,6 +46,10 @@ class Tests(unittest.TestCase):
         cur_plugin = self.bot_plugins.get('images')
         self.assertEqual(cur_plugin.get_plugin_version(), "2.0.0")
 
+    def test_version_whisper(self):
+        cur_plugin = self.bot_plugins.get('whisper')
+        self.assertEqual(cur_plugin.get_plugin_version(), "2.2.0")
+
 
 if __name__ == '__main__':
     unittest.main()
