@@ -32,3 +32,5 @@ clearwhisper,4
 setwhisperme,4
 getwhisper,4
 setwhisperusers,4
+addwhisperuser,4
+removewhisperuser,4
