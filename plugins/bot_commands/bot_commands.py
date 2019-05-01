@@ -217,9 +217,11 @@ class Plugin(PluginBase):
                 return
             elif GM.whisper_target["type"] == 2:
                 users = ""
+                counter = 0
                 for i, user in enumerate(GM.mumble.users):
-                    if GM.mumble.users[user]['session'] == GM.whisper_target['id'][i]:
-                        users += f"<br>[{i}] - GM.mumble.users[user]['name']"
+                    if GM.mumble.users[user]['session'] in GM.whisper_target['id']:
+                        users += f"<br>[{counter}] - {GM.mumble.users[user]['name']}"
+                        counter += 1
                 GM.gui.quick_gui(f"Current whisper users: {users}", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                 return
@@ -245,19 +247,54 @@ class Plugin(PluginBase):
                 return
             return
 
+        elif command == "addwhisperuser":
+            if not pv.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            try:
+                username = message_parse[1]
+                if username == GM.cfg['Connection_Settings']['UserID']:
+                    GM.logger.info("I can't add myself to the whisper targets!")
+                    GM.gui.quick_gui("I can't add myself to the whisper targets!", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                    return
+                if not isinstance(GM.whisper_target['id'], list):
+                    GM.gui.quick_gui("<br>The current whisper mode is set to single user.<br>Use the 'setwhisperusers' command for multi-user whispers.", text_type='header',
+                                     box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                    return
+                for user in GM.mumble.users:
+                    if GM.mumble.users[user]['name'] == username:
+                        if GM.mumble.users[user]['session'] in GM.whisper_target['id']:
+                            GM.gui.quick_gui(
+                                "<br>This user is already one of the whisper targets!",
+                                text_type='header',
+                                box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                            return
+
+                GM.whisper_target['id'].append(username)
+                utils.set_whisper_multi_user(GM.whisper_target['id'])
+
+                GM.gui.quick_gui(f"Added new user to the whisper targets!", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                GM.logger.info(f"Added new user to the whisper targets!")
+            except Exception:
+                GM.gui.quick_gui("Invalid whisper command!<br>Command format: !addwhisperuser username", text_type='header',
+                                 box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
+                return
+            return
+
         elif command == "setwhisperusers":
             if not pv.plugin_privilege_checker(text, command, self.priv_path):
                 return
             try:
                 parameter = message_parse[1]
 
-                user_list = [user.strip() for user in parameter.split(',')]
-                if len(user_list) < 2:
-                    GM.gui.quick_gui("User the 'setwhisperuser' command for a single user!", text_type='header',
+                users_list = [user.strip() for user in parameter.split(',') if not user.strip() == GM.cfg['Connection_Settings']['UserID']]
+                if len(users_list) < 2:
+                    GM.gui.quick_gui("Use the 'setwhisperuser' command for a single user!", text_type='header',
                                      box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
                     return
-                formatted_list = [user for user in user_list if not user == GM.cfg['Connection_Settings']['UserID']]
-                utils.set_whisper_multi_user(formatted_list)
+
+                utils.set_whisper_multi_user(users_list)
 
                 GM.gui.quick_gui(f"Added whisper to multiple users!", text_type='header',
                                  box_align='left', user=GM.mumble.users[text.actor]['name'], ignore_whisper=True)
