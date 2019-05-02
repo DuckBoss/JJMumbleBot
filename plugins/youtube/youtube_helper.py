@@ -64,8 +64,11 @@ def next():
             text_type='header',
             box_align='left')
         GM.logger.info("The youtube audio queue moved to the next available track.")
+        try:
+            utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", utils.get_temporary_img_dir())
+        except FileNotFoundError:
+            pass
         stop_audio()
-
         download_next()
         play_audio()
         return
@@ -97,6 +100,7 @@ def skipto(skip_val):
             YoutubeHelper.queue_instance.pop()
 
         GM.logger.info("The youtube audio queue skipped tracks.")
+        utils.clear_directory(utils.get_temporary_img_dir())
         stop_audio()
         download_next()
         play_audio()
@@ -125,7 +129,8 @@ def download_song_name(url):
 
 def clear_queue():
     YoutubeHelper.queue_instance.clear()
-    utils.clear_directory(utils.get_temporary_img_dir())
+    if not YoutubeHelper.is_playing:
+        utils.clear_directory(utils.get_temporary_img_dir())
 
 
 def download_next():
@@ -349,15 +354,28 @@ def play_audio():
                 GM.mumble.sound_output.add_sound(audioop.mul(raw_music, 2, YoutubeHelper.volume))
             else:
                 if not YoutubeHelper.autoplay:
-                    #time.sleep(0.1)
                     YoutubeHelper.is_playing = False
                     if thr:
                         thr.join()
+                    try:
+                        utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", utils.get_temporary_img_dir())
+                        if YoutubeHelper.queue_instance.size() < 1:
+                            utils.clear_directory(utils.get_temporary_img_dir())
+                    except FileNotFoundError:
+                        pass
+                    download_next()
                     return
                 else:
                     YoutubeHelper.is_playing = False
                     if thr:
                         thr.join()
+                    try:
+                        utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", utils.get_temporary_img_dir())
+                        if YoutubeHelper.queue_instance.size() < 1:
+                            utils.clear_directory(utils.get_temporary_img_dir())
+                    except FileNotFoundError:
+                        pass
+                    download_next()
                     play_audio()
                     return
         else:

@@ -1,6 +1,9 @@
 from flask import Flask, render_template, flash, request, redirect, url_for
 from wtforms import Form, validators, StringField
 from helpers.global_access import GlobalMods as GM
+from plugins.youtube.youtube_helper import YoutubeHelper as YH
+import utils
+from shutil import copyfile
 from cheroot.wsgi import Server as WsgiServer, PathInfoDispatcher
 from os import urandom
 
@@ -18,9 +21,12 @@ def main():
     if request.method == 'POST':
         command = request.form['commandField']
         if form.validate():
-            GM.jjmumblebot.remote_command(command)
-            flash(command)
-            return redirect('/')
+            if command[0] == GM.cfg['Main_Settings']['CommandToken']:
+                GM.jjmumblebot.remote_command(command)
+                flash(command)
+                return redirect('/')
+            else:
+                flash(f"Error: Commands must start with [{GM.cfg['Main_Settings']['CommandToken']}]")
         else:
             flash("Error: A command is required!")
     return render_template('index.html', form=form)
@@ -30,6 +36,12 @@ def main():
 def cmd_history():
     cmd_strings = list(GM.cmd_history.queue_storage)
     return render_template('history.html', cmd_strings=cmd_strings)
+
+
+@web_app.route("/youtube", methods=['GET', 'POST'])
+def cmd_youtube():
+    cmd_strings = list(YH.queue_instance.queue_storage)
+    return render_template('youtube.html', cmd_strings=cmd_strings, cur_playing=YH.current_song_info)
 
 
 def init_web():

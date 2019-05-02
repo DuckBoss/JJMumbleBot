@@ -7,7 +7,7 @@ from pymumble.pymumble_py3.constants import *
 
 class GlobalMods:
     # JJMumbleBot Data
-    version = "v2.2.1"
+    version = "v2.3.0"
     jjmumblebot = None
     # Whisper Target
     whisper_target = None
@@ -16,6 +16,8 @@ class GlobalMods:
     audio_lock = False
     # Mumble Instance
     mumble = None
+    # Web Interface
+    web_server = None
     # Config Access
     cfg = configparser.ConfigParser()
     # PGUI System Access

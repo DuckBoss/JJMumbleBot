@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>JJMumbleBot Web Interface - Command History</title>
+    <title>JJMumbleBot Web Interface - Youtube Queue</title>
     <!--
     <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
@@ -39,7 +39,7 @@
 
 <div class="lead"><br>
     <center>
-        <h2>Command History</h2>
+        <h2>Youtube Queue</h2>
     </center>
 </div>
 
@@ -49,23 +49,41 @@
             <form action="" method="post" role="form">
                 <div class="form-group">
                     <center>
-                        <form method="post" action="/history">
+                        <form method="post" action="/youtube">
                             <button type="submit" class="btn btn-outline-success">Refresh</button>
                         </form>
                     </center>
                     <br>
+                    {% if cur_playing %}
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Now Playing</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-primary">
+                                <th scope='row'>
+                                {{ cur_playing['main_title'] }}
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+                <div class="form-group">
                     {% if cmd_strings %}
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th scope="col">Successful Commands</th>
+                                <th scope="col">Up Next</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for item in cmd_strings %}
+                            {% for item in cmd_strings | reverse %}
                             <tr class="table-success">
                                 <th scope='row'>
-                                {{ item }}
+                                {{ item['main_title'] }}
                                 </th>
                             </tr>
                             {% endfor %}
@@ -74,7 +92,7 @@
                     {% else %}
                     <div class="lead"><br>
                         <center>
-                            <p>The command history list is currently empty.</p>
+                            <p>The youtube queue is currently empty.</p>
                         </center>
                     </div>
                     {% endif %}
