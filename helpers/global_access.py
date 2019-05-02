@@ -7,7 +7,7 @@ from pymumble.pymumble_py3.constants import *
 
 class GlobalMods:
     # JJMumbleBot Data
-    version = "v2.2.1"
+    version = "v2.3.0"
     jjmumblebot = None
     # Whisper Target
     whisper_target = None
