@@ -27,7 +27,7 @@ class Plugin(PluginBase):
                         <b>!queue/!q</b>: Displays the youtube queue.<br>\
                         <b>!song</b>: Shows currently playing track.<br>\
                         <b>!clear</b>: Clears the current youtube queue.<br>"
-    plugin_version = "2.1.0"
+    plugin_version = "2.2.1"
     priv_path = "youtube/youtube_privileges.csv"
 
     sound_board_plugin = None
