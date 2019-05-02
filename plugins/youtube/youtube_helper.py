@@ -65,7 +65,8 @@ def next():
             box_align='left')
         GM.logger.info("The youtube audio queue moved to the next available track.")
         stop_audio()
-        # doesn't need a 'download_next()' here because the next song thumbnail should already be downloaded.
+
+        download_next()
         play_audio()
         return
     return
