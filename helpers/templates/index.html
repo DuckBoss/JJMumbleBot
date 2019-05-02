@@ -14,11 +14,11 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="https://github.com/DuckBoss/JJMumbleBot">JJMumbleBot</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
+    <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div class="navbar-collapse collapse" id="navbarColor02" style="">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
                 <a class="nav-link" href="{{url_for('main')}}">Command Page</a>
@@ -26,6 +26,11 @@
             <li class="nav-item">
                 <form method="post" action="/history">
                     <a class="nav-link" href="{{url_for('cmd_history')}}">Command History</a>
+                </form>
+            </li>
+            <li class="nav-item">
+                <form method="post" action="/youtube">
+                    <a class="nav-link" href="{{url_for('cmd_youtube')}}">Youtube Queue</a>
                 </form>
             </li>
         </ul>
