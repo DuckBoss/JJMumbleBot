@@ -17,7 +17,6 @@ from bs4 import BeautifulSoup
 import threading
 import copy
 from helpers.global_access import RemoteTextMessage
-from helpers.web_handler import init_web, stop_web
 
 
 class JJMumbleBot:
@@ -146,6 +145,7 @@ class JJMumbleBot:
         print("JJ Mumble Bot initialized!\n")
         # Initialize the web interface.
         if GM.cfg.getboolean('Connection_Settings', 'EnableWebInterface'):
+            from helpers.web_handler import init_web
             self.web_thr = threading.Thread(target=init_web)
             self.web_thr.start()
             reg_print("JJMumbleBot Web Service was initialized.")
@@ -633,6 +633,7 @@ class JJMumbleBot:
         utils.clear_directory(utils.get_temporary_img_dir())
         reg_print("Cleared temporary directories.")
         if self.web_thr:
+            from helpers.web_handler import stop_web
             stop_web()
             self.web_thr.join()
             reg_print("JJMumbleBot Web Interface was disconnected.")
