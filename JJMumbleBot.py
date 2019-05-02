@@ -580,7 +580,7 @@ class JJMumbleBot:
             for i, item in enumerate(all_commands):
                 # Generate command with parameters
                 # new_text = copy.deepcopy(text)
-                new_text = text
+                new_text = RemoteTextMessage(channel_id=GM.mumble.users.myself['channel_id'], session=GM.mumble.users.myself['session'], message=message, actor=GM.mumble.users.myself['session'])
                 new_text.message = item
                 new_command = None
                 try:
@@ -598,7 +598,7 @@ class JJMumbleBot:
                         return
                     for x, sub_item in enumerate(alias_commands):
                         # sub_text = copy.deepcopy(text)
-                        sub_text = text
+                        sub_text = RemoteTextMessage(channel_id=GM.mumble.users.myself['channel_id'], session=GM.mumble.users.myself['session'], message=message, actor=GM.mumble.users.myself['session'])
                         if len(item[1:].split()) > 1:
                             sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
                         else:
