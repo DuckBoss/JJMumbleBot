@@ -1,37 +1,64 @@
 <html>
 <head>
     <title>JJMumbleBot Web Interface - Command History</title>
+    <!--
     <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+    -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 </head>
 <body>
 
-<div class="container"><br>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="https://github.com/DuckBoss/JJMumbleBot">JJMumbleBot</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor03" aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{url_for('main')}}">Command Page</a>
+            </li>
+            <li class="nav-item">
+                <form method="post" action="/history">
+                    <a class="nav-link" href="{{url_for('cmd_history')}}">Command History</a>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="lead"><br>
     <center>
-        <h2>JJMumbleBot - Command History</h2>
+        <h2>Command History</h2>
     </center>
 </div>
 
-<div class=container"><br>
+<div class="container"><br>
     <div class="row align-items-center justify-content-center">
         <div class="col-md-4">
             <form action="" method="post" role="form">
                 <div class="form-group">
-                    <br>
-                    <center>
-
-                        <ol>
-                        {% for item in cmd_strings %}
-                            <li>
-                            {{ item }}
-                            </li>
-                        {% endfor %}
-                        </ol>
-
-                    </center>
-                    <br>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Successful Commands</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cmd_strings %}
+                            <tr class="table-success">
+                                <th scope='row'>
+                                {{ item }}
+                                </th>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
                 <br>
             </form>

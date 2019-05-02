@@ -18,9 +18,12 @@ def main():
     if request.method == 'POST':
         command = request.form['commandField']
         if form.validate():
-            GM.jjmumblebot.remote_command(command)
-            flash(command)
-            return redirect('/')
+            if command[0] == GM.cfg['Main_Settings']['CommandToken']:
+                GM.jjmumblebot.remote_command(command)
+                flash(command)
+                return redirect('/')
+            else:
+                flash(f"Error: Commands must start with [{GM.cfg['Main_Settings']['CommandToken']}]")
         else:
             flash("Error: A command is required!")
     return render_template('index.html', form=form)
