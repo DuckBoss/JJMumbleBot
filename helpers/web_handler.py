@@ -2,6 +2,7 @@ from flask import Flask, render_template, flash, request, redirect, url_for
 from wtforms import Form, validators, StringField
 from helpers.global_access import GlobalMods as GM
 from plugins.youtube.youtube_helper import YoutubeHelper as YH
+from plugins.youtube.youtube_helper import clear_queue
 import utils
 from shutil import copyfile
 from cheroot.wsgi import Server as WsgiServer, PathInfoDispatcher
@@ -37,6 +38,20 @@ def cmd_history():
     cmd_strings = list(GM.cmd_history.queue_storage)
     return render_template('history.html', cmd_strings=cmd_strings)
 
+
+@web_app.route("/clear_history", methods=['GET', 'POST'])
+def cmd_clear_history():
+    GM.cmd_history.clear()
+    cmd_strings = list(GM.cmd_history.queue_storage)
+    return render_template('history.html', cmd_strings=cmd_strings)
+
+
+@web_app.route("/clear_youtube", methods=['GET', 'POST'])
+def cmd_clear_youtube():
+    clear_queue()
+    cmd_strings = list(YH.queue_instance.queue_storage)
+    return render_template('youtube.html', cmd_strings=cmd_strings, cur_playing=YH.current_song_info)
+    
 
 @web_app.route("/youtube", methods=['GET', 'POST'])
 def cmd_youtube():
