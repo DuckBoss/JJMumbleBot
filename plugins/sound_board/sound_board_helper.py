@@ -88,6 +88,7 @@ def play_audio():
             if raw_music and SoundBoardHelper.audio_thread:
                 GM.mumble.sound_output.add_sound(audioop.mul(raw_music, 2, SoundBoardHelper.volume))
             else:
+                stop_audio()
                 return
         else:
             return
