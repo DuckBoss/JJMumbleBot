@@ -55,9 +55,4 @@ A plugin-based python 3 mumble bot with extensive features.
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-## 3rd Party Licenses
-The full licenses can be found by clicking the links below, or in the 'licenses' folder.
-https://github.com/thomaspark/bootswatch/blob/master/LICENSE
-https://github.com/azlux/pymumble/blob/pymumble_py3/LICENSE
-
 ### Got any questions or concerns? Please post an issue report!
