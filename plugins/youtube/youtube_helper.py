@@ -361,7 +361,7 @@ def play_audio():
                         utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", utils.get_temporary_img_dir())
                         if YoutubeHelper.queue_instance.size() < 1:
                             utils.clear_directory(utils.get_temporary_img_dir())
-                    except FileNotFoundError:
+                    except (FileNotFoundError, TypeError):
                         pass
                     download_next()
                     return
@@ -373,7 +373,7 @@ def play_audio():
                         utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", utils.get_temporary_img_dir())
                         if YoutubeHelper.queue_instance.size() < 1:
                             utils.clear_directory(utils.get_temporary_img_dir())
-                    except FileNotFoundError:
+                    except (FileNotFoundError, TypeError):
                         pass
                     download_next()
                     play_audio()
