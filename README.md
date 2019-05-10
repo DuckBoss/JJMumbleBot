@@ -32,7 +32,7 @@ A plugin-based python 3 mumble bot with extensive features.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
-- <b>Web Interface</b> - A basic web interface using flask/cheroot to interface with the bot remotely.
+- <b>Web Interface [Experimental Feature]</b> - A basic web interface using flask/cheroot to interface with the bot remotely.
 - <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
 - <b>Event logging to keep track of bot usage and command history.</b>
 - <b>Multi-Command Input</b> - Input multiple commands in a single line.
@@ -41,6 +41,10 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Command Tick Rates</b> - Commands in the queue are processed by the tick rate assigned in the config.
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
+
+## Notes
+- The Web Interface is currently an experimental feature. It is being refined but it is not yet ready for production in a large mumble server. It works fine for smaller servers but the current implementation has unnecessarily high network usage.
+
 
 ## Documentation
 <b> Please check out the wiki for documentation </b> <br>
