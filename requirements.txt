@@ -3,7 +3,7 @@ requests==2.22.0
 youtube_dl==2019.5.20
 Pillow==6.0.0
 beautifulsoup4==4.7.1
-protobuf==3.7.1
+protobuf==3.8.0
 configparser==3.7.4
 wtforms==2.2.1
 cheroot==6.5.5
