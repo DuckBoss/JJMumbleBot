@@ -4,7 +4,7 @@ youtube_dl==2019.8.2
 Pillow==6.1.0
 beautifulsoup4==4.7.1
 protobuf==3.9.0
-configparser==3.7.4
+configparser==3.8.1
 wtforms==2.2.1
 cheroot==6.5.5
 flask==1.0.3
