@@ -7,4 +7,4 @@ protobuf==3.9.0
 configparser==3.8.1
 wtforms==2.2.1
 cheroot==6.5.5
-flask==1.0.3
+flask==1.1.1
