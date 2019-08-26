@@ -1,0 +1,10 @@
+* UDP for audio streams (currently only on tcp tunnel)
+* manage ping counters
+* lot of features not implemented
+    - user management
+    - ACL
+    - Groups
+    - position
+    - targets
+    - bans
+    - ...
