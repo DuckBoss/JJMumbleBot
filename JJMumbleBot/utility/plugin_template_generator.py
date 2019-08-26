@@ -2,6 +2,7 @@ import os
 import sys
 from JJMumbleBot.lib.utils import dir_utils
 
+
 py_template = """
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
@@ -51,27 +52,24 @@ All commands can be run by typing it in the channel or privately messaging JJMum
 meta_template = """
 [Plugin Information]
 PluginVersion = 1.0.0
-PluginName = Example
-PluginDescription = Default plugin description.
+PluginName = Plugin Name
+PluginDescription = Plugin Description
 PluginLanguage = EN
-PluginCommands: [
-                "example_echo"
-                ]
+PluginCommands: []
+
+[Plugin Settings]
+; List commands that need the core thread to wait for completion.
+; This may include processes that require multiple commands in succession.
+; For example: [Youtube Plugin - !yt -> !p] process requires 2 commands in that order.
+ThreadWaitForCommands: []
+; Finishes the task before continuing the bot service process.
+UseSingleThread = False
 
 [Plugin Type]
 AudioPlugin = False
 ImagePlugin = False
 CorePlugin = False
 ExtensionPlugin = True
-
-[Plugin Requirements]
-RequiresCore = False
-RequiresUserPermissions = true
-RequiresHelpData = true
-RequiresImageProcessing = false
-RequiresAudioProcessing = false
-RequiresOtherPlugins = false
-RequiresWebInterface = false
 """
 priv_template = """
 command,level
