@@ -40,12 +40,12 @@ def format_image_html(img_ext, byte_arr):
 
 def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False):
     # Convert to JPG if it's PNG
-    img = Image.open(f"{img_dir}{img_name}.{img_ext}")
+    img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     if img_ext.upper() == 'PNG':
-        img.convert('RGB').save(f'{img_dir}{img_name}.jpg', 'JPEG')
+        img.convert('RGB').save(f'{img_dir}/{img_name}.jpg', 'JPEG')
         img_ext = 'jpg'
     # Open images
-    img = Image.open(f"{img_dir}{img_name}.{img_ext}")
+    img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     img.load()
 
     img_width = img.size[0]
@@ -54,27 +54,27 @@ def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw
     if img_width > 480 or img_height > 270:
         img.thumbnail((480, 270), Image.ANTIALIAS)
     # Save and close images
-    img.save(f"{img_dir}{img_name}.{img_ext}")
+    img.save(f"{img_dir}/{img_name}.{img_ext}")
     img.close()
     # Convert images to byte array
-    with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_read:
+    with open(f"{img_dir}/{img_name}.{img_ext}", "rb") as img_read:
         img_data = img_read.read()
         img_byte_arr = bytearray(img_data)
     # Keep lowering quality until it fits within the size restrictions.
     img_quality = 100
     while len(img_byte_arr) >= size_goal and img_quality > 0:
         img_byte_arr.clear()
-        with open(f"{img_dir}{img_name}.{img_ext}", "rb") as img_file:
+        with open(f"{img_dir}/{img_name}.{img_ext}", "rb") as img_file:
             img_data = img_file.read()
             img_byte_arr = bytearray(img_data)
-        img = Image.open(f"{img_dir}{img_name}.{img_ext}")
-        img.save(f"{img_dir}{img_name}.{img_ext}", quality=img_quality)
+        img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
+        img.save(f"{img_dir}/{img_name}.{img_ext}", quality=img_quality)
         img.close()
         img_quality -= 10
     if len(img_byte_arr) < size_goal:
         # delete jpg if generated from png
-        if os.path.isfile(f"{img_dir}{img_name}.png"):
-            os.unlink(f"{img_dir}{img_name}.jpg")
+        if os.path.isfile(f"{img_dir}/{img_name}.png"):
+            os.unlink(f"{img_dir}/{img_name}.jpg")
         if raw:
             return img_byte_arr
         # return formatted html img string
@@ -103,18 +103,18 @@ def download_image_requests(img_url):
     s = requests.Session()
     r = s.get(img_url, headers={'User-Agent': 'Mozilla/5.0'})
     if r.status_code == 200:
-        with open(f"image.{img_ext}", 'wb') as f:
+        with open(f"{dir_utils.get_temp_img_dir()}/_image.{img_ext}", 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         dprint(f"Downloaded image from: {img_url}")
     else:
-        dprint(f"403 Error! - {img_url}")
+        dprint(f"{r.status_code} Error! - {img_url}")
 
 
 def download_image_stream(img_url):
     dir_utils.clear_directory(dir_utils.get_temp_img_dir())
     img_ext = img_url.rsplit('.', 1)[1]
-    with open(f"{dir_utils.get_temp_img_dir()}image.{img_ext}", 'wb') as img_file:
+    with open(f"{dir_utils.get_temp_img_dir()}/_image.{img_ext}", 'wb') as img_file:
         resp = requests.get(img_url, stream=True)
         for block in resp.iter_content(1024):
             if not block:
