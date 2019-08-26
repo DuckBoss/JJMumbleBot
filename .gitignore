@@ -118,6 +118,8 @@ dmypy.json
 # Custom
 PermMediaDirectory/
 TempImageDirectory/
+aliases.csv
+user_privileges.csv
 JJMumbleBot/config.ini
 config.ini
 */config.ini
