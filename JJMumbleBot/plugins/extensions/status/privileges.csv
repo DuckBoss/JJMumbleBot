@@ -1,0 +1,9 @@
+command,level
+setstatus,1
+mystatus,1
+status,1
+clearstatus,1
+announcement,3
+setannouncement,3
+clearannouncement,3
+
