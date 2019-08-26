@@ -1,0 +1,15 @@
+alias,command
+restart,!reboot
+quit,!exit
+yt,!youtube
+p,!play
+v,!volume
+q,!queue
+rp,!replay
+skip,!next
+sbv,!sbvolume
+sbs,!sbstop
+sbl,!sblist
+sble,!sblist_echo
+imgl,!imglist
+imgle,!imglist_echo
