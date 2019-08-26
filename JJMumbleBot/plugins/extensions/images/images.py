@@ -42,7 +42,7 @@ class Plugin(PluginBase):
             # Format image
             time.sleep(1)
             img_ext = img_url.rsplit('.', 1)[1]
-            formatted_string = IH.format_image("image", img_ext, dir_utils.get_temp_img_dir())
+            formatted_string = IH.format_image("_image", img_ext, dir_utils.get_temp_img_dir())
             rprint("Posting an image to the mumble channel chat.")
             # Display image with PGUI system
             GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_img_dir()}", formatted_string,
@@ -50,6 +50,7 @@ class Plugin(PluginBase):
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                          format=False)
             GS.log_service.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
+            dir_utils.remove_file("_image.jpg", dir_utils.get_temp_img_dir())
             return
 
         elif command == "img":
@@ -69,7 +70,7 @@ class Plugin(PluginBase):
             formatted_string = IH.format_image(parameters[0], parameters[1], f"{dir_utils.get_perm_med_dir()}/images/")
             rprint("Posting an image to the mumble channel chat.")
             # Display image with PGUI system
-            GS.gui_service.quick_gui_img(f"{dir_utils.get_perm_med_dir()}images/", formatted_string,
+            GS.gui_service.quick_gui_img(f"{dir_utils.get_perm_med_dir()}/images/", formatted_string,
                                          bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                          format=False)
