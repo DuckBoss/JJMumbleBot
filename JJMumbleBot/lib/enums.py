@@ -6,4 +6,3 @@ class BotState(enum.Enum):
     ONLINE = 1,
     PROCESSING = 2,
     ERROR = 3
-
