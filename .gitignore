@@ -121,8 +121,6 @@ TempImageDirectory/
 aliases.csv
 user_privileges.csv
 config.ini
-config.ini
-config.ini
 *.pem
 *.wav
 *.oga
