@@ -58,11 +58,14 @@ def get_cur_audio_length():
     return duration
 
 
-def download_clip(clip_name, voice, msg):
+def download_clip(clip_name, voice, msg, directory=None):
     global current_track
     temp = {'text': msg, 'voice': voice}
     json_dump = json.dumps(temp)
-    print(json_dump)
+
+    if directory is None:
+        directory = f'{dir_utils.get_perm_med_dir()}'
+
     try:
         url = 'https://streamlabs.com/polly/speak'
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
@@ -72,9 +75,9 @@ def download_clip(clip_name, voice, msg):
             resp = requests.get(json.loads(r.text)['speak_url'])
             print(resp.status_code)
             if resp.status_code == 200:
-                with open(f'{dir_utils.get_perm_med_dir()}/text_to_speech/{clip_name}.oga', 'wb') as f:
+                with open(f'{directory}/text_to_speech/{clip_name}.oga', 'wb') as f:
                     f.write(resp.content)
-                uri = f'{dir_utils.get_perm_med_dir()}/text_to_speech/{clip_name}.oga'
+                uri = f'{directory}/text_to_speech/{clip_name}.oga'
                 sp.call(
                     [tts_metadata[C_PLUGIN_SETTINGS][P_VLC_DIR], uri] + ['-I', 'dummy', '--quiet',
                                                                               '--one-instance', '--no-repeat',
@@ -107,11 +110,15 @@ def clear_audio_thread():
     return False
 
 
-def play_audio():
+def play_audio(mode=1):
     global_settings.audio_dni = (True, tts_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
     global_settings.mumble_inst.sound_output.clear_buffer()
 
-    uri = f"file:///{dir_utils.get_perm_med_dir()}/text_to_speech/{current_track}.oga"
+    if mode == 0:
+        uri = f"file:///{dir_utils.get_temp_med_dir()}/text_to_speech/{current_track}.oga"
+    else:
+        uri = f"file:///{dir_utils.get_perm_med_dir()}/text_to_speech/{current_track}.oga"
+
     command = tts_metadata[C_PLUGIN_SETTINGS][P_VLC_DIR]
 
     if global_settings.audio_inst is not None:

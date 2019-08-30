@@ -14,6 +14,7 @@ class Plugin(PluginBase):
     def quit(self):
         ttsu.clear_audio_thread()
         ttsu.stop_audio()
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
         ttsu.exit_flag = True
         dprint("Exiting Text To Speech Plugin...")
 
@@ -231,9 +232,13 @@ class Plugin(PluginBase):
                         box_align='left',
                         user=GS.mumble_inst.users[text.actor]['name'])
                     return
-                if ttsu.download_clip("_temp", self.metadata[C_PLUGIN_SETTINGS][P_TTS_DEF_VOICE], all_messages[1].strip()):
+                if ttsu.download_clip("_temp",
+                                      self.metadata[C_PLUGIN_SETTINGS][P_TTS_DEF_VOICE],
+                                      all_messages[1].strip(),
+                                      directory=f'{dir_utils.get_temp_med_dir()}'
+                                      ):
                     ttsu.current_track = "_temp"
-                    ttsu.play_audio()
+                    ttsu.play_audio(mode=0)
                     return
             elif len(all_messages) == 3:
                 if len(all_messages[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
@@ -244,9 +249,13 @@ class Plugin(PluginBase):
                         box_align='left',
                         user=GS.mumble_inst.users[text.actor]['name'])
                     return
-                if ttsu.download_clip("_temp", all_messages[1].strip(), all_messages[2].strip()):
+                if ttsu.download_clip("_temp",
+                                      all_messages[1].strip(),
+                                      all_messages[2].strip(),
+                                      directory=f'{dir_utils.get_temp_med_dir()}'
+                                      ):
                     ttsu.current_track = "_temp"
-                    ttsu.play_audio()
+                    ttsu.play_audio(mode=0)
                     return
             GS.gui_service.quick_gui(
                 f"Incorrect Format:<br>!tts 'voice_name' 'message'<br>OR<br>!tts 'message'",
