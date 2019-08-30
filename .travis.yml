@@ -15,4 +15,4 @@ install:
 # Run Tests
 # Built-in Plugin Tests
 script:
-  - python tests/test_cfg.py
+  - python JJMumbleBot/tests/test_cfg.py
