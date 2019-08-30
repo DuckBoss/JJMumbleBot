@@ -25,7 +25,7 @@ P_CMD_HIST_LIM = 'CommandHistoryLimit'
 # Permanent Directories
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 # Temporary Directories
-P_TEMP_IMG_DIR = 'TemporaryImageDirectory'
+P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
 P_CANVAS_BG_COL = 'CanvasBGColor'
 P_CANVAS_ALGN = 'CanvasAlignment'
@@ -35,6 +35,7 @@ P_TXT_HEAD_COL = 'HeaderTextColor'
 P_TXT_IND_COL = 'IndexTextColor'
 # Plugin Settings
 P_PLUG_DISABLED = 'DisabledPlugins'
+P_PLUG_SAFE = 'SafeModePlugins'
 # Web Interface Settings
 P_WEB_ENABLE = 'EnableWebInterface'
 P_WEB_IP = 'WebInterfaceIP'
