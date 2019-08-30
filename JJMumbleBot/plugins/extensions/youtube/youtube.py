@@ -21,6 +21,7 @@ class Plugin(PluginBase):
 
     def quit(self):
         YM.stop_audio()
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
         YH.exit_flag = True
         dprint("Exiting Youtube Plugin...")
 

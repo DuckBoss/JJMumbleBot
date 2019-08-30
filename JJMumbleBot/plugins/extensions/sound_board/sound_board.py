@@ -15,6 +15,7 @@ class Plugin(PluginBase):
     def quit(self):
         sbu.clear_audio_thread()
         sbu.stop_audio()
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/sound_board')
         sbu.exit_flag = True
         dprint("Exiting Sound Board Plugin...")
 
