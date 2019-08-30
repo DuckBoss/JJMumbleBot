@@ -84,7 +84,7 @@ def download_clip(clip_name, voice, msg, directory=None):
                                                                               '--sout',
                                                                               '#transcode{acodec=wav, channels=2, samplerate=43000, '
                                                                               'ab=128, threads=8}:std{access=file, mux=wav, '
-                                                                              f'dst={clip_name}.wav'
+                                                                              f'dst={directory}/text_to_speech/{clip_name}.wav '
                                                                               '}',
                                                                               'vlc://quit'])
                 return True
