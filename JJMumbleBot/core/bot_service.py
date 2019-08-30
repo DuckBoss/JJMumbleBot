@@ -13,6 +13,7 @@ from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
+from JJMumbleBot.lib import errors
 from JJMumbleBot.lib.monitor import monitor_service
 from time import time, sleep
 import copy
@@ -28,6 +29,9 @@ class BotService:
         BotServiceHelper.initialize_logging()
         BotServiceHelper.log(INFO, "###########################")
         BotServiceHelper.log(INFO, "Initializing JJMumbleBot...")
+        # Check and classify system arguments.
+        import JJMumbleBot.core.cla_classifier as cla
+        cla.classify()
         # Initialize bot state.
         global_settings.status = BotState.OFFLINE
         # Initialize up-time tracking.
@@ -40,11 +44,10 @@ class BotService:
         aliases.setup_aliases()
         BotServiceHelper.log(INFO, "Initialized command aliases.")
         # Initialize major directories.
-        dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_IMG_DIR])
+        dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR])
+        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/images')
+        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/audio')
         BotServiceHelper.log(INFO, "Initialized temporary directories.")
-        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/sound_board/')
-        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/images/')
-        BotServiceHelper.log(INFO, "Initialized permanent directories.")
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
         BotServiceHelper.log(INFO, "Initialized pseudo graphical user interface.")
@@ -59,17 +62,8 @@ class BotService:
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data()
         BotService.initialize_mumble(mumble_login_data)
-        # Start monitor service thread.
-        """
-        if runtime_settings.use_web_interface:
-            import threading
-            from JJMumbleBot.lib.monitor import monitor_test
-            global_settings.monitor_thr = threading.Thread(target=monitor_test.loop_monitor_check)
-            global_settings.monitor_thr.daemon = True
-            global_settings.monitor_thr.run()
-        """
-        # Initialize web service.
-        if runtime_settings.use_web_interface:
+        # Initialize web service if enabled and not in safe mode.
+        if runtime_settings.use_web_interface and not global_settings.safe_mode:
             import threading
             from JJMumbleBot.lib.web.web_interface.web_service import start_server
             runtime_settings.web_ip = global_settings.cfg[C_WEB_INT][P_WEB_IP]
@@ -101,7 +95,6 @@ class BotService:
             # Generate command with parameters
             new_text = copy.deepcopy(text)
             new_text.message = item
-            new_command = None
             try:
                 new_command = Command(item[1:].split()[0], new_text)
             except IndexError:
@@ -110,9 +103,13 @@ class BotService:
                 alias_commands = [msg.strip() for msg in aliases.aliases[new_command.command].split('|')]
                 if len(alias_commands) > runtime_settings.multi_cmd_limit:
                     rprint(
-                        f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
+                        f"The multi-command limit was reached! "
+                        f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
+                        f"commands per line.")
                     BotServiceHelper.log(WARNING,
-                        f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
+                                         f"The multi-command limit was reached! "
+                                         f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
+                                         f"commands per line.")
                     return
                 for x, sub_item in enumerate(alias_commands):
                     sub_text = copy.deepcopy(text)
@@ -120,7 +117,6 @@ class BotService:
                         sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
                     else:
                         sub_text.message = sub_item
-                    sub_command = None
                     try:
                         sub_command = Command(sub_item[1:].split()[0], sub_text)
                     except IndexError:
@@ -137,8 +133,15 @@ class BotService:
 
     @staticmethod
     def process_command_queue(com):
-        for plugin in global_settings.bot_plugins.values():
-            execute_cmd.execute_command(plugin, com)
+        try:
+            for plugin in global_settings.bot_plugins.values():
+                execute_cmd.execute_command(plugin, com)
+        except Exception:
+            from JJMumbleBot.lib.errors import ExitCodes
+            runtime_utils.exit_bot_error(ExitCodes.SAFE_MODE_ERROR)
+            raise errors.SafeModeError(
+                'The bot has no plugins configured for safe mode, so it was shutdown to prevent a '
+                'stalled process.')
 
     @staticmethod
     def on_connected():
@@ -147,8 +150,8 @@ class BotService:
     @staticmethod
     def loop():
         while not global_settings.exit_flag:
-            monitor_service.loop_monitor_check()
-            # print("updated monitor data")
+            # Update monitor service data.
+            monitor_service.monitor_check()
             sleep(runtime_settings.tick_rate)
         BotService.stop()
 
@@ -156,4 +159,3 @@ class BotService:
     def stop():
         import sys
         sys.exit(0)
-

@@ -24,6 +24,7 @@ class Plugin(PluginBase):
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
         self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/images/')
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -42,15 +43,15 @@ class Plugin(PluginBase):
             # Format image
             time.sleep(1)
             img_ext = img_url.rsplit('.', 1)[1]
-            formatted_string = IH.format_image("_image", img_ext, dir_utils.get_temp_img_dir())
+            formatted_string = IH.format_image("_image", img_ext, f'{dir_utils.get_temp_med_dir()}/images')
             rprint("Posting an image to the mumble channel chat.")
             # Display image with PGUI system
-            GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_img_dir()}", formatted_string,
+            GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/images", formatted_string,
                                          bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                          format=False)
             GS.log_service.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
-            dir_utils.remove_file("_image.jpg", dir_utils.get_temp_img_dir())
+            dir_utils.remove_file("_image.jpg", f'{dir_utils.get_temp_med_dir()}/images')
             return
 
         elif command == "img":

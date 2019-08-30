@@ -28,6 +28,8 @@ class Plugin(PluginBase):
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
         self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/text_to_speech/')
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/text_to_speech/')
         ttsu.tts_metadata = self.metadata
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")

@@ -20,7 +20,7 @@ class YoutubeHelper:
         'format': 'bestaudio/best',
         'noplaylist': True,
         'logger': GS.log_service,
-        'outtmpl': f'{dir_utils.get_temp_img_dir()}/%(id)s.jpg',
+        'outtmpl': f'{dir_utils.get_temp_med_dir()}/youtube/%(id)s.jpg',
         'skip_download': True,
         'writethumbnail': True
     }
@@ -69,7 +69,7 @@ def next_track():
             box_align='left')
         GS.log_service.info("The youtube audio queue moved to the next available track.")
         try:
-            dir_utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", dir_utils.get_temp_img_dir())
+            dir_utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg", f'{dir_utils.get_temp_med_dir()}/youtube')
         except FileNotFoundError:
             pass
         stop_audio()
@@ -106,7 +106,7 @@ def skipto(skip_val):
                 box_align='left')
             return
         if skip_val < 1:
-            next()
+            next_track()
             return
         GS.gui_service.quick_gui(
             f"Skipping to track {skip_val} in the queue.",
@@ -116,7 +116,7 @@ def skipto(skip_val):
             YoutubeHelper.queue_instance.pop()
 
         GS.log_service.info("The youtube audio queue skipped tracks.")
-        dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
         stop_audio()
         GS.audio_dni = (True, YoutubeHelper.yt_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         download_next()
@@ -147,7 +147,7 @@ def download_song_name(url):
 def clear_queue():
     YoutubeHelper.queue_instance.clear()
     if not YoutubeHelper.is_playing:
-        dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
 
 
 def download_next():
@@ -158,7 +158,7 @@ def download_next():
         youtube_url = queue_list[-1]['main_url']
     else:
         return
-    if os.path.isfile(f"{dir_utils.get_temp_img_dir()}/{queue_list[-1]['img_id']}.jpg"):
+    if os.path.isfile(f"{dir_utils.get_temp_med_dir()}/youtube/{queue_list[-1]['img_id']}.jpg"):
         # print("Thumbnail exists...skipping")
         return
     try:
@@ -179,7 +179,7 @@ def download_specific(index):
         youtube_url = queue_list[index]['main_url']
     else:
         return
-    if os.path.isfile(f"{dir_utils.get_temp_img_dir()}/{queue_list[index]['img_id']}.jpg"):
+    if os.path.isfile(f"{dir_utils.get_temp_med_dir()}/youtube/{queue_list[index]['img_id']}.jpg"):
         return
     try:
         with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
@@ -196,7 +196,7 @@ def download_playlist(url):
         'noplaylist': False,
         'extract_flat': True,
         'logger': GS.log_service,
-        'outtmpl': f'{dir_utils.get_temp_img_dir()}/%(id)s.jpg',
+        'outtmpl': f'{dir_utils.get_temp_med_dir()}/youtube/%(id)s.jpg',
         'skip_download': True,
         'writethumbnail': True,
         'ignoreerrors': True
@@ -208,7 +208,7 @@ def download_playlist(url):
             'noplaylist': False,
             'extract_flat': True,
             'logger': GS.log_service,
-            'outtmpl': f'{dir_utils.get_temp_img_dir()}/%(id)s.jpg',
+            'outtmpl': f'{dir_utils.get_temp_med_dir()}/youtube/%(id)s.jpg',
             'skip_download': True,
             'writethumbnail': True,
             'ignoreerrors': True,
@@ -359,7 +359,7 @@ def play_audio():
     YoutubeHelper.is_playing = True
     runtime_utils.unmute()
 
-    GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_img_dir()}/",
+    GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                  f"{YoutubeHelper.current_song_info['img_id']}",
                                  caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']}",
                                  format=True,
@@ -379,9 +379,9 @@ def play_audio():
                         thr.join()
                     try:
                         dir_utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg",
-                                              dir_utils.get_temp_img_dir())
+                                              f'{dir_utils.get_temp_med_dir()}/youtube')
                         if YoutubeHelper.queue_instance.size() < 1:
-                            dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+                            dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
                     except (FileNotFoundError, TypeError):
                         pass
                     download_next()
@@ -392,9 +392,9 @@ def play_audio():
                         thr.join()
                     try:
                         dir_utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg",
-                                              dir_utils.get_temp_img_dir())
+                                              f'{dir_utils.get_temp_med_dir()}/youtube')
                         if YoutubeHelper.queue_instance.size() < 1:
-                            dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+                            dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
                     except (FileNotFoundError, TypeError):
                         pass
                     download_next()

@@ -98,12 +98,12 @@ def encode_b64(byte_arr):
 
 
 def download_image_requests(img_url):
-    dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+    dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/internal/images')
     img_ext = img_url.rsplit('.', 1)[1]
     s = requests.Session()
     r = s.get(img_url, headers={'User-Agent': 'Mozilla/5.0'})
     if r.status_code == 200:
-        with open(f"{dir_utils.get_temp_img_dir()}/_image.{img_ext}", 'wb') as f:
+        with open(f"{dir_utils.get_temp_med_dir()}/internal/images/_image.{img_ext}", 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         dprint(f"Downloaded image from: {img_url}")
@@ -112,9 +112,9 @@ def download_image_requests(img_url):
 
 
 def download_image_stream(img_url):
-    dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+    dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/internal/images')
     img_ext = img_url.rsplit('.', 1)[1]
-    with open(f"{dir_utils.get_temp_img_dir()}/_image.{img_ext}", 'wb') as img_file:
+    with open(f"{dir_utils.get_temp_med_dir()}/internal/images/_image.{img_ext}", 'wb') as img_file:
         resp = requests.get(img_url, stream=True)
         for block in resp.iter_content(1024):
             if not block:

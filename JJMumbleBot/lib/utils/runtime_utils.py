@@ -1,6 +1,7 @@
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.helpers import runtime_helper
+from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.resources.strings import *
 import time
@@ -223,16 +224,37 @@ def exit_bot():
     )
     for plugin in global_settings.bot_plugins.values():
         plugin.quit()
-    dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+    dir_utils.clear_directory(dir_utils.get_temp_med_dir())
     rprint("Cleared temporary directories.")
-    """
-    if self.web_thr:
-        from helpers.web_handler import stop_web
-        stop_web()
-        self.web_thr.join()
-        reg_print("JJMumbleBot Web Interface was disconnected.")
-        GM.logger.info("JJMumbleBot Web Interface was disconnected.")
-    """
+    import requests.exceptions
+    if runtime_settings.use_web_interface:
+        try:
+            web_service.stop_server()
+            runtime_settings.web_thread.join()
+            runtime_settings.web_thread = None
+            rprint("Shutdown web service.")
+        except requests.exceptions.ConnectionError:
+            pass
+    global_settings.exit_flag = True
+
+
+def exit_bot_error(error_code: ExitCodes):
+    from JJMumbleBot.lib.utils import dir_utils
+    from JJMumbleBot.lib.web.web_interface import web_service
+    global_settings.gui_service.quick_gui(
+        f"{get_bot_name()} has encountered an error and is being shutdown.<br>Please check the bot logs/console."
+        f"<br>Exit Code: {error_code.value}",
+        text_type='header',
+        box_align='center',
+        ignore_whisper=True,
+    )
+    try:
+        for plugin in global_settings.bot_plugins.values():
+            plugin.quit()
+    except AttributeError:
+        pass
+    dir_utils.clear_directory(dir_utils.get_temp_med_dir())
+    rprint("Cleared temporary directories.")
     import requests.exceptions
     if runtime_settings.use_web_interface:
         try:

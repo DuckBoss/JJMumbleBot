@@ -16,7 +16,3 @@ class PluginBase(ABC):
     @abstractmethod
     def get_metadata(self):
         pass
-
-
-
-

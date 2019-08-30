@@ -29,6 +29,8 @@ class Plugin(PluginBase):
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
         self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/sound_board/')
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/sound_board/')
         sbu.sound_board_metadata = self.metadata
         sbu.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
         rprint(

@@ -32,6 +32,7 @@ class Plugin(PluginBase):
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
         self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/youtube/')
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
         YH.yt_metadata = self.metadata
         YH.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_YT_DEF_VOL])
@@ -51,7 +52,7 @@ class Plugin(PluginBase):
             if not privileges.plugin_privilege_checker(text, command, self.priv_path):
                 return
             if YH.current_song_info is not None:
-                GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_img_dir()}/",
+                GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                              f"{YH.current_song_info['img_id']}",
                                              caption=f"Now playing: {YH.current_song_info['main_title']}",
                                              format=True,
@@ -172,7 +173,7 @@ class Plugin(PluginBase):
                     box_align='left')
                 YH.queue_instance.clear()
                 YM.stop_audio()
-                dir_utils.clear_directory(dir_utils.get_temp_img_dir())
+                dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
                 YH.queue_instance = qh.QueueHandler(YH.max_queue_size)
                 GS.log_service.info("The youtube audio thread was stopped.")
                 return

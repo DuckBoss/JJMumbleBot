@@ -1,6 +1,6 @@
 import JJMumbleBot.settings.global_settings as global_settings
 import JJMumbleBot.installer.quick_start as quick_start
-from JJMumbleBot.lib.enums import ExitCodes
+from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.resources.strings import DEBUG, CRITICAL
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
 from JJMumbleBot.lib.utils.utils import rprint
@@ -46,10 +46,10 @@ def classify():
         from JJMumbleBot.lib.errors import SysArgError
         BotServiceHelper.log(CRITICAL, "It looks like both verbose mode and quiet mode are enabled. "
                              "Only one or the other can be used!\n"
-                             f"Error Code: {ExitCodes.SYS_ARG_ERROR}")
+                             f"Error Code: {ExitCodes.SYS_ARG_ERROR.value}")
         raise SysArgError("It looks like both verbose mode and quiet mode are enabled. "
                           "Only one or the other can be used!\n"
-                          f"Error Code: {ExitCodes.SYS_ARG_ERROR}")
+                          f"Error Code: {ExitCodes.SYS_ARG_ERROR.value}")
     if global_settings.debug_mode:
         CLAType.cla_debug()
 
