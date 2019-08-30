@@ -232,6 +232,15 @@ class Plugin(PluginBase):
         elif command == "clearhistory":
             if not privileges.plugin_privilege_checker(text, command, self.priv_path):
                 return
+            GS.cmd_history.queue_storage.clear()
+            GS.gui_service.quick_gui(
+                f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">Cleared command history.</font>',
+                text_type='header',
+                box_align='left',
+                text_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[text.actor]['name']
+            )
 
         elif command == "history":
             if not privileges.plugin_privilege_checker(text, command, self.priv_path):
