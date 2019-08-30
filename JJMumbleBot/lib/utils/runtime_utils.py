@@ -181,7 +181,7 @@ def remove_channel():
     return
 
 
-def check_uptime():
+def check_up_time():
     runtime_helper.seconds = time.time() - runtime_helper.start_seconds
     return f"Up-time: {str(datetime.timedelta(seconds=runtime_helper.seconds)).split('.')[0]}"
 

@@ -55,4 +55,4 @@ def get_bot_channel_json():
 
 
 def get_uptime_json():
-    return json.dumps({"uptime": runtime_utils.check_uptime()})
+    return json.dumps({"uptime": runtime_utils.check_up_time()})
