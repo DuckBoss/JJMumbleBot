@@ -1,5 +1,6 @@
 alias,command
 restart,!reboot
+saferestart,!safereboot
 quit,!exit
 yt,!youtube
 p,!play
@@ -13,10 +14,10 @@ sbl,!sblist
 sble,!sblist_echo
 imgl,!imglist
 imgle,!imglist_echo
-ttsl, !ttslist
-ttsle, !ttslist_echo
-ttsp, !ttsplay
-ttspq, !ttsplay_quiet
+ttsl,!ttslist
+ttsle,!ttslist_echo
+ttsp,!ttsplay
+ttspq,!ttsplay_quiet
 
 
 

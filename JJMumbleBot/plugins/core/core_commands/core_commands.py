@@ -80,7 +80,7 @@ class Plugin(PluginBase):
             if not privileges.plugin_privilege_checker(text, command, self.priv_path):
                 return
             GS.gui_service.quick_gui(
-                rutils.check_uptime(),
+                rutils.check_up_time(),
                 text_type='header',
                 box_align='left',
                 ignore_whisper=True,
@@ -105,6 +105,16 @@ class Plugin(PluginBase):
             rutils.exit_bot()
             GS.log_service.info("JJ Mumble Bot is being rebooted.")
             os.execv(sys.executable, ['python3'] + sys.argv)
+            return
+
+        elif command == "safereboot":
+            import os
+            import sys
+            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+                return
+            rutils.exit_bot()
+            GS.log_service.info("JJ Mumble Bot is being rebooted in safe mode.")
+            os.execv(sys.executable, ['python3'] + sys.argv + ['-safe'])
             return
 
         elif command == "refresh":
