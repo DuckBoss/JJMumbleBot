@@ -31,6 +31,7 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/text_to_speech/')
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/text_to_speech/')
         ttsu.tts_metadata = self.metadata
+        ttsu.voice_list = json.loads(self.metadata.get(C_PLUGIN_SETTINGS, P_TTS_ALL_VOICE))
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -216,10 +217,16 @@ class Plugin(PluginBase):
                         box_align='left')
                     return
             all_messages = message[1:].split(' ', 2)
+            if all_messages[1].strip() in ttsu.voice_list:
+                all_messages = message[1:].split(' ', 2)
+            else:
+                all_messages = message[1:].split(' ', 1)
+
             if len(all_messages) == 2:
                 if len(all_messages[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
                     GS.gui_service.quick_gui(
-                        f"The text to speech message exceeded the character limit: [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
+                        f"The text to speech message exceeded the character limit:"
+                        f" [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
                         text_type='header',
                         box_align='left',
                         user=GS.mumble_inst.users[text.actor]['name'])
@@ -231,7 +238,8 @@ class Plugin(PluginBase):
             elif len(all_messages) == 3:
                 if len(all_messages[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
                     GS.gui_service.quick_gui(
-                        f"The text to speech message exceeded the character limit: [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
+                        f"The text to speech message exceeded the character limit:"
+                        f" [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
                         text_type='header',
                         box_align='left',
                         user=GS.mumble_inst.users[text.actor]['name'])

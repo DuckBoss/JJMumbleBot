@@ -19,6 +19,7 @@ is_playing = False
 tts_metadata = None
 # default volume
 volume = 0.5
+voice_list = []
 
 
 def prepare_tts_list():
@@ -59,9 +60,7 @@ def get_cur_audio_length():
 
 def download_clip(clip_name, voice, msg):
     global current_track
-    temp = {}
-    temp['text'] = msg
-    temp['voice'] = voice
+    temp = {'text': msg, 'voice': voice}
     json_dump = json.dumps(temp)
     print(json_dump)
     try:
