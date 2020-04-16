@@ -36,6 +36,8 @@ class BotService:
         global_settings.status = BotState.OFFLINE
         # Initialize up-time tracking.
         global_settings.start_seconds = time()
+        # Set maximum multi-command limit.
+        runtime_settings.multi_cmd_limit = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
         # Initialize command queue limit.
         global_settings.cmd_queue = QueueHandler(runtime_settings.cmd_hist_lim)
         # Initialize command history tracking.
