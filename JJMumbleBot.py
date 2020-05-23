@@ -1,4 +1,4 @@
-import pymumble.pymumble_py3 as pymumble
+import pymumble_py3 as pymumble
 import time
 import os
 import sys
