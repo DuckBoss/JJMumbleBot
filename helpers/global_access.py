@@ -1,8 +1,8 @@
 import configparser
 import time
 import datetime
-from pymumble.pymumble_py3.messages import Cmd as PyMessages
-from pymumble.pymumble_py3.constants import *
+from pymumble_py3.messages import Cmd as PyMessages
+from pymumble_py3.constants import *
 
 
 class GlobalMods:
