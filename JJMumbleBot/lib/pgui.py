@@ -104,6 +104,11 @@ class PseudoGUI:
         new_content = PGUIHelper.content(text, tt=text_type, tc=text_color, tf=text_font, ta=text_align)
         return new_content
 
+    def get_box_content(self):
+        if self.content is None:
+            return ''
+        return self.content
+
     def display_box(self, channel, user=None, ignore_whisper=False):
         if self.content is None or self.box_open:
             return
