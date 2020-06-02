@@ -64,7 +64,7 @@ class Plugin(PluginBase):
                 return
             return
 
-        if command == "sbvolume":
+        elif command == "sbvolume":
             if not privileges.plugin_privilege_checker(text, command, self.priv_path):
                 return
             try:
@@ -73,11 +73,7 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Current sound board volume: {sbu.volume}", text_type='header',
                                          box_align='left')
                 return
-            if vol > 1:
-                GS.gui_service.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
-                                         box_align='left')
-                return
-            if vol < 0:
+            if vol > 1 or vol < 0:
                 GS.gui_service.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
                                          box_align='left')
                 return
