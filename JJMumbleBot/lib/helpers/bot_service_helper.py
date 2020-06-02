@@ -161,14 +161,13 @@ class BotServiceHelper:
             return
         if not global_settings.log_service:
             return
-        else:
-            if level == INFO:
-                global_settings.log_service.info(message)
-            elif level == DEBUG:
-                global_settings.log_service.debug(message)
-            elif level == WARNING:
-                global_settings.log_service.warning(message)
-            elif level == CRITICAL:
-                global_settings.log_service.critical(message)
+        if level == INFO:
+            global_settings.log_service.info(message)
+        elif level == DEBUG:
+            global_settings.log_service.debug(message)
+        elif level == WARNING:
+            global_settings.log_service.warning(message)
+        elif level == CRITICAL:
+            global_settings.log_service.critical(message)
 
 
