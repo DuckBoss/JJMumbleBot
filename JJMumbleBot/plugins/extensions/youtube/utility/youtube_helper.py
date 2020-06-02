@@ -399,20 +399,19 @@ def play_audio():
                         pass
                     download_next()
                     return
-                else:
-                    YoutubeHelper.is_playing = False
-                    if thr:
-                        thr.join()
-                    try:
-                        dir_utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg",
-                                              f'{dir_utils.get_temp_med_dir()}/youtube')
-                        if YoutubeHelper.queue_instance.size() < 1:
-                            dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
-                    except (FileNotFoundError, TypeError):
-                        pass
-                    download_next()
-                    play_audio()
-                    return
+                YoutubeHelper.is_playing = False
+                if thr:
+                    thr.join()
+                try:
+                    dir_utils.remove_file(f"{YoutubeHelper.current_song_info['img_id']}.jpg",
+                                          f'{dir_utils.get_temp_med_dir()}/youtube')
+                    if YoutubeHelper.queue_instance.size() < 1:
+                        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
+                except (FileNotFoundError, TypeError):
+                    pass
+                download_next()
+                play_audio()
+                return
         else:
             return
     return
