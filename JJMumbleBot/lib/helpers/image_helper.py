@@ -38,7 +38,7 @@ def format_image_html(img_ext, byte_arr):
     return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
 
 
-def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False):
+def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270):
     # Convert to JPG if it's PNG
     img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     if img_ext.upper() == 'PNG':
@@ -51,8 +51,8 @@ def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw
     img_width = img.size[0]
     img_height = img.size[1]
     # Scale images down with aspect ratio
-    if img_width > 480 or img_height > 270:
-        img.thumbnail((480, 270), Image.ANTIALIAS)
+    if img_width > max_width or img_height > max_height:
+        img.thumbnail((max_width, max_height), Image.ANTIALIAS)
     # Save and close images
     img.save(f"{img_dir}/{img_name}.{img_ext}")
     img.close()
@@ -120,4 +120,41 @@ def download_image_stream(img_url):
             if not block:
                 break
             img_file.write(block)
+    dprint(f"Downloaded image from: {img_url}")
+
+
+def download_image_stream_to_dir(img_url, dir_name):
+    dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{dir_name}')
+    img_ext = img_url.rsplit('.', 1)[1]
+    with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}", 'wb') as img_file:
+        resp = requests.get(img_url, stream=True)
+        for block in resp.iter_content(1024):
+            if not block:
+                break
+            img_file.write(block)
+    if img_ext == 'png':
+        dprint(f"Fixing image to force jpg conversion: {img_url}")
+        img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
+        img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.jpg")
+        dir_utils.remove_file("_image.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
+    dprint(f"Downloaded image from: {img_url}")
+
+
+def download_image_requests_to_dir(img_url, dir_name):
+    dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{dir_name}')
+    img_ext = img_url.rsplit('.', 1)[1]
+    s = requests.Session()
+    r = s.get(img_url)
+    if r.status_code == 200:
+        with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}", 'wb') as f:
+            r.raw.decode_content = True
+            shutil.copyfileobj(r.raw, f)
+        dprint(f"Downloaded image from: {img_url}")
+    else:
+        dprint(f"{r.status_code} Error! - {img_url}")
+    if img_ext == 'png':
+        dprint(f"Fixing image to force jpg conversion: {img_url}")
+        img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
+        img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.jpg")
+        dir_utils.remove_file("_image.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
     dprint(f"Downloaded image from: {img_url}")
