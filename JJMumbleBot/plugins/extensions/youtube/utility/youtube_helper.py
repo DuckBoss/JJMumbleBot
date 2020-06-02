@@ -43,7 +43,7 @@ class YoutubeHelper:
 
 
 def get_queue():
-    if YoutubeHelper.queue_instance.size() is 0:
+    if YoutubeHelper.queue_instance.size() == 0:
         return None
     list_queue = [f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Youtube Queue:</font>"]
     queue_list = list(YoutubeHelper.queue_instance.queue_storage)
