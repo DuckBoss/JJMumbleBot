@@ -54,10 +54,25 @@ def get_cur_audio_length():
     return duration
 
 
+def get_audio_length(file_name):
+    try:
+        wav_file = wave.open(f"{dir_utils.get_perm_med_dir()}/sound_board/{file_name}.wav", 'r')
+        frames = wav_file.getnframes()
+        rate = wav_file.getframerate()
+        duration = frames / float(rate)
+        print(duration)
+        wav_file.close()
+        if not duration:
+            return -1
+    except Exception:
+        return -1
+    return duration
+
+
 def download_clip(url, name):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': dir_utils.get_perm_med_dir() + f'sound_board/{name}.wav',
+        'outtmpl': dir_utils.get_perm_med_dir() + f'/sound_board/{name}.wav',
         'noplaylist': True,
         'continue_dl': True,
         'postprocessors': [{
@@ -101,7 +116,16 @@ def play_audio():
     global is_playing
     is_playing = True
     if global_settings.audio_inst is None:
-        global_settings.audio_inst = sp.Popen(
+        use_stereo = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
+        if use_stereo:
+            global_settings.audio_inst = sp.Popen(
+                [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
+                                  '#transcode{acodec=s16le, channels=2, samplerate=48000, '
+                                  'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
+                                  'vlc://quit'],
+                stdout=sp.PIPE, bufsize=480)
+        else:
+            global_settings.audio_inst = sp.Popen(
             [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
                               '#transcode{acodec=s16le, channels=2, samplerate=24000, '
                               'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',

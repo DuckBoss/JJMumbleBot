@@ -17,6 +17,7 @@ P_USER_ID = 'UserID'
 P_USER_CERT = 'UserCertification'
 P_CHANNEL_DEF = 'DefaultChannel'
 # Main Settings
+P_AUD_STEREO = 'UseStereoOutput'
 P_CMD_TICK_RATE = 'CommandTickRate'
 P_CMD_MULTI_LIM = 'MultiCommandLimit'
 P_CMD_TOKEN = 'CommandToken'

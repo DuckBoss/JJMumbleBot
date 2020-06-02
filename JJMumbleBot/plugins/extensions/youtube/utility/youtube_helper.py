@@ -334,6 +334,8 @@ def play_audio():
 
     stripped_url = BeautifulSoup(YoutubeHelper.current_song, features='html.parser').get_text()
     uri = stripped_url
+    dprint(uri)
+    dprint(YoutubeHelper.current_song)
 
     command = YoutubeHelper.yt_metadata[C_PLUGIN_SETTINGS][P_YT_VLC_DIR]
 
@@ -348,13 +350,24 @@ def play_audio():
         GS.audio_inst = None
 
     if GS.audio_inst is None:
-        GS.audio_inst = sp.Popen(
-            [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
-                              '#transcode{acodec=s16le, channels=2, '
-                              'samplerate=24000, ab=192, threads=8}:std{access=file, '
-                              'mux=wav, dst=-}',
-                              'vlc://quit'],
-            stdout=sp.PIPE, bufsize=480)
+        use_stereo = GS.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
+        print(f"USE STEREO: {use_stereo}")
+        if use_stereo:
+            GS.audio_inst = sp.Popen(
+                [command, uri] + ['-I', 'dummy', '--one-instance', '--no-repeat', '--sout',
+                                  '#transcode{acodec=s16le, channels=2, '
+                                  'samplerate=48000, ab=192, threads=8}:std{access=file, '
+                                  'mux=wav, dst=-}',
+                                  'vlc://quit'],
+                stdout=sp.PIPE, bufsize=1024)
+        else:
+            GS.audio_inst = sp.Popen(
+                [command, uri] + ['-I', 'dummy', '--one-instance', '--no-repeat', '--sout',
+                                  '#transcode{acodec=s16le, channels=2, '
+                                  'samplerate=24000, ab=192, threads=8}:std{access=file, '
+                                  'mux=wav, dst=-}',
+                                  'vlc://quit'],
+                stdout=sp.PIPE, bufsize=1024)
     # YoutubeHelper.music_thread.wait()
     YoutubeHelper.is_playing = True
     runtime_utils.unmute()
@@ -369,7 +382,7 @@ def play_audio():
         while GS.mumble_inst.sound_output.get_buffer_size() > 0.5 and not YoutubeHelper.exit_flag:
             time.sleep(0.01)
         if GS.audio_inst:
-            raw_music = GS.audio_inst.stdout.read(480)
+            raw_music = GS.audio_inst.stdout.read(1024)
             if raw_music and GS.audio_inst and YoutubeHelper.is_playing:
                 GS.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, YoutubeHelper.volume))
             else:

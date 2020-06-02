@@ -16,7 +16,8 @@ class BotServiceHelper:
         server_port: int = int(global_settings.cfg[C_CONNECTION_SETTINGS][P_SERVER_PORT])
         user_id: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
         user_cert: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
-        return MumbleData(ip=server_ip, port=server_port, uid=user_id, pwd=server_pass, cert=user_cert)
+        use_stereo: bool = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
+        return MumbleData(ip=server_ip, port=server_port, uid=user_id, pwd=server_pass, cert=user_cert, stereo=use_stereo)
 
     @staticmethod
     def initialize_settings():
