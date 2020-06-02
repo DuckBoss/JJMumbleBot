@@ -130,6 +130,11 @@ class BotServiceHelper:
                        os.path.isdir(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
                                                   name)) and name != "__pycache__"]
         for p_file in all_imports:
+            if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
+                                                  p_file)):
+                rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...");
+                continue
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         sys.path.pop(0)
         rprint("######### Core Plugins Initialized #########")
@@ -141,8 +146,11 @@ class BotServiceHelper:
                            os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
                                         name)) and name != "__pycache__"]
         for p_file in all_imports:
-            # if p_file == "youtube" or p_file == "help":
-            #    continue
+            if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
+                                                  p_file)):
+                rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...");\
+                continue
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         sys.path.pop(0)
         rprint("######### Extension Plugins Initialized #########")
