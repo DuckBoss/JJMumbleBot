@@ -125,3 +125,4 @@ config.ini
 *.wav
 *.oga
 *.ogg
+*.py.save
