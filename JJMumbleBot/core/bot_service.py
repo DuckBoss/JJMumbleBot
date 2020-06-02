@@ -1,4 +1,4 @@
-from JJMumbleBot.lib.pymumble import pymumble_py3 as pymumble
+import pymumble_py3 as pymumble
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
