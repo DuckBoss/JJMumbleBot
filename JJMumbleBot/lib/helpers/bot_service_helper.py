@@ -98,7 +98,7 @@ class BotServiceHelper:
                 if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
                                                   p_file)):
                     rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...");
+                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
                 global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         # help_plugin = __import__('help.help')
@@ -117,7 +117,7 @@ class BotServiceHelper:
                 if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
                                                   p_file)):
                     rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...");
+                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
                 global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         sys.path.pop(0)
@@ -141,7 +141,7 @@ class BotServiceHelper:
             if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
                                                   p_file)):
                 rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...");
+                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         sys.path.pop(0)
@@ -157,7 +157,7 @@ class BotServiceHelper:
             if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
                                                   p_file)):
                 rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...");\
+                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
         sys.path.pop(0)
