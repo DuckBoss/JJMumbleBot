@@ -21,7 +21,6 @@ class BotServiceHelper:
 
     @staticmethod
     def initialize_settings():
-        from JJMumbleBot.lib.utils import dir_utils
         import configparser
         global_settings.cfg = configparser.ConfigParser()
         global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
@@ -186,5 +185,3 @@ class BotServiceHelper:
             global_settings.log_service.warning(message)
         elif level == CRITICAL:
             global_settings.log_service.critical(message)
-
-
