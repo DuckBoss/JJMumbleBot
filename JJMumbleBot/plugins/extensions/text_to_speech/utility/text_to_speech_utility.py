@@ -70,10 +70,10 @@ def download_clip(clip_name, voice, msg, directory=None):
         url = 'https://streamlabs.com/polly/speak'
         headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
         r = requests.post(url, data=json_dump, headers=headers)
-        print(r.status_code)
+        # print(r.status_code)
         if r.status_code == 200:
             resp = requests.get(json.loads(r.text)['speak_url'])
-            print(resp.status_code)
+            # print(resp.status_code)
             if resp.status_code == 200:
                 with open(f'{directory}/text_to_speech/{clip_name}.oga', 'wb') as f:
                     f.write(resp.content)
@@ -129,13 +129,22 @@ def play_audio(mode=1):
     global is_playing
     is_playing = True
     if global_settings.audio_inst is None:
-        global_settings.audio_inst = sp.Popen(
+        use_stereo = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
+        if use_stereo:
+            global_settings.audio_inst = sp.Popen(
+                [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
+                                  '#transcode{acodec=s16le, channels=2, samplerate=48000, '
+                                  'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
+                                  'vlc://quit'],
+                stdout=sp.PIPE, bufsize=480)
+        else:
+            global_settings.audio_inst = sp.Popen(
             [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
                               '#transcode{acodec=s16le, channels=2, samplerate=24000, '
                               'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
                               'vlc://quit'],
             stdout=sp.PIPE, bufsize=480)
-
+                
     runtime_utils.unmute()
     while not exit_flag and global_settings.audio_inst and is_playing:
         while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not exit_flag:
