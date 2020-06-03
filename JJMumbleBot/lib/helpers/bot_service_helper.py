@@ -116,7 +116,6 @@ class BotServiceHelper:
 
     # Initializes all available plugins.
     # TODO: Re-introduce help plugin.
-    # TODO: Require all plugins to come with metadata specifying initialization data requirements.
     @staticmethod
     def initialize_plugins():
         import sys
