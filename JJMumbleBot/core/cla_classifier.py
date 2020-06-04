@@ -4,6 +4,7 @@ from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.resources.strings import DEBUG, CRITICAL
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
 from JJMumbleBot.lib.utils.utils import rprint
+from JJMumbleBot.lib.resources.strings import L_STARTUP
 import sys
 
 
@@ -27,26 +28,26 @@ def classify():
         return
     if '-quiet' in sys.argv:
         global_settings.quiet_mode = True
-        BotServiceHelper.log(DEBUG, "Quiet mode has been enabled through system arguments.")
+        BotServiceHelper.log(DEBUG, "Quiet mode has been enabled through system arguments.", origin=L_STARTUP)
     for arg in sys.argv[1:]:
         if arg == "-debug":
             global_settings.debug_mode = True
             rprint("Debug mode has been enabled.")
-            BotServiceHelper.log(DEBUG, "Debug mode has been enabled through system arguments.")
+            BotServiceHelper.log(DEBUG, "Debug mode has been enabled through system arguments.", origin=L_STARTUP)
         elif arg == "-safe":
             global_settings.safe_mode = True
             rprint("Safe mode has been enabled.")
-            BotServiceHelper.log(DEBUG, "Safe mode has been enabled through system arguments.")
+            BotServiceHelper.log(DEBUG, "Safe mode has been enabled through system arguments.", origin=L_STARTUP)
         elif arg == "-verbose":
             global_settings.verbose_mode = True
             rprint("Verbose mode has been enabled.")
-            BotServiceHelper.log(DEBUG, "Verbose mode has been enabled through system arguments.")
+            BotServiceHelper.log(DEBUG, "Verbose mode has been enabled through system arguments.", origin=L_STARTUP)
 
     if global_settings.verbose_mode and global_settings.quiet_mode:
         from JJMumbleBot.lib.errors import SysArgError
         BotServiceHelper.log(CRITICAL, "It looks like both verbose mode and quiet mode are enabled. "
                              "Only one or the other can be used!\n"
-                             f"Error Code: {ExitCodes.SYS_ARG_ERROR.value}")
+                             f"Error Code: {ExitCodes.SYS_ARG_ERROR.value}", origin=L_STARTUP)
         raise SysArgError("It looks like both verbose mode and quiet mode are enabled. "
                           "Only one or the other can be used!\n"
                           f"Error Code: {ExitCodes.SYS_ARG_ERROR.value}")
