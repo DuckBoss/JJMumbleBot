@@ -39,7 +39,7 @@ def get_cur_audio_length():
 def download_clip(url, name):
     ydl_opts = {
         'format': 'bestaudio/best',
-        'outtmpl': utils.get_permanent_media_dir() + f'sound_board/{name}.wav',
+        'outtmpl': utils.get_permanent_media_dir() + f'/sound_board/{name}.wav',
         'noplaylist': True,
         'continue_dl': True,
         'postprocessors': [{
