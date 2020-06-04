@@ -52,6 +52,13 @@ DEBUG = 'debug'
 WARNING = 'warning'
 CRITICAL = 'critical'
 ###########################################################################
+# LOGGING PREFIX STRINGS
+L_GENERAL = "General"
+L_USER_PRIV = "UserPrivileges"
+L_PRIV_DB = "PrivilegesDatabase"
+L_COMMAND = "Command"
+L_STARTUP = "StartUp"
+###########################################################################
 # PLUGIN CONFIG CATEGORY STRINGS
 C_PLUGIN_INFO = 'Plugin Information'
 C_PLUGIN_REQS = 'Plugin Requirements'
@@ -72,4 +79,8 @@ P_EXT_PLUGIN = 'ExtensionPlugin'
 # Universal Plugin Settings
 P_THREAD_WAIT = 'ThreadWaitForCommands'
 P_THREAD_SINGLE = 'UseSingleThread'
+###########################################################################
+# BOT META INFORMATION STRINGS
+META_NAME = "JJMumbleBot"
+META_VERSION = "3.0.0"
 ###########################################################################
