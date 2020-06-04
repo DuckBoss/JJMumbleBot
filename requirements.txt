@@ -4,7 +4,7 @@ youtube_dl==2020.5.29
 Pillow==7.1.2
 beautifulsoup4==4.9.0
 protobuf==3.12.2
-configparser==3.8.1
+configparser==5.0.0
 wtforms==2.2.1
 cheroot==6.5.5
 flask==1.0.3
