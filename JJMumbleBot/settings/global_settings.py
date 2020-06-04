@@ -3,8 +3,6 @@
 # END USERS MUST NOT CHANGE ANY SETTINGS HERE OR THE SOFTWARE MAY NOT FUNCTION PROPERLY.
 ###############################################################################
 
-from JJMumbleBot.lib.enums import BotState
-
 # Internal Settings
 bot_service = None
 gui_service = None
@@ -22,7 +20,6 @@ verbose_mode: bool = False
 audio_inst = None
 audio_dni = (False, None)
 # Bot State
-status = BotState.OFFLINE
 exit_flag: bool = False
 # Command History
 cmd_history = None

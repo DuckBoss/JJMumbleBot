@@ -155,10 +155,6 @@ def get_about():
     return '<br> JJMumbleBot is a plugin-based python3 mumble bot client.<br><a href="https://github.com/DuckBoss/JJMumbleBot">https://github.com/DuckBoss/JJMumbleBot</a><br>'
 
 
-def get_status():
-    return global_settings.status
-
-
 def get_users_in_my_channel():
     cur_channel = get_my_channel()
     users = cur_channel.get_users()

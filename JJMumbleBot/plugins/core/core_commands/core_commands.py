@@ -66,16 +66,6 @@ class Plugin(PluginBase):
             )
             return
 
-        elif command == "botstatus":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
-                return
-            GS.gui_service.quick_gui(
-                f"{rutils.get_bot_name()} is {'Online' if rutils.get_status() == BotState.ONLINE else 'Offline'}.",
-                text_type='header',
-                box_align='left'
-            )
-            return
-
         elif command == "uptime":
             if not privileges.plugin_privilege_checker(text, command, self.priv_path):
                 return

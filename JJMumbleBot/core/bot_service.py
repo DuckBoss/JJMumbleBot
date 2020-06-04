@@ -7,7 +7,6 @@ from JJMumbleBot.lib.mumble_data import MumbleData
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.helpers.queue_handler import QueueHandler
 from JJMumbleBot.lib.cmd_history import CMDQueue
-from JJMumbleBot.lib.enums import BotState
 from JJMumbleBot.lib.utils import dir_utils, runtime_utils
 from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
@@ -31,8 +30,6 @@ class BotService:
         # Check and classify system arguments.
         import JJMumbleBot.core.cla_classifier as cla
         cla.classify()
-        # Initialize bot state.
-        global_settings.status = BotState.OFFLINE
         # Initialize up-time tracking.
         global_settings.start_seconds = time()
         # Set maximum multi-command limit.
@@ -76,7 +73,6 @@ class BotService:
         global_settings.mumble_inst.set_codec_profile('audio')
         global_settings.mumble_inst.start()
         global_settings.mumble_inst.is_ready()
-        global_settings.status = BotState.ONLINE
 
     @staticmethod
     def message_received(text):
