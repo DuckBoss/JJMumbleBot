@@ -14,7 +14,6 @@ from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
 from JJMumbleBot.lib import errors
-from JJMumbleBot.lib.monitor import monitor_service
 from time import time, sleep
 import copy
 
@@ -52,7 +51,7 @@ class BotService:
         BotServiceHelper.log(INFO, "Initialized temporary directories.")
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
-        BotServiceHelper.log(INFO, "Initialized pseudo graphical user interface.")
+        BotServiceHelper.log(INFO, "Initialized PGUI.")
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -61,18 +60,10 @@ class BotService:
         else:
             BotServiceHelper.initialize_plugins()
             BotServiceHelper.log(INFO, "Initialized all plugins.")
+        BotServiceHelper.log(INFO, "###########################")
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data()
         BotService.initialize_mumble(mumble_login_data)
-        # Initialize web service if enabled and not in safe mode.
-        if runtime_settings.use_web_interface and not global_settings.safe_mode:
-            import threading
-            from JJMumbleBot.lib.web.web_interface.web_service import start_server
-            runtime_settings.web_ip = global_settings.cfg[C_WEB_INT][P_WEB_IP]
-            runtime_settings.web_port = int(global_settings.cfg[C_WEB_INT][P_WEB_PORT])
-            runtime_settings.web_thread = threading.Thread(target=start_server)
-            runtime_settings.web_thread.daemon = True
-            runtime_settings.web_thread.start()
         # Start runtime loop.
         BotService.loop()
 
@@ -111,7 +102,7 @@ class BotService:
                     BotServiceHelper.log(WARNING,
                                          f"The multi-command limit was reached! "
                                          f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
-                                         f"commands per line.")
+                                         f"commands per line.", origin=L_COMMAND)
                     return
                 for x, sub_item in enumerate(alias_commands):
                     sub_text = copy.deepcopy(text)
@@ -152,8 +143,6 @@ class BotService:
     @staticmethod
     def loop():
         while not global_settings.exit_flag:
-            # Update monitor service data.
-            monitor_service.monitor_check()
             sleep(runtime_settings.tick_rate)
         BotService.stop()
 
