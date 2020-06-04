@@ -6,15 +6,9 @@
 from JJMumbleBot.lib.enums import BotState
 
 # Internal Settings
-version: str = "v3.0.0"
 bot_service = None
 gui_service = None
 log_service = None
-# Monitor Service
-monitor_service = None
-monitor_thr = None
-# Web Service
-socket_service = None
 # Config Instance
 cfg = None
 # Mumble Instance
