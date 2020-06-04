@@ -53,7 +53,7 @@ class Plugin(PluginBase):
             file_counter = 0
             gather_list = []
             internal_list = []
-            for file_item in os.listdir(utils.get_permanent_media_dir() + "sound_board/"):
+            for file_item in os.listdir(utils.get_permanent_media_dir() + "/sound_board/"):
                 if file_item.endswith(".wav"):
                     gather_list.append(f"{file_item}")
                     file_counter += 1
@@ -90,7 +90,7 @@ class Plugin(PluginBase):
             gather_list = []
             internal_list = []
 
-            for file_item in os.listdir(utils.get_permanent_media_dir() + "sound_board/"):
+            for file_item in os.listdir(utils.get_permanent_media_dir() + "/sound_board/"):
                 if file_item.endswith(".wav"):
                     gather_list.append(f"{file_item}")
                     file_counter += 1
@@ -176,7 +176,7 @@ class Plugin(PluginBase):
                 return
             if len(all_messages) == 2:
                 if ".wav" in all_messages[1].strip():
-                    utils.remove_file(all_messages[1].strip(), utils.get_permanent_media_dir() + "sound_board/")
+                    utils.remove_file(all_messages[1].strip(), utils.get_permanent_media_dir() + "/sound_board/")
                     GM.gui.quick_gui(f"Deleted sound clip : {all_messages[1].strip()}", text_type='header',
                                      box_align='left')
 
@@ -191,7 +191,7 @@ class Plugin(PluginBase):
                                  box_align='left')
                 return
 
-            if not os.path.isfile(utils.get_permanent_media_dir() + f"sound_board/{parameter}.wav"):
+            if not os.path.isfile(utils.get_permanent_media_dir() + f"/sound_board/{parameter}.wav"):
                 GM.gui.quick_gui(
                     "The sound clip does not exist.",
                     text_type='header',
