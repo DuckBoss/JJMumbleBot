@@ -19,7 +19,7 @@ def parse_message(text):
         rprint(f"Message Received: [{user['name']} -> {message}]")
 
     if message[0] == runtime_settings.cmd_token:
-        global_settings.log_service.info(f"Commands Received: [{user['name']} -> {message}]")
+        global_settings.log_service.info(f"Commands Received: [{user['name']} -> {message}]", origin=L_COMMAND)
         # example input: !version ; !about ; !yt twice ; !p ; !status
         all_commands = [msg.strip() for msg in message.split(';')]
         # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
@@ -30,7 +30,7 @@ def parse_message(text):
             rprint(
                 f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
             global_settings.log_service.warning(
-                f"The multi-command      d! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
+                f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.", origin=L_COMMAND)
             return
         return all_commands
     return None
