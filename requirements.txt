@@ -1,6 +1,7 @@
-beautifulsoup4==4.8.0
+beautifulsoup4==4.9.1
 psutil==5.6.3
-requests==2.22.0
-Pillow==6.1.0
-youtube-dl>=2019.9.1
+requests==2.23.0
+Pillow==7.1.2
+youtube-dl==2020.5.29
+protobuf==3.12.2
 
