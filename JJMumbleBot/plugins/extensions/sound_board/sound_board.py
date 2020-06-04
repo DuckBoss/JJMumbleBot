@@ -157,7 +157,7 @@ class Plugin(PluginBase):
             all_messages = message[1:].split()
             if len(all_messages) == 2:
                 if ".wav" in all_messages[1].strip():
-                    dir_utils.remove_file(all_messages[1].strip(), dir_utils.get_perm_med_dir() + "sound_board/")
+                    dir_utils.remove_file(all_messages[1].strip(), f"{dir_utils.get_perm_med_dir()}/sound_board/")
                     GS.gui_service.quick_gui(f"Deleted sound clip : {all_messages[1].strip()}", text_type='header',
                                              box_align='left')
 
