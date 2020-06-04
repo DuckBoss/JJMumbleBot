@@ -1,7 +1,6 @@
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.mumble_data import MumbleData
-from JJMumbleBot.lib.web.web_interface import web_service
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.resources.strings import *
@@ -52,23 +51,6 @@ class BotServiceHelper:
         log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
         handler.setFormatter(log_formatter)
         global_settings.log_service.addHandler(handler)
-
-    @staticmethod
-    def initialize_web():
-        if not runtime_settings.use_web_interface:
-            return
-        import threading
-        runtime_settings.web_ip = global_settings.cfg[C_WEB_INT][P_WEB_IP]
-        runtime_settings.web_port = int(global_settings.cfg[C_WEB_INT][P_WEB_PORT])
-        runtime_settings.web_thread = threading.Thread(target=web_service.start_server())
-        runtime_settings.web_thread.start()
-
-    @staticmethod
-    def shutdown_web():
-        if not runtime_settings.use_web_interface:
-            return
-        web_service.stop_server()
-        runtime_settings.web_thread.join()
 
     # Initializes only safe-mode applicable plugins.
     # TODO: Re-introduce help plugin.
@@ -172,16 +154,16 @@ class BotServiceHelper:
         # self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
 
     @staticmethod
-    def log(level, message):
+    def log(level, message, origin=None):
         if not runtime_settings.use_logging:
             return
         if not global_settings.log_service:
             return
         if level == INFO:
-            global_settings.log_service.info(message)
+            global_settings.log_service.info(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
         elif level == DEBUG:
-            global_settings.log_service.debug(message)
+            global_settings.log_service.debug(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
         elif level == WARNING:
-            global_settings.log_service.warning(message)
+            global_settings.log_service.warning(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
         elif level == CRITICAL:
-            global_settings.log_service.critical(message)
+            global_settings.log_service.critical(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
