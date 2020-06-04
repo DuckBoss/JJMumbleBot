@@ -1,5 +1,4 @@
-import collections
-
+from collections import deque
 
 class CMDQueue:
 
@@ -8,7 +7,7 @@ class CMDQueue:
 
     def __init__(self, max_size):
         # print("Queue Initialized...")
-        self.queue_storage = collections.deque([], maxlen=max_size)
+        self.queue_storage = deque([], maxlen=max_size)
 
     def insert(self, item):
         if self.queue_size < self.queue_storage.maxlen:
