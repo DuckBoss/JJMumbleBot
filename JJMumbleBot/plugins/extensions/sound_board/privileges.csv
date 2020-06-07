@@ -1,0 +1,9 @@
+command,level
+sb,2
+sbvolume,3
+sbrandom,3
+sblist,2
+sblist_echo,3
+sbstop,2
+sbdownload,3
+sbdelete,3

@@ -3,7 +3,7 @@
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
 <br>
 [![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
-[![Build Status](https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=master)](https://travis-ci.com/DuckBoss/JJMumbleBot)
+[![Build Status](https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=dev-v3.0.0)](https://travis-ci.com/DuckBoss/JJMumbleBot)
 
 A plugin-based python 3 mumble bot with extensive features.
 
@@ -32,7 +32,6 @@ A plugin-based python 3 mumble bot with extensive features.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
 - <b>Support for adding plugins at runtime.</b>
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
-- <b>Web Interface [Experimental Feature]</b> - A basic web interface using flask/cheroot to interface with the bot remotely.
 - <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
 - <b>Event logging to keep track of bot usage and command history.</b>
 - <b>Multi-Command Input</b> - Input multiple commands in a single line.
