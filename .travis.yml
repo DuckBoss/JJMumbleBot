@@ -1,9 +1,7 @@
 language: python
 python:
-  - "3.6"
   - "3.7"
-dist: bionic
-services: mysql
+  - "3.8"
 before_install:
   - sudo apt-get update
   - sudo apt-get install -y libopus0
@@ -11,8 +9,9 @@ before_install:
   - sudo service mumble-server restart
 install:
   - pip install -r requirements.txt
+  - pip install pytest
 
 # Run Tests
 # Built-in Plugin Tests
 script:
-  - python JJMumbleBot/tests/test_cfg.py
+  - pytest
