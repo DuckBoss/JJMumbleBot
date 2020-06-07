@@ -1,6 +1,7 @@
 command,level
 echo,2
 log,4
+plugins,1
 make,4
 remove,4
 move,2
