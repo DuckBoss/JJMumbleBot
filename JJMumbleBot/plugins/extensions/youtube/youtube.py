@@ -19,10 +19,10 @@ from bs4 import BeautifulSoup
 class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
-        import json
+        from json import loads
         self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
-        self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
         YH.yt_metadata = self.metadata
