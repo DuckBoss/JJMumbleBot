@@ -1,6 +1,16 @@
+## Python Version
+JJMumbleBot has been updated through multiple python revisions,
+and with this update it will now require Python 3.7 or higher.
+
+## Aliases
+There is now a global_aliases.csv file that must be placed in the JJMumbleBot/cfg/ directory, which will function similarly as the previous versions of the aliases.csv file.<br>
+In addition, individual plugins now require an aliases.csv file which will contain any command aliases related to that plugin.<br>
+The directory structure of this new system can be seen in the Plugins section below.
+
 ## Plugins
-Plugins are now separated into 'core' and 'extensions' folders. Third party plugins that extend the functionality of the bot should be placed in the 'extensions' folder.
-Various changes such as separating the help data and metadata into individual files have been made to improve the development and functionality of plugins. 
+Plugins are now separated into 'core' and 'extensions' folders.<br>
+Third party plugins that extend the functionality of the bot should be placed in the 'extensions' folder.<br>
+Various changes such as separating the help data and metadata into individual files have been made to improve the development and functionality of plugins.<br>
 **Due to these changes, all existing custom third party plugins must be updated to the new format.**
 <hr>
 
@@ -58,6 +68,15 @@ The plugin also allows users to download TTS clips to be played at a later time 
 <hr>
 
 # Other Updates
+
+### Removed Web Interface Plugin
+The previous web interface plugin implementation was very messy and experimental.
+I will be releasing v3.0.0 without a web interface plugin, and will work on implementing
+it properly in the near future.
+
+### Auto-Updater Plugin [Experimental]
+I'm working on an auto-updater plugin which will keep plugins automatically updated.
+There's no guarantee that this will be released with v3.0.0.
 
 ### New Default Aliases
 **For the full list of default aliases, please check the documentation provided here. ADD DOC HERE**
