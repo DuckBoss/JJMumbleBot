@@ -60,11 +60,9 @@ class Plugin(PluginBase):
             if res is True:
                 GS.gui_service.quick_gui(f"There is a newer version of: [{message_parse[1]}] available.",
                                          text_type='header', box_align='left', ignore_whisper=True)
-                return
             elif res is None:
                 GS.gui_service.quick_gui(f"The package: [{message_parse[1]}] is not a dependency of this software.",
                                          text_type='header', box_align='left', ignore_whisper=True)
-                return
             else:
                 GS.gui_service.quick_gui(f"There is no update available for: [{message_parse[1]}].",
                                          text_type='header', box_align='left', ignore_whisper=True)

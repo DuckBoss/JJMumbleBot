@@ -31,5 +31,3 @@ cmd_queue = None
 aliases = {}
 # Initialized plugins.
 bot_plugins = None
-
-

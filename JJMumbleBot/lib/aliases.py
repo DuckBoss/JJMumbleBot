@@ -59,4 +59,3 @@ def add_to_aliases(alias, commands):
     dprint(f'Could not add [{alias}] to registered aliases.')
     log(INFO, f"Could not add [{alias}] to registered aliases.", origin=L_ALIASES)
     return False
-

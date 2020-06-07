@@ -121,7 +121,3 @@ class PseudoGUI:
 
     def clear_display(self):
         self.content = None
-
-
-
-
