@@ -6,6 +6,7 @@ from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib import privileges
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.text_to_speech.utility import text_to_speech_utility as ttsu
+from JJMumbleBot.plugins.extensions.text_to_speech.utility import settings as tts_settings
 from JJMumbleBot.plugins.extensions.text_to_speech.resources.strings import *
 from JJMumbleBot.lib.utils import dir_utils
 import os
@@ -13,15 +14,15 @@ import os
 
 class Plugin(PluginBase):
     def __init__(self):
+        from json import loads
         super().__init__()
-        import json
         self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
-        self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
-        ttsu.tts_metadata = self.metadata
-        ttsu.voice_list = json.loads(self.metadata.get(C_PLUGIN_SETTINGS, P_TTS_ALL_VOICE))
+        tts_settings.tts_metadata = self.metadata
+        tts_settings.voice_list = loads(self.metadata.get(C_PLUGIN_SETTINGS, P_TTS_ALL_VOICE))
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -29,7 +30,7 @@ class Plugin(PluginBase):
         ttsu.clear_audio_thread()
         ttsu.stop_audio()
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
-        ttsu.exit_flag = True
+        tts_settings.exit_flag = True
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
@@ -44,7 +45,7 @@ class Plugin(PluginBase):
         if command == "ttsstop":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
-            if ttsu.is_playing and GS.audio_inst is not None:
+            if tts_settings.is_playing and GS.audio_inst is not None:
                 if not GS.audio_dni[0]:
                     GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
                 else:
@@ -67,7 +68,7 @@ class Plugin(PluginBase):
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
-                GS.gui_service.quick_gui(f"Current text to speech volume: {ttsu.volume}", text_type='header',
+                GS.gui_service.quick_gui(f"Current text to speech volume: {tts_settings.volume}", text_type='header',
                                          box_align='left')
                 return
             if vol > 1:
@@ -78,8 +79,8 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui("Invalid text to speech volume Input: [0-1]", text_type='header',
                                          box_align='left')
                 return
-            ttsu.volume = vol
-            GS.gui_service.quick_gui(f"Set text to speech volume to {ttsu.volume}", text_type='header',
+            tts_settings.volume = vol
+            GS.gui_service.quick_gui(f"Set text to speech volume to {tts_settings.volume}", text_type='header',
                                      box_align='left')
 
         elif command == "ttslist":
@@ -132,6 +133,20 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
             log(INFO, "Displayed a list of all text to speech board files.", origin=L_COMMAND)
 
+        elif command == "ttsvoices":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(tts_settings.voice_list) == 0:
+                cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Available Voices:</font> None"
+                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
+                log(INFO, "Displayed a list of all available text to speech voices.", origin=L_COMMAND)
+                return
+            cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Available Voices:</font>"
+            for i, voice_name in enumerate(tts_settings.voice_list):
+                cur_text += f"[{i}] - {voice_name}<br>"
+            GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
+            log(INFO, "Displayed a list of all available text to speech voices.", origin=L_COMMAND)
+
         elif command == "ttsdownload":
             from JJMumbleBot.plugins.extensions.text_to_speech.resources.strings import P_VLC_DIR
 
@@ -178,7 +193,7 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return False
-            ttsu.current_track = parameter
+            tts_settings.current_track = parameter
             ttsu.play_audio()
 
         elif command == "ttsplayquiet":
@@ -192,7 +207,7 @@ class Plugin(PluginBase):
             parameter = message_parse[1].strip()
             if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/text_to_speech/{parameter}.oga"):
                 return False
-            ttsu.current_track = parameter
+            tts_settings.current_track = parameter
             ttsu.play_audio()
 
         elif command == "tts":
@@ -210,7 +225,7 @@ class Plugin(PluginBase):
                         box_align='left')
                     return
             all_messages = message[1:].split(' ', 2)
-            if all_messages[1].strip() in ttsu.voice_list:
+            if all_messages[1].strip() in tts_settings.voice_list:
                 all_messages = message[1:].split(' ', 2)
             else:
                 all_messages = message[1:].split(' ', 1)
@@ -229,7 +244,7 @@ class Plugin(PluginBase):
                                       all_messages[1].strip(),
                                       directory=f'{dir_utils.get_temp_med_dir()}'
                                       ):
-                    ttsu.current_track = "_temp"
+                    tts_settings.current_track = "_temp"
                     ttsu.play_audio(mode=0)
                     return
             elif len(all_messages) == 3:
@@ -246,7 +261,7 @@ class Plugin(PluginBase):
                                       all_messages[2].strip(),
                                       directory=f'{dir_utils.get_temp_med_dir()}'
                                       ):
-                    ttsu.current_track = "_temp"
+                    tts_settings.current_track = "_temp"
                     ttsu.play_audio(mode=0)
                     return
             GS.gui_service.quick_gui(
