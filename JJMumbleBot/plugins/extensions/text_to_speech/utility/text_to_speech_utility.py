@@ -80,13 +80,13 @@ def download_clip(clip_name, voice, msg, directory=None):
                 uri = f'{directory}/text_to_speech/{clip_name}.oga'
                 sp.call(
                     [tts_metadata[C_PLUGIN_SETTINGS][P_VLC_DIR], uri] + ['-I', 'dummy', '--quiet',
-                                                                              '--one-instance', '--no-repeat',
-                                                                              '--sout',
-                                                                              '#transcode{acodec=wav, channels=2, samplerate=43000, '
-                                                                              'ab=128, threads=8}:std{access=file, mux=wav, '
-                                                                              f'dst={directory}/text_to_speech/{clip_name}.wav '
-                                                                              '}',
-                                                                              'vlc://quit'])
+                                                                         '--one-instance', '--no-repeat',
+                                                                         '--sout',
+                                                                         '#transcode{acodec=wav, channels=2, samplerate=43000, '
+                                                                         'ab=192, threads=8}:std{access=file, mux=wav, '
+                                                                         f'dst={directory}/text_to_speech/{clip_name}.wav '
+                                                                         '}',
+                                                                         'vlc://quit'])
                 return True
             else:
                 dprint(f'Could not download clip: Response-{r.status_code}')
@@ -95,7 +95,7 @@ def download_clip(clip_name, voice, msg, directory=None):
             dprint(f'Could not download clip: Response-{r.status_code}')
             return False
     except Exception as e:
-        print(e)
+        dprint(e)
         return False
 
 
@@ -139,12 +139,12 @@ def play_audio(mode=1):
                 stdout=sp.PIPE, bufsize=480)
         else:
             global_settings.audio_inst = sp.Popen(
-            [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
-                              '#transcode{acodec=s16le, channels=2, samplerate=24000, '
-                              'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
-                              'vlc://quit'],
-            stdout=sp.PIPE, bufsize=480)
-                
+                [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
+                                  '#transcode{acodec=s16le, channels=2, samplerate=24000, '
+                                  'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
+                                  'vlc://quit'],
+                stdout=sp.PIPE, bufsize=480)
+
     runtime_utils.unmute()
     while not exit_flag and global_settings.audio_inst and is_playing:
         while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not exit_flag:
