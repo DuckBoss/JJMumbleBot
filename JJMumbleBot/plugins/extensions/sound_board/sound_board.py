@@ -1,5 +1,6 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib import privileges
@@ -14,30 +15,29 @@ from bs4 import BeautifulSoup
 
 
 class Plugin(PluginBase):
+    def __init__(self):
+        super().__init__()
+        import json
+        self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
+        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+        self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
+        sbu.sound_board_metadata = self.metadata
+        sbu.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
+        rprint(
+            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+
     def quit(self):
         sbu.clear_audio_thread()
         sbu.stop_audio()
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/sound_board')
         sbu.exit_flag = True
-        dprint("Exiting Sound Board Plugin...")
+        dprint(f"Exiting {self.plugin_name} plugin...")
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def get_metadata(self):
-        pass
-
-    def __init__(self):
-        super().__init__()
-        import json
-        raw_file = os.path.basename(__file__)
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{raw_file}')
-        self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
-        self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
-        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/sound_board/')
-        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/sound_board/')
-        sbu.sound_board_metadata = self.metadata
-        sbu.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
-        rprint(
-            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+        return self.metadata
 
     def process(self, text):
         message = text.message.strip()
@@ -45,7 +45,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "sbstop":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if sbu.is_playing and GS.audio_inst is not None:
                 if not GS.audio_dni[0]:
@@ -62,10 +62,9 @@ class Plugin(PluginBase):
                 sbu.stop_audio()
                 GS.gui_service.quick_gui("Stopping sound board audio thread...", text_type='header', box_align='left')
                 return
-            return
 
         elif command == "sbvolume":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 vol = float(message[1:].split(' ', 1)[1])
@@ -78,12 +77,12 @@ class Plugin(PluginBase):
                                          box_align='left')
                 return
             sbu.volume = vol
-            GS.gui_service.quick_gui(f"Set sound_board volume to {sbu.volume}", text_type='header',
+            log(INFO, f"Set {self.plugin_name} volume to {sbu.volume}", origin=L_COMMAND)
+            GS.gui_service.quick_gui(f"Set {self.plugin_name} volume to {sbu.volume}", text_type='header',
                                      box_align='left')
-            return
 
         elif command == "sblist":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             internal_list = []
             gather_list = sbu.prepare_sb_list()
@@ -95,7 +94,7 @@ class Plugin(PluginBase):
                 cur_text += "<br>There are no local sound board files available."
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left',
                                          user=GS.mumble_inst.users[text.actor]['name'])
-                GS.log_service.info("Displayed a list of all local sound board files.")
+                log(INFO, "Displayed a list of all local sound board files.")
                 return
             for i, item in enumerate(internal_list):
                 cur_text += item
@@ -106,11 +105,10 @@ class Plugin(PluginBase):
             if cur_text != "":
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
                                          user=GS.mumble_inst.users[text.actor]['name'])
-            GS.log_service.info("Displayed a list of all local sound board files.")
-            return
+            log(INFO, "Displayed a list of all local sound board files.")
 
         elif command == "sblist_echo":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             internal_list = []
             gather_list = sbu.prepare_sb_list()
@@ -122,7 +120,7 @@ class Plugin(PluginBase):
             if len(internal_list) == 0:
                 cur_text += "<br>There are no local sound board files available."
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
-                GS.log_service.info("Displayed a list of all local sound board files.")
+                log(INFO, "Displayed a list of all local sound board files.")
                 return
             for i, item in enumerate(internal_list):
                 cur_text += item
@@ -131,11 +129,10 @@ class Plugin(PluginBase):
                     cur_text = ""
             if cur_text != "":
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-            GS.log_service.info("Displayed a list of all local sound board files.")
-            return
+            log(INFO, "Displayed a list of all local sound board files.")
 
         elif command == "sbdownload":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             all_messages = message[1:].split()
             all_messages_stripped = BeautifulSoup(message_parse[1], features='html.parser').get_text()
@@ -149,10 +146,9 @@ class Plugin(PluginBase):
                                              box_align='left')
                     return
                 return
-            return
 
         elif command == "sbdelete":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             all_messages = message[1:].split()
             if len(all_messages) == 2:
@@ -162,7 +158,7 @@ class Plugin(PluginBase):
                                              box_align='left')
 
         elif command == "sbrandom":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
@@ -196,7 +192,7 @@ class Plugin(PluginBase):
             sbu.play_audio()
 
         elif command == "sb":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
