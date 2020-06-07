@@ -42,6 +42,14 @@ class Tests(unittest.TestCase):
         default_channel = global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]
         self.assertEqual(default_channel, "DEFAULT_CHANNEL_NAME")
 
+    def test_super_user(self):
+        super_user = global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_SU]
+        self.assertEqual(super_user, "DEFAULT_SUPER_USER_NAME")
+
+    def test_self_register(self):
+        self_register = global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER)
+        self.assertEqual(self_register, True)
+
 
 if __name__ == '__main__':
     unittest.main()
