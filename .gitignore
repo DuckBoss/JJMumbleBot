@@ -126,3 +126,4 @@ config.ini
 *.oga
 *.ogg
 *.py.save
+JJMumbleBot/cfg/global_aliases.csv
