@@ -1,3 +1,7 @@
+# NOTICE:
+#### I will update this release to match the master branch until it is ready for a full release.<br>Only download this pre-release/early-release-build if you understand that there are bound to be issues.
+#### v3.0.0 does not currently have updated documentation. I am working on it to be ready for the full release.
+
 ## Python Version
 JJMumbleBot has been updated through multiple python revisions,
 and with this update it will now require Python 3.7 or higher.
