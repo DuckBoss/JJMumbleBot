@@ -76,6 +76,9 @@ class BotService:
         global_settings.mumble_inst.set_codec_profile('audio')
         global_settings.mumble_inst.start()
         global_settings.mumble_inst.is_ready()
+        if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
+            global_settings.mumble_inst.users.myself.register()
+        global_settings.mumble_inst.users.myself.comment(f'[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
 
     @staticmethod
     def message_received(text):
