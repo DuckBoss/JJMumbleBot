@@ -1,8 +1,9 @@
+import configparser
+
 from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 from JJMumbleBot.lib.utils.runtime_utils import get_version
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
-import configparser
 
 
 # sys.path.append(".")
