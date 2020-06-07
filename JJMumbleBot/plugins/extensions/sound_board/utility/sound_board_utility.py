@@ -60,7 +60,6 @@ def get_audio_length(file_name):
         frames = wav_file.getnframes()
         rate = wav_file.getframerate()
         duration = frames / float(rate)
-        print(duration)
         wav_file.close()
         if not duration:
             return -1
