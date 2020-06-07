@@ -1,4 +1,5 @@
 from JJMumbleBot.lib.utils import dir_utils
+from JJMumbleBot.lib.utils.database_utils import GetDB
 import configparser
 
 
@@ -10,7 +11,9 @@ class PluginUtilityService:
         cfg.read(f'{dir_utils.get_main_dir()}/{meta_path.split(".")[0]}/metadata.ini')
         return cfg
 
-    # TODO: Implement this method
     @staticmethod
-    def process_help(help_path: str):
-        return help_path
+    def process_help(db_cursor, plugin_name: str):
+        plugin_help_data = GetDB.get_plugin_help(db_cursor=db_cursor, plugin_name=plugin_name)
+        if plugin_help_data:
+            return plugin_help_data
+        return None

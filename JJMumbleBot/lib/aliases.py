@@ -1,93 +1,62 @@
-import csv
-from JJMumbleBot.lib.utils import dir_utils
-import logging
-
-aliases = {}
-alias_path = "cfg/aliases.csv"
-
-
-def setup_aliases_debug():
-    with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='r') as csvf:
-        csvr = csv.DictReader(csvf)
-        print("Setting up registered aliases...")
-        for i, row in enumerate(csvr):
-            aliases[row['alias']] = row['command']
-            print("Added [%s-%s] to the registered aliases list." % (row['alias'], row['command']))
-            logging.info("Added [%s-%s] to the registered aliases list." % (row['alias'], row['command']))
-
-
-def setup_aliases():
-    with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='r') as csvf:
-        csvr = csv.DictReader(csvf)
-        print("Setting up registered aliases...")
-        for i, row in enumerate(csvr):
-            aliases[row['alias']] = row['command']
-            logging.info("Added [%s-%s] to the registered aliases list." % (row['alias'], row['command']))
+from JJMumbleBot.lib.utils import database_utils
+from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.utils.print_utils import dprint
+from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
 
 
 def alias_check(alias):
-    if alias in aliases.keys():
-        return aliases[alias]
-
-    with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='r') as csvf:
-        csvr = csv.DictReader(csvf)
-        for i, row in enumerate(csvr):
-            if row['alias'] == alias:
-                aliases[alias] = row['command']
-                return alias[alias]
+    alias_dict = database_utils.GetDB.get_alias(db_cursor=get_memory_db().cursor(), alias_name=alias)
+    if alias_dict:
+        return alias_dict['alias']
     return None
 
 
-def set_alias(alias, command):
-    if alias in aliases.keys():
-        with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='r') as csvf:
-            csvr = csv.reader(csvf)
-            content = list(csvr)
-            ind = [(i, j.index(alias)) for i, j in enumerate(content) if alias in j]
-            content[ind[0][0]][1] = command
-            aliases[alias] = command
-            return overwrite_aliases(content)
+def set_alias(alias, commands) -> bool:
+    if database_utils.UpdateDB.update_alias(db_conn=get_memory_db(), alias_name=alias, commands=commands):
+        dprint(f"Registered alias: [{alias}] - [{commands}]")
+        log(INFO, f"Registered alias: [{alias}] - [{commands}]", origin=L_ALIASES)
+        return True
+    dprint(f'Could not register [{alias}] to the registered aliases.')
+    log(INFO, f"Could not register [{alias}] to the registered aliases.", origin=L_ALIASES)
     return False
 
 
+def get_all_aliases():
+    alias_list = database_utils.GetDB.get_all_aliases(db_cursor=get_memory_db().cursor())
+    if alias_list is not None:
+        return alias_list
+    dprint('Could not retrieve all the aliases from registered aliases.')
+    log(INFO, "Could not retrieve all the aliases from registered aliases.", origin=L_ALIASES)
+    return []
+
+
 def remove_from_aliases(alias):
-    if alias in aliases.keys():
-        aliases.pop(alias, None)
-        with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='r') as csvf:
-            csvr = csv.reader(csvf)
-            content = list(csvr)
-            ind = [(i, j.index(alias)) for i, j in enumerate(content) if alias in j]
-            if (content[ind[0][0]][0]) == alias:
-                content.remove(content[ind[0][0]])
-            return overwrite_aliases(content)
+    if database_utils.DeleteDB.delete_alias(db_conn=get_memory_db(), alias_name=alias):
+        dprint(f"Removed [{alias}] from registered aliases.")
+        log(INFO, f"Removed [{alias}] from registered aliases.", origin=L_ALIASES)
+        return True
+    dprint(f'Could not remove [{alias}] from registered aliases.')
+    log(INFO, f"Could not remove [{alias}] from registered aliases.", origin=L_ALIASES)
+    return False
 
 
 def clear_aliases():
-    aliases.clear()
-    with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='w') as csvf:
-        fields = ['alias', 'command']
-        csvw = csv.DictWriter(csvf, fieldnames=fields)
-        csvw.writeheader()
+    if database_utils.DeleteDB.delete_all_aliases(db_conn=get_memory_db()):
+        dprint("All aliases were removed from the registered aliases.")
+        log(INFO, "All aliases were removed from the registered aliases.", origin=L_ALIASES)
         return True
+    dprint('Could not remove all aliases from registered aliases.')
+    log(INFO, "Could not remove all aliases from registered aliases.", origin=L_ALIASES)
+    return False
 
 
-def add_to_aliases(alias, command):
-    with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='a', newline='') as csvf:
-        headers = ['alias', 'command']
-        csvw = csv.DictWriter(csvf, fieldnames=headers)
-        csvw.writerow({'alias': alias, 'command': command})
-        aliases[alias] = command
-        print("Added [%s-%s] to the user list." % (alias, command))
+def add_to_aliases(alias, commands):
+    if database_utils.InsertDB.insert_new_alias(db_conn=get_memory_db(), alias_name=alias, commands=commands):
+        dprint(f"Registered new alias: [{alias}] - [{commands}]")
+        log(INFO, f"Registered new alias: [{alias}] - [{commands}]", origin=L_ALIASES)
         return True
+    dprint(f'Could not add [{alias}] to registered aliases.')
+    log(INFO, f"Could not add [{alias}] to registered aliases.", origin=L_ALIASES)
+    return False
 
-
-def overwrite_aliases(content):
-    try:
-        with open(f"{dir_utils.get_main_dir()}/{alias_path}", mode='w', newline='') as csvf:
-            csvw = csv.writer(csvf)
-            csvw.writerows(content)
-            return True
-    except Exception:
-        print("There was a problem overwriting the privileges csv file.")
-        logging.critical("There was a problem overwriting the privileges csv file.")
-        return False

@@ -1,10 +1,12 @@
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.mumble_data import MumbleData
+from JJMumbleBot.lib.utils.database_management_utils import get_memory_db, save_memory_db_to_file
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils import dir_utils
+from JJMumbleBot.lib.utils.database_utils import InsertDB, UtilityDB
 from JJMumbleBot.lib.resources.strings import *
-import logging
+from JJMumbleBot.lib.utils.logging_utils import log
 
 
 class BotServiceHelper:
@@ -16,7 +18,8 @@ class BotServiceHelper:
         user_id: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
         user_cert: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
         use_stereo: bool = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
-        return MumbleData(ip=server_ip, port=server_port, uid=user_id, pwd=server_pass, cert=user_cert, stereo=use_stereo)
+        return MumbleData(ip=server_ip, port=server_port, uid=user_id, pwd=server_pass, cert=user_cert,
+                          stereo=use_stereo)
 
     @staticmethod
     def initialize_settings():
@@ -28,7 +31,6 @@ class BotServiceHelper:
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
         runtime_settings.cmd_token = global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]
         runtime_settings.use_logging = global_settings.cfg.getboolean(C_LOGGING, P_LOG_ENABLE, fallback=False)
-        runtime_settings.use_web_interface = global_settings.cfg.getboolean(C_WEB_INT, P_WEB_ENABLE, fallback=False)
         runtime_settings.max_logs = global_settings.cfg[C_LOGGING][P_LOG_MAX]
         runtime_settings.cmd_queue_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_QUEUE_LIM])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_HIST_LIM])
@@ -36,25 +38,8 @@ class BotServiceHelper:
             rprint("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
             runtime_settings.cmd_token = '!'
 
-    @staticmethod
-    def initialize_logging():
-        if not runtime_settings.use_logging:
-            return
-        from logging.handlers import TimedRotatingFileHandler
-        logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
-        log_file_name = f"{global_settings.cfg[C_LOGGING][P_LOG_DIR]}/runtime.log"
-        global_settings.log_service = logging.getLogger("RuntimeLogging")
-        global_settings.log_service.setLevel(logging.DEBUG)
-
-        handler = TimedRotatingFileHandler(log_file_name, when='midnight', backupCount=runtime_settings.max_logs)
-        handler.setLevel(logging.INFO)
-        log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
-        handler.setFormatter(log_formatter)
-        global_settings.log_service.addHandler(handler)
-
     # Initializes only safe-mode applicable plugins.
     # TODO: Re-introduce help plugin.
-    # TODO: Require all plugins to come with metadata specifying initialization data requirements.
     @staticmethod
     def initialize_plugins_safe():
         import sys
@@ -67,6 +52,10 @@ class BotServiceHelper:
             runtime_utils.exit_bot_error(ExitCodes.CONFIG_ERROR)
             raise ConfigError('There was an error loading the global config for initializing safe mode plugins.')
 
+        # Import global aliases into the database.
+        UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+
         global_settings.bot_plugins = {}
         safe_mode_plugins = json.loads(global_settings.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_SAFE))
         # Load Core Plugins
@@ -78,11 +67,20 @@ class BotServiceHelper:
         for p_file in all_imports:
             if p_file in safe_mode_plugins:
                 if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
-                                                  p_file)):
-                    rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                                                   p_file)):
+                    rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
+                # Import the core plugin.
                 global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+                # Import core plugin into the database.
+                InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
+                # Import core plugin user privileges into the database.
+                UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/privileges.csv')
+                # Import plugin aliases into the database.
+                UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
+                # Import plugin help into the database.
+                UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
         # help_plugin = __import__('help.help')
         # self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
@@ -97,11 +95,21 @@ class BotServiceHelper:
         for p_file in all_imports:
             if p_file in safe_mode_plugins:
                 if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
-                                                  p_file)):
-                    rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                                                   p_file)):
+                    rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
+                # Import the core plugin.
                 global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+                # Import core plugin into the database.
+                InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
+                # Import core plugin user privileges into the database.
+                UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/privileges.csv')
+                # Import plugin aliases into the database.
+                UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/aliases.csv')
+                # Import plugin help into the database.
+                UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
+        save_memory_db_to_file()
         sys.path.pop(0)
         rprint("######### Extension Plugins Initialized - Safe Mode #########")
 
@@ -112,6 +120,10 @@ class BotServiceHelper:
         import sys
         import os
 
+        # Import global aliases into the database.
+        UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+
         global_settings.bot_plugins = {}
         # Load Core Plugins
         rprint("######### Initializing Core Plugins #########")
@@ -121,11 +133,20 @@ class BotServiceHelper:
                                                   name)) and name != "__pycache__"]
         for p_file in all_imports:
             if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
-                                                  p_file)):
-                rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                                               p_file)):
+                rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
+            # Import the core plugin.
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+            # Import core plugin into the database.
+            InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
+            # Import core plugin user privileges into the database.
+            UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/privileges.csv')
+            # Import plugin aliases into the database.
+            UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
+            # Import plugin help into the database.
+            UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
         sys.path.pop(0)
         rprint("######### Core Plugins Initialized #########")
         # Load Extension Plugins
@@ -137,33 +158,20 @@ class BotServiceHelper:
                                         name)) and name != "__pycache__"]
         for p_file in all_imports:
             if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
-                                                  p_file)):
-                rprint(f"ERROR: {p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                                               p_file)):
+                rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
+            # Import the core plugin.
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+            # Import core plugin into the database.
+            InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
+            # Import core plugin user privileges into the database.
+            UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/privileges.csv')
+            # Import plugin aliases into the database.
+            UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/aliases.csv')
+            # Import plugin help into the database.
+            UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
+        save_memory_db_to_file()
         sys.path.pop(0)
         rprint("######### Extension Plugins Initialized #########")
-        # Import the help and youtube plugins separately.
-        # help_plugin = __import__('help.help')
-        # youtube_plugin = __import__('youtube.youtube')
-        # Assign audio plugins manually.
-        # self.bot_plugins['youtube'] = youtube_plugin.youtube.Plugin()
-        # self.bot_plugins.get('youtube').set_sound_board_plugin(self.bot_plugins.get('sound_board'))
-        # self.bot_plugins.get('sound_board').set_youtube_plugin(self.bot_plugins.get('youtube'))
-        # self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
-
-    @staticmethod
-    def log(level, message, origin=None):
-        if not runtime_settings.use_logging:
-            return
-        if not global_settings.log_service:
-            return
-        if level == INFO:
-            global_settings.log_service.info(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
-        elif level == DEBUG:
-            global_settings.log_service.debug(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
-        elif level == WARNING:
-            global_settings.log_service.warning(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')
-        elif level == CRITICAL:
-            global_settings.log_service.critical(f'[{META_NAME}.{origin if not None else L_GENERAL}]:{message}')

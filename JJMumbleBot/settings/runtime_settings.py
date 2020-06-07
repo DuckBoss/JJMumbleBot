@@ -5,11 +5,6 @@
 
 
 # INTERNAL SETTINGS
-# Web Interface
-use_web_interface: bool = False
-web_ip = None
-web_port = None
-web_thread = None
 # Logging
 use_logging: bool = False
 max_logs: int = 15

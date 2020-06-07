@@ -5,9 +5,8 @@ C_MAIN_SETTINGS = 'Main Settings'
 C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
 C_MEDIA_DIR = 'Media Directories'
-C_WEB_INT = 'Web Interface'
 C_LOGGING = 'Logging'
-
+C_BOT_INFORMATION = 'Bot Information'
 # PROGRAM CONFIG PARAMETER STRINGS
 # Connection Settings
 P_SERVER_IP = 'ServerIP'
@@ -16,6 +15,7 @@ P_SERVER_PORT = 'ServerPort'
 P_USER_ID = 'UserID'
 P_USER_CERT = 'UserCertification'
 P_CHANNEL_DEF = 'DefaultChannel'
+P_DEFAULT_SU = 'DefaultSuperUser'
 # Main Settings
 P_AUD_STEREO = 'UseStereoOutput'
 P_CMD_TICK_RATE = 'CommandTickRate'
@@ -37,16 +37,14 @@ P_TXT_IND_COL = 'IndexTextColor'
 # Plugin Settings
 P_PLUG_DISABLED = 'DisabledPlugins'
 P_PLUG_SAFE = 'SafeModePlugins'
-# Web Interface Settings
-P_WEB_ENABLE = 'EnableWebInterface'
-P_WEB_IP = 'WebInterfaceIP'
-P_WEB_PORT = 'WebInterfacePort'
 # Logging
 P_LOG_ENABLE = 'EnableLogging'
 P_LOG_MAX = 'MaxLogs'
 P_LOG_DIR = 'LogDirectory'
+# Bot Information
+P_ABOUT_TEXT = 'AboutText'
 ###########################################################################
-# LOGGING STRINGS
+# LOGGING STRINGS - DO NOT MODIFY
 INFO = 'info'
 DEBUG = 'debug'
 WARNING = 'warning'
@@ -55,9 +53,12 @@ CRITICAL = 'critical'
 # LOGGING PREFIX STRINGS
 L_GENERAL = "General"
 L_USER_PRIV = "UserPrivileges"
-L_PRIV_DB = "PrivilegesDatabase"
+L_DATABASE = "Database"
 L_COMMAND = "Command"
 L_STARTUP = "StartUp"
+L_SHUTDOWN = "ShutDown"
+L_ALIASES = "Aliases"
+L_LOGGING = "Logging"
 ###########################################################################
 # PLUGIN CONFIG CATEGORY STRINGS
 C_PLUGIN_INFO = 'Plugin Information'

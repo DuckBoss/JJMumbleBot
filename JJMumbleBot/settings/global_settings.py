@@ -11,6 +11,8 @@ log_service = None
 cfg = None
 # Mumble Instance
 mumble_inst = None
+# Bot Database Instance String (In Memory)
+mumble_db_string = None
 # Command Line Arguments
 safe_mode: bool = False
 debug_mode: bool = False
