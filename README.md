@@ -41,7 +41,8 @@ A plugin-based python 3 mumble bot with extensive features.
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
-## Documentation
+## Documentation (Pre-v3.0)
+### I am working on updating the documentation for the latest v3.0.0 release!<br>If you are using v3.0.0, please refer to the release notes here: [Release Notes Document](https://github.com/DuckBoss/JJMumbleBot/blob/master/release_notes.md)
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Requirements: </b> <br>
@@ -51,7 +52,7 @@ A plugin-based python 3 mumble bot with extensive features.
 <b> Legacy Branches: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions</a>
 
-## Extra Plugins:
+## Extra Plugins (Pre-v3.0):
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
 ### Got any questions or concerns? Please post an issue report!
