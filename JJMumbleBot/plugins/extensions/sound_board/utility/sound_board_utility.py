@@ -27,7 +27,7 @@ def prepare_sb_list():
 
 
 def stop_audio():
-    if global_settings.audio_inst is not None and is_playing:
+    if global_settings.audio_inst is not None and settings.is_playing:
         dprint("Stopping sound_board audio thread...")
         global_settings.audio_inst.terminate()
         global_settings.audio_inst.kill()
