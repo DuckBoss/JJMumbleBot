@@ -1,5 +1,5 @@
 from JJMumbleBot.lib.utils.dir_utils import get_main_dir
-from JJMumbleBot.lib.pymumble import pymumble_py3 as pymumble
+import pymumble_py3 as pymumble
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
 from JJMumbleBot.settings import global_settings
 import configparser

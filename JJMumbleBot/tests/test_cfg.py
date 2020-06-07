@@ -16,7 +16,7 @@ class Tests(unittest.TestCase):
 
     def test_version(self):
         bot_version = get_version()
-        self.assertEqual(bot_version, global_settings.version)
+        self.assertEqual(bot_version, META_VERSION)
 
     def test_server_ip(self):
         server_ip = global_settings.cfg[C_CONNECTION_SETTINGS][P_SERVER_IP]
