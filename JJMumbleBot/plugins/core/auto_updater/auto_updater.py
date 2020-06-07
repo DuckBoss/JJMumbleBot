@@ -3,7 +3,7 @@ from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib import privileges
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
-from JJMumbleBot.lib.helpers.bot_service_helper import log
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.core.auto_updater.resources.strings import P_PIP_CMD
 from JJMumbleBot.plugins.core.auto_updater.utility import auto_updater_helper as update_utils
@@ -41,11 +41,11 @@ class Plugin(PluginBase):
                 if updated_version:
                     GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}",
                                              text_type='header', box_align='left', ignore_whisper=True)
-                    GS.log_service.info(f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}")
+                    log(INFO, f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}", origin=L_DEPENDENCIES)
                     return
                 GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]}] could not be updated.",
                                          text_type='header', box_align='left', ignore_whisper=True)
-                GS.log_service.info(f"Dependency: [{message_parse[1]} could not be updated.")
+                log(INFO, f"Dependency: [{message_parse[1]} could not be updated.", origin=L_DEPENDENCIES)
             elif res is None:
                 GS.gui_service.quick_gui(f"The package: [{message_parse[1]}] is not a dependency of this software.",
                                          text_type='header', box_align='left', ignore_whisper=True)
