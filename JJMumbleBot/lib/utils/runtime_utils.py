@@ -5,7 +5,6 @@ from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.resources.strings import *
-import time
 import datetime
 
 
