@@ -24,7 +24,7 @@ class Plugin(PluginBase):
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
-        sbu.sound_board_metadata = self.metadata
+        sbu_settings.sound_board_metadata = self.metadata
         sbu_settings.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
@@ -32,7 +32,7 @@ class Plugin(PluginBase):
     def quit(self):
         sbu.clear_audio_thread()
         sbu.stop_audio()
-        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/sound_board')
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         sbu_settings.exit_flag = True
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
@@ -154,7 +154,7 @@ class Plugin(PluginBase):
             all_messages = message[1:].split()
             if len(all_messages) == 2:
                 if ".wav" in all_messages[1].strip():
-                    dir_utils.remove_file(all_messages[1].strip(), f"{dir_utils.get_perm_med_dir()}/sound_board/")
+                    dir_utils.remove_file(all_messages[1].strip(), f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")
                     GS.gui_service.quick_gui(f"Deleted sound clip : {all_messages[1].strip()}", text_type='header',
                                              box_align='left')
 
@@ -183,7 +183,7 @@ class Plugin(PluginBase):
                 sfx_duration = sbu.get_audio_length(random_sfx)
 
             # print(random_sfx)
-            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/sound_board/{random_sfx}.wav"):
+            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav"):
                 GS.gui_service.quick_gui(
                     "The sound clip does not exist.",
                     text_type='header',
@@ -208,7 +208,7 @@ class Plugin(PluginBase):
                     return
             # print(GS.audio_dni)
             parameter = message_parse[1].strip()
-            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/sound_board/{parameter}.wav"):
+            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav"):
                 GS.gui_service.quick_gui(
                     "The sound clip does not exist.",
                     text_type='header',
