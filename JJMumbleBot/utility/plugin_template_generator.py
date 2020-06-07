@@ -6,6 +6,7 @@ from JJMumbleBot.lib.utils import dir_utils
 py_template = """
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
@@ -14,7 +15,8 @@ from JJMumbleBot.lib import privileges
 
 class Plugin(PluginBase):
     def quit(self):
-        dprint("Exiting Plugin...")
+        dprint(f"Exiting {self.plugin_name} plugin...")
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def get_metadata(self):
         return self.metadata
@@ -23,11 +25,9 @@ class Plugin(PluginBase):
         super().__init__()
         import os
         import json
-        raw_file = os.path.basename(__file__)
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{raw_file}')
+        self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
+        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
-        self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -37,11 +37,11 @@ class Plugin(PluginBase):
         command = message_parse[0]
         
         if command == "example_echo":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             parameter = message_parse[1]
             global_settings.gui_service.quick_gui(parameter, text_type='header', box_align='left', ignore_whisper=True)
-            global_settings.log_service.info(f"Echo:[{parameter}]")
+            log(INFO, f"Echo:[{parameter}]", origin=L_GENERAL)
             return
 
 """
