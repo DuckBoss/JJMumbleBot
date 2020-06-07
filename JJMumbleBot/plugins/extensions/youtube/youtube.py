@@ -370,13 +370,11 @@ class Plugin(PluginBase):
                     if not YH.is_playing:
                         YM.download_next()
                         YM.play_audio()
-                    return
                 else:
                     GS.gui_service.quick_gui(
                         "The given link was not identified as a youtube video link!",
                         text_type='header',
                         box_align='left')
-                    return
 
         elif command == "link":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
