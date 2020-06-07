@@ -7,6 +7,7 @@ from JJMumbleBot.lib import privileges
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utility as sbu
+from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
 from JJMumbleBot.lib.utils import dir_utils
 import os
 import random
@@ -17,14 +18,14 @@ from bs4 import BeautifulSoup
 class Plugin(PluginBase):
     def __init__(self):
         super().__init__()
-        import json
+        from json import loads
         self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
-        self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         sbu.sound_board_metadata = self.metadata
-        sbu.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
+        sbu_settings.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -32,7 +33,7 @@ class Plugin(PluginBase):
         sbu.clear_audio_thread()
         sbu.stop_audio()
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/sound_board')
-        sbu.exit_flag = True
+        sbu_settings.exit_flag = True
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
@@ -47,7 +48,7 @@ class Plugin(PluginBase):
         if command == "sbstop":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
-            if sbu.is_playing and GS.audio_inst is not None:
+            if sbu_settings.is_playing and GS.audio_inst is not None:
                 if not GS.audio_dni[0]:
                     GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
                 else:
@@ -69,16 +70,16 @@ class Plugin(PluginBase):
             try:
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
-                GS.gui_service.quick_gui(f"Current sound board volume: {sbu.volume}", text_type='header',
+                GS.gui_service.quick_gui(f"Current sound board volume: {sbu_settings.volume}", text_type='header',
                                          box_align='left')
                 return
             if vol > 1 or vol < 0:
                 GS.gui_service.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
                                          box_align='left')
                 return
-            sbu.volume = vol
-            log(INFO, f"Set {self.plugin_name} volume to {sbu.volume}", origin=L_COMMAND)
-            GS.gui_service.quick_gui(f"Set {self.plugin_name} volume to {sbu.volume}", text_type='header',
+            sbu_settings.volume = vol
+            log(INFO, f"Set {self.plugin_name} volume to {sbu_settings.volume}", origin=L_COMMAND)
+            GS.gui_service.quick_gui(f"Set {self.plugin_name} volume to {sbu_settings.volume}", text_type='header',
                                      box_align='left')
 
         elif command == "sblist":
@@ -188,7 +189,7 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return False
-            sbu.current_track = random_sfx
+            sbu_settings.current_track = random_sfx
             sbu.play_audio()
 
         elif command == "sb":
@@ -213,5 +214,5 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return False
-            sbu.current_track = parameter
+            sbu_settings.current_track = parameter
             sbu.play_audio()

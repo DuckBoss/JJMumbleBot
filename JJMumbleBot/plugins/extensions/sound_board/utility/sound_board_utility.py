@@ -4,6 +4,7 @@ from JJMumbleBot.lib.utils.print_utils import dprint, rprint
 from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.resources.strings import C_PLUGIN_SETTINGS
+from JJMumbleBot.plugins.extensions.sound_board.utility import settings
 from JJMumbleBot.lib.utils import runtime_utils
 import os
 import wave
@@ -11,13 +12,6 @@ import youtube_dl
 import time
 import audioop
 import subprocess as sp
-
-exit_flag = False
-current_track = None
-is_playing = False
-sound_board_metadata = None
-# default volume
-volume = 0.5
 
 
 def prepare_sb_list():
@@ -33,20 +27,19 @@ def prepare_sb_list():
 
 
 def stop_audio():
-    global current_track
     if global_settings.audio_inst is not None and is_playing:
         dprint("Stopping sound_board audio thread...")
         global_settings.audio_inst.terminate()
         global_settings.audio_inst.kill()
         global_settings.audio_inst = None
-        current_track = None
+        settings.current_track = None
         global_settings.audio_dni = (False, None)
         return True
     return False
 
 
 def get_cur_audio_length():
-    wav_file = wave.open(f"{dir_utils.get_perm_med_dir()}/sound_board/{current_track}.wav", 'r')
+    wav_file = wave.open(f"{dir_utils.get_perm_med_dir()}/sound_board/{settings.current_track}.wav", 'r')
     frames = wav_file.getnframes()
     rate = wav_file.getframerate()
     duration = frames / float(rate)
@@ -101,19 +94,18 @@ def clear_audio_thread():
 
 
 def play_audio():
-    global_settings.audio_dni = (True, sound_board_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+    global_settings.audio_dni = (True, settings.sound_board_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
     global_settings.mumble_inst.sound_output.clear_buffer()
 
-    uri = f"file:///{dir_utils.get_perm_med_dir()}/sound_board/{current_track}.wav"
-    command = sound_board_metadata[C_PLUGIN_SETTINGS][P_VLC_DIR]
+    uri = f"file:///{dir_utils.get_perm_med_dir()}/sound_board/{settings.current_track}.wav"
+    command = settings.sound_board_metadata[C_PLUGIN_SETTINGS][P_VLC_DIR]
 
     if global_settings.audio_inst is not None:
         global_settings.audio_inst.terminate()
         global_settings.audio_inst.kill()
         global_settings.audio_inst = None
 
-    global is_playing
-    is_playing = True
+    settings.is_playing = True
     if global_settings.audio_inst is None:
         use_stereo = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
         if use_stereo:
@@ -132,16 +124,16 @@ def play_audio():
             stdout=sp.PIPE, bufsize=480)
 
     runtime_utils.unmute()
-    while not exit_flag and global_settings.audio_inst and is_playing:
-        while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not exit_flag:
+    while not settings.exit_flag and global_settings.audio_inst and settings.is_playing:
+        while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not settings.exit_flag:
             time.sleep(0.01)
         if global_settings.audio_inst:
             raw_music = global_settings.audio_inst.stdout.read(480)
             if raw_music and global_settings.audio_inst:
-                global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, volume))
+                global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, settings.volume))
             else:
                 stop_audio()
-                is_playing = False
+                settings.is_playing = False
                 return
         else:
             return
