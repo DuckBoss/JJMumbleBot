@@ -1,5 +1,6 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.settings import global_settings as GS
@@ -13,20 +14,22 @@ import time
 
 
 class Plugin(PluginBase):
-    def get_metadata(self):
-        pass
-
     def __init__(self):
         super().__init__()
         import json
-        raw_file = os.path.basename(__file__)
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{raw_file}')
+        self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
+        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
-        self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
-        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/images/')
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+
+    def quit(self):
+        dprint(f"Exiting {self.plugin_name} plugin...")
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+
+    def get_metadata(self):
+        return self.metadata
 
     def process(self, text):
         message = text.message.strip()
@@ -34,7 +37,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "post":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             img_url = message_parse[1]
             # Download image
@@ -50,12 +53,11 @@ class Plugin(PluginBase):
                                          bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                          format=False)
-            GS.log_service.info(f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
+            log(INFO, f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             dir_utils.remove_file("_image.jpg", f'{dir_utils.get_temp_med_dir()}/images')
-            return
 
         elif command == "img":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             parameters = message_parse[1].rsplit(".", 1)
             try:
@@ -75,11 +77,10 @@ class Plugin(PluginBase):
                                          bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                          format=False)
-            GS.log_service.info("Posted an image to the mumble channel chat from local files.")
-            return
+            log(INFO, "Posted an image to the mumble channel chat from local files.")
 
         elif command == "imglist":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             file_counter = 0
             gather_list = []
@@ -113,11 +114,10 @@ class Plugin(PluginBase):
             if cur_text != "":
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
                                          user=GS.mumble_inst.users[text.actor]['name'])
-            GS.log_service.info("Displayed a list of all local image files.")
-            return
+            log(INFO, "Displayed a list of all local image files.")
 
         elif command == "imglist_echo":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             file_counter = 0
             gather_list = []
@@ -138,7 +138,7 @@ class Plugin(PluginBase):
             if len(internal_list) == 0:
                 cur_text += "<br>There are no local image files available."
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
-                GS.log_service.info("Displayed a list of all local image files.")
+                log(INFO, "Displayed a list of all local image files.")
                 return
 
             for i, item in enumerate(internal_list):
@@ -148,8 +148,4 @@ class Plugin(PluginBase):
                     cur_text = ""
             if cur_text != "":
                 GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-            GS.log_service.info("Displayed a list of all local image files.")
-            return
-
-    def quit(self):
-        dprint("Exiting Images Plugin...")
+            log(INFO, "Displayed a list of all local image files.")
