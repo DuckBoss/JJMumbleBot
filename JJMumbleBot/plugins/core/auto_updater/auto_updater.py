@@ -5,6 +5,7 @@ from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.helpers.bot_service_helper import log
 from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.plugins.core.auto_updater.resources.strings import P_PIP_CMD
 from JJMumbleBot.plugins.core.auto_updater.utility import auto_updater_helper as update_utils
 
 
@@ -36,13 +37,13 @@ class Plugin(PluginBase):
                 return
             res = update_utils.update_available(message_parse[1])
             if res is True:
-                updated_version = update_utils.check_and_update(message_parse[1])
+                updated_version = update_utils.check_and_update(message_parse[1], self.metadata[C_PLUGIN_SET][P_PIP_CMD])
                 if updated_version:
-                    GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]} has been updated to v{updated_version}",
+                    GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}",
                                              text_type='header', box_align='left', ignore_whisper=True)
                     GS.log_service.info(f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}")
                     return
-                GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]} could not be updated.",
+                GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]}] could not be updated.",
                                          text_type='header', box_align='left', ignore_whisper=True)
                 GS.log_service.info(f"Dependency: [{message_parse[1]} could not be updated.")
             elif res is None:

@@ -8,9 +8,9 @@ def check_pypi_version(package_name):
     return data['info']['version']
 
 
-def update_package(package_name):
+def update_package(package_name, pip_cmd):
     from subprocess import call
-    call(f"pip install --upgrade {package_name}", shell=True)
+    call(f"{pip_cmd} install --upgrade {package_name}", shell=True)
 
 
 def update_available(package_name):
@@ -30,12 +30,12 @@ def update_available(package_name):
     return False
 
 
-def check_and_update(package_name):
+def check_and_update(package_name, pip_cmd):
     import pkg_resources
     vers = check_pypi_version(package_name)
     if vers != pkg_resources.get_distribution(package_name).version:
         dprint(f"There is a newer version of: [{package_name}] available. Updating...")
-        update_package(package_name)
+        update_package(package_name, pip_cmd)
         return vers
     return None
 
