@@ -61,6 +61,7 @@ L_STARTUP = "StartUp"
 L_SHUTDOWN = "ShutDown"
 L_ALIASES = "Aliases"
 L_LOGGING = "Logging"
+L_DEPENDENCIES = "Dependencies"
 ###########################################################################
 # PLUGIN CONFIG CATEGORY STRINGS
 C_PLUGIN_INFO = 'Plugin Information'
