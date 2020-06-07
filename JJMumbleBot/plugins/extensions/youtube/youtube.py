@@ -1,5 +1,6 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.utils import runtime_utils
@@ -16,24 +17,13 @@ from bs4 import BeautifulSoup
 
 
 class Plugin(PluginBase):
-    def get_metadata(self):
-        return self.metadata
-
-    def quit(self):
-        YM.stop_audio()
-        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
-        YH.exit_flag = True
-        dprint("Exiting Youtube Plugin...")
-
     def __init__(self):
         super().__init__()
         import json
-        raw_file = os.path.basename(__file__)
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{raw_file}')
+        self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
+        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.priv_path = f'plugins/extensions/{raw_file.split(".")[0]}/privileges.csv'
-        self.help_path = f'plugins/extensions/{raw_file.split(".")[0]}/help.html'
-        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/youtube/')
+        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
         YH.yt_metadata = self.metadata
         YH.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_YT_DEF_VOL])
@@ -44,13 +34,23 @@ class Plugin(PluginBase):
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
+    def get_metadata(self):
+        return self.metadata
+
+    def quit(self):
+        YM.stop_audio()
+        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
+        YH.exit_flag = True
+        dprint(f"Exiting {self.plugin_name} plugin...")
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+
     def process(self, text):
         message = text.message.strip()
         message_parse = message[1:].split(' ', 1)
         command = message_parse[0]
 
         if command == "song":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if YH.current_song_info is not None:
                 GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
@@ -58,16 +58,15 @@ class Plugin(PluginBase):
                                              caption=f"Now playing: {YH.current_song_info['main_title']}",
                                              format=True,
                                              img_size=32768)
-                GS.log_service.info("Displayed current song in the youtube plugin.")
+                log(INFO, "Displayed current song in the youtube plugin.", origin=L_COMMAND)
             else:
                 GS.gui_service.quick_gui(
                     f"{runtime_utils.get_bot_name()} is not playing anything right now.",
                     text_type='header',
                     box_align='left')
-            return
 
         elif command == "autoplay":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if YH.autoplay:
                 YH.autoplay = False
@@ -75,18 +74,17 @@ class Plugin(PluginBase):
                     "Autoplay has been disabled.",
                     text_type='header',
                     box_align='left')
-                GS.log_service.info("Autoplay has been disabled in the youtube plugin.")
+                log(INFO, "Autoplay has been disabled in the youtube plugin.", origin=L_COMMAND)
             else:
                 YH.autoplay = True
                 GS.gui_service.quick_gui(
                     "Autoplay has been enabled.",
                     text_type='header',
                     box_align='left')
-                GS.log_service.info("Autoplay has been enabled in the youtube plugin.")
-            return
+                log(INFO, "Autoplay has been enabled in the youtube plugin.", origin=L_COMMAND)
 
         elif command == "shuffle":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if GS.audio_inst is not None:
                 if not YH.queue_instance.is_empty():
@@ -96,17 +94,16 @@ class Plugin(PluginBase):
                         "The youtube queue has been shuffled.",
                         text_type='header',
                         box_align='left')
-                    GS.log_service.info("The youtube audio queue was shuffled.")
+                    log(INFO, "The youtube audio queue was shuffled.", origin=L_COMMAND)
                     return
 
         elif command == "next":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
             else:
                 if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
-                    rprint(GS.audio_dni)
                     rprint(
                         f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[0]}|{GS.audio_dni[1]}]')
                     GS.gui_service.quick_gui(
@@ -114,13 +111,10 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left')
                     return
-            print(GS.audio_dni)
             YM.next_track()
-            print(GS.audio_dni)
-            return
 
         elif command == "removetrack":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if GS.audio_inst is not None:
                 if YH.queue_instance.is_empty():
@@ -141,20 +135,18 @@ class Plugin(PluginBase):
                     f"Removed track: [{rem_val}]-{removed_item['main_title']} from the queue.",
                     text_type='header',
                     box_align='left')
-                GS.log_service.info(f"Removed track #{rem_val} from the youtube audio queue.")
+                log(INFO, f"Removed track #{rem_val} from the youtube audio queue.", origin=L_COMMAND)
                 return
-            return
 
         elif command == "skipto":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             skip_val = int(message[1:].split(' ', 1)[1])
             YM.skipto(skip_val)
-            GS.log_service.info(f"The youtube audio queue skipped to track #{skip_val}.")
-            return
+            log(INFO, f"The youtube audio queue skipped to track #{skip_val}.", origin=L_COMMAND)
 
         elif command == "stop":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if GS.audio_inst is not None:
                 if not GS.audio_dni[0]:
@@ -176,12 +168,11 @@ class Plugin(PluginBase):
                 YM.stop_audio()
                 dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
                 YH.queue_instance = qh.QueueHandler(YH.max_queue_size)
-                GS.log_service.info("The youtube audio thread was stopped.")
+                log(INFO, "The youtube audio thread was stopped.", origin=L_COMMAND)
                 return
-            return
 
         elif command == "clear":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             rprint("Clearing youtube queue.")
             YM.clear_queue()
@@ -189,11 +180,10 @@ class Plugin(PluginBase):
                 "Cleared youtube queue.",
                 text_type='header',
                 box_align='left')
-            GS.log_service.info("The youtube queue was cleared.")
-            return
+            log(INFO, "The youtube queue was cleared.", origin=L_COMMAND)
 
         elif command == "volume":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 vol = float(message[1:].split(' ', 1)[1])
@@ -204,13 +194,7 @@ class Plugin(PluginBase):
                     box_align='left')
                 return
 
-            if vol > 1:
-                GS.gui_service.quick_gui(
-                    "Invalid Volume Input: [0-1]",
-                    text_type='header',
-                    box_align='left')
-                return
-            if vol < 0:
+            if vol > 1 or vol < 0:
                 GS.gui_service.quick_gui(
                     "Invalid Volume Input: [0-1]",
                     text_type='header',
@@ -221,11 +205,10 @@ class Plugin(PluginBase):
                 f"Set volume to {YH.volume}",
                 text_type='header',
                 box_align='left')
-            GS.log_service.info(f"The youtube audio volume was changed to {YH.volume}.")
-            return
+            log(INFO, f"The youtube audio volume was changed to {YH.volume}.", origin=L_COMMAND)
 
         elif command == "youtube":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
 
             if not GS.audio_dni[0]:
@@ -252,12 +235,11 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left',
                 text_align='left')
-            GS.log_service.info("Displayed youtube search results.")
+            log(INFO, "Displayed youtube search results.", origin=L_COMMAND)
             YH.can_play = True
-            return
 
         elif command == "queue":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             queue_results = YM.get_queue()
             if queue_results is not None:
@@ -277,17 +259,16 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left',
                         text_align='left')
-                GS.log_service.info("Displayed current youtube queue.")
+                log(INFO, "Displayed current youtube queue.", origin=L_COMMAND)
                 return
             else:
                 GS.gui_service.quick_gui(
                     "The youtube queue is empty.",
                     text_type='header',
                     box_align='left')
-            return
 
         elif command == "playlist":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if len(message_parse) == 2:
                 if not GS.audio_dni[0]:
@@ -321,7 +302,7 @@ class Plugin(PluginBase):
                         f'Playlist Generated:<br><a href="{stripped_url}">{stripped_url}</a>',
                         text_type='header',
                         box_align='left')
-                    GS.log_service.info(f"Generated playlist: {stripped_url}")
+                    log(INFO, f"Generated playlist: {stripped_url}", origin=L_COMMAND)
                     if not YH.is_playing:
                         YM.download_next()
                         YM.play_audio()
@@ -334,7 +315,7 @@ class Plugin(PluginBase):
                 return
 
         elif command == "linkfront":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
 
             if not GS.audio_dni[0]:
@@ -398,9 +379,8 @@ class Plugin(PluginBase):
                     return
 
         elif command == "link":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
-
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
             else:
@@ -462,7 +442,7 @@ class Plugin(PluginBase):
                     return
 
         elif command == "play":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if YH.can_play:
                 if not GS.audio_dni[0]:
@@ -562,9 +542,9 @@ class Plugin(PluginBase):
                     if not YH.is_playing:
                         YM.download_next()
                         YM.play_audio()
-            return
+
         elif command == "replay":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if GS.audio_inst is not None:
                 if not GS.audio_dni[0]:
@@ -590,4 +570,3 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return
-            return
