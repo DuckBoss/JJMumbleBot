@@ -1,5 +1,6 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib.utils import runtime_utils as rutils
 from JJMumbleBot.lib.helpers import runtime_helper
@@ -9,20 +10,22 @@ from JJMumbleBot.lib.resources.strings import *
 
 
 class Plugin(PluginBase):
-    def get_metadata(self):
-        return self.metadata
-
     def __init__(self):
         super().__init__()
         import os
         import json
-        raw_file = os.path.basename(__file__)
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{raw_file}')
+        self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
+        self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.priv_path = f'plugins/core/{raw_file.split(".")[0]}/privileges.csv'
-        self.help_path = f'plugins/core/{raw_file.split(".")[0]}/help.html'
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+
+    def quit(self):
+        dprint(f"Exiting {self.plugin_name} plugin...")
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+
+    def get_metadata(self):
+        return self.metadata
 
     def process(self, text):
         message = text.message.strip()
@@ -30,7 +33,7 @@ class Plugin(PluginBase):
         command = message_parse[0]
 
         if command == "getwhisper":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if runtime_helper.whisper_target is None:
                 GS.gui_service.quick_gui("There is no whisper target set", text_type='header',
@@ -65,7 +68,7 @@ class Plugin(PluginBase):
                 return
 
         elif command == "setwhisperuser":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 parameter = message_parse[1]
@@ -80,17 +83,16 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Set whisper to User: {parameter}", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                GS.log_service.info(f"Set whisper to User: {parameter}.")
+                log(INFO, f"Set whisper to User: {parameter}.", origin=L_COMMAND)
             except IndexError:
                 GS.gui_service.quick_gui("Invalid whisper command!<br>Command format: !setwhisperuser username",
                                          text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
                 return
-            return
 
         elif command == "removewhisperuser":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 username = message_parse[1]
@@ -114,13 +116,13 @@ class Plugin(PluginBase):
                     if user_id in runtime_helper.whisper_target['id']:
                         runtime_helper.whisper_target['id'].remove(user_id)
                     else:
-                        GS.gui_service.quick_gui(f"Could not find user: {username} in the whisper targets!",
+                        GS.gui_service.quick_gui(f"Could not find user: {username} in the whisper targets.",
                                                  text_type='header',
                                                  box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                                  ignore_whisper=True)
                         return
                 else:
-                    GS.gui_service.quick_gui(f"Could not find user: {username} in the whisper targets!",
+                    GS.gui_service.quick_gui(f"Could not find user: {username} in the whisper targets.",
                                              text_type='header',
                                              box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                              ignore_whisper=True)
@@ -130,25 +132,24 @@ class Plugin(PluginBase):
                 else:
                     rutils.set_whisper_multi_user(runtime_helper.whisper_target['id'])
 
-                GS.gui_service.quick_gui(f"Removed user: {username} from the whisper targets!", text_type='header',
+                GS.gui_service.quick_gui(f"Removed user: {username} from the whisper targets.", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                GS.log_service.info(f"Removed user: {username} from the whisper targets!")
+                log(INFO, f"Removed user: {username} from the whisper targets.", origin=L_COMMAND)
             except IndexError:
                 GS.gui_service.quick_gui("Invalid whisper command!<br>Command format: !removewhisperuser username",
                                          text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
                 return
-            return
 
         elif command == "addwhisperuser":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 username = message_parse[1]
                 if username == GS.cfg[C_CONNECTION_SETTINGS][P_USER_ID]:
-                    GS.log_service.info("I can't add myself to the whisper targets!")
+                    log(INFO, "I can't add myself to the whisper targets!", origin=L_COMMAND)
                     GS.gui_service.quick_gui("I can't add myself to the whisper targets!", text_type='header',
                                              box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                              ignore_whisper=True)
@@ -177,17 +178,16 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Added new user: {username} to the whisper targets!", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                GS.log_service.info(f"Added new user: {username} to the whisper targets!")
+                log(INFO, f"Added new user: {username} to the whisper targets!", origin=L_COMMAND)
             except IndexError:
                 GS.gui_service.quick_gui("Invalid whisper command!<br>Command format: !addwhisperuser username",
                                          text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
                 return
-            return
 
         elif command == "setwhisperusers":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 parameter = message_parse[1]
@@ -212,14 +212,13 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left', user=GS.mumble_inst.users[text.actor]['name'], ignore_whisper=True)
                 return
-            return
 
         elif command == "setwhisperme":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             parameter = GS.mumble_inst.users[text.actor]['name']
             if parameter == GS.cfg[C_CONNECTION_SETTINGS][P_USER_ID]:
-                GS.log_service.info("I can't set the whisper target to myself!")
+                log(INFO, "I can't set the whisper target to myself!", origin=L_COMMAND)
                 return
 
             rutils.set_whisper_user(parameter)
@@ -227,11 +226,10 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(f"Set whisper to user: {parameter}", text_type='header',
                                      box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                      ignore_whisper=True)
-            GS.log_service.info(f"Set whisper to user: {parameter}.")
-            return
+            log(INFO, f"Set whisper to user: {parameter}.", origin=L_COMMAND)
 
         elif command == "setwhisperchannel":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
                 parameter = message_parse[1]
@@ -240,16 +238,15 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Set whisper to channel: {parameter}", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                GS.log_service.info(f"Set whisper to channel: {parameter}.")
+                log(INFO, f"Set whisper to channel: {parameter}.", origin=L_COMMAND)
             except IndexError:
                 GS.gui_service.quick_gui("Command format: !setwhisperchannel channel_name", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
                 return
-            return
 
         elif command == "clearwhisper":
-            if not privileges.plugin_privilege_checker(text, command, self.priv_path):
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             rutils.clear_whisper()
             if runtime_helper.whisper_target is None:
@@ -260,7 +257,3 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui("Unable to remove current whisper!", text_type='header',
                                      box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                      ignore_whisper=True)
-            return
-
-    def quit(self):
-        dprint("Exiting Whisper Plugin...")
