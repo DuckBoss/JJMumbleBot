@@ -3,7 +3,7 @@
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
 <br>
 [![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
-[![Build Status](https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=dev-v3.0.0)](https://travis-ci.com/DuckBoss/JJMumbleBot)
+[![Build Status](https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=master)](https://travis-ci.com/DuckBoss/JJMumbleBot)
 
 A plugin-based python 3 mumble bot with extensive features.
 
