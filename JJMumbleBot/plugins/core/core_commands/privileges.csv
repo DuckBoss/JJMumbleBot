@@ -1,0 +1,16 @@
+command,level
+exit,4
+version,1
+botstatus,1
+refresh,4
+about,1
+system_test,4
+alias,4
+aliases,1
+removealias,4
+clearaliases,4
+sleep,2
+history,2
+clearhistory,4
+reboot,4
+uptime,1

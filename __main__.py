@@ -1,4 +1,5 @@
-import JJMumbleBot
+import JJMumbleBot.core.bot_service as service
+
 if __name__ == "__main__":
-    print("JJ Mumble Bot Booting...")
-    JJMumbleBot.JJMumbleBot()
+    # Initialize bot service.
+    service.BotService()
