@@ -88,12 +88,10 @@ def download_clip(clip_name, voice, msg, directory=None):
                                                                          '}',
                                                                          'vlc://quit'])
                 return True
-            else:
-                dprint(f'Could not download clip: Response-{r.status_code}')
-                return False
-        else:
             dprint(f'Could not download clip: Response-{r.status_code}')
             return False
+        dprint(f'Could not download clip: Response-{r.status_code}')
+        return False
     except Exception as e:
         dprint(e)
         return False

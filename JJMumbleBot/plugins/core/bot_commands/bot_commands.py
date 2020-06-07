@@ -78,12 +78,11 @@ class Plugin(PluginBase):
             channel_search = rutils.get_channel(channel_name)
             if channel_search is None:
                 return
-            else:
-                channel_search.move_in()
-                GS.gui_service.quick_gui(
-                    f"{rutils.get_bot_name()} was moved by {GS.mumble_inst.users[text.actor]['name']}",
-                    text_type='header', box_align='left', ignore_whisper=True)
-                log(INFO, f"Moved to channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}")
+            channel_search.move_in()
+            GS.gui_service.quick_gui(
+                f"{rutils.get_bot_name()} was moved by {GS.mumble_inst.users[text.actor]['name']}",
+                text_type='header', box_align='left', ignore_whisper=True)
+            log(INFO, f"Moved to channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}")
 
         elif command == "make":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -139,7 +138,6 @@ class Plugin(PluginBase):
                                          text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                return
 
         elif command == "addprivileges":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -162,7 +160,6 @@ class Plugin(PluginBase):
                                          box_align='left',
                                          user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                return
 
         elif command == "blacklist":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -211,4 +208,3 @@ class Plugin(PluginBase):
                                          user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True
                                          )
-                return

@@ -21,7 +21,7 @@ def parse_message(text):
         # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
         # add to command history
-        [global_settings.cmd_history.insert(cmd) for cmd in all_commands]
+        global_settings.cmd_history = [global_settings.cmd_history.insert(cmd) for cmd in all_commands]
         if len(all_commands) > runtime_settings.multi_cmd_limit:
             rprint(
                 f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
@@ -30,16 +30,16 @@ def parse_message(text):
                 origin=L_COMMAND)
             return
         return all_commands
+
+    if "<img" in message:
+        rprint(f"Message Received: [{user['name']} -> Image Data]")
+        log(INFO, f"Message Received: [{user['name']} -> Image Data]")
+    elif "<a href=" in message:
+        rprint(f"Message Received: [{user['name']} -> Hyperlink Data]")
+        log(INFO, f"Message Received: [{user['name']} -> Hyperlink Data]")
     else:
-        if "<img" in message:
-            rprint(f"Message Received: [{user['name']} -> Image Data]")
-            log(INFO, f"Message Received: [{user['name']} -> Image Data]")
-        elif "<a href=" in message:
-            rprint(f"Message Received: [{user['name']} -> Hyperlink Data]")
-            log(INFO, f"Message Received: [{user['name']} -> Hyperlink Data]")
-        else:
-            rprint(f"Message Received: [{user['name']} -> {message}]")
-            log(INFO, f"Message Received: [{user['name']} -> {message}]")
+        rprint(f"Message Received: [{user['name']} -> {message}]")
+        log(INFO, f"Message Received: [{user['name']} -> {message}]")
     return None
 
 
@@ -179,13 +179,11 @@ def make_channel(root_channel, channel_name):
 def leave_channel():
     default_channel = get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF])
     default_channel.move_in()
-    return
 
 
 def remove_channel():
     cur_channel = get_my_channel()
     cur_channel.remove()
-    return
 
 
 def check_up_time():

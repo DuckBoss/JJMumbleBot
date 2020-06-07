@@ -260,7 +260,6 @@ class Plugin(PluginBase):
                         box_align='left',
                         text_align='left')
                 log(INFO, "Displayed current youtube queue.", origin=L_COMMAND)
-                return
             else:
                 GS.gui_service.quick_gui(
                     "The youtube queue is empty.",

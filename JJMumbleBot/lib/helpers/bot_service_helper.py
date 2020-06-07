@@ -39,7 +39,6 @@ class BotServiceHelper:
             runtime_settings.cmd_token = '!'
 
     # Initializes only safe-mode applicable plugins.
-    # TODO: Re-introduce help plugin.
     @staticmethod
     def initialize_plugins_safe():
         import sys
@@ -114,7 +113,6 @@ class BotServiceHelper:
         rprint("######### Extension Plugins Initialized - Safe Mode #########")
 
     # Initializes all available plugins.
-    # TODO: Re-introduce help plugin.
     @staticmethod
     def initialize_plugins():
         import sys

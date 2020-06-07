@@ -45,7 +45,6 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Current whisper channel: {ch}", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                return
             elif runtime_helper.whisper_target["type"] == 1:
                 us = ""
                 for user in GS.mumble_inst.users:
@@ -54,7 +53,6 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Current whisper user: {us}", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                return
             elif runtime_helper.whisper_target["type"] == 2:
                 users = ""
                 counter = 0
@@ -65,7 +63,6 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui(f"Current whisper users: {users}", text_type='header',
                                          box_align='left', user=GS.mumble_inst.users[text.actor]['name'],
                                          ignore_whisper=True)
-                return
 
         elif command == "setwhisperuser":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
