@@ -79,6 +79,8 @@ class BotService:
         if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
             global_settings.mumble_inst.users.myself.register()
         global_settings.mumble_inst.users.myself.comment(f'[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
+        runtime_utils.mute()
+        runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]).move_in()
 
     @staticmethod
     def message_received(text):
