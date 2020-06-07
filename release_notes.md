@@ -54,7 +54,7 @@ Added new commands:
 ### Text To Speech Plugin [NEW]
 A plugin that allows users to type messages that can be read out by various TTS voices.
 The plugin also allows users to download TTS clips to be played at a later time like the sound board plugin.
-- Stream TTS message with specified voice`
+- Stream TTS message with specified voice
 ```!tts 'voice_name' 'message'```
 - Displays a list of all the TTS voices available
 ```!ttsvoices```
@@ -71,16 +71,20 @@ The plugin also allows users to download TTS clips to be played at a later time 
 **For a full list of commands, please check the documentation provided here. ADD DOC HERE**
 <hr>
 
+### Auto-Updater Plugin [NEW]
+A plugin that allows server administrators to check for bot dependency updates and update dependency packages as necessary
+through commands in the plugin.
+- Check for updates on a dependency (example: pymumble)
+```!checkforupdates youtube-dl```
+- Update dependencies that are outdated (example: pymumble)
+```!updatedependency pymumble```
+
 # Other Updates
 
 ### Removed Web Interface Plugin
 The previous web interface plugin implementation was very messy and experimental.
 I will be releasing v3.0.0 without a web interface plugin, and will work on implementing
 it properly in the near future.
-
-### Auto-Updater Plugin [Experimental]
-I'm working on an auto-updater plugin which will keep plugins automatically updated.
-There's no guarantee that this will be released with v3.0.0.
 
 ### New Default Aliases
 **For the full list of default aliases, please check the documentation provided here. ADD DOC HERE**

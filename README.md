@@ -30,7 +30,7 @@ A plugin-based python 3 mumble bot with extensive features.
   - <b>Whisper Plugin</b> - Whisper support for audio data.
   - <b>Bot Commands Plugin</b> - Enhanced interactivity and management commands.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
-- <b>Support for adding plugins at runtime.</b>
+- <b>Auto-Updater</b> - A System to update dependencies through bot commands.
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
 - <b>Event logging to keep track of bot usage and command history.</b>
