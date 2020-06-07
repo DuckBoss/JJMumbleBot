@@ -20,7 +20,8 @@ def parse_message(text):
         # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
         # add to command history
-        global_settings.cmd_history = [global_settings.cmd_history.insert(cmd) for cmd in all_commands]
+        for cmd in all_commands:
+            global_settings.cmd_history.insert(cmd)
         if len(all_commands) > runtime_settings.multi_cmd_limit:
             rprint(
                 f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
