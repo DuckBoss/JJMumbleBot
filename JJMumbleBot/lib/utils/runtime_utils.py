@@ -173,7 +173,14 @@ def get_users_in_my_channel():
 
 
 def make_channel(root_channel, channel_name):
-    return global_settings.mumble_inst.channels.new_channel(root_channel.get_id(), channel_name)
+    from json import loads
+    allowed_channels = loads(global_settings.cfg[C_PLUGIN_SETTINGS][P_PLUG_ALLOWED_CHANNELS])
+    if allowed_channels is not None:
+        for chan_name in allowed_channels:
+            found_channel = global_settings.mumble_inst.channels.find_by_name(chan_name)
+            if found_channel is not None and found_channel.get_id() == root_channel.get_id():
+                return global_settings.mumble_inst.channels.new_channel(root_channel.get_id(), channel_name)
+    return None
 
 
 def leave_channel():

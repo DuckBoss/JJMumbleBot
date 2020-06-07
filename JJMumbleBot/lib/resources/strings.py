@@ -38,6 +38,7 @@ P_TXT_IND_COL = 'IndexTextColor'
 # Plugin Settings
 P_PLUG_DISABLED = 'DisabledPlugins'
 P_PLUG_SAFE = 'SafeModePlugins'
+P_PLUG_ALLOWED_CHANNELS = 'AllowedRootChannelsForTempChannels'
 # Logging
 P_LOG_ENABLE = 'EnableLogging'
 P_LOG_MAX = 'MaxLogs'
