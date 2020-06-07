@@ -4,14 +4,12 @@ python:
   - "3.8"
 before_install:
   - sudo apt-get update
+  - pip install -U pip
+  - pip install -U pytest
   - sudo apt-get install -y libopus0
   - sudo apt-get install -y mumble-server
   - sudo service mumble-server restart
 install:
   - pip install -r requirements.txt
-  - pip install pytest
-
-# Run Tests
-# Built-in Plugin Tests
 script:
   - pytest

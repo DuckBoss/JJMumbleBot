@@ -1,12 +1,13 @@
-from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 import pymumble_py3 as pymumble
-from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
-from JJMumbleBot.settings import global_settings
+import sys
 import configparser
 
 
-# sys.path.append(".")
-# sys.path.append(".")
+sys.path.append(".")
+sys.path.append(".")
+from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
+from JJMumbleBot.settings import global_settings
 
 
 class Test_Conn:
