@@ -37,7 +37,7 @@ class Plugin(PluginBase):
                 return
             res = update_utils.update_available(message_parse[1])
             if res is True:
-                updated_version = update_utils.check_and_update(message_parse[1], self.metadata[C_PLUGIN_SET][P_PIP_CMD])
+                updated_version = update_utils.check_and_update(message_parse[1], pip_cmd=self.metadata[C_PLUGIN_SET][P_PIP_CMD])
                 if updated_version:
                     GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}",
                                              text_type='header', box_align='left', ignore_whisper=True)

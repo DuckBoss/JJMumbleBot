@@ -3,6 +3,7 @@ from JJMumbleBot.lib.resources.strings import L_DEPENDENCIES
 from requests import get
 from subprocess import call
 import pkg_resources
+import sys
 
 
 def check_pypi_version(package_name):
@@ -14,9 +15,7 @@ def check_pypi_version(package_name):
 
 
 def update_package(package_name, pip_cmd):
-    cmd = f'{pip_cmd}'
-    param = f'install --upgrade {package_name}'
-    if call([cmd, param]) == 0:
+    if call([sys.executable, '-m', pip_cmd, 'install', '--upgrade', package_name]) == 0:
         return True
     return False
 
