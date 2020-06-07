@@ -105,7 +105,7 @@ def get_whisper_clients_by_type(wh_type: int):
         return None
     if wh_type == 0:
         return global_settings.mumble_inst.channels[runtime_helper.whisper_target['id']]['name']
-    elif wh_type == 1:
+    if wh_type == 1:
         for user in global_settings.mumble_inst.users:
             if global_settings.mumble_inst.users[user]['session'] == runtime_helper.whisper_target['id']:
                 return global_settings.mumble_inst.users[user]['name']
