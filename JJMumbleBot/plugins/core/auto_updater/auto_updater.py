@@ -31,7 +31,7 @@ class Plugin(PluginBase):
         message_parse = message[1:].split(' ', 1)
         command = message_parse[0]
 
-        if command == "update":
+        if command == "updatedependency":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             res = update_utils.update_available(message_parse[1])
@@ -40,7 +40,7 @@ class Plugin(PluginBase):
                 if updated_version:
                     GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]} has been updated to v{updated_version}",
                                              text_type='header', box_align='left', ignore_whisper=True)
-                    GS.log_service.info(f"Dependency: [{message_parse[1]} has been updated to v{updated_version}")
+                    GS.log_service.info(f"Dependency: [{message_parse[1]}] has been updated to v{updated_version}")
                     return
                 GS.gui_service.quick_gui(f"Dependency: [{message_parse[1]} could not be updated.",
                                          text_type='header', box_align='left', ignore_whisper=True)
@@ -55,6 +55,8 @@ class Plugin(PluginBase):
 
         elif command == "checkforupdates":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
                 return
             res = update_utils.update_available(message_parse[1])
             if res is True:
