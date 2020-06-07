@@ -20,7 +20,7 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        dprint(f"Exiting {self.plugin_name} plugin...")
+        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def get_metadata(self):
@@ -37,6 +37,7 @@ class Plugin(PluginBase):
                 return
             parameter = message_parse[1]
             GS.gui_service.quick_gui(parameter, text_type='header', box_align='left', ignore_whisper=True)
+            dprint(f"Echo:[{parameter}]", origin=L_COMMAND)
             log(INFO, f"Echo:[{parameter}]", origin=L_COMMAND)
 
         elif command == "msg":
@@ -45,13 +46,14 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(message[1:].split(' ', 2)[2], text_type='header', box_align='left',
                                      user=all_messages[1],
                                      ignore_whisper=True)
+            dprint(f"Msg:[{all_messages[1]}]->[{message[1:].split(' ', 2)[2]}]", origin=L_COMMAND)
             log(INFO, f"Msg:[{all_messages[1]}]->[{message[1:].split(' ', 2)[2]}]", origin=L_COMMAND)
 
         elif command == "log":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
-            dprint(f"Manually Logged: [{message_parse[1]}]")
-            log(INFO, f'Manually Logged: [{message_parse[1]}]', L_LOGGING)
+            dprint(f"Manually Logged: [{message_parse[1]}]", origin=L_LOGGING)
+            log(INFO, f'Manually Logged: [{message_parse[1]}]', origin=L_LOGGING)
 
         elif command == "plugins":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -82,7 +84,8 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(
                 f"{rutils.get_bot_name()} was moved by {GS.mumble_inst.users[text.actor]['name']}",
                 text_type='header', box_align='left', ignore_whisper=True)
-            log(INFO, f"Moved to channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}")
+            dprint(f"Moved to channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}", origin=L_COMMAND)
+            log(INFO, f"Moved to channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}", origin=L_COMMAND)
 
         elif command == "make":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -90,19 +93,22 @@ class Plugin(PluginBase):
             parameter = message_parse[1]
             channel_name = parameter
             rutils.make_channel(rutils.get_my_channel(), channel_name)
-            log(INFO, f"Made a channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}")
+            dprint(f"Made a channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}", origin=L_COMMAND)
+            log(INFO, f"Made a channel: {channel_name} by {GS.mumble_inst.users[text.actor]['name']}", origin=L_COMMAND)
 
         elif command == "leave":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             rutils.leave_channel()
-            log(INFO, "Returned to default channel.")
+            dprint(f"Returned to default channel.", origin=L_COMMAND)
+            log(INFO, "Returned to default channel.", origin=L_COMMAND)
 
         elif command == "remove":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             rutils.remove_channel()
-            log(INFO, "Removed current channel.")
+            dprint(f"Removed current channel.", origin=L_COMMAND)
+            log(INFO, "Removed current channel.", origin=L_COMMAND)
 
         elif command == "joinme":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -111,7 +117,7 @@ class Plugin(PluginBase):
                                      box_align='left', ignore_whisper=True)
 
             GS.mumble_inst.channels[GS.mumble_inst.users[text.actor]['channel_id']].move_in()
-            log(INFO, f"Joined user: {GS.mumble_inst.users[text.actor]['name']}")
+            log(INFO, f"Joined user: {GS.mumble_inst.users[text.actor]['name']}", origin=L_COMMAND)
 
         elif command == "privileges":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):

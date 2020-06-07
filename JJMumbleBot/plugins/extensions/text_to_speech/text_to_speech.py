@@ -30,7 +30,7 @@ class Plugin(PluginBase):
         ttsu.stop_audio()
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
         ttsu.exit_flag = True
-        dprint(f"Exiting {self.plugin_name} plugin...")
+        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def get_metadata(self):

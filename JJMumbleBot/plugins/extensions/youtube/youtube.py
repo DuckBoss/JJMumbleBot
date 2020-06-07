@@ -41,7 +41,7 @@ class Plugin(PluginBase):
         YM.stop_audio()
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/youtube')
         YH.exit_flag = True
-        dprint(f"Exiting {self.plugin_name} plugin...")
+        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def process(self, text):

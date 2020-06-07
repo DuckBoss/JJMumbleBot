@@ -20,7 +20,7 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        dprint(f"Exiting {self.plugin_name} plugin...")
+        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def get_metadata(self):
