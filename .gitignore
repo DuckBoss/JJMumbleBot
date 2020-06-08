@@ -128,3 +128,6 @@ config.ini
 *.py.save
 *.db
 JJMumbleBot/cfg/global_aliases.csv
+# Ignore extra plugins that will be used in the plugin repository
+JJMumbleBot/plugins/extensions/mhw_wiki/
+JJMumbleBot/plugins/extensions/osrs_wiki/
