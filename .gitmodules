@@ -1,3 +1,0 @@
-[submodule "JJMumbleBot/lib/pymumble"]
-	path = JJMumbleBot/lib/pymumble
-	url = https://github.com/Azlux/pymumble
