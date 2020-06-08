@@ -150,16 +150,16 @@ class Plugin(PluginBase):
                 return
             alias_name = message_parse[1]
 
-            if aliases.set_alias(alias_name, message_parse[2]):
+            if aliases.add_to_aliases(alias_name, message_parse[2]):
                 GS.gui_service.quick_gui(
-                    f"Registered alias: [{alias_name}] - [{message_parse[2]}]",
+                    f"Registered new alias: [{alias_name}] - [{message_parse[2]}]",
                     text_type='header',
                     box_align='left',
                     ignore_whisper=True,
                     user=GS.mumble_inst.users[text.actor]['name'])
-            elif aliases.add_to_aliases(alias_name, message_parse[2]):
+            elif aliases.set_alias(alias_name, message_parse[2]):
                 GS.gui_service.quick_gui(
-                    f"Registered new alias: [{alias_name}] - [{message_parse[2]}]",
+                    f"Registered alias: [{alias_name}] - [{message_parse[2]}]",
                     text_type='header',
                     box_align='left',
                     ignore_whisper=True,
