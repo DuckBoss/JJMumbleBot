@@ -197,7 +197,7 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = random_sfx
-            sbu.play_audio(loop=True)
+            sbu.play_audio()
 
         elif command == "sb":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
