@@ -1,3 +1,4 @@
 alias,command
 restart,!reboot
+saferestart,!safereboot
 quit,!exit
