@@ -376,7 +376,7 @@ def play_audio():
     GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                  f"{YoutubeHelper.current_song_info['img_id']}",
                                  caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']}",
-                                 format=True,
+                                 format_img=True,
                                  img_size=32768)
 
     while not YoutubeHelper.exit_flag and GS.mumble_inst.isAlive():

@@ -34,7 +34,7 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user, ignore_whisper=ignore_whisper)
         self.clear_display()
 
-    def quick_gui_img(self, directory, img_data, format=False, caption=None, bgcolor="black", channel=None, user=None, img_size=65536, cellspacing="5"):
+    def quick_gui_img(self, directory, img_data, format_img=False, caption=None, bgcolor="black", channel=None, user=None, img_size=65536, cellspacing="5"):
         if self.box_open:
             return False
         if channel is None:
@@ -42,7 +42,7 @@ class PseudoGUI:
 
         self.open_box(align='left', bgcolor=bgcolor, cellspacing=cellspacing)
 
-        if format:
+        if format_img:
             formatted_string = IH.format_image(f"{img_data}", "jpg", directory, size_goal=img_size)
             content = self.make_content(formatted_string, image=True, text_align='center')
             if content is not None:

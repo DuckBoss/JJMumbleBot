@@ -56,7 +56,7 @@ class Plugin(PluginBase):
                 GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                              f"{YH.current_song_info['img_id']}",
                                              caption=f"Now playing: {YH.current_song_info['main_title']}",
-                                             format=True,
+                                             format_img=True,
                                              img_size=32768)
                 log(INFO, "Displayed current song in the youtube plugin.", origin=L_COMMAND)
             else:

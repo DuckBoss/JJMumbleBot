@@ -52,7 +52,7 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/images", formatted_string,
                                          bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
-                                         format=False)
+                                         format_img=False)
             log(INFO, f"Posted an image to the mumble channel chat from: {message_parse[1]}.")
             dir_utils.remove_file("_image.jpg", f'{dir_utils.get_temp_med_dir()}/images')
 
@@ -76,7 +76,7 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui_img(f"{dir_utils.get_perm_med_dir()}/images/", formatted_string,
                                          bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                          cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
-                                         format=False)
+                                         format_img=False)
             log(INFO, "Posted an image to the mumble channel chat from local files.")
 
         elif command == "imglist":
