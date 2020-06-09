@@ -164,7 +164,7 @@ class Plugin(PluginBase):
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
             else:
-                if GS.audio_dni-[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
                     rprint(
                         f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
                     GS.gui_service.quick_gui(
