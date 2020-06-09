@@ -37,7 +37,7 @@ class PGUIHelper:
         if tt == 'data':
             content = f'<td align="{ta}">{PGUIHelper.font_mod(text, params=[txt_color, txt_face])}</td>'
             return content
-        elif tt == 'header':
+        if tt == 'header':
             content = f'<th align="{ta}">{PGUIHelper.font_mod(text, params=[txt_color, txt_face])}</th>'
             return content
         return None
