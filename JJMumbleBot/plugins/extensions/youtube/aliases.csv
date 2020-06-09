@@ -1,0 +1,8 @@
+alias,command
+yt,!youtube
+p,!play
+v,!volume
+q,!queue
+rp,!replay
+skip,!next
+stream,!link

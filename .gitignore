@@ -118,8 +118,7 @@ dmypy.json
 # Custom
 PermMediaDirectory/
 TempImageDirectory/
-aliases.csv
-user_privileges.csv
+global_aliases.csv
 config.ini
 *.pem
 *.wav
