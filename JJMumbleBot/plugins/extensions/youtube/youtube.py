@@ -436,6 +436,24 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left')
 
+        elif command == "loop":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            YH.loop_song = not YH.loop_song
+            rprint(
+                f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode.')
+            GS.gui_service.quick_gui(
+                f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode.',
+                text_type='header',
+                box_align='left')
+            if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
+                if GS.audio_inst is not None:
+                    if YH.current_song is not None and YH.current_song_info is not None:
+                        YH.queue_instance.insert_priority(YH.current_song_info)
+                        YM.stop_audio()
+                        YM.download_next()
+                        YM.play_audio()
+
         elif command == "play":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return

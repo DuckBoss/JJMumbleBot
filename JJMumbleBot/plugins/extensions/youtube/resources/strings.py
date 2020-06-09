@@ -1,5 +1,6 @@
 ###########################################################################
 # YOTUUBE CONFIG PARAMETER STRINGS
+P_YT_VLC_QUIET = 'VLCRunQuiet'
 P_YT_AUTO_PLAY = 'AutoPlay'
 P_YT_MAX_VID_LEN = 'MaxVideoLength'
 P_YT_MAX_QUE_LEN = 'MaxQueueLength'

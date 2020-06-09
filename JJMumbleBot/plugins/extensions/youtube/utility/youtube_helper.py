@@ -28,6 +28,7 @@ class YoutubeHelper:
     queue_instance = None
     all_searches = None
     can_play = False
+    loop_song = False
     is_playing = False
     current_song = None
     current_song_info = None
@@ -354,7 +355,7 @@ def play_audio():
         print(f"USE STEREO: {use_stereo}")
         if use_stereo:
             GS.audio_inst = sp.Popen(
-                [command, uri] + ['-I', 'dummy', '--one-instance', '--no-repeat', '--sout',
+                [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}', '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=48000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
@@ -362,7 +363,7 @@ def play_audio():
                 stdout=sp.PIPE, bufsize=1024)
         else:
             GS.audio_inst = sp.Popen(
-                [command, uri] + ['-I', 'dummy', '--one-instance', '--no-repeat', '--sout',
+                [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}', '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
