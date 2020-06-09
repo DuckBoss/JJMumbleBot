@@ -88,7 +88,7 @@ class Plugin(PluginBase):
                 return
             rutils.exit_bot()
             log(INFO, "JJ Mumble Bot is being rebooted.", origin=L_STARTUP)
-            os.execv(sys.executable, ['python3'] + sys.argv)
+            os.execv(sys.executable, ['python3'] + sys.argv) # nosec
 
         elif command == "safereboot":
             import os
@@ -97,7 +97,7 @@ class Plugin(PluginBase):
                 return
             rutils.exit_bot()
             log(INFO, "JJ Mumble Bot is being rebooted in safe mode.", origin=L_STARTUP)
-            os.execv(sys.executable, ['python3'] + sys.argv + ['-safe'])
+            os.execv(sys.executable, ['python3'] + sys.argv + ['-safe']) # nosec
 
         elif command == "refresh":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
