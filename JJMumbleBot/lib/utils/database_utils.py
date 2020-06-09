@@ -618,14 +618,14 @@ class GetDB:
 class UpdateDB:
     @staticmethod
     def update_user_privileges(db_conn, user_name, level, ignore_file_save=False) -> bool:
-        get_user_query = f"""
+        update_privileges_query = f"""
             UPDATE permissions
             SET level = ?
             WHERE user_id = (SELECT users.user_id FROM users WHERE users.name = ? LIMIT 1)
             AND ? = (SELECT permission_levels.level_id FROM permission_levels WHERE permission_levels.level_id = ?);
         """
         try:
-            db_conn.cursor().execute(get_user_query, (level, user_name, level, level))
+            db_conn.cursor().execute(update_privileges_query, (level, user_name, level, level))
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
@@ -641,14 +641,37 @@ class UpdateDB:
             return False
 
     @staticmethod
+    def update_plugin_help(db_conn, plugin_name, plugin_help_text, ignore_file_save=False) -> bool:
+        update_help_query = f"""
+            UPDATE plugins_help
+            SET help_text = ?
+            WHERE plugin_id = (SELECT plugins.plugin_id from plugins WHERE plugins.name = ? );
+        """
+        try:
+            db_conn.cursor().execute(update_help_query, (plugin_help_text, plugin_name))
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Updated plugin help text in the database: {plugin_name}",
+                       origin=L_DATABASE)
+                log(INFO, f"Updated plugin help text in the database: {plugin_name}",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            dprint(err)
+            return False
+
+    @staticmethod
     def update_alias(db_conn, alias_name, commands, ignore_file_save=False) -> bool:
-        get_user_query = f"""
+        update_alias_query = f"""
             UPDATE aliases
             SET alias = ?
             WHERE name = ?;
         """
         try:
-            db_conn.cursor().execute(get_user_query, (commands, alias_name))
+            db_conn.cursor().execute(update_alias_query, (commands, alias_name))
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
@@ -702,6 +725,9 @@ class UtilityDB:
         file_name = html_path.split('/')[-2]
         with open(html_path, mode='r') as html_file:
             try:
+                file_content = html_file.read()
+                if UpdateDB.update_plugin_help(db_conn, plugin_name=file_name, plugin_help_text=file_content):
+                    return True
                 InsertDB.insert_new_plugins_help(db_conn, plugin_name=file_name, help_text=html_file.read())
                 return True
             except Error:
