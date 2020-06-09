@@ -202,6 +202,8 @@ class Plugin(PluginBase):
         elif command == "sb":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
+            if len(message_parse) < 2:
+                return
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
             else:
@@ -226,6 +228,8 @@ class Plugin(PluginBase):
 
         elif command == "sbloop":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
                 return
             if not GS.audio_dni[0]:
                 GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
