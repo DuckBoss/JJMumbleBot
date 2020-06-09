@@ -8,10 +8,11 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utility as sbu
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
+from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 from JJMumbleBot.lib.utils import dir_utils
 import os
 import random
-from datetime import datetime
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 
 
@@ -157,6 +158,17 @@ class Plugin(PluginBase):
                     dir_utils.remove_file(all_messages[1].strip(), f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")
                     GS.gui_service.quick_gui(f"Deleted sound clip : {all_messages[1].strip()}", text_type='header',
                                              box_align='left')
+
+        elif command == "sbplaying":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
+                track_duration = sbu.get_audio_length(sbu_settings.current_track)
+                rprint(f'{get_bot_name()}({self.plugin_name}) is playing: {sbu_settings.current_track} (duration: {str(timedelta(seconds = round(track_duration))) if track_duration > 0 else "Unavailable"})', origin=L_COMMAND)
+                GS.gui_service.quick_gui(
+                    f'{get_bot_name()}({self.plugin_name}) is playing: {sbu_settings.current_track} (duration: {str(timedelta(seconds = round(track_duration))) if track_duration > 0 else "Unavailable"})',
+                    text_type='header',
+                    box_align='left')
 
         elif command == "sbrandom":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
