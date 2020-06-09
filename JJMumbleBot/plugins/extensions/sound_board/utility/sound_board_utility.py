@@ -114,21 +114,21 @@ def play_audio():
                                   '#transcode{acodec=s16le, channels=2, samplerate=48000, '
                                   'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
                                   'vlc://quit'],
-                stdout=sp.PIPE, bufsize=480)
+                stdout=sp.PIPE, bufsize=1024)
         else:
             global_settings.audio_inst = sp.Popen(
             [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
                               '#transcode{acodec=s16le, channels=2, samplerate=24000, '
                               'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
                               'vlc://quit'],
-            stdout=sp.PIPE, bufsize=480)
+            stdout=sp.PIPE, bufsize=1024)
 
     runtime_utils.unmute()
     while not settings.exit_flag and global_settings.audio_inst and settings.is_playing:
         while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not settings.exit_flag:
             time.sleep(0.01)
         if global_settings.audio_inst:
-            raw_music = global_settings.audio_inst.stdout.read(480)
+            raw_music = global_settings.audio_inst.stdout.read(1024)
             if raw_music and global_settings.audio_inst:
                 global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, settings.volume))
             else:
