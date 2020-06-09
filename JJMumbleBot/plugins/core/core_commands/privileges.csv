@@ -1,5 +1,6 @@
 command,level
 exit,4
+help,1
 version,1
 botstatus,1
 refresh,4
