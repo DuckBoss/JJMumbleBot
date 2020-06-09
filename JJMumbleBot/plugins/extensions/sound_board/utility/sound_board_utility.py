@@ -93,7 +93,7 @@ def clear_audio_thread():
     return False
 
 
-def play_audio():
+def play_audio(loop=False):
     global_settings.audio_dni = (True, settings.sound_board_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
     global_settings.mumble_inst.sound_output.clear_buffer()
 
@@ -110,14 +110,14 @@ def play_audio():
         use_stereo = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
         if use_stereo:
             global_settings.audio_inst = sp.Popen(
-                [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
+                [command, uri] + ['-I', 'dummy', f'{"--quiet" if settings.sound_board_metadata.getboolean(C_PLUGIN_SETTINGS, P_VLC_QUIET, fallback=True) else ""}', '--one-instance', f'{"--no-repeat" if loop is False else "--repeat"}', '--sout',
                                   '#transcode{acodec=s16le, channels=2, samplerate=48000, '
                                   'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
                                   'vlc://quit'],
                 stdout=sp.PIPE, bufsize=1024)
         else:
             global_settings.audio_inst = sp.Popen(
-            [command, uri] + ['-I', 'dummy', '--quiet', '--one-instance', '--no-repeat', '--sout',
+            [command, uri] + ['-I', 'dummy', f'{"--quiet" if settings.sound_board_metadata.getboolean(C_PLUGIN_SETTINGS, P_VLC_QUIET, fallback=True) else ""}', '--one-instance', f'{"--no-repeat" if loop is False else "--repeat"}', '--sout',
                               '#transcode{acodec=s16le, channels=2, samplerate=24000, '
                               'ab=128, threads=8}:std{access=file, mux=wav, dst=-}',
                               'vlc://quit'],

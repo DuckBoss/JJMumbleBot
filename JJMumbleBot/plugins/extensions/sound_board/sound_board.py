@@ -197,7 +197,7 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = random_sfx
-            sbu.play_audio()
+            sbu.play_audio(loop=True)
 
         elif command == "sb":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -223,3 +223,28 @@ class Plugin(PluginBase):
                 return False
             sbu_settings.current_track = parameter
             sbu.play_audio()
+
+        elif command == "sbloop":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
+            # print(GS.audio_dni)
+            parameter = message_parse[1].strip()
+            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav"):
+                GS.gui_service.quick_gui(
+                    "The sound clip does not exist.",
+                    text_type='header',
+                    box_align='left')
+                return False
+            sbu_settings.current_track = parameter
+            sbu.play_audio(loop=True)
