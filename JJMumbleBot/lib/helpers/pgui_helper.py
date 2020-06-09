@@ -46,5 +46,3 @@ class PGUIHelper:
     def img_content(text):
         content = f'<td align="left">{text}</td>'
         return content
-
-
