@@ -42,4 +42,3 @@ def check_and_update(package_name, pip_cmd):
         if update_package(package_name, pip_cmd):
             return vers
     return None
-
