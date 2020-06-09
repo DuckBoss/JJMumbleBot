@@ -118,7 +118,7 @@ class Plugin(PluginBase):
                 GS.gui_service.open_box()
                 all_help_lines = [msg.strip() for msg in plugin_help_data.split('<br>')]
                 content = GS.gui_service.make_content(f'<font color="red">##### </font>'
-                                                      f'<b>{rutils.get_bot_name()} General Help Commands</b>'
+                                                      f'<b>{rutils.get_bot_name()} Help Commands - [{plugin_name}]</b>'
                                                       f'<font color="red"> #####</font>')
                 GS.gui_service.append_row(content)
                 content = GS.gui_service.make_content(f'Plugin Version: {self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]}<br>', text_color='cyan')
