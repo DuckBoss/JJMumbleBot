@@ -42,7 +42,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
 ## Documentation (Pre-v3.0)
-### I am working on updating the documentation for the latest v3.0.0 release!<br>If you are using v3.0.0, please refer to the release notes here: [Release Notes Document](https://github.com/DuckBoss/JJMumbleBot/blob/master/release_notes.md)
+### I am working on updating the documentation for the latest v3.0+ release!<br>If you are using v3.0+, please refer to the release notes here: [Release Notes Document](https://github.com/DuckBoss/JJMumbleBot/blob/master/release_notes.md)
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Requirements: </b> <br>
