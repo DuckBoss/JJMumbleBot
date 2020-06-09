@@ -177,12 +177,7 @@ class Plugin(PluginBase):
 
             random.seed(datetime.now())
             random_sfx = random.choice(gather_list)[:-4]
-            sfx_duration = sbu.get_audio_length(random_sfx)
-            while sfx_duration > 6:
-                random_sfx = random.choice(gather_list)[:-4]
-                sfx_duration = sbu.get_audio_length(random_sfx)
 
-            # print(random_sfx)
             if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav"):
                 GS.gui_service.quick_gui(
                     "The sound clip does not exist.",
