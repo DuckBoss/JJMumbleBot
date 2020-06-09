@@ -61,7 +61,7 @@ class Plugin(PluginBase):
                 log(INFO, "Displayed current song in the youtube plugin.", origin=L_COMMAND)
             else:
                 GS.gui_service.quick_gui(
-                    f"{runtime_utils.get_bot_name()} is not playing anything right now.",
+                    f"{runtime_utils.get_bot_name()}({self.plugin_name}) is not playing anything right now.",
                     text_type='header',
                     box_align='left')
 
