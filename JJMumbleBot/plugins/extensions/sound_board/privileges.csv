@@ -3,6 +3,7 @@ sb,2
 sbvolume,3
 sbrandom,3
 sbloop,3
+sbskip,3
 sblist,2
 sblist_echo,3
 sbplaying,2

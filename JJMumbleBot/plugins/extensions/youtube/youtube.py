@@ -345,7 +345,7 @@ class Plugin(PluginBase):
                             text_type='header',
                             box_align='left')
                         return
-                    song_data['main_url'] = stripped_url
+                    # song_data['main_url'] = stripped_url
 
                     # self.sound_board_plugin.clear_audio_thread()
                     if not GS.audio_dni[0]:
@@ -406,7 +406,7 @@ class Plugin(PluginBase):
                             text_type='header',
                             box_align='left')
                         return
-                    song_data['main_url'] = stripped_url
+                    # song_data['main_url'] = stripped_url
 
                     # self.sound_board_plugin.clear_audio_thread()
                     if not GS.audio_dni[0]:
@@ -441,18 +441,11 @@ class Plugin(PluginBase):
                 return
             YH.loop_song = not YH.loop_song
             rprint(
-                f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode.')
+                f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode. {"The next track in the queue will start looping." if YH.loop_song else ""}')
             GS.gui_service.quick_gui(
-                f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode.',
+                f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode. {"The next track in the queue will start looping." if YH.loop_song else ""}',
                 text_type='header',
                 box_align='left')
-            if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
-                if GS.audio_inst is not None:
-                    if YH.current_song is not None and YH.current_song_info is not None:
-                        YH.queue_instance.insert_priority(YH.current_song_info)
-                        YM.stop_audio()
-                        YM.download_next()
-                        YM.play_audio()
 
         elif command == "play":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -487,7 +480,7 @@ class Plugin(PluginBase):
                             text_type='header',
                             box_align='left')
                         return
-                    song_data['main_url'] = "https://www.youtube.com" + YH.all_searches[0]['href']
+                    # song_data['main_url'] = "https://www.youtube.com" + YH.all_searches[0]['href']
                     GS.gui_service.quick_gui(
                         f"Automatically chosen: {YH.all_searches[0]['title']}",
                         text_type='header',
@@ -507,8 +500,7 @@ class Plugin(PluginBase):
                                 text_type='header',
                                 box_align='left')
                             return
-                        song_data['main_url'] = "https://www.youtube.com" + YH.all_searches[int(all_messages[1])][
-                            'href']
+                        # song_data['main_url'] = "https://www.youtube.com" + YH.all_searches[int(all_messages[1])]['href']
                         GS.gui_service.quick_gui(
                             f"You've chosen: {YH.all_searches[int(all_messages[1])]['title']}",
                             text_type='header',
@@ -535,8 +527,7 @@ class Plugin(PluginBase):
                                 text_type='header',
                                 box_align='left')
                             return
-                        song_data['main_url'] = "https://www.youtube.com" + YH.all_searches[int(all_messages[1])][
-                            'href']
+                        #song_data['main_url'] = "https://www.youtube.com" + YH.all_searches[int(all_messages[1])]['href']
                         GS.gui_service.quick_gui(
                             f"You've chosen: {YH.all_searches[int(all_messages[1])]['title']}",
                             text_type='header',
