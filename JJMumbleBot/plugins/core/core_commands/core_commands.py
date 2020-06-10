@@ -115,13 +115,15 @@ class Plugin(PluginBase):
 
             plugin_help_data = PluginUtilityService.process_help(db_cursor=get_memory_db().cursor(), plugin_name=plugin_name)
             if plugin_help_data:
+                plugin_metadata = GS.bot_plugins[plugin_name].metadata
+
                 GS.gui_service.open_box()
                 all_help_lines = [msg.strip() for msg in plugin_help_data.split('<br>')]
                 content = GS.gui_service.make_content(f'<font color="red">##### </font>'
                                                       f'<b>{rutils.get_bot_name()} Help Commands - [{plugin_name}]</b>'
                                                       f'<font color="red"> #####</font>')
                 GS.gui_service.append_row(content)
-                content = GS.gui_service.make_content(f'Plugin Version: {self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]}<br>', text_color='cyan')
+                content = GS.gui_service.make_content(f'Plugin Version: {plugin_metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]}<br>', text_color='cyan')
                 GS.gui_service.append_row(content)
                 for i, item in enumerate(all_help_lines):
                     item_parts = item.split(':', 1)
