@@ -160,7 +160,7 @@ def download_next():
     else:
         return
     if os.path.isfile(f"{dir_utils.get_temp_med_dir()}/youtube/{queue_list[-1]['img_id']}.jpg"):
-        # print("Thumbnail exists...skipping")
+        dprint(f"Thumbnail exists for {queue_list[-1]['img_id']}.jpg...skipping")
         return
     try:
         with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
@@ -168,14 +168,14 @@ def download_next():
             # if video['duration'] >= YoutubeHelper.max_track_duration or video['duration'] <= 0.1:
             #    debug_print("Video length exceeds limit...skipping.")
             #    YoutubeHelper.queue_instance.pop()
-    except youtube_dl.utils.DownloadError:
+    except youtube_dl.utils.DownloadError as e:
+        dprint(e)
         return
     return
 
 
 def download_specific(index):
     queue_list = list(YoutubeHelper.queue_instance.queue_storage)
-    youtube_url = None
     if len(queue_list) > 0:
         youtube_url = queue_list[index]['main_url']
     else:
@@ -278,6 +278,7 @@ def stop_current():
         YoutubeHelper.current_song_info = None
         YoutubeHelper.current_song = None
         YoutubeHelper.is_playing = False
+        YoutubeHelper.loop_song = False
 
 
 def stop_audio():
@@ -289,6 +290,7 @@ def stop_audio():
         YoutubeHelper.current_song_info = None
         YoutubeHelper.current_song = None
         YoutubeHelper.is_playing = False
+        YoutubeHelper.loop_song = False
         GS.audio_dni = (False, None)
 
 
@@ -352,10 +354,11 @@ def play_audio():
 
     if GS.audio_inst is None:
         use_stereo = GS.cfg.getboolean(C_MAIN_SETTINGS, P_AUD_STEREO)
-        print(f"USE STEREO: {use_stereo}")
+        dprint(f"USE STEREO: {use_stereo}")
         if use_stereo:
             GS.audio_inst = sp.Popen(
-                [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}', '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
+                [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}',
+                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=48000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
@@ -363,7 +366,8 @@ def play_audio():
                 stdout=sp.PIPE, bufsize=1024)
         else:
             GS.audio_inst = sp.Popen(
-                [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}', '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
+                [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}',
+                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
@@ -372,12 +376,16 @@ def play_audio():
     # YoutubeHelper.music_thread.wait()
     YoutubeHelper.is_playing = True
     runtime_utils.unmute()
-
-    GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
-                                 f"{YoutubeHelper.current_song_info['img_id']}",
-                                 caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']}",
-                                 format_img=True,
-                                 img_size=32768)
+    try:
+        GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
+                                     f"{YoutubeHelper.current_song_info['img_id']}",
+                                     caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']}",
+                                     format_img=True,
+                                     img_size=32768)
+    except FileNotFoundError:
+        GS.gui_service.quick_gui(f"Thumbnail Image Unavailable<br>Now playing: {YoutubeHelper.current_song_info['img_id']}",
+                                text_type='header',
+                                box_align='left')
 
     while not YoutubeHelper.exit_flag and GS.mumble_inst.isAlive():
         while GS.mumble_inst.sound_output.get_buffer_size() > 0.5 and not YoutubeHelper.exit_flag:
