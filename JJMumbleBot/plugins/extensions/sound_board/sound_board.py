@@ -197,6 +197,7 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = random_sfx
+            sbu_settings.loop_clip = False
             sbu.play_audio()
 
         elif command == "sb":
@@ -224,6 +225,7 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = parameter
+            sbu_settings.loop_clip = False
             sbu.play_audio()
 
         elif command == "sbloop":
@@ -251,4 +253,24 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = parameter
-            sbu.play_audio(loop=True)
+            sbu_settings.loop_clip = True
+            sbu.play_audio()
+
+        elif command == "sbskip":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
+                return
+            if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
+                if not sbu_settings.loop_clip:
+                    try:
+                        seconds_to_skip = int(message_parse[1])
+                        sbu_settings.skip_to = seconds_to_skip
+                        sbu.play_audio()
+                    except ValueError:
+                        return
+                else:
+                    GS.gui_service.quick_gui(
+                        "The skip feature is currently unavailable when looping clips.",
+                        text_type='header',
+                        box_align='left')
