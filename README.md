@@ -51,7 +51,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 <b> Legacy Branches: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions</a>
 
-## Extra Plugins (Pre-v3.0):
+## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
 ### Got any questions or concerns? Please post an issue report!
