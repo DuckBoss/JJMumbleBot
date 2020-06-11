@@ -41,6 +41,16 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
+## Installation And Setup
+- Download and install python 3.7+
+    - Linux: `sudo apt-get install python3.7`
+    - Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a>
+    - Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a>
+- Install project dependencies
+    - `pip install -r requirements.txt`
+    - <b>Note: You must have libopus installed and installation varies by operating system.</b>
+- Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
+
 ## Documentation
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
