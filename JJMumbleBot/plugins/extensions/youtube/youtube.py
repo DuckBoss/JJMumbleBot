@@ -12,6 +12,7 @@ from JJMumbleBot.plugins.extensions.youtube.utility.youtube_helper import Youtub
 from JJMumbleBot.plugins.extensions.youtube.utility import youtube_helper as YM
 import warnings
 import os
+from datetime import timedelta
 from JJMumbleBot.lib.helpers import queue_handler as qh
 from bs4 import BeautifulSoup
 
@@ -55,7 +56,8 @@ class Plugin(PluginBase):
             if YH.current_song_info is not None:
                 GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                              f"{YH.current_song_info['img_id']}",
-                                             caption=f"Now playing: {YH.current_song_info['main_title']}",
+                                             caption=f"Now playing: {YH.current_song_info['main_title']} "
+                                                     f"[Duration: {str(timedelta(seconds=int(YH.current_song_info['duration']))) if YH.current_song_info['duration'] is not None else 0}]",
                                              format_img=True,
                                              img_size=32768)
                 log(INFO, "Displayed current song in the youtube plugin.", origin=L_COMMAND)
@@ -446,6 +448,26 @@ class Plugin(PluginBase):
                 f'{"Enabled" if YH.loop_song is True else "Disabled"} {self.plugin_name} loop mode. {"The next track in the queue will start looping." if YH.loop_song else ""}',
                 text_type='header',
                 box_align='left')
+
+        elif command == "seek":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
+                return
+            if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
+                if not YH.loop_song:
+                    try:
+                        seconds_to_skip = int(message_parse[1])
+                        YH.seek_to = seconds_to_skip
+                        YH.queue_instance.insert_priority(YH.current_song_info)
+                        YM.play_audio()
+                    except ValueError:
+                        return
+                else:
+                    GS.gui_service.quick_gui(
+                        f"The {self.plugin_name} seek feature is currently unavailable when looping tracks.",
+                        text_type='header',
+                        box_align='left')
 
         elif command == "play":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):

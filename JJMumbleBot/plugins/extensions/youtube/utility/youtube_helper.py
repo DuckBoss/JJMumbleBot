@@ -7,6 +7,7 @@ from JJMumbleBot.lib.utils import runtime_utils
 import requests
 from bs4 import BeautifulSoup
 import os
+from datetime import timedelta
 import youtube_dl
 import subprocess as sp
 import time
@@ -29,6 +30,7 @@ class YoutubeHelper:
     all_searches = None
     can_play = False
     loop_song = False
+    seek_to = 0
     is_playing = False
     current_song = None
     current_song_info = None
@@ -136,7 +138,8 @@ def download_song_name(url):
                 'std_url': url,
                 'main_url': info_dict['url'],
                 'main_title': info_dict['title'],
-                'img_id': info_dict['id']
+                'img_id': info_dict['id'],
+                'duration': info_dict['duration']
             }
             return prep_struct
     except youtube_dl.utils.DownloadError:
@@ -256,7 +259,8 @@ def download_playlist(url):
                 'std_url': f"https://www.youtube.com/watch?v={video['url']}",
                 'main_url': temp_song_data['main_url'],
                 'main_title': video['title'],
-                'img_id': video['id']
+                'img_id': video['id'],
+                'duration': temp_song_data['duration']
             }
             all_videos.append(prep_struct)
         return all_videos
@@ -332,28 +336,36 @@ def play_audio():
         if use_stereo:
             GS.audio_inst = sp.Popen(
                 [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}',
-                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
+                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}',
+                                  f'--start-time={YoutubeHelper.seek_to if YoutubeHelper.loop_song is False else 0}',
+                                  '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=48000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
                                   'vlc://quit'],
                 stdout=sp.PIPE, bufsize=1024)
+            YoutubeHelper.seek_to = 0
         else:
             GS.audio_inst = sp.Popen(
                 [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}',
-                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
+                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}',
+                                  f'--start-time={YoutubeHelper.seek_to if YoutubeHelper.loop_song is False else 0}',
+                                  '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
                                   'vlc://quit'],
                 stdout=sp.PIPE, bufsize=1024)
+            YoutubeHelper.seek_to = 0
+
     # YoutubeHelper.music_thread.wait()
     YoutubeHelper.is_playing = True
     runtime_utils.unmute()
     try:
         GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                      f"{YoutubeHelper.current_song_info['img_id']}",
-                                     caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']}",
+                                     caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']} "
+                                             f"[Duration: {str(timedelta(seconds=int(YoutubeHelper.current_song_info['duration']))) if YoutubeHelper.current_song_info['duration'] is not None else 0}]",
                                      format_img=True,
                                      img_size=32768)
     except FileNotFoundError:
