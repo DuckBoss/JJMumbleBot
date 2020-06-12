@@ -136,6 +136,7 @@ def download_song_name(url):
                 return None
 
             prep_struct = {
+                'std_url': url,
                 'main_url': info_dict['url'],
                 'main_title': info_dict['title'],
                 'img_id': info_dict['id']
@@ -156,14 +157,15 @@ def download_next():
     # print(queue_list)
     youtube_url = None
     if len(queue_list) > 0:
-        youtube_url = queue_list[-1]['main_url']
+        youtube_url = queue_list[-1]['std_url']
     else:
         return
-    if os.path.isfile(f"{dir_utils.get_temp_med_dir()}/youtube/{queue_list[-1]['img_id']}.jpg"):
+    if os.path.exists(f"{dir_utils.get_temp_med_dir()}/youtube/{queue_list[-1]['img_id']}.jpg"):
         dprint(f"Thumbnail exists for {queue_list[-1]['img_id']}.jpg...skipping")
         return
     try:
         with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
+            ydl.cache.remove()
             ydl.extract_info(youtube_url, download=True)
             # if video['duration'] >= YoutubeHelper.max_track_duration or video['duration'] <= 0.1:
             #    debug_print("Video length exceeds limit...skipping.")
@@ -177,7 +179,7 @@ def download_next():
 def download_specific(index):
     queue_list = list(YoutubeHelper.queue_instance.queue_storage)
     if len(queue_list) > 0:
-        youtube_url = queue_list[index]['main_url']
+        youtube_url = queue_list[index]['std_url']
     else:
         return
     if os.path.isfile(f"{dir_utils.get_temp_med_dir()}/youtube/{queue_list[index]['img_id']}.jpg"):
@@ -220,7 +222,7 @@ def download_playlist(url):
         playlist_dict_check = ydl.extract_info(url, download=False, process=False)
         if playlist_dict_check is None:
             GS.gui_service.quick_gui(
-                f"ERROR: This playlist is private. Only unlisted/public playlists can be played.",
+                f"ERROR: This playlist is private or protected. Only unlisted/public playlists can be played.",
                 text_type='header',
                 box_align='left')
             return None
@@ -228,7 +230,8 @@ def download_playlist(url):
             count = 0
             for entry in playlist_dict_check['entries']:
                 count += 1
-            # print(f"Playlist length: {count}")
+                print(entry)
+            print(f"Playlist length: {count}")
             if count > int(YoutubeHelper.yt_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]):
                 if not YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
                     GS.gui_service.quick_gui(
@@ -254,8 +257,12 @@ def download_playlist(url):
                 dprint("Unable to get video information...skipping.")
                 continue
             # print(video)
+            temp_song_data = download_song_name(f"https://www.youtube.com/watch?v={video['url']}")
+            if temp_song_data is None:
+                continue
             prep_struct = {
-                'main_url': f"https://www.youtube.com/watch?v={video['id']}",
+                'std_url': f"https://www.youtube.com/watch?v={video['url']}",
+                'main_url': temp_song_data['main_url'],
                 'main_title': video['title'],
                 'img_id': video['id']
             }
