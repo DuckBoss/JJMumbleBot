@@ -4,9 +4,10 @@ from JJMumbleBot.lib.utils.print_utils import dprint, rprint
 from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
-import urllib.request
+import requests
 from bs4 import BeautifulSoup
 import os
+from datetime import timedelta
 import youtube_dl
 import subprocess as sp
 import time
@@ -29,6 +30,7 @@ class YoutubeHelper:
     all_searches = None
     can_play = False
     loop_song = False
+    seek_to = 0
     is_playing = False
     current_song = None
     current_song_info = None
@@ -77,8 +79,6 @@ def next_track():
         GS.audio_dni = (True, YoutubeHelper.yt_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         download_next()
         play_audio()
-        return
-    return
 
 
 def skipto(skip_val):
@@ -122,7 +122,6 @@ def skipto(skip_val):
         GS.audio_dni = (True, YoutubeHelper.yt_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         download_next()
         play_audio()
-        return
 
 
 def download_song_name(url):
@@ -139,7 +138,8 @@ def download_song_name(url):
                 'std_url': url,
                 'main_url': info_dict['url'],
                 'main_title': info_dict['title'],
-                'img_id': info_dict['id']
+                'img_id': info_dict['id'],
+                'duration': info_dict['duration']
             }
             return prep_struct
     except youtube_dl.utils.DownloadError:
@@ -154,8 +154,6 @@ def clear_queue():
 
 def download_next():
     queue_list = list(YoutubeHelper.queue_instance.queue_storage)
-    # print(queue_list)
-    youtube_url = None
     if len(queue_list) > 0:
         youtube_url = queue_list[-1]['std_url']
     else:
@@ -167,9 +165,6 @@ def download_next():
         with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
             ydl.cache.remove()
             ydl.extract_info(youtube_url, download=True)
-            # if video['duration'] >= YoutubeHelper.max_track_duration or video['duration'] <= 0.1:
-            #    debug_print("Video length exceeds limit...skipping.")
-            #    YoutubeHelper.queue_instance.pop()
     except youtube_dl.utils.DownloadError as e:
         dprint(e)
         return
@@ -264,28 +259,11 @@ def download_playlist(url):
                 'std_url': f"https://www.youtube.com/watch?v={video['url']}",
                 'main_url': temp_song_data['main_url'],
                 'main_title': video['title'],
-                'img_id': video['id']
+                'img_id': video['id'],
+                'duration': temp_song_data['duration']
             }
             all_videos.append(prep_struct)
         return all_videos
-
-
-def clear_audio_thread():
-    if GS.audio_inst is not None:
-        dprint("Stopping audio thread.")
-        GS.audio_inst.terminate()
-        GS.audio_inst.kill()
-        GS.audio_inst = None
-        YoutubeHelper.is_playing = False
-        GS.audio_dni = (False, None)
-
-
-def stop_current():
-    if GS.audio_inst is not None:
-        YoutubeHelper.current_song_info = None
-        YoutubeHelper.current_song = None
-        YoutubeHelper.is_playing = False
-        YoutubeHelper.loop_song = False
 
 
 def stop_audio():
@@ -301,23 +279,16 @@ def stop_audio():
         GS.audio_dni = (False, None)
 
 
-def get_search_results(search_term):
-    return get_vid_list(search_term)
-
-
 def get_vid_list(search):
     url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
-    req = urllib.request.Request(url)
-    with urllib.request.urlopen(req) as response:
-        html = response.read()
+    req = requests.get(url)
+    html = req.text
     soup = BeautifulSoup(html, 'html.parser')
     all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
     search_results_list = []
-
     for i in range(10):
         search_dict = {"title": all_searches[i]['title'], 'href': all_searches[i]['href']}
         search_results_list.append(search_dict)
-
     return search_results_list
 
 
@@ -365,28 +336,36 @@ def play_audio():
         if use_stereo:
             GS.audio_inst = sp.Popen(
                 [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}',
-                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
+                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}',
+                                  f'--start-time={YoutubeHelper.seek_to if YoutubeHelper.loop_song is False else 0}',
+                                  '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=48000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
                                   'vlc://quit'],
                 stdout=sp.PIPE, bufsize=1024)
+            YoutubeHelper.seek_to = 0
         else:
             GS.audio_inst = sp.Popen(
                 [command, uri] + ['-I', 'dummy', f'{"--quiet" if YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_VLC_QUIET, fallback=True) else ""}',
-                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}', '--sout',
+                                  '--one-instance', f'{"--no-repeat" if YoutubeHelper.loop_song is False else "--repeat"}',
+                                  f'--start-time={YoutubeHelper.seek_to if YoutubeHelper.loop_song is False else 0}',
+                                  '--sout',
                                   '#transcode{acodec=s16le, channels=2, '
                                   'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                   'mux=wav, dst=-}',
                                   'vlc://quit'],
                 stdout=sp.PIPE, bufsize=1024)
+            YoutubeHelper.seek_to = 0
+
     # YoutubeHelper.music_thread.wait()
     YoutubeHelper.is_playing = True
     runtime_utils.unmute()
     try:
         GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                      f"{YoutubeHelper.current_song_info['img_id']}",
-                                     caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']}",
+                                     caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']} "
+                                             f"[Duration: {str(timedelta(seconds=int(YoutubeHelper.current_song_info['duration']))) if YoutubeHelper.current_song_info['duration'] is not None else 0}]",
                                      format_img=True,
                                      img_size=32768)
     except FileNotFoundError:
@@ -431,7 +410,3 @@ def play_audio():
         else:
             return
     return
-
-
-def set_max_track_duration(new_max):
-    GS.max_track_duration = new_max
