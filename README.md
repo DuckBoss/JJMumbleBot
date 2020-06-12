@@ -8,7 +8,7 @@
 A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for custom plugins.
 
 
-##  🚀  Features  🚀 
+## Features  🚀 
 - <b>Built-in Plugins</b> - Fast, responsive, plugin-based system for easy expandability.
   - <b>Youtube Plugin</b> - Streams youtube songs in the channel.
     - Playlist Support
@@ -41,7 +41,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
-## 🏃 Installation And Setup 🏃
+## Installation And Setup 🏃
 - Download and install python 3.7+
     - Linux: `sudo apt-get install python3.7`
     - Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a>
@@ -51,7 +51,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - <b>Note: You must have libopus installed and installation varies by operating system.</b>
 - Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
 
-## 📝 Documentation 📝 
+## Documentation 📝 
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
 <b> Requirements: </b> <br>
@@ -64,4 +64,4 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-### 👋 Got any questions or concerns? Please post an issue report! 👋 
+### Got any questions or concerns? Please post an issue report! 👋 
