@@ -269,25 +269,6 @@ def download_playlist(url):
             all_videos.append(prep_struct)
         return all_videos
 
-
-def clear_audio_thread():
-    if GS.audio_inst is not None:
-        dprint("Stopping audio thread.")
-        GS.audio_inst.terminate()
-        GS.audio_inst.kill()
-        GS.audio_inst = None
-        YoutubeHelper.is_playing = False
-        GS.audio_dni = (False, None)
-
-
-def stop_current():
-    if GS.audio_inst is not None:
-        YoutubeHelper.current_song_info = None
-        YoutubeHelper.current_song = None
-        YoutubeHelper.is_playing = False
-        YoutubeHelper.loop_song = False
-
-
 def stop_audio():
     if GS.audio_inst is not None:
         dprint("Stopping audio thread.")
