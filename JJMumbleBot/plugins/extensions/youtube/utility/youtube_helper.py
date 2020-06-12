@@ -77,8 +77,6 @@ def next_track():
         GS.audio_dni = (True, YoutubeHelper.yt_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         download_next()
         play_audio()
-        return
-    return
 
 
 def skipto(skip_val):
