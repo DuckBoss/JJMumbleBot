@@ -256,7 +256,7 @@ class Plugin(PluginBase):
             sbu_settings.loop_clip = True
             sbu.play_audio()
 
-        elif command == "sbskip":
+        elif command == "sbseek":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if len(message_parse) < 2:
