@@ -122,7 +122,6 @@ def skipto(skip_val):
         GS.audio_dni = (True, YoutubeHelper.yt_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         download_next()
         play_audio()
-        return
 
 
 def download_song_name(url):
@@ -285,11 +284,9 @@ def get_vid_list(search):
     soup = BeautifulSoup(html, 'html.parser')
     all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
     search_results_list = []
-
     for i in range(10):
         search_dict = {"title": all_searches[i]['title'], 'href': all_searches[i]['href']}
         search_results_list.append(search_dict)
-
     return search_results_list
 
 
