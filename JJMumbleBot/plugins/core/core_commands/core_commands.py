@@ -104,11 +104,56 @@ class Plugin(PluginBase):
                 return
             rutils.refresh_plugins()
 
+        elif command == "comment":
+            from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            message = text.message.strip()
+            message_parse = message[1:].split(' ', 1)
+            if len(message_parse) < 2:
+                return
+            GS.mumble_inst.users.myself.comment(
+                f'{message_parse[1]}<br><br>[{META_NAME}({META_VERSION})] - {rutils.get_bot_name()}<br>{rutils.get_about()}')
+
+            GS.cfg.set(C_CONNECTION_SETTINGS, P_USER_COMMENT, message_parse[1])
+            with open(f'{get_main_dir()}/cfg/config.ini', mode='w') as cfg_file:
+                GS.cfg.write(cfg_file)
+
+            GS.gui_service.quick_gui(
+                f"Changed the bot's user comment.",
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[text.actor]['name'])
+            dprint(f"Changed the bot\'s user comment to {message_parse[1]}.")
+            log(INFO, f"Changed the bot\'s user comment to {message_parse[1]}.", origin=L_COMMAND)
+
+        elif command == "resetcomment":
+            from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            GS.mumble_inst.users.myself.comment(
+                f'[{META_NAME}({META_VERSION})] - {rutils.get_bot_name()}<br>{rutils.get_about()}')
+
+            GS.cfg.set(C_CONNECTION_SETTINGS, P_USER_COMMENT, "")
+            with open(f'{get_main_dir()}/cfg/config.ini', mode='w') as cfg_file:
+                GS.cfg.write(cfg_file)
+
+            GS.gui_service.quick_gui(
+                f"Reset the bot's user comment.",
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[text.actor]['name'])
+            dprint(f"Reset the bot\'s user comment.")
+            log(INFO, f"Reset the bot\'s user comment.", origin=L_COMMAND)
+
+
         elif command == "help":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             message = text.message.strip()
-            message_parse = message[1:].split(' ', 2)
+            message_parse = message[1:].split(' ', 1)
             if len(message_parse) < 2:
                 all_plugin_names = sorted(list(GS.bot_plugins.keys()), key=str.lower)
                 all_help_lines = [f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {msg.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{msg.strip()}</font> plugin.' for msg in all_plugin_names]

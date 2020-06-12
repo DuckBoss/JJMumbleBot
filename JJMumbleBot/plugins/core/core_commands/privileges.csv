@@ -2,7 +2,8 @@ command,level
 exit,4
 help,1
 version,1
-botstatus,1
+comment,4
+resetcomment,4
 refresh,4
 about,1
 system_test,4
