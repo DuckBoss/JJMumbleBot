@@ -271,6 +271,6 @@ class Plugin(PluginBase):
                         return
                 else:
                     GS.gui_service.quick_gui(
-                        "The skip feature is currently unavailable when looping clips.",
+                        f"The {self.plugin_name} seek feature is currently unavailable when looping clips.",
                         text_type='header',
                         box_align='left')
