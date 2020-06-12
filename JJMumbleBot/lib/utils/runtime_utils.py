@@ -162,7 +162,13 @@ def get_version():
 
 
 def get_about():
-    return global_settings.cfg[C_BOT_INFORMATION][P_ABOUT_TEXT]
+    return '<br> A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for ' \
+           'custom plugins.<br><a href="https://github.com/DuckBoss/JJMumbleBot">https://github.com/DuckBoss' \
+           '/JJMumbleBot</a><br> '
+
+
+def get_comment():
+    return global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT]
 
 
 def get_users_in_my_channel():

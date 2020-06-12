@@ -6,7 +6,6 @@ C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
 C_MEDIA_DIR = 'Media Directories'
 C_LOGGING = 'Logging'
-C_BOT_INFORMATION = 'Bot Information'
 # PROGRAM CONFIG PARAMETER STRINGS
 # Connection Settings
 P_SERVER_IP = 'ServerIP'
@@ -17,6 +16,7 @@ P_USER_CERT = 'UserCertification'
 P_CHANNEL_DEF = 'DefaultChannel'
 P_DEFAULT_SU = 'DefaultSuperUser'
 P_SELF_REGISTER = "SelfRegister"
+P_USER_COMMENT = "DefaultComment"
 # Main Settings
 P_AUD_STEREO = 'UseStereoOutput'
 P_CMD_TICK_RATE = 'CommandTickRate'
@@ -35,6 +35,7 @@ P_CANVAS_BORD = 'CanvasBorder'
 P_CANVAS_TXT_COL = 'CanvasTextColor'
 P_TXT_HEAD_COL = 'HeaderTextColor'
 P_TXT_IND_COL = 'IndexTextColor'
+P_TXT_SUBHEAD_COL = 'SubHeaderTextColor'
 # Plugin Settings
 P_PLUG_DISABLED = 'DisabledPlugins'
 P_PLUG_SAFE = 'SafeModePlugins'
@@ -43,8 +44,6 @@ P_PLUG_ALLOWED_CHANNELS = 'AllowedRootChannelsForTempChannels'
 P_LOG_ENABLE = 'EnableLogging'
 P_LOG_MAX = 'MaxLogs'
 P_LOG_DIR = 'LogDirectory'
-# Bot Information
-P_ABOUT_TEXT = 'AboutText'
 ###########################################################################
 # LOGGING STRINGS - DO NOT MODIFY
 INFO = 'info'
