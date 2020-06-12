@@ -283,7 +283,7 @@ class Plugin(PluginBase):
                         return
 
                 stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
-                if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                if ("youtube.com" in stripped_url or "youtu.be" in stripped_url) and ("list" in stripped_url or "playlist" in stripped_url):
                     if YH.queue_instance.is_full():
                         GS.gui_service.quick_gui(
                             "The youtube queue is full!",
@@ -305,13 +305,11 @@ class Plugin(PluginBase):
                     if not YH.is_playing:
                         YM.download_next()
                         YM.play_audio()
-                    return
-            else:
-                GS.gui_service.quick_gui(
-                    "The given link was not identified as a youtube video link!",
-                    text_type='header',
-                    box_align='left')
-                return
+                else:
+                    GS.gui_service.quick_gui(
+                        "The given link was not identified as a youtube playlist link!",
+                        text_type='header',
+                        box_align='left')
 
         elif command == "linkfront":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
@@ -332,6 +330,14 @@ class Plugin(PluginBase):
             if len(message_parse) == 2:
                 stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
                 if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if "playlist" in stripped_url or "list" in stripped_url:
+                        GS.gui_service.quick_gui(
+                            "The given link was identified as a youtube playlist link!<br>Please use the playlist "
+                            "command to add playlists to the queue!",
+                            text_type='header',
+                            box_align='left')
+                        return
+
                     if YH.queue_instance.is_full():
                         GS.gui_service.quick_gui(
                             "The youtube queue is full!",
@@ -393,6 +399,14 @@ class Plugin(PluginBase):
             if len(message_parse) == 2:
                 stripped_url = BeautifulSoup(message_parse[1], features='html.parser').get_text()
                 if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+                    if "playlist" in stripped_url or "list" in stripped_url:
+                        GS.gui_service.quick_gui(
+                            "The given link was identified as a youtube playlist link!<br>Please use the playlist "
+                            "command to add playlists to the queue!",
+                            text_type='header',
+                            box_align='left')
+                        return
+
                     if YH.queue_instance.is_full():
                         GS.gui_service.quick_gui(
                             "The youtube queue is full!",
