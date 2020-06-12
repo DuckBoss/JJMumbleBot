@@ -110,9 +110,26 @@ class Plugin(PluginBase):
             message = text.message.strip()
             message_parse = message[1:].split(' ', 2)
             if len(message_parse) < 2:
+                all_plugin_names = sorted(list(GS.bot_plugins.keys()), key=str.lower)
+                all_help_lines = [f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {msg.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{msg.strip()}</font> plugin.' for msg in all_plugin_names]
+                GS.gui_service.open_box()
+                content = GS.gui_service.make_content(f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">##### </font>'
+                                                      f'<b>{rutils.get_bot_name()} General Help Commands</b>'
+                                                      f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}"> #####</font>')
+                GS.gui_service.append_row(content)
+                for i, help_text in enumerate(all_help_lines):
+                    content = GS.gui_service.make_content(
+                            f'{help_text}',
+                            text_type='header',
+                            text_align="left")
+                    GS.gui_service.append_row(content)
+                GS.gui_service.close_box()
+                GS.gui_service.display_box(channel=rutils.get_my_channel())
+                dprint(f"Displayed general help screen in the channel.")
+                log(INFO, f"Displayed general help screen in the channel.", origin=L_COMMAND)
                 return
-            plugin_name = message_parse[1]
 
+            plugin_name = message_parse[1]
             plugin_help_data = PluginUtilityService.process_help(db_cursor=get_memory_db().cursor(), plugin_name=plugin_name)
             if plugin_help_data:
                 plugin_metadata = GS.bot_plugins[plugin_name].metadata
