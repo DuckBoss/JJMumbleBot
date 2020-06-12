@@ -4,7 +4,7 @@ from JJMumbleBot.lib.utils.print_utils import dprint, rprint
 from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
-import urllib.request
+import requests
 from bs4 import BeautifulSoup
 import os
 import youtube_dl
@@ -154,8 +154,6 @@ def clear_queue():
 
 def download_next():
     queue_list = list(YoutubeHelper.queue_instance.queue_storage)
-    # print(queue_list)
-    youtube_url = None
     if len(queue_list) > 0:
         youtube_url = queue_list[-1]['std_url']
     else:
@@ -167,9 +165,6 @@ def download_next():
         with youtube_dl.YoutubeDL(YoutubeHelper.ydl_opts) as ydl:
             ydl.cache.remove()
             ydl.extract_info(youtube_url, download=True)
-            # if video['duration'] >= YoutubeHelper.max_track_duration or video['duration'] <= 0.1:
-            #    debug_print("Video length exceeds limit...skipping.")
-            #    YoutubeHelper.queue_instance.pop()
     except youtube_dl.utils.DownloadError as e:
         dprint(e)
         return
@@ -285,9 +280,8 @@ def stop_audio():
 
 def get_vid_list(search):
     url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
-    req = urllib.request.Request(url)
-    with urllib.request.urlopen(req) as response:
-        html = response.read()
+    req = requests.get(url)
+    html = req.text
     soup = BeautifulSoup(html, 'html.parser')
     all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
     search_results_list = []
