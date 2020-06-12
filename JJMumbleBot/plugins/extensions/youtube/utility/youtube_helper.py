@@ -230,8 +230,8 @@ def download_playlist(url):
             count = 0
             for entry in playlist_dict_check['entries']:
                 count += 1
-                print(entry)
-            print(f"Playlist length: {count}")
+                # print(entry)
+            # print(f"Playlist length: {count}")
             if count > int(YoutubeHelper.yt_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]):
                 if not YoutubeHelper.yt_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
                     GS.gui_service.quick_gui(
