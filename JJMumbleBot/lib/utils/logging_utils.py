@@ -7,15 +7,15 @@ import logging
 def initialize_logging():
     if not runtime_settings.use_logging:
         return
-    from logging.handlers import TimedRotatingFileHandler
+    from logging.handlers import RotatingFileHandler
     logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
     log_file_name = f"{global_settings.cfg[C_LOGGING][P_LOG_DIR]}/runtime.log"
     global_settings.log_service = logging.getLogger("RuntimeLogging")
     global_settings.log_service.setLevel(logging.DEBUG)
 
-    handler = TimedRotatingFileHandler(log_file_name, when='midnight', backupCount=runtime_settings.max_logs)
+    handler = RotatingFileHandler(log_file_name, maxBytes=150000, backupCount=int(runtime_settings.max_logs))
     handler.setLevel(logging.INFO)
-    log_formatter = logging.Formatter('%(asctime)s - [%(levelname)s] - %(message)s')
+    log_formatter = logging.Formatter('[%(asctime)s]-[%(levelname)s]-%(message)s')
     handler.setFormatter(log_formatter)
     global_settings.log_service.addHandler(handler)
 
