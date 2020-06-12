@@ -409,7 +409,3 @@ def play_audio():
         else:
             return
     return
-
-
-def set_max_track_duration(new_max):
-    GS.max_track_duration = new_max
