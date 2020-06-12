@@ -269,6 +269,7 @@ def download_playlist(url):
             all_videos.append(prep_struct)
         return all_videos
 
+
 def stop_audio():
     if GS.audio_inst is not None:
         dprint("Stopping audio thread.")
@@ -280,10 +281,6 @@ def stop_audio():
         YoutubeHelper.is_playing = False
         YoutubeHelper.loop_song = False
         GS.audio_dni = (False, None)
-
-
-def get_search_results(search_term):
-    return get_vid_list(search_term)
 
 
 def get_vid_list(search):

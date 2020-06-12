@@ -228,7 +228,7 @@ class Plugin(PluginBase):
             except IndexError:
                 return
 
-            YH.all_searches = YM.get_search_results(search_term)
+            YH.all_searches = YM.get_vid_list(search_term)
             search_results = YM.get_choices(YH.all_searches)
             GS.gui_service.quick_gui(
                 f"{search_results}\nWhich one would you like to play?",
