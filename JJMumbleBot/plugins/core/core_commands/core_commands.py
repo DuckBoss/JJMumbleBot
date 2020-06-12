@@ -148,26 +148,47 @@ class Plugin(PluginBase):
             dprint(f"Reset the bot\'s user comment.")
             log(INFO, f"Reset the bot\'s user comment.", origin=L_COMMAND)
 
-
         elif command == "help":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             message = text.message.strip()
             message_parse = message[1:].split(' ', 1)
             if len(message_parse) < 2:
-                all_plugin_names = sorted(list(GS.bot_plugins.keys()), key=str.lower)
-                all_help_lines = [f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {msg.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{msg.strip()}</font> plugin.' for msg in all_plugin_names]
+                print(list(GS.bot_plugins))
+                all_plugin_metadata = [GS.bot_plugins[plugin].get_metadata() for plugin in list(GS.bot_plugins)]
+                all_core_plugin_names = [metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] for metadata in all_plugin_metadata if metadata.getboolean(C_PLUGIN_TYPE, P_CORE_PLUGIN)]
+                all_extension_plugin_names = [metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] for metadata in all_plugin_metadata if metadata.getboolean(C_PLUGIN_TYPE, P_EXT_PLUGIN)]
+
                 GS.gui_service.open_box()
                 content = GS.gui_service.make_content(f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">##### </font>'
                                                       f'<b>{rutils.get_bot_name()} General Help Commands</b>'
                                                       f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}"> #####</font>')
                 GS.gui_service.append_row(content)
-                for i, help_text in enumerate(all_help_lines):
+
+                content = GS.gui_service.make_content(
+                    f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">##### </font>'
+                    f'<b>Core Plugins</b>'
+                    f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}"> #####</font>')
+                GS.gui_service.append_row(content)
+                for i, help_text in enumerate(all_core_plugin_names):
                     content = GS.gui_service.make_content(
-                            f'{help_text}',
+                            f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {help_text.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{help_text.strip()}</font> plugin.',
                             text_type='header',
                             text_align="left")
                     GS.gui_service.append_row(content)
+
+                content = GS.gui_service.make_content(
+                    f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">##### </font>'
+                    f'<b>Extension Plugins</b>'
+                    f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}"> #####</font>')
+                GS.gui_service.append_row(content)
+                for i, help_text in enumerate(all_extension_plugin_names):
+                    content = GS.gui_service.make_content(
+                        f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {help_text.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{help_text.strip()}</font> plugin.',
+                        text_type='header',
+                        text_align="left")
+                    GS.gui_service.append_row(content)
+
                 GS.gui_service.close_box()
                 GS.gui_service.display_box(channel=rutils.get_my_channel())
                 dprint(f"Displayed general help screen in the channel.")
