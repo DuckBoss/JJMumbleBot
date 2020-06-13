@@ -58,8 +58,10 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Requirements">https://github.com/DuckBoss/JJMumbleBot/wiki/Requirements</a> <br>
 <b> Quick Start guide: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start</a> <br>
+<b> Quick Setup Utility - Web Interface For Config.ini File </b> <br>
+<a href="https://duckboss.github.io/JJMumbleBot/pages/qsu.html">https://duckboss.github.io/JJMumbleBot/pages/qsu.html</a> <br>
 <b> Legacy Branches: </b> <br>
-<a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions</a>
+<a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions</a> 
 
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
