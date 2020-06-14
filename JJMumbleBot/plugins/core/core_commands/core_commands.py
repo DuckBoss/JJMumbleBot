@@ -154,7 +154,7 @@ class Plugin(PluginBase):
             message = text.message.strip()
             message_parse = message[1:].split(' ', 1)
             if len(message_parse) < 2:
-                print(list(GS.bot_plugins))
+                # print(list(GS.bot_plugins))
                 all_plugin_names = [plugin for plugin in list(GS.bot_plugins)]
                 all_plugin_metadata = [{"name": plugin_name, "metadata": GS.bot_plugins[plugin_name].get_metadata()} for plugin_name in all_plugin_names]
                 all_core_plugin_names = [(plugin_info["name"], plugin_info["metadata"][C_PLUGIN_INFO][P_PLUGIN_NAME]) for plugin_info in all_plugin_metadata if plugin_info["metadata"].getboolean(C_PLUGIN_TYPE, P_CORE_PLUGIN)]
