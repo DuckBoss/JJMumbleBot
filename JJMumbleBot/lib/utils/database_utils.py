@@ -363,7 +363,6 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            print(db_conn.cursor().rowcount)
             if alias_id is not None:
                 if GetDB.get_alias(db_cursor=db_conn.cursor(), alias_id=alias_id) is None:
                     dprint(f"Deleted alias in the database: {alias_id}",
