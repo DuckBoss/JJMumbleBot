@@ -13,7 +13,7 @@ class PseudoGUI:
     def __init__(self):
         dprint("Pseudo-GUI initialized.")
 
-    def quick_gui(self, content, text_type="data", text_color=None, text_font='Calibri', text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None, ignore_whisper=False):
+    def quick_gui(self, content, text_type="data", text_color=None, text_font=None, text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None, ignore_whisper=False):
         if self.box_open:
             return False
         if channel is None:
@@ -34,7 +34,7 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user, ignore_whisper=ignore_whisper)
         self.clear_display()
 
-    def quick_gui_img(self, directory, img_data, format_img=False, caption=None, bgcolor="black", channel=None, user=None, img_size=65536, cellspacing="5"):
+    def quick_gui_img(self, directory, img_data, format_img=False, caption=None, caption_font=None, bgcolor="black", channel=None, user=None, img_size=65536, cellspacing="5"):
         if self.box_open:
             return False
         if channel is None:
@@ -53,7 +53,7 @@ class PseudoGUI:
                 self.append_row(content)
 
         if caption is not None:
-            caption = self.make_content(caption, text_type="header", text_font='Calibri', image=False)
+            caption = self.make_content(caption, text_type="header", text_font=caption_font, image=False)
             self.append_row(caption)
 
         self.close_box()
@@ -94,13 +94,15 @@ class PseudoGUI:
         self.content += content
         return True
 
-    def make_content(self, text, text_type="data", text_color=None, text_font='Calibri', text_align="center", image=False):
+    def make_content(self, text, text_type="data", text_color=None, text_font=None, text_align="center", image=False):
         if not self.box_open:
             return None
         if image:
             return PGUIHelper.img_content(text)
         if text_color is None:
             text_color = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_TXT_COL]
+        if text_font is None:
+            text_font = GS.cfg[C_PGUI_SETTINGS][P_TXT_DEFAULT_FONT]
         new_content = PGUIHelper.content(text, tt=text_type, tc=text_color, tf=text_font, ta=text_align)
         return new_content
 
