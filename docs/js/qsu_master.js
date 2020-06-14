@@ -82,6 +82,8 @@ function get_pgui_settings() {
 ; https://doc.qt.io/qt-5/richtext-html-subset.html
 ; https://doc.qt.io/qt-5/qcolor.html#setNamedColor
 CanvasBGColor = ${document.getElementById('pgui-canvas-bg-color').value}
+; Determines the default Canvas Image BG Color
+CanvasImageBGColor = ${document.getElementById('pgui-canvas-img-bg-color').value}
 ; Determines the default canvas alignment using html alignment tags
 CanvasAlignment = ${document.getElementById('pgui-canvas-align').value}
 ; Determines the default canvas border size [Recommended: 0]
