@@ -129,9 +129,9 @@ class Plugin(PluginBase):
             log(INFO, f"Changed the bot\'s user comment to {message_parse[1]}.", origin=L_COMMAND)
 
         elif command == "resetcomment":
-            from JJMumbleBot.lib.utils.dir_utils import get_main_dir
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
+            from JJMumbleBot.lib.utils.dir_utils import get_main_dir
             GS.mumble_inst.users.myself.comment(
                 f'[{META_NAME}({META_VERSION})] - {rutils.get_bot_name()}<br>{rutils.get_about()}')
 
@@ -147,6 +147,37 @@ class Plugin(PluginBase):
                 user=GS.mumble_inst.users[text.actor]['name'])
             dprint(f"Reset the bot\'s user comment.")
             log(INFO, f"Reset the bot\'s user comment.", origin=L_COMMAND)
+
+        elif command == "pgui_stress_test":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            message = text.message.strip()
+            message_parse = message[1:].split(' ', 1)
+            if len(message_parse) < 2:
+                num_of_lines = 5
+            else:
+                num_of_lines = int(message_parse[1])
+
+            import random
+            bg_colors = ["Blue", "Cyan", "Magenta", "Red", "Yellow", "Green", "Lime", "Black", "Snow", "Violet",
+                         "Salmon", "Purple", "Pink", "Navy", "MintCream", "Maroon", "Gray", "Indigo", "Coral",
+                         "Ivory", "Gold", "DodgerBlue", "CadetBlue", "Brown", "Beige", "Aquamarine"]
+            GS.gui_service.open_box()
+
+            for i in range(num_of_lines):
+                content = GS.gui_service.make_content(
+                    f'<font color="{random.choice(bg_colors)}">[{i}] - PGUI STRESS TEST</font>',
+                    text_type='header',
+                    text_align="left",
+                    bgcolor=random.choice(bg_colors)
+                )
+                GS.gui_service.append_row(content)
+                random.seed(i)
+
+            GS.gui_service.close_box()
+            GS.gui_service.display_box(channel=rutils.get_my_channel())
+            dprint(f"Conducted PGUI stress test in the channel.")
+            log(INFO, f"Conducted PGUI stress test in the channel.", origin=L_COMMAND)
 
         elif command == "help":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):

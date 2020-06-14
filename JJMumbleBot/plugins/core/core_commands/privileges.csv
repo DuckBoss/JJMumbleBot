@@ -4,6 +4,7 @@ help,1
 version,1
 comment,4
 resetcomment,4
+pgui_stress_test,5
 refresh,4
 about,1
 system_test,4
