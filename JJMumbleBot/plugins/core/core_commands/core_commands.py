@@ -155,9 +155,10 @@ class Plugin(PluginBase):
             message_parse = message[1:].split(' ', 1)
             if len(message_parse) < 2:
                 print(list(GS.bot_plugins))
-                all_plugin_metadata = [GS.bot_plugins[plugin].get_metadata() for plugin in list(GS.bot_plugins)]
-                all_core_plugin_names = [metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] for metadata in all_plugin_metadata if metadata.getboolean(C_PLUGIN_TYPE, P_CORE_PLUGIN)]
-                all_extension_plugin_names = [metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] for metadata in all_plugin_metadata if metadata.getboolean(C_PLUGIN_TYPE, P_EXT_PLUGIN)]
+                all_plugin_names = [plugin for plugin in list(GS.bot_plugins)]
+                all_plugin_metadata = [{"name": plugin_name, "metadata": GS.bot_plugins[plugin_name].get_metadata()} for plugin_name in all_plugin_names]
+                all_core_plugin_names = [(plugin_info["name"], plugin_info["metadata"][C_PLUGIN_INFO][P_PLUGIN_NAME]) for plugin_info in all_plugin_metadata if plugin_info["metadata"].getboolean(C_PLUGIN_TYPE, P_CORE_PLUGIN)]
+                all_extension_plugin_names = [(plugin_info["name"], plugin_info["metadata"][C_PLUGIN_INFO][P_PLUGIN_NAME]) for plugin_info in all_plugin_metadata if plugin_info["metadata"].getboolean(C_PLUGIN_TYPE, P_EXT_PLUGIN)]
 
                 GS.gui_service.open_box()
                 content = GS.gui_service.make_content(f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">##### </font>'
@@ -170,9 +171,9 @@ class Plugin(PluginBase):
                     f'<b>Core Plugins</b>'
                     f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}"> #####</font>')
                 GS.gui_service.append_row(content)
-                for i, help_text in enumerate(all_core_plugin_names):
+                for i, plugin_info in enumerate(all_core_plugin_names):
                     content = GS.gui_service.make_content(
-                            f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {help_text.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{help_text.strip()}</font> plugin.',
+                            f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {plugin_info[0].strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{plugin_info[1]}</font> plugin.',
                             text_type='header',
                             text_align="left")
                     GS.gui_service.append_row(content)
@@ -182,9 +183,9 @@ class Plugin(PluginBase):
                     f'<b>Extension Plugins</b>'
                     f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}"> #####</font>')
                 GS.gui_service.append_row(content)
-                for i, help_text in enumerate(all_extension_plugin_names):
+                for i, plugin_info in enumerate(all_extension_plugin_names):
                     content = GS.gui_service.make_content(
-                        f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {help_text.strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{help_text.strip()}</font> plugin.',
+                        f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}">!help {plugin_info[0].strip()}</font> - Displays help information for the <font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}">{plugin_info[1].strip()}</font> plugin.',
                         text_type='header',
                         text_align="left")
                     GS.gui_service.append_row(content)
