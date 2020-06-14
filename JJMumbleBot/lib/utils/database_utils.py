@@ -191,11 +191,10 @@ class InsertDB:
             if not ignore_file_save:
                 save_memory_db_to_file()
             if db_conn.cursor().rowcount == -1:
-                dprint(f"Inserted new plugin into the database: {plugin_name}",
+                dprint(f"Inserted new plugin help data into the database: {plugin_name}",
                        origin=L_DATABASE)
-                log(INFO, f"Inserted new plugin into the database: {plugin_name}",
+                log(INFO, f"Inserted new plugin help data into the database: {plugin_name}",
                     origin=L_DATABASE)
-
                 return True
             return False
         except Error as err:
@@ -697,7 +696,7 @@ class UtilityDB:
             for i, row in enumerate(csvr):
                 try:
                     InsertDB.insert_new_command(db_conn, plugin_name=plugin_name, command_name=row['command'],
-                                                permission_level=int(row['level']))
+                                                permission_level=int(row['level']), ignore_file_save=True)
                 except Error:
                     dprint("Encountered an error while importing plugin privileges data into the database.")
                     log(WARNING, "Encountered an error while importing plugin privileges data into the database.",
@@ -711,7 +710,7 @@ class UtilityDB:
             csvr = DictReader(csv_file)
             for i, row in enumerate(csvr):
                 try:
-                    InsertDB.insert_new_alias(db_conn, alias_name=row['alias'].strip(), commands=row['command'].strip())
+                    InsertDB.insert_new_alias(db_conn, alias_name=row['alias'].strip(), commands=row['command'].strip(), ignore_file_save=True)
                 except Error:
                     dprint(
                         f"Encountered an error while importing a plugin alias from {file_name} plugin into the database.")
@@ -726,9 +725,8 @@ class UtilityDB:
         with open(html_path, mode='r') as html_file:
             try:
                 file_content = html_file.read()
-                if UpdateDB.update_plugin_help(db_conn, plugin_name=file_name, plugin_help_text=file_content):
-                    return True
-                InsertDB.insert_new_plugins_help(db_conn, plugin_name=file_name, help_text=html_file.read())
+                InsertDB.insert_new_plugins_help(db_conn, plugin_name=file_name, help_text=html_file.read(), ignore_file_save=True)
+                UpdateDB.update_plugin_help(db_conn, plugin_name=file_name, plugin_help_text=file_content)
                 return True
             except Error:
                 dprint("Encountered an error while importing plugin help data into the database.")
