@@ -85,7 +85,7 @@ class PseudoGUI:
     def append_row(self, content, align="center"):
         if not self.box_open:
             return False
-        self.content += f'<tr align="{align}">' + content + '</tr>'
+        self.content += f'<tr align="{align}">{content}</tr>'
         return True
 
     def append_content(self, content):
@@ -94,16 +94,18 @@ class PseudoGUI:
         self.content += content
         return True
 
-    def make_content(self, text, text_type="data", text_color=None, text_font=None, text_align="center", image=False):
+    def make_content(self, text, text_type="data", text_color=None, text_font=None, text_align="center", bgcolor="black", image_bgcolor=None, image=False):
         if not self.box_open:
             return None
         if image:
-            return PGUIHelper.img_content(text)
+            if image_bgcolor is None:
+                image_bgcolor = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_IMG_BG_COL]
+            return PGUIHelper.img_content(text, text_align, image_bgcolor)
         if text_color is None:
             text_color = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_TXT_COL]
         if text_font is None:
             text_font = GS.cfg[C_PGUI_SETTINGS][P_TXT_DEFAULT_FONT]
-        new_content = PGUIHelper.content(text, tt=text_type, tc=text_color, tf=text_font, ta=text_align)
+        new_content = PGUIHelper.content(text, tt=text_type, tc=text_color, tf=text_font, ta=text_align, bgcolor=bgcolor)
         return new_content
 
     def get_box_content(self):

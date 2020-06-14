@@ -30,6 +30,7 @@ P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
 P_CANVAS_BG_COL = 'CanvasBGColor'
+P_CANVAS_IMG_BG_COL = 'CanvasImageBGColor'
 P_CANVAS_ALGN = 'CanvasAlignment'
 P_CANVAS_BORD = 'CanvasBorder'
 P_CANVAS_TXT_COL = 'CanvasTextColor'
