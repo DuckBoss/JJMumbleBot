@@ -363,12 +363,21 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            if db_conn.cursor().rowcount > 0:
-                dprint(f"Deleted alias in the database: {alias_id if alias_id is not None else alias_name}",
-                       origin=L_DATABASE)
-                log(INFO, f"Deleted alias in the database: {alias_id if alias_id is not None else alias_name}",
-                    origin=L_DATABASE)
-                return True
+            print(db_conn.cursor().rowcount)
+            if alias_id is not None:
+                if GetDB.get_alias(db_cursor=db_conn.cursor(), alias_id=alias_id) is None:
+                    dprint(f"Deleted alias in the database: {alias_id}",
+                           origin=L_DATABASE)
+                    log(INFO, f"Deleted alias in the database: {alias_id}",
+                        origin=L_DATABASE)
+                    return True
+            else:
+                if GetDB.get_alias(db_cursor=db_conn.cursor(), alias_name=alias_name) is None:
+                    dprint(f"Deleted alias in the database: {alias_name}",
+                           origin=L_DATABASE)
+                    log(INFO, f"Deleted alias in the database: {alias_name}",
+                        origin=L_DATABASE)
+                    return True
             return False
         except Error as err:
             dprint(err)
@@ -478,6 +487,8 @@ class GetDB:
             result_dict = {}
             result_cols = [item[0] for item in db_cursor.description]
             result_row = db_cursor.fetchone()
+            if result_row is None:
+                return None
             for i, item in enumerate(result_cols):
                 result_dict[item] = list(result_row)[i]
             return result_dict
