@@ -15,6 +15,8 @@ UserCertification = ${document.getElementById('server-cert').value}
 DefaultChannel = ${document.getElementById('server-default-channel').value}
 ; Enter the bot owner's display name here. The bot must have at least 1 super user to be able to control all bot commands.
 DefaultSuperUser = ${document.getElementById('server-superuser').value}
+; Allows the bot to attempt to self-register to the server.
+SelfRegister = ${document.getElementById('main-settings-self-register').value}
 ; The default comment associated with the bot that is shown to users when they view the bot's comment. This can be left blank.
 DefaultComment = ${document.getElementById('server-comment').value}
 `;
