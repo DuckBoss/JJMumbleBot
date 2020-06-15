@@ -1,4 +1,5 @@
 import pymumble_py3 as pymumble
+from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
@@ -29,8 +30,10 @@ class BotService:
         BotServiceHelper.initialize_settings()
         # Initialize logging services.
         initialize_logging()
-        log(INFO, "###########################")
-        log(INFO, "Initializing JJMumbleBot...")
+        log(INFO, "###########################", origin=L_STARTUP)
+        rprint("###########################", origin=L_STARTUP)
+        log(INFO, "Initializing JJMumbleBot...", origin=L_STARTUP)
+        rprint("Initializing JJMumbleBot...", origin=L_STARTUP)
         # Check and classify system arguments.
         import JJMumbleBot.core.cla_classifier as cla
         cla.classify()
@@ -42,28 +45,51 @@ class BotService:
         global_settings.cmd_queue = QueueHandler(runtime_settings.cmd_hist_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
+        log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
+        rprint("######### Initializing Internal Database #########", origin=L_DATABASE)
+        # Back up bot database.
+        db_backup = BotServiceHelper.backup_database()
+        log(INFO, f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
+        rprint(f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
         # Initialize bot database.
         global_settings.mumble_db = init_database()
+        log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)
+        rprint("######### Initialized Internal Database #########", origin=L_DATABASE)
         # Initialize major directories.
         dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR])
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/audio')
-        log(INFO, "Initialized temporary directories.")
+        log(INFO, "Initialized Temporary Directories.", origin=L_STARTUP)
+        rprint("Initialized Temporary Directories.", origin=L_STARTUP)
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
-        log(INFO, "Initialized PGUI.")
+        log(INFO, "Initialized PGUI.", origin=L_STARTUP)
+        rprint("Initialized PGUI.", origin=L_STARTUP)
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
             runtime_settings.tick_rate = 0.2
-            log(INFO, "Initialized plugins with safe mode.")
+            log(INFO, "Initialized plugins with safe mode.", origin=L_STARTUP)
+            rprint("Initialized plugins with safe mode.", origin=L_STARTUP)
         else:
             BotServiceHelper.initialize_plugins()
-            log(INFO, "Initialized all plugins.")
-        log(INFO, "###########################")
+            log(INFO, "Initialized all plugins.", origin=L_STARTUP)
+            rprint("Initialized all plugins.", origin=L_STARTUP)
+        log(INFO, "######### Initializing Mumble Client #########", origin=L_STARTUP)
+        rprint("######### Initializing Mumble Client #########", origin=L_STARTUP)
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data()
         BotService.initialize_mumble(mumble_login_data)
+        log(INFO, "######### Initialized Mumble Client #########", origin=L_STARTUP)
+        rprint("######### Initialized Mumble Client #########", origin=L_STARTUP)
+        # Initialize web interface
+        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE):
+            log(INFO, "######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
+            rprint("######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
+            from JJMumbleBot.web import web_helper
+            web_helper.initialize_web()
+            log(INFO, "######### Initialized Web Interface #########", origin=L_WEB_INTERFACE)
+            rprint("######### Initialized Web Interface #########", origin=L_WEB_INTERFACE)
         # Start runtime loop.
         BotService.loop()
 
@@ -78,19 +104,26 @@ class BotService:
         global_settings.mumble_inst.is_ready()
         if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
             global_settings.mumble_inst.users.myself.register()
-        global_settings.mumble_inst.users.myself.comment(f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
+        global_settings.mumble_inst.users.myself.comment(
+            f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
         runtime_utils.mute()
         runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]).move_in()
 
     @staticmethod
-    def message_received(text):
+    def message_received(text, remote_cmd=False):
         all_commands = runtime_utils.parse_message(text)
         if all_commands is None:
             return
         # Iterate through all commands provided and generate commands.
         for i, item in enumerate(all_commands):
             # Generate command with parameters
-            new_text = deepcopy(text)
+            if not remote_cmd:
+                new_text = deepcopy(text)
+            else:
+                new_text = RemoteTextMessage(channel_id=global_settings.mumble_inst.users.myself['channel_id'],
+                                             session=global_settings.mumble_inst.users.myself['session'],
+                                             message=text.message,
+                                             actor=global_settings.mumble_inst.users.myself['session'])
             new_text.message = item
             try:
                 new_command = Command(item[1:].split()[0], new_text)
@@ -113,7 +146,14 @@ class BotService:
                             f"commands per line.", origin=L_COMMAND)
                         return
                     for x, sub_item in enumerate(alias_commands):
-                        sub_text = deepcopy(text)
+                        if not remote_cmd:
+                            sub_text = deepcopy(text)
+                        else:
+                            sub_text = RemoteTextMessage(
+                                channel_id=global_settings.mumble_inst.users.myself['channel_id'],
+                                session=global_settings.mumble_inst.users.myself['session'],
+                                message=text.message,
+                                actor=global_settings.mumble_inst.users.myself['session'])
                         if len(item[1:].split()) > 1:
                             sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
                         else:

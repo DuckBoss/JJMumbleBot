@@ -2,6 +2,7 @@
 # PROGRAM CONFIG CATEGORY STRINGS
 C_CONNECTION_SETTINGS = 'Connection Settings'
 C_MAIN_SETTINGS = 'Main Settings'
+C_WEB_SETTINGS = 'Web Interface'
 C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
 C_MEDIA_DIR = 'Media Directories'
@@ -24,6 +25,11 @@ P_CMD_MULTI_LIM = 'MultiCommandLimit'
 P_CMD_TOKEN = 'CommandToken'
 P_CMD_QUEUE_LIM = 'CommandQueueLimit'
 P_CMD_HIST_LIM = 'CommandHistoryLimit'
+# Web Interface
+P_WEB_ENABLE = 'EnableWebInterface'
+P_WEB_IP = 'WebServerIP'
+P_WEB_PAGE_PORT = 'WebPagePort'
+P_WEB_SOCK_PORT = 'WebSocketPort'
 # Permanent Directories
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 # Temporary Directories
@@ -63,6 +69,7 @@ L_SHUTDOWN = "ShutDown"
 L_ALIASES = "Aliases"
 L_LOGGING = "Logging"
 L_DEPENDENCIES = "Dependencies"
+L_WEB_INTERFACE = "WebInterface"
 ###########################################################################
 # PLUGIN CONFIG CATEGORY STRINGS
 C_PLUGIN_INFO = 'Plugin Information'

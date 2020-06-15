@@ -30,6 +30,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
   - <b>Whisper Plugin</b> - Whisper support for audio data.
   - <b>Bot Commands Plugin</b> - Enhanced interactivity and management commands.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
+- <b>Web Interface [WIP]</b> - Control and manage the bot with an optional web interface.
 - <b>Auto-Updater</b> - A System to update dependencies through bot commands.
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
 - <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
@@ -49,6 +50,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - Install project dependencies
     - `pip install -r requirements.txt`
     - <b>Note: You must have libopus installed and installation varies by operating system.</b>
+- Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)
 - Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
 
 ## Documentation 📝 
