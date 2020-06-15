@@ -23,9 +23,7 @@ async def send_message(websocket, path):
         while True:
             # web_data = monitor_service.get_hardware_info()
             # web_data.update(monitor_service.get_system_info())
-            web_data = {}
-            web_data["cur_time"] = str(datetime.now()).split('.')[0]
-
+            web_data = {"cur_time": str(datetime.now()).split('.')[0]}
             packed_data = json.dumps(web_data)
             await websocket.send(packed_data)
             await asyncio.sleep(1)
@@ -43,7 +41,7 @@ def get_message():
                                      message=content,
                                      actor=global_settings.mumble_inst.users.myself['session'])
             global_settings.bot_service.message_received(text=text, remote_cmd=True)
-            print(text.message)
+            # print(text.message)
     return content
 
 
