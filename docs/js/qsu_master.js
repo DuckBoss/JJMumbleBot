@@ -35,7 +35,7 @@ PermanentMediaDirectory = ${document.getElementById('media-perm-path').value}
 function get_logging() {
   return `
 [Logging]
-; To enable logging for the bot, set this to true. Set it to false to disable.
+; To enable logging for the bot, check the box. Uncheck it to disable.
 EnableLogging = ${document.getElementById('logging-enable').value}
 ; This sets the maximum number of logs the bot can have at a time before it overwrites the oldest one.
 MaxLogs = ${document.getElementById('logging-max-logs').value}
@@ -56,10 +56,24 @@ AllowedRootChannelsForTempChannels = [${document.getElementById('allowed-root').
 `;
 }
 
+function get_web_interface_settings() {
+  return `
+[Web Interface]
+; To enable the web interface for the bot, check the box. Uncheck it to disable.
+EnableWebInterface = ${document.getElementById('web-interface-enable').value}
+; This sets the web server IP.
+WebServerIP = ${document.getElementById('web-interface-ip').value}
+; This sets the port of the web server for the main web interface page.
+WebPagePort = ${document.getElementById('web-interface-server-port').value}
+; This sets the port of the web socket on the web interface providing live data.
+WebSocketPort = ${document.getElementById('web-interface-socket-port').value}
+`;
+}
+
 function get_main_settings() {
   return `
 [Main Settings]
-; Enable stereo output by setting this to True, or disable by setting it to False.
+; To enable stereo output for the bot, check the box. Uncheck it to disable.
 UseStereoOutput = ${document.getElementById('main-settings-stereo').value}
 ; The execution tick rate of commands in the command queue [Must be an integer/float].
 CommandTickRate  = ${document.getElementById('main-settings-cmd-tick-rate').value}
