@@ -143,7 +143,7 @@ function get_all_data() {
       }
   }
 
-  var ini_out = `${get_connection_settings()}\n${get_media_directories()}\n${get_logging()}\n${get_plugin_settings()}\n${get_main_settings()}\n${get_pgui_settings()}`;
+  var ini_out = `${get_connection_settings()}\n${get_web_interface_settings()}\n${get_media_directories()}\n${get_logging()}\n${get_plugin_settings()}\n${get_main_settings()}\n${get_pgui_settings()}`;
   console.log(ini_out.trim())
   download(ini_out.trim(), 'config.ini', 'text/plain')
 }
