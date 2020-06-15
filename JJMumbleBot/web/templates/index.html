@@ -34,14 +34,23 @@
         </form>
     </div>
     <script type="text/javascript">
-        var ws = new WebSocket("ws://192.168.1.200:7001/");
+        var data_storage = {};
+
+        var ws = new WebSocket("ws://{{ server_ip }}:{{ socket_port }}/");
         ws.onmessage = function(e) {
-          json_data = JSON.parse(e.data)
-          document.getElementById("test").innerHTML = JSON.stringify(json_data);
-          console.log(json_data);
+          $.extend(data_storage, JSON.parse(e.data))
+          document.getElementById("test").innerHTML = JSON.stringify(data_storage);
+          console.log(data_storage);
         }
 
         $(document).ready(function() {
+            fetch('http://{{ server_ip }}:{{ server_port }}/plugins')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+            fetch('http://{{ server_ip }}:{{ server_port }}/system')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+
             $('form').on('submit', function(event) {
                 $.ajax({
                     data: {

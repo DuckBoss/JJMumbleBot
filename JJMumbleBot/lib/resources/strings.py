@@ -27,6 +27,7 @@ P_CMD_QUEUE_LIM = 'CommandQueueLimit'
 P_CMD_HIST_LIM = 'CommandHistoryLimit'
 # Web Interface
 P_WEB_ENABLE = 'EnableWebInterface'
+P_WEB_IP = 'WebServerIP'
 P_WEB_PAGE_PORT = 'WebPagePort'
 P_WEB_SOCK_PORT = 'WebSocketPort'
 # Permanent Directories

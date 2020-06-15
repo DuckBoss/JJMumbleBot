@@ -1,4 +1,5 @@
 import pymumble_py3 as pymumble
+from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
@@ -109,68 +110,20 @@ class BotService:
         runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]).move_in()
 
     @staticmethod
-    def message_received(text):
+    def message_received(text, remote_cmd=False):
         all_commands = runtime_utils.parse_message(text)
         if all_commands is None:
             return
         # Iterate through all commands provided and generate commands.
         for i, item in enumerate(all_commands):
             # Generate command with parameters
-            new_text = deepcopy(text)
-            new_text.message = item
-            try:
-                new_command = Command(item[1:].split()[0], new_text)
-            except IndexError:
-                continue
-            all_aliases = aliases.get_all_aliases()
-            all_alias_names = [x[0] for x in all_aliases]
-            if len(all_aliases) != 0:
-                if new_command.command in all_alias_names:
-                    alias_item_index = all_alias_names.index(new_command.command)
-                    alias_commands = [msg.strip() for msg in all_aliases[alias_item_index][1].split('|')]
-                    if len(alias_commands) > runtime_settings.multi_cmd_limit:
-                        rprint(
-                            f"The multi-command limit was reached! "
-                            f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
-                            f"commands per line.", origin=L_COMMAND)
-                        log(WARNING,
-                            f"The multi-command limit was reached! "
-                            f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
-                            f"commands per line.", origin=L_COMMAND)
-                        return
-                    for x, sub_item in enumerate(alias_commands):
-                        sub_text = deepcopy(text)
-                        if len(item[1:].split()) > 1:
-                            sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
-                        else:
-                            sub_text.message = sub_item
-                        try:
-                            sub_command = Command(sub_item[1:].split()[0], sub_text)
-                        except IndexError:
-                            continue
-                        global_settings.cmd_queue.insert(sub_command)
-                else:
-                    # Insert command into the command queue
-                    global_settings.cmd_queue.insert(new_command)
+            if not remote_cmd:
+                new_text = deepcopy(text)
             else:
-                global_settings.cmd_queue.insert(new_command)
-
-        # Process commands if the queue is not empty
-        while not global_settings.cmd_queue.is_empty():
-            # Process commands in the queue
-            BotService.process_command_queue(global_settings.cmd_queue.pop())
-            sleep(runtime_settings.tick_rate)
-
-    # TODO: ALIASES DON'T WORK WITH REMOTE COMMANDS
-    @staticmethod
-    def remote_message_received(text):
-        all_commands = runtime_utils.parse_message(text)
-        if all_commands is None:
-            return
-        # Iterate through all commands provided and generate commands.
-        for i, item in enumerate(all_commands):
-            # Generate command with parameters
-            new_text = text
+                new_text = RemoteTextMessage(channel_id=global_settings.mumble_inst.users.myself['channel_id'],
+                                             session=global_settings.mumble_inst.users.myself['session'],
+                                             message=text.message,
+                                             actor=global_settings.mumble_inst.users.myself['session'])
             new_text.message = item
             try:
                 new_command = Command(item[1:].split()[0], new_text)
@@ -193,7 +146,14 @@ class BotService:
                             f"commands per line.", origin=L_COMMAND)
                         return
                     for x, sub_item in enumerate(alias_commands):
-                        sub_text = text
+                        if not remote_cmd:
+                            sub_text = deepcopy(text)
+                        else:
+                            sub_text = RemoteTextMessage(
+                                channel_id=global_settings.mumble_inst.users.myself['channel_id'],
+                                session=global_settings.mumble_inst.users.myself['session'],
+                                message=text.message,
+                                actor=global_settings.mumble_inst.users.myself['session'])
                         if len(item[1:].split()) > 1:
                             sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
                         else:

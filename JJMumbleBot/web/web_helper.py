@@ -21,9 +21,9 @@ web_app.config['SECRET_KEY'] = urandom(16)
 async def send_message(websocket, path):
     try:
         while True:
-            web_data = monitor_service.get_all_plugins()
-            web_data.update(monitor_service.get_hardware_info())
-            web_data.update(monitor_service.get_system_info())
+            # web_data = monitor_service.get_hardware_info()
+            # web_data.update(monitor_service.get_system_info())
+            web_data = {}
             web_data["cur_time"] = str(datetime.now()).split('.')[0]
 
             packed_data = json.dumps(web_data)
@@ -42,32 +42,46 @@ def get_message():
                                      session=global_settings.mumble_inst.users.myself['session'],
                                      message=content,
                                      actor=global_settings.mumble_inst.users.myself['session'])
-            global_settings.bot_service.remote_message_received(text=text)
-            print(text)
+            global_settings.bot_service.message_received(text=text, remote_cmd=True)
+            print(text.message)
     return content
+
+
+@web_app.route("/plugins", methods=['GET'])
+def get_plugins():
+    cmd_strings = list(global_settings.bot_plugins)
+    return json.dumps({"plugins": cmd_strings})
+
+
+@web_app.route("/system", methods=['GET'])
+def get_system_info():
+    return json.dumps(monitor_service.get_system_info())
 
 
 @web_app.route("/", methods=['GET', 'POST'])
 def main():
-    return render_template('index.html')
+    return render_template('index.html',
+                           server_ip=global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP],
+                           server_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]),
+                           socket_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]))
 
 
 def start_flask_server():
-    global_settings.flask_server = WSGIServer(("192.168.1.200", int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT])), web_app, log=None)
+    global_settings.flask_server = WSGIServer(("0.0.0.0", int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT])),
+                                              web_app, log=None)
     global_settings.flask_server.serve_forever()
-    rprint("Initialized Flask Server.", origin=L_WEB_INTERFACE)
-    log(INFO, "Initialized Flask Server", origin=L_WEB_INTERFACE)
 
 
 def initialize_web():
-    ws = websockets.serve(send_message, "192.168.1.200", int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]), origins=None)
+    ws = websockets.serve(send_message, "0.0.0.0", int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]),
+                          origins=None)
     asyncio.get_event_loop().run_until_complete(ws)
-    global_settings.socket_server = Thread(target=asyncio.get_event_loop().run_forever)
+    global_settings.socket_server = Thread(target=asyncio.get_event_loop().run_forever, daemon=True)
     global_settings.socket_server.start()
     rprint("Initialized Socket Server.", origin=L_WEB_INTERFACE)
     log(INFO, "Initialized Socket Server", origin=L_WEB_INTERFACE)
 
-    global_settings.flask_server = Thread(target=start_flask_server)
+    global_settings.flask_server = Thread(target=start_flask_server, daemon=True)
     global_settings.flask_server.start()
     rprint("Initialized Flask Server.", origin=L_WEB_INTERFACE)
     log(INFO, "Initialized Flask Server", origin=L_WEB_INTERFACE)
