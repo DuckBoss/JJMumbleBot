@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>
-      JJMumbleBot Quick Setup Utility - Web Interface
+      JJMumbleBot Quick Setup Utility - Web Interface (MASTER BRANCH)
     </title>
 
     <link rel="stylesheet" type="text/css" href="../css/main.css">
@@ -73,6 +73,35 @@
         <input type="text" id="server-comment" name='server-default-comment-input' size='100'>
       </div>
     </div>
+    <h3>Web Interface</h3>
+    <div class='snippet-item'>
+      <div class='snippet-text'>
+        <p>To enable the web interface for the bot, check the box. Uncheck it to disable.</p>
+        <input type="checkbox" id="web-interface-enable" name='web-interface-enable-input' class='required' checked required>
+        <label for='web-interface-enable-input'>Use Web Interface</label>
+      </div>
+      <br>
+      <div class='snippet-text'>
+        <p>Enter the web server IP here.</p>
+        <b>[Example: 192.168.1.100]</b><br>
+        <label for='web-interface-ip-input'>Web Server IP:</label><br>
+        <input type="text" id="web-interface-ip" name='web-interface-ip-input' class='required' size='100' required>
+      </div>
+      <br>
+      <div class='snippet-text'>
+        <p>Enter the web server IP here.</p>
+        <b>[Example: 7000]</b><br>
+        <label for='web-interface-server-port-input'>Web Server Port:</label><br>
+        <input type="number" id="web-interface-server-port" name='web-interface-server-port-input' class='required' required>
+      </div>
+      <br>
+      <div class='snippet-text'>
+        <p>Enter the web server IP here.</p>
+        <b>[Example: 7001]</b><br>
+        <label for='web-interface-socket-port-input'>Web Socket Port:</label><br>
+        <input type="number" id="web-interface-socket-port" name='web-interface-socket-port-input' class='required' required>
+      </div>
+    </div>
     <h3>Media Directories</h3>
     <div class='snippet-item'>
       <div class='snippet-text'>
@@ -137,7 +166,7 @@
     <h3>Main Settings</h3>
     <div class='snippet-item'>
       <div class='snippet-text'>
-        <p>Enable stereo output by setting this to True, or disable by setting it to False.</p>
+        <p>Enable stereo output by checking the box, or disable by unchecking it.</p>
         <input type="checkbox" id="main-settings-stereo" name='main-settings-stereo-input' class='required' checked required>
         <label for='main-settings-stereo-input'>Use Stereo Output</label>
       </div>
@@ -185,9 +214,15 @@
           <br>
           <a href="https://doc.qt.io/qt-5/qcolor.html#setNamedColor">Qt5 Named Colors</a>
         </p>
-        <label for='pgui-canvas-bg-color-input'>GUI Background Color:</label><br>
+        <label for='pgui-canvas-bg-color-input'>GUI Default Background Color:</label><br>
         <input type="text" id="pgui-canvas-bg-color" name='pgui-canvas-bg-color-input' class='required' value='black' required>
       </div>
+      <br>
+      <div class='snippet-text'>
+        <p>Determines the default background color of images in the UI canvas.</p>
+        <label for='pgui-canvas-img-bg-color-input'>GUI Default Image Background Color:</label><br>
+        <input type="text" id="pgui-canvas-img-bg-color" name='pgui-canvas-img-bg-color-input' class='required' value='black' required>
+      </div>s
       <br>
       <div class='snippet-text'>
         <p>Determines the default canvas alignment using html alignment tags</p>
@@ -207,6 +242,12 @@
         <b>[Example: white, red, blue, (qt5 html subset colors)]</b><br>
         <label for='pgui-canvas-color-input'>GUI Default Text Color:</label><br>
         <input type="text" id="pgui-canvas-color" name='pgui-canvas-color-input' class='required' value='white' required>
+      </div>
+      <br>
+      <div class='snippet-text'>
+        <p>Determines the default canvas text font [Recommended: Calibri]</p>
+        <label for='pgui-canvas-default-font-input'>GUI Default Font:</label><br>
+        <input type="text" id="pgui-canvas-default-font" name='pgui-canvas-default-font-input' class='required' value="Calibri" required>
       </div>
       <br>
       <div class='snippet-text'>
@@ -236,6 +277,6 @@
   <div id='generate-ini-file'>
     <button onclick="get_all_data()" class="generate_button">Download Config.ini File</button>
   </div>
-  <script src="../js/main.js"></script>
+  <script src="../js/qsu_master.js"></script>
   </body>
 </html>
