@@ -50,6 +50,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - Install project dependencies
     - `pip install -r requirements.txt`
     - <b>Note: You must have libopus installed and installation varies by operating system.</b>
+- Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)
 - Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
 
 ## Documentation 📝 
