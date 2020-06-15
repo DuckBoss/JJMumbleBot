@@ -45,8 +45,16 @@ class BotService:
         global_settings.cmd_queue = QueueHandler(runtime_settings.cmd_hist_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
+        log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
+        rprint("######### Initializing Internal Database #########", origin=L_DATABASE)
+        # Back up bot database.
+        db_backup = BotServiceHelper.backup_database()
+        log(INFO, f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
+        rprint(f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
         # Initialize bot database.
         global_settings.mumble_db = init_database()
+        log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)
+        rprint("######### Initialized Internal Database #########", origin=L_DATABASE)
         # Initialize major directories.
         dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR])
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/images')

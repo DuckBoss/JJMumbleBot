@@ -173,3 +173,16 @@ class BotServiceHelper:
         save_memory_db_to_file()
         sys.path.pop(0)
         rprint("######### Extension Plugins Initialized #########")
+
+    @staticmethod
+    def backup_database():
+        from datetime import datetime
+        from shutil import copy
+        from os import path, makedirs
+        if not path.exists(f'{dir_utils.get_main_dir()}/cfg/backups'):
+            makedirs(f'{dir_utils.get_main_dir()}/cfg/backups')
+        cur_time = str(datetime.now())[:19].replace(":", "_").replace(" ", "")
+        src_file = f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.db'
+        dst_file = f'{dir_utils.get_main_dir()}/cfg/backups/jjmumblebot_{str(cur_time)}.db'
+        copy(src_file, dst_file)
+        return dst_file
