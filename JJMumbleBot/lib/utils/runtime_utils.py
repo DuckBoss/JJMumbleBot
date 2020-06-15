@@ -240,6 +240,12 @@ def exit_bot():
     )
     for plugin in global_settings.bot_plugins.values():
         plugin.quit()
+    if global_settings.flask_server:
+        global_settings.flask_server.stop()
+        dprint("Terminated flask server instance.", origin=L_WEB_INTERFACE)
+    if global_settings.socket_server:
+        global_settings.socket_server = None
+        dprint("Terminated web socket server instance.", origin=L_WEB_INTERFACE)
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
     dprint("Cleared temporary directories on shutdown.")
     log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN)

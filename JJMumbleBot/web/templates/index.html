@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Web Socket Testing</title>
+</head>
+<body>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Home</li>
+      </ol>
+    </nav>
+
+    <div class="container">
+        <div id="test" class="alert alert-primary">
+            No Data Available...
+        </div>
+
+
+        <form action="{{ url_for('get_message') }}" method="POST">
+            <div class="form-group">
+                <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="!command ...">
+                <small id="emailHelp" class="form-text text-muted">Send commands to JJMumbleBot from here.</small>
+                <button type="submit" class="btn btn-primary">Send Command</button>
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+        var ws = new WebSocket("ws://192.168.1.200:7001/");
+        ws.onmessage = function(e) {
+          json_data = JSON.parse(e.data)
+          document.getElementById("test").innerHTML = JSON.stringify(json_data);
+          console.log(json_data);
+        }
+
+        $(document).ready(function() {
+            $('form').on('submit', function(event) {
+                $.ajax({
+                    data: {
+                        commandInput: $('#commandInput').val()
+                    },
+                    type: 'POST',
+                    url: '/command'
+                })
+            this.reset();
+            event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

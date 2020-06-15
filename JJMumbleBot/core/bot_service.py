@@ -64,6 +64,12 @@ class BotService:
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data()
         BotService.initialize_mumble(mumble_login_data)
+        # Initialize web interface
+        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE):
+            from JJMumbleBot.web import web_helper
+            web_helper.initialize_web()
+        rprint(global_settings.flask_server)
+        rprint(global_settings.socket_server)
         # Start runtime loop.
         BotService.loop()
 
@@ -78,7 +84,8 @@ class BotService:
         global_settings.mumble_inst.is_ready()
         if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
             global_settings.mumble_inst.users.myself.register()
-        global_settings.mumble_inst.users.myself.comment(f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
+        global_settings.mumble_inst.users.myself.comment(
+            f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
         runtime_utils.mute()
         runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]).move_in()
 
@@ -114,6 +121,60 @@ class BotService:
                         return
                     for x, sub_item in enumerate(alias_commands):
                         sub_text = deepcopy(text)
+                        if len(item[1:].split()) > 1:
+                            sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
+                        else:
+                            sub_text.message = sub_item
+                        try:
+                            sub_command = Command(sub_item[1:].split()[0], sub_text)
+                        except IndexError:
+                            continue
+                        global_settings.cmd_queue.insert(sub_command)
+                else:
+                    # Insert command into the command queue
+                    global_settings.cmd_queue.insert(new_command)
+            else:
+                global_settings.cmd_queue.insert(new_command)
+
+        # Process commands if the queue is not empty
+        while not global_settings.cmd_queue.is_empty():
+            # Process commands in the queue
+            BotService.process_command_queue(global_settings.cmd_queue.pop())
+            sleep(runtime_settings.tick_rate)
+
+    # TODO: ALIASES DON'T WORK WITH REMOTE COMMANDS
+    @staticmethod
+    def remote_message_received(text):
+        all_commands = runtime_utils.parse_message(text)
+        if all_commands is None:
+            return
+        # Iterate through all commands provided and generate commands.
+        for i, item in enumerate(all_commands):
+            # Generate command with parameters
+            new_text = text
+            new_text.message = item
+            try:
+                new_command = Command(item[1:].split()[0], new_text)
+            except IndexError:
+                continue
+            all_aliases = aliases.get_all_aliases()
+            all_alias_names = [x[0] for x in all_aliases]
+            if len(all_aliases) != 0:
+                if new_command.command in all_alias_names:
+                    alias_item_index = all_alias_names.index(new_command.command)
+                    alias_commands = [msg.strip() for msg in all_aliases[alias_item_index][1].split('|')]
+                    if len(alias_commands) > runtime_settings.multi_cmd_limit:
+                        rprint(
+                            f"The multi-command limit was reached! "
+                            f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
+                            f"commands per line.", origin=L_COMMAND)
+                        log(WARNING,
+                            f"The multi-command limit was reached! "
+                            f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
+                            f"commands per line.", origin=L_COMMAND)
+                        return
+                    for x, sub_item in enumerate(alias_commands):
+                        sub_text = text
                         if len(item[1:].split()) > 1:
                             sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
                         else:
