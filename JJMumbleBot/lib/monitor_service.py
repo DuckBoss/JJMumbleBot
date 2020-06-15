@@ -10,12 +10,6 @@ def get_all_users():
     }
 
 
-def get_all_plugins():
-    return {
-        "plugin_names": [x for x in global_settings.bot_plugins.keys()]
-    }
-
-
 def get_hardware_info():
     return {
         "cpu_usage": f'{psutil.cpu_percent()}%',
