@@ -67,29 +67,21 @@ class BotService:
             BotServiceHelper.initialize_plugins()
             log(INFO, "Initialized all plugins.", origin=L_STARTUP)
             rprint("Initialized all plugins.", origin=L_STARTUP)
-        log(INFO, "###########################", origin=L_STARTUP)
-        rprint("###########################", origin=L_STARTUP)
-        log(INFO, "Initializing Mumble Client...", origin=L_STARTUP)
-        rprint("Initializing Mumble Client...", origin=L_STARTUP)
+        log(INFO, "########################### Initializing Mumble Client ###########################", origin=L_STARTUP)
+        rprint("########################### Initializing Mumble Client ###########################", origin=L_STARTUP)
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data()
         BotService.initialize_mumble(mumble_login_data)
-        log(INFO, "Initialized Mumble Client", origin=L_STARTUP)
-        rprint("Initialized Mumble Client", origin=L_STARTUP)
-        log(INFO, "###########################", origin=L_STARTUP)
-        rprint("###########################", origin=L_STARTUP)
+        log(INFO, "########################### Initialized Mumble Client ###########################", origin=L_STARTUP)
+        rprint("########################### Initialized Mumble Client ###########################", origin=L_STARTUP)
         # Initialize web interface
         if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE):
-            log(INFO, "Initializing Web Interface...", origin=L_WEB_INTERFACE)
-            rprint("Initializing Web Interface...", origin=L_WEB_INTERFACE)
+            log(INFO, "########################### Initializing Web Interface ###########################", origin=L_WEB_INTERFACE)
+            rprint("########################### Initializing Web Interface ###########################", origin=L_WEB_INTERFACE)
             from JJMumbleBot.web import web_helper
             web_helper.initialize_web()
-            log(INFO, "Initialized Web Interface", origin=L_WEB_INTERFACE)
-            rprint("Initialized Web Interface", origin=L_WEB_INTERFACE)
-            log(INFO, "###########################", origin=L_STARTUP)
-            rprint("###########################", origin=L_STARTUP)
-        rprint(global_settings.flask_server)
-        rprint(global_settings.socket_server)
+            log(INFO, "########################### Initialized Web Interface ###########################", origin=L_WEB_INTERFACE)
+            rprint("########################### Initialized Web Interface ###########################", origin=L_WEB_INTERFACE)
         # Start runtime loop.
         BotService.loop()
 
