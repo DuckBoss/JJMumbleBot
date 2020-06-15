@@ -60,10 +60,14 @@ def get_system_info():
 
 @web_app.route("/", methods=['GET', 'POST'])
 def main():
-    return render_template('index.html',
-                           server_ip=global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP],
-                           server_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]),
-                           socket_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]))
+    return render_template(
+        'index.html',
+        server_ip=global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP],
+        server_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]),
+        socket_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]),
+        command_token=global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN],
+        plugins=list(global_settings.bot_plugins)
+    )
 
 
 def start_flask_server():
