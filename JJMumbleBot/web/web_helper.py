@@ -71,13 +71,13 @@ def main():
 
 
 def start_flask_server():
-    global_settings.flask_server = WSGIServer(("0.0.0.0", int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT])),
+    global_settings.flask_server = WSGIServer((global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP], int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT])),
                                               web_app, log=None)
     global_settings.flask_server.serve_forever()
 
 
 def initialize_web():
-    ws = websockets.serve(send_message, "0.0.0.0", int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]),
+    ws = websockets.serve(send_message, global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP], int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]),
                           origins=None)
     asyncio.get_event_loop().run_until_complete(ws)
     global_settings.socket_server = Thread(target=asyncio.get_event_loop().run_forever, daemon=True)
