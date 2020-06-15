@@ -29,8 +29,10 @@ class BotService:
         BotServiceHelper.initialize_settings()
         # Initialize logging services.
         initialize_logging()
-        log(INFO, "###########################")
-        log(INFO, "Initializing JJMumbleBot...")
+        log(INFO, "###########################", origin=L_STARTUP)
+        rprint("###########################", origin=L_STARTUP)
+        log(INFO, "Initializing JJMumbleBot...", origin=L_STARTUP)
+        rprint("Initializing JJMumbleBot...", origin=L_STARTUP)
         # Check and classify system arguments.
         import JJMumbleBot.core.cla_classifier as cla
         cla.classify()
@@ -48,26 +50,43 @@ class BotService:
         dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR])
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/audio')
-        log(INFO, "Initialized temporary directories.")
+        log(INFO, "Initialized Temporary Directories.", origin=L_STARTUP)
+        rprint("Initialized Temporary Directories.", origin=L_STARTUP)
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
-        log(INFO, "Initialized PGUI.")
+        log(INFO, "Initialized PGUI.", origin=L_STARTUP)
+        rprint("Initialized PGUI.", origin=L_STARTUP)
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
             runtime_settings.tick_rate = 0.2
-            log(INFO, "Initialized plugins with safe mode.")
+            log(INFO, "Initialized plugins with safe mode.", origin=L_STARTUP)
+            rprint("Initialized plugins with safe mode.", origin=L_STARTUP)
         else:
             BotServiceHelper.initialize_plugins()
-            log(INFO, "Initialized all plugins.")
-        log(INFO, "###########################")
+            log(INFO, "Initialized all plugins.", origin=L_STARTUP)
+            rprint("Initialized all plugins.", origin=L_STARTUP)
+        log(INFO, "###########################", origin=L_STARTUP)
+        rprint("###########################", origin=L_STARTUP)
+        log(INFO, "Initializing Mumble Client...", origin=L_STARTUP)
+        rprint("Initializing Mumble Client...", origin=L_STARTUP)
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data()
         BotService.initialize_mumble(mumble_login_data)
+        log(INFO, "Initialized Mumble Client", origin=L_STARTUP)
+        rprint("Initialized Mumble Client", origin=L_STARTUP)
+        log(INFO, "###########################", origin=L_STARTUP)
+        rprint("###########################", origin=L_STARTUP)
         # Initialize web interface
         if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE):
+            log(INFO, "Initializing Web Interface...", origin=L_WEB_INTERFACE)
+            rprint("Initializing Web Interface...", origin=L_WEB_INTERFACE)
             from JJMumbleBot.web import web_helper
             web_helper.initialize_web()
+            log(INFO, "Initialized Web Interface", origin=L_WEB_INTERFACE)
+            rprint("Initialized Web Interface", origin=L_WEB_INTERFACE)
+            log(INFO, "###########################", origin=L_STARTUP)
+            rprint("###########################", origin=L_STARTUP)
         rprint(global_settings.flask_server)
         rprint(global_settings.socket_server)
         # Start runtime loop.
