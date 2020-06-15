@@ -1,6 +1,6 @@
-websockets
-flask
-gevent
+websockets==8.1
+Flask==1.1.2
+gevent==20.6.1
 beautifulsoup4==4.9.1
 psutil==5.7.0
 requests==2.23.0
