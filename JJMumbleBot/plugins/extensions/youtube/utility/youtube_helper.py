@@ -5,6 +5,7 @@ from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
 import requests
+from PIL import Image
 from bs4 import BeautifulSoup
 import os
 from datetime import timedelta
@@ -362,6 +363,13 @@ def play_audio():
     YoutubeHelper.is_playing = True
     runtime_utils.unmute()
     try:
+        # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
+        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/youtube/{YoutubeHelper.current_song_info['img_id']}.webp"):
+            im = Image.open(f"{dir_utils.get_temp_med_dir()}/youtube/{YoutubeHelper.current_song_info['img_id']}.webp").convert("RGB")
+            im.save(f"{dir_utils.get_temp_med_dir()}/youtube/{YoutubeHelper.current_song_info['img_id']}.jpg", "jpeg")
+            os.remove(f"{dir_utils.get_temp_med_dir()}/youtube/{YoutubeHelper.current_song_info['img_id']}.webp")
+            dprint(f"Fixed thumbnail for {YoutubeHelper.current_song_info['img_id']}", origin=L_GENERAL)
+
         GS.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/youtube",
                                      f"{YoutubeHelper.current_song_info['img_id']}",
                                      caption=f"Now playing: {YoutubeHelper.current_song_info['main_title']} "
