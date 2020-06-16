@@ -56,6 +56,8 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 ## Documentation 📝 
 <b> Please check out the wiki for documentation </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">https://github.com/DuckBoss/JJMumbleBot/wiki</a> <br>
+<b> F.A.Q - Solve common issues easily </b> <br>
+<a href="https://github.com/DuckBoss/JJMumbleBot/wiki/F.A.Q.">https://github.com/DuckBoss/JJMumbleBot/wiki/F.A.Q.</a> <br>
 <b> Requirements: </b> <br>
 <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Requirements">https://github.com/DuckBoss/JJMumbleBot/wiki/Requirements</a> <br>
 <b> Quick Start guide: </b> <br>
