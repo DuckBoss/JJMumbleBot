@@ -101,6 +101,15 @@ class Plugin(PluginBase):
             settings.radio_link = next(settings.radio_pool)
             radio_utility.play_audio()
 
+        elif command == "rnew":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
+                return
+            settings.radio_link = message_parse[1]
+            radio_utility.play_audio()
+            return
+
         elif command == "rsong":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
