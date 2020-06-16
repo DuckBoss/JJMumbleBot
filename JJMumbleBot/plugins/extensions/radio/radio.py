@@ -51,6 +51,17 @@ class Plugin(PluginBase):
         if command == "rdefault":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
             radio_utility.stop_audio()
             settings.radio_pool = cycle(settings.all_radio_links)
             settings.radio_link = next(settings.radio_pool)
@@ -97,6 +108,17 @@ class Plugin(PluginBase):
         elif command == "rnext":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
             radio_utility.stop_audio()
             settings.radio_link = next(settings.radio_pool)
             radio_utility.play_audio()
@@ -106,12 +128,25 @@ class Plugin(PluginBase):
                 return
             if len(message_parse) < 2:
                 return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
             settings.radio_link = message_parse[1]
             radio_utility.play_audio()
             return
 
         elif command == "rsong":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if not settings.is_playing:
                 return
             try:
                 url = settings.radio_link  # radio stream
