@@ -30,13 +30,12 @@ class BotService:
         BotServiceHelper.initialize_settings()
         # Initialize logging services.
         initialize_logging()
-        log(INFO, "###########################", origin=L_STARTUP)
-        rprint("###########################", origin=L_STARTUP)
-        log(INFO, "Initializing JJMumbleBot...", origin=L_STARTUP)
-        rprint("Initializing JJMumbleBot...", origin=L_STARTUP)
         # Check and classify system arguments.
         import JJMumbleBot.core.cla_classifier as cla
         cla.classify()
+
+        log(INFO, "######### Initializing JJMumbleBot #########", origin=L_STARTUP)
+        rprint("######### Initializing JJMumbleBot #########", origin=L_STARTUP)
         # Initialize up-time tracking.
         runtime_helper.start_time = datetime.now()
         # Set maximum multi-command limit.
