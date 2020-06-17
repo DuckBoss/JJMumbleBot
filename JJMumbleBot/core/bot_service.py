@@ -200,4 +200,5 @@ class BotService:
     @staticmethod
     def stop():
         import sys
+        global_settings.mumble_inst.stop()
         sys.exit(0)
