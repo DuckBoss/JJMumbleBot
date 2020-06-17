@@ -89,14 +89,14 @@
       </div>
       <br>
       <div class='snippet-text'>
-        <p>Enter the web server IP here.</p>
+        <p>Enter the port of the web server for the main web interface page.</p>
         <b>[Example: 7000]</b><br>
         <label for='web-interface-server-port-input'>Web Server Port:</label><br>
         <input type="number" id="web-interface-server-port" name='web-interface-server-port-input' class='required' required>
       </div>
       <br>
       <div class='snippet-text'>
-        <p>Enter the web server IP here.</p>
+        <p>Enter the port of the web socket on the web interface providing live data.</p>
         <b>[Example: 7001]</b><br>
         <label for='web-interface-socket-port-input'>Web Socket Port:</label><br>
         <input type="number" id="web-interface-socket-port" name='web-interface-socket-port-input' class='required' required>
@@ -105,14 +105,14 @@
     <h3>Media Directories</h3>
     <div class='snippet-item'>
       <div class='snippet-text'>
-        <p>Enter the bot owner's display name here. The bot must have at least 1 super user to be able to control all bot commands.</p>
+        <p>Temporary media directory to store youtube thumbnails and other images content. This directory is cleared when the bot exits.</p>
         <b>[Example: path/to/temp_media_dir]</b><br>
         <label for='media-temp-path-input'>Temporary Media Directory Path:</label><br>
         <input type="text" id="media-temp-path" name='media-temp-path-input' class='required' size='100' required>
       </div>
       <br>
       <div class='snippet-text'>
-        <p>The default comment associated with the bot that is shown to users when they view the bot's comment. This can be left blank.</p>
+        <p>Permanent media directory to store sound board clips, and other media that won't be deleted when the bot exits.</p>
         <b>[Example: path/to/perm_media_dir]</b><br>
         <label for='media-perm-path-input'>Permanent Media Directory Path:</label><br>
         <input type="text" id="media-perm-path" name='media-perm-path-input ' class='required' size='100' required>
