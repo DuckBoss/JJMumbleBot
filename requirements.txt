@@ -3,7 +3,7 @@ Flask==1.1.2
 gevent==20.6.2
 beautifulsoup4==4.9.1
 psutil==5.7.0
-requests==2.23.0
+requests==2.24.0
 Pillow==7.1.2
 youtube-dl==2020.6.16.1
 pymumble==1.2
