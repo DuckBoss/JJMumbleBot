@@ -20,6 +20,7 @@ web_app.config['SECRET_KEY'] = urandom(16)
 
 
 async def send_message(websocket, path):
+    web_tick_rate = float(global_settings.cfg[C_WEB_SETTINGS][P_WEB_TICK_RATE])
     try:
         while True:
             # web_data = monitor_service.get_hardware_info()
@@ -27,9 +28,10 @@ async def send_message(websocket, path):
             web_data = {"cur_time": str(datetime.now()).split('.')[0]}
             web_data.update({"bot_uptime": f'{check_up_time()}'})
             web_data.update(monitor_service.get_last_command_output())
+            web_data.update(monitor_service.get_all_online())
             packed_data = json.dumps(web_data)
             await websocket.send(packed_data)
-            await asyncio.sleep(1)
+            await asyncio.sleep(web_tick_rate)
     except websockets.ConnectionClosed:
         return
 
@@ -52,6 +54,12 @@ def post_message():
 def get_plugins():
     cmd_strings = list(global_settings.bot_plugins)
     return json.dumps({"plugins": cmd_strings})
+
+
+@web_app.route("/channels", methods=['GET'])
+def get_channels():
+    cmd_strings = monitor_service.get_all_online()
+    return cmd_strings
 
 
 @web_app.route("/system", methods=['GET'])
