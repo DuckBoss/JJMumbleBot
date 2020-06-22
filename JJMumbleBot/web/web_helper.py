@@ -11,7 +11,7 @@ from gevent.pywsgi import WSGIServer
 from threading import Thread
 from JJMumbleBot.lib import monitor_service
 from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
-from JJMumbleBot.lib.utils.runtime_utils import check_up_time
+from JJMumbleBot.lib.utils.runtime_utils import check_up_time, get_bot_name
 import json
 from os import urandom
 
@@ -79,6 +79,7 @@ def main():
         server_ip=global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP],
         server_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]),
         socket_port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT]),
+        bot_name=get_bot_name(),
         command_token=global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN],
         plugins=list(global_settings.bot_plugins)
     )

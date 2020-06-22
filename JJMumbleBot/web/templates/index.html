@@ -12,7 +12,7 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <title>JJMumbleBot Web Interface</title>
+    <title>{{ bot_name }} Web Interface</title>
 </head>
 <body>
     <nav aria-label="breadcrumb">
@@ -25,7 +25,7 @@
     <form action="{{ url_for('post_message') }}" method="POST">
         <div class="form-group">
             <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="{{ command_token }}command ...">
-            <small id="commandHelp" class="form-text text-muted">Send commands to JJMumbleBot from here.</small>
+            <small id="commandHelp" class="form-text text-muted">Send commands to {{ bot_name }} from here.</small>
             <button type="submit" class="btn btn-outline-success">Send Command</button>
             <button class="btn btn-outline-secondary generate_button" onclick="download_report()">Download Bot Report</button>
         </div>
