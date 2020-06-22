@@ -157,6 +157,14 @@ def get_all_users():
     return global_settings.mumble_inst.users
 
 
+def get_all_channels():
+    return global_settings.mumble_inst.channels
+
+
+def get_users_in_channel(channel_name):
+    return global_settings.mumble_inst.channels.find_by_name(channel_name).get_users()
+
+
 def get_version():
     return META_VERSION
 
