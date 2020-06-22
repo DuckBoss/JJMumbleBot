@@ -67,6 +67,8 @@ WebServerIP = ${document.getElementById('web-interface-ip').value}
 WebPagePort = ${document.getElementById('web-interface-server-port').value}
 ; This sets the port of the web socket on the web interface providing live data.
 WebSocketPort = ${document.getElementById('web-interface-socket-port').value}
+; This sets the tick rate of the loop that sends data to the web interface.
+WebTickRate = ${document.getElementById('web-interface-tick-rate-port').value}
 `;
 }
 

@@ -117,9 +117,13 @@ class PseudoGUI:
         if self.content is None or self.box_open:
             return
         if user is not None:
+            GS.last_command_type = f'[PRIVATE]'
+            GS.last_command_output = f'{self.content}'
             runtime_utils.msg(user, self.content)
             self.clear_display()
             return
+        GS.last_command_type = f'[PUBLIC]'
+        GS.last_command_output = f'{self.content}'
         runtime_utils.echo(channel, self.content, ignore_whisper=ignore_whisper)
         self.clear_display()
 

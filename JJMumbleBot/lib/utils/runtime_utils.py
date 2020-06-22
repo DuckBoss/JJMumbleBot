@@ -157,6 +157,14 @@ def get_all_users():
     return global_settings.mumble_inst.users
 
 
+def get_all_channels():
+    return global_settings.mumble_inst.channels
+
+
+def get_users_in_channel(channel_name):
+    return global_settings.mumble_inst.channels.find_by_name(channel_name).get_users()
+
+
 def get_version():
     return META_VERSION
 
@@ -200,7 +208,7 @@ def remove_channel():
 
 def check_up_time():
     cur_time = datetime.datetime.now() - runtime_helper.start_time
-    return f"Up-time: {str(cur_time)[:-7]}"
+    return f"{str(cur_time)[:-7]}"
 
 
 def refresh_plugins():
