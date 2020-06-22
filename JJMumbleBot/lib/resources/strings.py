@@ -30,6 +30,7 @@ P_WEB_ENABLE = 'EnableWebInterface'
 P_WEB_IP = 'WebServerIP'
 P_WEB_PAGE_PORT = 'WebPagePort'
 P_WEB_SOCK_PORT = 'WebSocketPort'
+P_WEB_TICK_RATE = 'WebTickRate'
 # Permanent Directories
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 # Temporary Directories
