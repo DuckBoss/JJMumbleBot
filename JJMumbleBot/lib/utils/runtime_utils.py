@@ -200,7 +200,7 @@ def remove_channel():
 
 def check_up_time():
     cur_time = datetime.datetime.now() - runtime_helper.start_time
-    return f"Up-time: {str(cur_time)[:-7]}"
+    return f"{str(cur_time)[:-7]}"
 
 
 def refresh_plugins():

@@ -66,7 +66,7 @@ class Plugin(PluginBase):
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             GS.gui_service.quick_gui(
-                rutils.check_up_time(),
+                f"Up-time: {rutils.check_up_time()}",
                 text_type='header',
                 box_align='left',
                 ignore_whisper=True,
