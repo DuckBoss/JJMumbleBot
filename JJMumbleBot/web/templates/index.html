@@ -29,10 +29,10 @@
             </div>
         </form>
         <br>
-        <div class="panel panel-info">
-            <div class="panel-heading">Most Recently Displayed Message</div>
+        <div class="panel panel-info" id="commandOutputPanelParent">
+            <div class="panel-heading" id="commandOutputHeader"></div>
             <div class="panel panel-info" id="commandOutputPanel">
-                <div class="panel-body" id="commandOutput">
+                <div class="panel-body" id="commandOutputData">
 
                 </div>
             </div>
@@ -71,7 +71,8 @@
         var ws = new WebSocket("ws://{{ server_ip }}:{{ socket_port }}/");
         ws.onmessage = function(e) {
           $.extend(data_storage, JSON.parse(e.data))
-          document.getElementById("commandOutput").innerHTML = data_storage["last_cmd_output"]
+          document.getElementById("commandOutputHeader").innerHTML = "Most Recent Message Output " + data_storage["last_cmd_type"]
+          document.getElementById("commandOutputData").innerHTML = data_storage["last_cmd_output"]
           // console.log(data_storage);
         }
 

@@ -19,6 +19,7 @@ def get_hardware_info():
 
 def get_last_command_output():
     return {
+        "last_cmd_type": f'{global_settings.last_command_type}',
         "last_cmd_output": f'{global_settings.last_command_output}'
     }
 
