@@ -15,7 +15,7 @@
 <body>
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page">Home</li>
+        <li class="breadcrumb-item active" aria-current="page" id="bot-uptime">Home</li>
       </ol>
     </nav>
 
@@ -29,9 +29,9 @@
             </div>
         </form>
         <br>
-        <div class="panel panel-info" id="commandOutputPanelParent">
+        <div class="container">
             <div class="panel-heading" id="commandOutputHeader"></div>
-            <div class="panel panel-info" id="commandOutputPanel">
+            <div class="panel panel-primary" id="commandOutputPanel">
                 <div class="panel-body" id="commandOutputData">
 
                 </div>
@@ -67,12 +67,16 @@
     </div>
     <script type="text/javascript">
         var data_storage = {};
+        var commandOutputHeader = null;
+        var commandOutputData = null;
+        var botUpTime = null;
 
         var ws = new WebSocket("ws://{{ server_ip }}:{{ socket_port }}/");
         ws.onmessage = function(e) {
-          $.extend(data_storage, JSON.parse(e.data))
-          document.getElementById("commandOutputHeader").innerHTML = "Most Recent Message Output " + data_storage["last_cmd_type"]
-          document.getElementById("commandOutputData").innerHTML = data_storage["last_cmd_output"]
+          $.extend(data_storage, JSON.parse(e.data));
+          commandOutputHeader.innerHTML = "Most Recent Message Output " + data_storage["last_cmd_type"];
+          commandOutputData.innerHTML = data_storage["last_cmd_output"];
+          botUpTime.innerHTML = data_storage["bot_uptime"];
           // console.log(data_storage);
         }
 
@@ -100,10 +104,17 @@
         }
 
         $(document).ready(function() {
+            commandOutputHeader = document.getElementById("commandOutputHeader");
+            commandOutputData = document.getElementById("commandOutputData");
+            botUpTime = document.getElementById("bot-uptime");
+
             fetch('http://{{ server_ip }}:{{ server_port }}/plugins')
                 .then(response => response.json())
                 .then(json => $.extend(data_storage, json));
             fetch('http://{{ server_ip }}:{{ server_port }}/system')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+            fetch('http://{{ server_ip }}:{{ server_port }}/hardware')
                 .then(response => response.json())
                 .then(json => $.extend(data_storage, json));
 

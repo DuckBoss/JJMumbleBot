@@ -11,6 +11,7 @@ from gevent.pywsgi import WSGIServer
 from threading import Thread
 from JJMumbleBot.lib import monitor_service
 from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
+from JJMumbleBot.lib.utils.runtime_utils import check_up_time
 import json
 from os import urandom
 
@@ -24,6 +25,7 @@ async def send_message(websocket, path):
             # web_data = monitor_service.get_hardware_info()
             # web_data.update(monitor_service.get_system_info())
             web_data = {"cur_time": str(datetime.now()).split('.')[0]}
+            web_data.update({"bot_uptime": f'{check_up_time()}'})
             web_data.update(monitor_service.get_last_command_output())
             packed_data = json.dumps(web_data)
             await websocket.send(packed_data)
@@ -55,6 +57,11 @@ def get_plugins():
 @web_app.route("/system", methods=['GET'])
 def get_system_info():
     return json.dumps(monitor_service.get_system_info())
+
+
+@web_app.route("/hardware", methods=['GET'])
+def get_hardware_info():
+    return json.dumps(monitor_service.get_hardware_info())
 
 
 @web_app.route("/", methods=['GET', 'POST'])
