@@ -1,0 +1,49 @@
+#commandOutputPanel {
+    text-align: center;
+    display: inline-block;
+    width:100%;
+    max-width:100%;
+    max-height:450px;
+    overflow: auto;
+}
+#commandOutputData {
+    text-align: center;
+    width:100%;
+    max-width:100%;
+}
+#commandInput {
+    background-color: #212529;
+    color: white;
+}
+.container {
+    padding: 15px;
+    width: 60%;
+    background-color: rgb(28, 30, 31);
+}
+figcaption {
+    text-decoration: underline;
+}
+.breadcrumb {
+    background-color: #212529;
+}
+.row {
+    padding: 10px;
+}
+.col-8.border.border-light {
+    padding: 10px;
+}
+.col-4.border.border-light {
+    padding: 10px;
+}
+.list-group ul{
+    font-size: small;
+    background-color: #212529;
+}
+.list-group li {
+    font-size: small;
+    background-color: #212529;
+}
+body {
+    color: rgb(218, 215, 210);
+    background-color: rgb(24, 26, 27);
+}
