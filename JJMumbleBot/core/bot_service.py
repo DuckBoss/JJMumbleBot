@@ -82,7 +82,7 @@ class BotService:
         log(INFO, "######### Initialized Mumble Client #########", origin=L_STARTUP)
         rprint("######### Initialized Mumble Client #########", origin=L_STARTUP)
         # Initialize web interface
-        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE):
+        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE) and global_settings.safe_mode is False:
             log(INFO, "######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
             rprint("######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
             from JJMumbleBot.web import web_helper
