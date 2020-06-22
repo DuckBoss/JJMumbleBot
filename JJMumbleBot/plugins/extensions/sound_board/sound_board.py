@@ -229,7 +229,7 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(
                 f"Playing sound clip: {sbu_settings.current_track}",
                 text_type='header',
-                box_align='center')
+                box_align='left')
             sbu.play_audio()
 
         elif command == "sbquiet":
@@ -289,7 +289,7 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(
                 f"Playing looping sound clip: {sbu_settings.current_track}",
                 text_type='header',
-                box_align='center')
+                box_align='left')
             sbu.play_audio()
 
         elif command == "sbloopquiet":
