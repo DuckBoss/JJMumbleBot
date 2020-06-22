@@ -121,6 +121,7 @@ class PseudoGUI:
             self.clear_display()
             return
         runtime_utils.echo(channel, self.content, ignore_whisper=ignore_whisper)
+        GS.last_command_output = self.content
         self.clear_display()
 
     def clear_display(self):

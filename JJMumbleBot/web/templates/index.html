@@ -20,7 +20,7 @@
     </nav>
 
     <div class="container">
-        <form action="{{ url_for('get_message') }}" method="POST">
+        <form action="{{ url_for('post_message') }}" method="POST">
             <div class="form-group">
                 <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="{{ command_token }}command ...">
                 <small id="emailHelp" class="form-text text-muted">Send commands to JJMumbleBot from here.</small>
@@ -28,6 +28,12 @@
                 <button class="btn btn-primary generate_button" onclick="download_report()">Download Bot Report</button>
             </div>
         </form>
+        <div class="panel panel-info">
+            <div class="panel-heading">Most Recently Displayed Message</div>
+            <div class="panel-body" id="commandOutput">
+
+            </div>
+        </div>
 
         <div class="form-group">
             {% if plugins %}
@@ -62,6 +68,7 @@
         var ws = new WebSocket("ws://{{ server_ip }}:{{ socket_port }}/");
         ws.onmessage = function(e) {
           $.extend(data_storage, JSON.parse(e.data))
+          document.getElementById("commandOutput").innerHTML = data_storage["last_cmd_output"]
           // console.log(data_storage);
         }
 

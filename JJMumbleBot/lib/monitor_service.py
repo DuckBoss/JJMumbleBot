@@ -17,6 +17,12 @@ def get_hardware_info():
     }
 
 
+def get_last_command_output():
+    return {
+        "last_cmd_output": f'{global_settings.last_command_output}'
+    }
+
+
 def get_system_info():
     uname = platform.uname()
     return {

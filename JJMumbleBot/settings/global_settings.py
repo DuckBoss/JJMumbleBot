@@ -32,5 +32,8 @@ cmd_history = None
 cmd_queue = None
 # Aliases
 aliases = {}
-# Initialized plugins.
+# Initialized Plugins.
 bot_plugins = None
+# Last Command Output
+last_command_output = ''
+
