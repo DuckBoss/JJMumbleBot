@@ -68,6 +68,21 @@ class VLCInterface:
             dprint(e)
             return False
 
+    def add_and_play_to_playlist(self, mrl=None):
+        try:
+            if mrl is None:
+                return False
+            web_resp = requests.post(
+                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=in_play&input={mrl}',
+                auth=(self.vlc_user, self.vlc_pass)
+            )
+            if web_resp.ok:
+                return True
+            return False
+        except requests.RequestException as e:
+            dprint(e)
+            return False
+
     def next_track(self) -> bool:
         try:
             web_resp = requests.post(
@@ -154,6 +169,24 @@ class VLCInterface:
                         current_json['loop'] is True and loop is False):
                     web_resp = requests.post(
                         f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_loop',
+                        auth=(self.vlc_user, self.vlc_pass)
+                    )
+                    if web_resp.ok:
+                        return True
+                    return False
+            return False
+        except requests.RequestException as e:
+            dprint(e)
+            return False
+
+    def toggle_repeat(self, repeat=True) -> bool:
+        try:
+            current_json = self.get_json()
+            if current_json:
+                if (current_json['repeat'] is False and repeat is True) or (
+                        current_json['repeat'] is True and repeat is False):
+                    web_resp = requests.post(
+                        f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_repeat',
                         auth=(self.vlc_user, self.vlc_pass)
                     )
                     if web_resp.ok:
