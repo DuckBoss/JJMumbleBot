@@ -34,6 +34,8 @@ class Plugin(PluginBase):
         if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
             if GS.vlc_interface.stop():
                 GS.audio_dni = (False, None)
+                GS.vlc_interface.toggle_repeat(repeat=False)
+                GS.vlc_interface.toggle_loop(loop=False)
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         sbu_settings.exit_flag = True
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
@@ -57,13 +59,6 @@ class Plugin(PluginBase):
                     GS.vlc_interface.toggle_loop(loop=False)
                     GS.gui_service.quick_gui("Stopped sound board audio.", text_type='header',
                                              box_align='left')
-            else:
-                rprint(
-                    f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
-                GS.gui_service.quick_gui(
-                    "An audio plugin is using the audio thread with no interruption mode enabled.",
-                    text_type='header',
-                    box_align='left')
 
         elif command == "sbvolume":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
