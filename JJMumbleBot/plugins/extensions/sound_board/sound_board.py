@@ -53,6 +53,8 @@ class Plugin(PluginBase):
             if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
                 if GS.vlc_interface.stop():
                     GS.audio_dni = (False, None)
+                    GS.vlc_interface.toggle_repeat(repeat=False)
+                    GS.vlc_interface.toggle_loop(loop=False)
                     GS.gui_service.quick_gui("Stopped sound board audio.", text_type='header',
                                              box_align='left')
             else:
@@ -67,11 +69,16 @@ class Plugin(PluginBase):
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             try:
-                vol = float(message[1:].split(' ', 1)[-1])
+                vol = float(message_parse[1])
             except IndexError:
                 GS.gui_service.quick_gui(f"Current sound board volume: {sbu_settings.volume}", text_type='header',
                                          box_align='left')
                 return
+            except ValueError:
+                GS.gui_service.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
+                                         box_align='left')
+                return
+
             if vol > 1 or vol < 0:
                 GS.gui_service.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
                                          box_align='left')
@@ -196,9 +203,10 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = random_sfx
+            GS.vlc_interface.toggle_repeat(repeat=False)
+            GS.vlc_interface.toggle_loop(loop=False)
             GS.vlc_interface.clear_playlist()
-            GS.vlc_interface.add_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav')
-            GS.vlc_interface.play()
+            GS.vlc_interface.add_and_play_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav')
             sbu.play_audio()
 
         elif command == "sb":
@@ -226,32 +234,119 @@ class Plugin(PluginBase):
                     box_align='left')
                 return False
             sbu_settings.current_track = parameter
+            GS.vlc_interface.toggle_repeat(repeat=False)
+            GS.vlc_interface.toggle_loop(loop=False)
             GS.vlc_interface.clear_playlist()
-            GS.vlc_interface.add_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav')
-            GS.vlc_interface.play()
+            GS.vlc_interface.add_and_play_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav')
             GS.gui_service.quick_gui(
                 f"Playing sound clip: {sbu_settings.current_track}",
                 text_type='header',
                 box_align='left')
             sbu.play_audio()
 
-        '''
+        elif command == "sbquiet":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
+                return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
+            # print(GS.audio_dni)
+            parameter = message_parse[1].strip()
+            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav"):
+                GS.gui_service.quick_gui(
+                    "The sound clip does not exist.",
+                    text_type='header',
+                    box_align='left')
+                return False
+            sbu_settings.current_track = parameter
+            GS.vlc_interface.toggle_repeat(repeat=False)
+            GS.vlc_interface.toggle_loop(loop=False)
+            GS.vlc_interface.clear_playlist()
+            GS.vlc_interface.add_and_play_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav')
+            sbu.play_audio()
+
+        elif command == "sbloop":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
+                return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
+            parameter = message_parse[1].strip()
+            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav"):
+                GS.gui_service.quick_gui(
+                    "The sound clip does not exist.",
+                    text_type='header',
+                    box_align='left')
+                return False
+            sbu_settings.current_track = parameter
+            GS.vlc_interface.toggle_loop(loop=False)
+            GS.vlc_interface.clear_playlist()
+            GS.vlc_interface.add_and_play_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav')
+            GS.vlc_interface.toggle_repeat(repeat=True)
+            sbu.play_audio()
+            GS.gui_service.quick_gui(
+                f"Playing looping sound clip: {sbu_settings.current_track}",
+                text_type='header',
+                box_align='left')
+
+        elif command == "sbloopquiet":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            if len(message_parse) < 2:
+                return
+            if not GS.audio_dni[0]:
+                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+            else:
+                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
+                    rprint(
+                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
+                    GS.gui_service.quick_gui(
+                        "An audio plugin is using the audio thread with no interruption mode enabled.",
+                        text_type='header',
+                        box_align='left')
+                    return
+            parameter = message_parse[1].strip()
+            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav"):
+                GS.gui_service.quick_gui(
+                    "The sound clip does not exist.",
+                    text_type='header',
+                    box_align='left')
+                return False
+            sbu_settings.current_track = parameter
+            GS.vlc_interface.toggle_loop(loop=False)
+            GS.vlc_interface.clear_playlist()
+            GS.vlc_interface.add_and_play_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav')
+            GS.vlc_interface.toggle_repeat(repeat=True)
+            sbu.play_audio()
+
         elif command == "sbseek":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
             if len(message_parse) < 2:
                 return
             if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
-                if not sbu_settings.loop_clip:
-                    try:
-                        seconds_to_skip = int(message_parse[1])
-                        sbu_settings.skip_to = seconds_to_skip
-                        sbu.play_audio()
-                    except ValueError:
-                        return
-                else:
-                    GS.gui_service.quick_gui(
-                        f"The {self.plugin_name} seek feature is currently unavailable when looping clips.",
-                        text_type='header',
-                        box_align='left')
-        '''
+                try:
+                    GS.vlc_interface.seek(int(message_parse[1]))
+                    # sbu.play_audio()
+                except ValueError:
+                    return
