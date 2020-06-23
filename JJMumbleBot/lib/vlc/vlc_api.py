@@ -107,6 +107,19 @@ class VLCInterface:
             dprint(e)
             return False
 
+    def stop(self) -> bool:
+        try:
+            web_resp = requests.post(
+                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_stop',
+                auth=(self.vlc_user, self.vlc_pass)
+            )
+            if web_resp.ok and self.clear_playlist():
+                return True
+            return False
+        except requests.RequestException as e:
+            dprint(e)
+            return False
+
     def seek(self, seconds: int = 0) -> bool:
         try:
             web_resp = requests.post(
