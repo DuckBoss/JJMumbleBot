@@ -31,8 +31,9 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        sbu.clear_audio_thread()
-        sbu.stop_audio()
+        if GS.audio_dni[1] == self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and GS.audio_dni[0] is True:
+            if GS.vlc_interface.stop():
+                GS.audio_dni = (False, None)
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         sbu_settings.exit_flag = True
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
