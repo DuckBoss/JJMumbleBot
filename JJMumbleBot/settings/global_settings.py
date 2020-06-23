@@ -22,7 +22,8 @@ debug_mode: bool = False
 quiet_mode: bool = False
 verbose_mode: bool = False
 # Audio Thread Instance
-audio_inst = None
+vlc_inst = None
+vlc_thread = None
 audio_dni = (False, None)
 # Bot State
 exit_flag: bool = False

@@ -5,7 +5,7 @@ C_MAIN_SETTINGS = 'Main Settings'
 C_WEB_SETTINGS = 'Web Interface'
 C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
-C_MEDIA_DIR = 'Media Directories'
+C_MEDIA_SETTINGS = 'Media Settings'
 C_LOGGING = 'Logging'
 # PROGRAM CONFIG PARAMETER STRINGS
 # Connection Settings
@@ -31,9 +31,11 @@ P_WEB_IP = 'WebServerIP'
 P_WEB_PAGE_PORT = 'WebPagePort'
 P_WEB_SOCK_PORT = 'WebSocketPort'
 P_WEB_TICK_RATE = 'WebTickRate'
-# Permanent Directories
+# Media Settings
+P_MEDIA_VLC_PATH = 'VLCPath'
+P_MEDIA_VLC_PASS = 'VLCPassword'
+P_MEDIA_VLC_STEREO = 'VLCStereoAudio'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
-# Temporary Directories
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
 P_CANVAS_BG_COL = 'CanvasBGColor'
