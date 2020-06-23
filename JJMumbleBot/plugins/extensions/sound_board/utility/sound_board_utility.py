@@ -48,7 +48,6 @@ def download_clip(url, name):
 
 def play_audio():
     if global_settings.audio_dni[1] == settings.sound_board_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME] and global_settings.audio_dni[0] is True:
-        global_settings.audio_dni = (True, settings.sound_board_metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         global_settings.mumble_inst.sound_output.clear_buffer()
 
         runtime_utils.unmute()
