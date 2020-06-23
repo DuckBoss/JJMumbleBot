@@ -9,7 +9,7 @@ class VLCInterface:
         self.vlc_user = web_user
         self.vlc_pass = web_pass
 
-    def get_json(self):
+    def get_status_json(self):
         try:
             web_resp = requests.get(f'http://{self.vlc_host}:{self.vlc_port}/requests/status.json',
                                     auth=(self.vlc_user, self.vlc_pass))
@@ -20,9 +20,22 @@ class VLCInterface:
             dprint(e)
             return None
 
+    def get_playlist_json(self):
+        try:
+            web_resp = requests.post(
+                f'http://{self.vlc_host}:{self.vlc_port}/requests/playlist.json',
+                auth=(self.vlc_user, self.vlc_pass)
+            )
+            if web_resp.ok:
+                return web_resp.content
+            return None
+        except requests.RequestException as e:
+            dprint(e)
+            return None
+
     def toggle_pause(self, pause=True) -> bool:
         try:
-            current_json = self.get_json()
+            current_json = self.get_status_json()
             if current_json:
                 if (current_json['state'] == 'playing' and pause is True) or (
                         current_json['state'] == 'paused' and pause is False):
@@ -39,6 +52,22 @@ class VLCInterface:
         except requests.RequestException as e:
             dprint(e)
             return False
+
+    def get_playlist(self):
+        playlist_json = self.get_playlist_json()
+        if playlist_json:
+            current_playlist = []
+            for track in playlist_json['children']['children']:
+                current_track = playlist_json['children']['children'][track]
+                current_track_dict = {
+                    "name": current_track['name'],
+                    "duration": current_track['duration'],
+                    "uri": current_track['uri'],
+                    "current": current_track['current']
+                }
+                current_playlist.append(current_track_dict)
+            return current_playlist
+        return None
 
     def clear_playlist(self) -> bool:
         try:
@@ -137,13 +166,18 @@ class VLCInterface:
 
     def seek(self, seconds: int = 0) -> bool:
         try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=seek&val={seconds}',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
+            current_json = self.get_status_json()
+            if current_json:
+                if seconds > int(current_json['length']):
+                    self.stop()
+                    return True
+                web_resp = requests.post(
+                    f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=seek&val={seconds}',
+                    auth=(self.vlc_user, self.vlc_pass)
+                )
+                if web_resp.ok:
+                    return True
+                return False
         except requests.RequestException as e:
             dprint(e)
             return False
@@ -163,7 +197,7 @@ class VLCInterface:
 
     def toggle_loop(self, loop=True) -> bool:
         try:
-            current_json = self.get_json()
+            current_json = self.get_status_json()
             if current_json:
                 if (current_json['loop'] is False and loop is True) or (
                         current_json['loop'] is True and loop is False):
@@ -181,7 +215,7 @@ class VLCInterface:
 
     def toggle_repeat(self, repeat=True) -> bool:
         try:
-            current_json = self.get_json()
+            current_json = self.get_status_json()
             if current_json:
                 if (current_json['repeat'] is False and repeat is True) or (
                         current_json['repeat'] is True and repeat is False):
@@ -203,38 +237,38 @@ class VLCStatus(VLCInterface):
         super().__init__(web_host, web_port, web_user, web_pass)
 
     def get_current_time(self):
-        vlc_json = self.get_json()
+        vlc_json = self.get_status_json()
         if vlc_json:
             return vlc_json['time']
         return None
 
     def get_track_length(self):
-        vlc_json = self.get_json()
+        vlc_json = self.get_status_json()
         if vlc_json:
             return vlc_json['length']
         return None
 
     def is_looping(self) -> bool:
-        vlc_json = self.get_json()
+        vlc_json = self.get_status_json()
         if vlc_json:
             return vlc_json['loop']
         return False
 
     def is_repeating(self) -> bool:
-        vlc_json = self.get_json()
+        vlc_json = self.get_status_json()
         if vlc_json:
             return vlc_json['repeat']
         return False
 
     def is_playing(self) -> bool:
-        vlc_json = self.get_json()
+        vlc_json = self.get_status_json()
         if vlc_json:
             if vlc_json['state'] == 'playing':
                 return True
         return False
 
     def is_paused(self) -> bool:
-        vlc_json = self.get_json()
+        vlc_json = self.get_status_json()
         if vlc_json:
             if vlc_json['state'] == 'paused':
                 return True
