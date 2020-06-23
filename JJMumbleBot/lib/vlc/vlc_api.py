@@ -62,6 +62,7 @@ class VLCInterface:
                 current_track_dict = {
                     "name": current_track['name'],
                     "duration": current_track['duration'],
+                    "track_id": current_track['id'],
                     "uri": current_track['uri'],
                     "current": current_track['current']
                 }
@@ -142,6 +143,19 @@ class VLCInterface:
         try:
             web_resp = requests.post(
                 f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_play',
+                auth=(self.vlc_user, self.vlc_pass)
+            )
+            if web_resp.ok:
+                return True
+            return False
+        except requests.RequestException as e:
+            dprint(e)
+            return False
+
+    def play_specific(self, track_id: int):
+        try:
+            web_resp = requests.post(
+                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_play&id={int(track_id)}',
                 auth=(self.vlc_user, self.vlc_pass)
             )
             if web_resp.ok:
