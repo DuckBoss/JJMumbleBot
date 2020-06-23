@@ -25,6 +25,8 @@ verbose_mode: bool = False
 vlc_inst = None
 vlc_thread = None
 audio_dni = (False, None)
+vlc_interface = None
+vlc_status = None
 # Bot State
 exit_flag: bool = False
 # Command History

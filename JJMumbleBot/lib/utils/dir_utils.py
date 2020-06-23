@@ -9,11 +9,11 @@ def get_main_dir():
 
 
 def get_temp_med_dir():
-    return global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]
+    return global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]
 
 
 def get_perm_med_dir():
-    return global_settings.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]
+    return global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]
 
 
 def clear_directory(d):

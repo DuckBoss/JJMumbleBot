@@ -55,9 +55,9 @@ class BotService:
         log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)
         rprint("######### Initialized Internal Database #########", origin=L_DATABASE)
         # Initialize major directories.
-        dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR])
-        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/images')
-        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/audio')
+        dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
+        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
+        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
         log(INFO, "Initialized Temporary Directories.", origin=L_STARTUP)
         rprint("Initialized Temporary Directories.", origin=L_STARTUP)
         # Initialize PGUI system.
