@@ -7,11 +7,9 @@ from JJMumbleBot.lib.resources.strings import C_PLUGIN_SETTINGS
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings
 from JJMumbleBot.lib.utils import runtime_utils
 import os
-import wave
 import youtube_dl
 import time
 import audioop
-import subprocess as sp
 
 
 def prepare_sb_list():
