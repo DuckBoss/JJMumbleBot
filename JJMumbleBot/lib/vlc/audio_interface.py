@@ -10,7 +10,8 @@ def create_vlc_single_instance():
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH],
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS],
             global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_STEREO, fallback=True)
-        )
+        ),
+        daemon=True
     )
     global_settings.vlc_thread.start()
 
