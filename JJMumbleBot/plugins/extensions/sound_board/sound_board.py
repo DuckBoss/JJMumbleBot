@@ -196,7 +196,7 @@ class Plugin(PluginBase):
                 return False
             sbu_settings.current_track = random_sfx
             GS.vlc_interface.clear_playlist()
-            GS.vlc_interface.add_to_playlist(mrl=sbu_settings.current_track)
+            GS.vlc_interface.add_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav')
             GS.vlc_interface.play()
             sbu.play_audio()
 
@@ -226,7 +226,7 @@ class Plugin(PluginBase):
                 return False
             sbu_settings.current_track = parameter
             GS.vlc_interface.clear_playlist()
-            GS.vlc_interface.add_to_playlist(mrl=sbu_settings.current_track)
+            GS.vlc_interface.add_to_playlist(mrl=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameter}.wav')
             GS.vlc_interface.play()
             GS.gui_service.quick_gui(
                 f"Playing sound clip: {sbu_settings.current_track}",
