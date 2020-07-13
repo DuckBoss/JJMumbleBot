@@ -232,6 +232,13 @@ class Plugin(PluginBase):
 
             YH.all_searches = YM.get_vid_list(search_term, int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]))
             search_results = YM.get_choices(YH.all_searches)
+            if not search_results:
+                GS.gui_service.quick_gui(
+                    f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>No search results found.</font>",
+                    text_type='header',
+                    box_align='left',
+                    text_align='left')
+                return
             GS.gui_service.quick_gui(
                 f"{search_results}\nWhich one would you like to play?",
                 text_type='header',
