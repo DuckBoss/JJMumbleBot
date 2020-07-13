@@ -46,10 +46,12 @@ class BotService:
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
         log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
         rprint("######### Initializing Internal Database #########", origin=L_DATABASE)
-        # Back up bot database.
-        db_backup = BotServiceHelper.backup_database()
-        log(INFO, f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
-        rprint(f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
+        # Back up internal database.
+        if global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_DB_BACKUP, fallback=False):
+            db_backup = BotServiceHelper.backup_database()
+            if db_backup:
+                log(INFO, f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
+                rprint(f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
         # Initialize bot database.
         global_settings.mumble_db = init_database()
         log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)

@@ -75,6 +75,8 @@ WebTickRate = ${document.getElementById('web-interface-tick-rate-port').value}
 function get_main_settings() {
   return `
 [Main Settings]
+; Enable or disable automatic internal database backups
+EnableDatabaseBackup = ${document.getElementById('main-settings-db-backups').value}
 ; To enable stereo output for the bot, check the box. Uncheck it to disable.
 UseStereoOutput = ${document.getElementById('main-settings-stereo').value}
 ; The execution tick rate of commands in the command queue [Must be an integer/float].
