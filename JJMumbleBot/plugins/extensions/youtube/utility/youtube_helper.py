@@ -4,6 +4,7 @@ from JJMumbleBot.lib.utils.print_utils import dprint, rprint
 from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
+from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
 import requests
 from PIL import Image
 from bs4 import BeautifulSoup
@@ -280,22 +281,20 @@ def stop_audio():
         GS.audio_dni = (False, None)
 
 
-def get_vid_list(search):
-    url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
-    req = requests.get(url)
-    html = req.text
-    soup = BeautifulSoup(html, 'html.parser')
-    all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
+def get_vid_list(search: str, max_results: int):
     search_results_list = []
-    for i in range(10):
-        search_dict = {"title": all_searches[i]['title'], 'href': all_searches[i]['href']}
-        search_results_list.append(search_dict)
+    search_results = YoutubeSearch(search, max_results=max_results).to_dict()
+    print(search_results)
+    for i in range(max_results):
+        search_results_list.append(search_results[i])
     return search_results_list
 
 
 def get_choices(all_searches):
+    if len(all_searches) == 0:
+        return None
     list_urls = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Search Results:</font><br>"
-    for i in range(10):
+    for i, item in enumerate(all_searches):
         completed_url = "https://www.youtube.com" + all_searches[i]['href']
         list_urls += f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
     return list_urls
