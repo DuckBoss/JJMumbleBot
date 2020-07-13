@@ -294,7 +294,7 @@ def get_choices(all_searches):
     if len(all_searches) == 0:
         return None
     list_urls = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Search Results:</font><br>"
-    for i in range(len(all_searches)):
+    for i, item in enumerate(all_searches):
         completed_url = "https://www.youtube.com" + all_searches[i]['href']
         list_urls += f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{completed_url}'>[{all_searches[i]['title']}]</a><br>"
     return list_urls
