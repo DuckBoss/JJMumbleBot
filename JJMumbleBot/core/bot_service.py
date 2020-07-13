@@ -17,7 +17,8 @@ from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
 from JJMumbleBot.lib import errors
-from time import sleep
+from time import sleep, time
+import audioop
 from datetime import datetime
 from copy import deepcopy
 
@@ -99,8 +100,10 @@ class BotService:
         global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id,
                                                       password=md.password, certfile=md.certificate, stereo=md.stereo)
         global_settings.mumble_inst.callbacks.set_callback('text_received', BotService.message_received)
+        global_settings.mumble_inst.callbacks.set_callback('sound_received', BotService.sound_received)
         global_settings.mumble_inst.callbacks.set_callback('connected', BotService.on_connected)
         global_settings.mumble_inst.set_codec_profile('audio')
+        global_settings.mumble_inst.set_receive_sound(True)
         global_settings.mumble_inst.start()
         global_settings.mumble_inst.is_ready()
         if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
@@ -193,8 +196,19 @@ class BotService:
         log(INFO, f"{runtime_utils.get_bot_name()} is online.", origin=L_STARTUP)
 
     @staticmethod
+    def sound_received(user, audio_chunk):
+        # print(f'user:{user}')
+        # print(f'audio:{audio_chunk}')
+        if audioop.rms(audio_chunk.pcm, 2) > 0.5 and runtime_utils.can_duck():
+            runtime_utils.duck_volume()
+            runtime_settings.duck_start = time()
+            runtime_settings.duck_end = time() + 1
+
+    @staticmethod
     def loop():
         while not global_settings.exit_flag:
+            if time() > runtime_settings.duck_end and runtime_utils.is_ducking():
+                runtime_utils.unduck_volume()
             sleep(runtime_settings.tick_rate)
         BotService.stop()
 

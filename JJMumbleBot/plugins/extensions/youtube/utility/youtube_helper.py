@@ -386,7 +386,7 @@ def play_audio():
         if GS.audio_inst:
             raw_music = GS.audio_inst.stdout.read(1024)
             if raw_music and GS.audio_inst and YoutubeHelper.is_playing:
-                GS.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, YoutubeHelper.volume))
+                GS.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, runtime_utils.get_volume()))
             else:
                 if not YoutubeHelper.autoplay:
                     YoutubeHelper.is_playing = False
