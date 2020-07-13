@@ -80,6 +80,31 @@ class Plugin(PluginBase):
                 box_align='left')
             log(INFO, f"The bot audio ducking was {'enabled' if rutils.can_duck() else 'disabled'}.", origin=L_COMMAND)
 
+        elif command == "duckvolume":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            try:
+                vol = float(message[1:].split(' ', 1)[1])
+            except IndexError:
+                GS.gui_service.quick_gui(
+                    f"Current bot ducking volume: {rutils.get_volume()}",
+                    text_type='header',
+                    box_align='left')
+                return
+            if vol > 1 or vol < 0:
+                GS.gui_service.quick_gui(
+                    "Invalid Volume Input: [0-1]",
+                    text_type='header',
+                    box_align='left')
+                return
+
+            rutils.set_duck_volume(vol)
+            GS.gui_service.quick_gui(
+                f"Set volume to {vol}",
+                text_type='header',
+                box_align='left')
+            log(INFO, f"The bot audio ducking volume was changed to {vol}.", origin=L_COMMAND)
+
         elif command == "volume":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return

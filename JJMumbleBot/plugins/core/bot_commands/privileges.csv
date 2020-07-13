@@ -4,6 +4,7 @@ log,4
 plugins,1
 volume,3
 duckaudio,3
+duckvolume,3
 make,4
 remove,4
 move,2

@@ -192,6 +192,10 @@ def set_volume(volume: float, auto=False):
     lerp_thr.start()
 
 
+def set_duck_volume(volume: float):
+    runtime_settings.ducking_volume = volume
+
+
 def set_volume_fast(volume: float, auto=False):
     if not auto:
         runtime_settings.last_volume = volume
