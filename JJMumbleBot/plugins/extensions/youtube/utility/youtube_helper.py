@@ -4,6 +4,7 @@ from JJMumbleBot.lib.utils.print_utils import dprint, rprint
 from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
+from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
 import requests
 from PIL import Image
 from bs4 import BeautifulSoup
@@ -281,18 +282,11 @@ def stop_audio():
 
 
 def get_vid_list(search: str, max_results: int):
-    url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
-    req = requests.get(url)
-    html = req.text
-    soup = BeautifulSoup(html, 'html.parser')
-    all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
     search_results_list = []
+    search_results = YoutubeSearch(search, max_results=max_results).to_dict()
+    print(search_results)
     for i in range(max_results):
-        try:
-            search_dict = {"title": all_searches[i]['title'], 'href': all_searches[i]['href']}
-        except IndexError:
-            continue
-        search_results_list.append(search_dict)
+        search_results_list.append(search_results[i])
     return search_results_list
 
 
