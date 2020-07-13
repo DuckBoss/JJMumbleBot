@@ -280,15 +280,18 @@ def stop_audio():
         GS.audio_dni = (False, None)
 
 
-def get_vid_list(search):
+def get_vid_list(search: str, max_results: int):
     url = "https://www.youtube.com/results?search_query=" + search.replace(" ", "+")
     req = requests.get(url)
     html = req.text
     soup = BeautifulSoup(html, 'html.parser')
     all_searches = soup.findAll(attrs={'class': 'yt-uix-tile-link'})
     search_results_list = []
-    for i in range(10):
-        search_dict = {"title": all_searches[i]['title'], 'href': all_searches[i]['href']}
+    for i in range(max_results):
+        try:
+            search_dict = {"title": all_searches[i]['title'], 'href': all_searches[i]['href']}
+        except IndexError:
+            continue
         search_results_list.append(search_dict)
     return search_results_list
 
