@@ -201,13 +201,13 @@ def get_ducking_volume():
 
 
 def set_duck_threshold(threshold: float):
-    if threshold < 0 or threshold > 1:
+    if threshold < 0:
         return
     runtime_settings.ducking_threshold = threshold
 
 
 def set_ducking_delay(delay: float):
-    if delay < 0 or delay > 1:
+    if delay < 0 or delay > 5:
         return
     runtime_settings.ducking_delay = delay
 

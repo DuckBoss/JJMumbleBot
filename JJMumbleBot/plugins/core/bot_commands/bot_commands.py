@@ -91,9 +91,9 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return
-            if threshold > 1 or threshold < 0:
+            if threshold < 0:
                 GS.gui_service.quick_gui(
-                    "Invalid Ducking Threshold Input: [0-1]",
+                    "Invalid Ducking Threshold Input: [Must be greater than 0]",
                     text_type='header',
                     box_align='left')
                 return
@@ -116,9 +116,9 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 return
-            if delay > 1 or delay < 0:
+            if delay > 5 or delay < 0:
                 GS.gui_service.quick_gui(
-                    "Invalid Ducking Delay Input: [0-1]",
+                    "Invalid Ducking Delay Input: [0-5]",
                     text_type='header',
                     box_align='left')
                 return
