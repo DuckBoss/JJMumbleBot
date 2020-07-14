@@ -196,6 +196,10 @@ def set_duck_volume(volume: float):
     runtime_settings.ducking_volume = volume
 
 
+def get_ducking_volume():
+    return runtime_settings.ducking_volume
+
+
 def set_volume_fast(volume: float, auto=False):
     if not auto:
         runtime_settings.last_volume = volume

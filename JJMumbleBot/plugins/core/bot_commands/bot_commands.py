@@ -87,7 +87,7 @@ class Plugin(PluginBase):
                 vol = float(message[1:].split(' ', 1)[1])
             except IndexError:
                 GS.gui_service.quick_gui(
-                    f"Current bot ducking volume: {rutils.get_volume()}",
+                    f"Current bot ducking volume: {rutils.get_ducking_volume()}",
                     text_type='header',
                     box_align='left')
                 return
