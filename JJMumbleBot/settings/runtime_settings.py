@@ -28,6 +28,8 @@ is_ducking: bool = False
 duck_start: float = 0.0
 duck_end: float = 0.0
 ducking_volume: float = 0.05
+ducking_threshold: float = 0.5
+ducking_delay: float = 1
 last_volume: float = 0.3
 volume: float = 0.3
 

@@ -80,6 +80,56 @@ class Plugin(PluginBase):
                 box_align='left')
             log(INFO, f"The bot audio ducking was {'enabled' if rutils.can_duck() else 'disabled'}.", origin=L_COMMAND)
 
+        elif command == "duckthreshold":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            try:
+                threshold = float(message[1:].split(' ', 1)[1])
+            except IndexError:
+                GS.gui_service.quick_gui(
+                    f"Current bot ducking threshold: {rutils.get_ducking_threshold()}",
+                    text_type='header',
+                    box_align='left')
+                return
+            if threshold > 1 or threshold < 0:
+                GS.gui_service.quick_gui(
+                    "Invalid Ducking Threshold Input: [0-1]",
+                    text_type='header',
+                    box_align='left')
+                return
+
+            rutils.set_duck_threshold(threshold)
+            GS.gui_service.quick_gui(
+                f"Set ducking threshold to {threshold}",
+                text_type='header',
+                box_align='left')
+            log(INFO, f"The bot audio ducking threshold was changed to {threshold}.", origin=L_COMMAND)
+
+        elif command == "duckdelay":
+            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                return
+            try:
+                delay = float(message[1:].split(' ', 1)[1])
+            except IndexError:
+                GS.gui_service.quick_gui(
+                    f"Current bot ducking delay: {rutils.get_ducking_delay()}",
+                    text_type='header',
+                    box_align='left')
+                return
+            if delay > 1 or delay < 0:
+                GS.gui_service.quick_gui(
+                    "Invalid Ducking Delay Input: [0-1]",
+                    text_type='header',
+                    box_align='left')
+                return
+
+            rutils.set_ducking_delay(delay)
+            GS.gui_service.quick_gui(
+                f"Set ducking delay to {delay}",
+                text_type='header',
+                box_align='left')
+            log(INFO, f"The bot audio ducking delay was changed to {delay}.", origin=L_COMMAND)
+
         elif command == "duckvolume":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return

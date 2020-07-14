@@ -199,10 +199,10 @@ class BotService:
     def sound_received(user, audio_chunk):
         # print(f'user:{user}')
         # print(f'audio:{audio_chunk}')
-        if audioop.rms(audio_chunk.pcm, 2) > 0.5 and runtime_utils.can_duck():
+        if audioop.rms(audio_chunk.pcm, 2) > runtime_utils.get_ducking_threshold() and runtime_utils.can_duck():
             runtime_utils.duck_volume()
             runtime_settings.duck_start = time()
-            runtime_settings.duck_end = time() + 1
+            runtime_settings.duck_end = time() + runtime_utils.get_ducking_delay()
 
     @staticmethod
     def loop():

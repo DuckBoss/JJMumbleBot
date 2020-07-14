@@ -200,6 +200,26 @@ def get_ducking_volume():
     return runtime_settings.ducking_volume
 
 
+def set_duck_threshold(threshold: float):
+    if threshold < 0 or threshold > 1:
+        return
+    runtime_settings.ducking_threshold = threshold
+
+
+def set_ducking_delay(delay: float):
+    if delay < 0 or delay > 1:
+        return
+    runtime_settings.ducking_delay = delay
+
+
+def get_ducking_threshold():
+    return runtime_settings.ducking_threshold
+
+
+def get_ducking_delay():
+    return runtime_settings.ducking_delay
+
+
 def set_volume_fast(volume: float, auto=False):
     if not auto:
         runtime_settings.last_volume = volume
