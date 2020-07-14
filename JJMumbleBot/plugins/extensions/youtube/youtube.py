@@ -27,7 +27,6 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
         YH.yt_metadata = self.metadata
-        YH.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_YT_DEF_VOL])
         YH.max_queue_size = int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_QUE_LEN])
         YH.max_track_duration = int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])
         YH.autoplay = self.metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_AUTO_PLAY, fallback=True)
