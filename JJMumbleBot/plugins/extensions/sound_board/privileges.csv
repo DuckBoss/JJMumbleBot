@@ -1,7 +1,6 @@
 command,level
 sb,2
 sbquiet,3
-sbvolume,3
 sbrandom,3
 sbloop,3
 sbloopquiet,3
