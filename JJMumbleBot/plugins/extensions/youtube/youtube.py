@@ -199,7 +199,6 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left')
                     return
-
             try:
                 search_term = message_parse[1]
             except IndexError:
