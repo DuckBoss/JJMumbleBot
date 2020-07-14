@@ -62,27 +62,6 @@ class Plugin(PluginBase):
                                          box_align='left')
                 return
 
-        elif command == "ttsv":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            try:
-                vol = float(message[1:].split(' ', 1)[1])
-            except IndexError:
-                GS.gui_service.quick_gui(f"Current text to speech volume: {tts_settings.volume}", text_type='header',
-                                         box_align='left')
-                return
-            if vol > 1:
-                GS.gui_service.quick_gui("Invalid text to speech volume Input: [0-1]", text_type='header',
-                                         box_align='left')
-                return
-            if vol < 0:
-                GS.gui_service.quick_gui("Invalid text to speech volume Input: [0-1]", text_type='header',
-                                         box_align='left')
-                return
-            tts_settings.volume = vol
-            GS.gui_service.quick_gui(f"Set text to speech volume to {tts_settings.volume}", text_type='header',
-                                     box_align='left')
-
         elif command == "ttslist":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
