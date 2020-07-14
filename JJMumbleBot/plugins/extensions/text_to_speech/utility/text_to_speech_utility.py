@@ -140,7 +140,7 @@ def play_audio(mode=1):
         if global_settings.audio_inst:
             raw_music = global_settings.audio_inst.stdout.read(480)
             if raw_music and global_settings.audio_inst:
-                global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, settings.volume))
+                global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, runtime_utils.get_volume()))
             else:
                 stop_audio()
                 settings.is_playing = False

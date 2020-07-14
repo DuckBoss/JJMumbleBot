@@ -27,7 +27,6 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
         YH.yt_metadata = self.metadata
-        YH.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_YT_DEF_VOL])
         YH.max_queue_size = int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_QUE_LEN])
         YH.max_track_duration = int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])
         YH.autoplay = self.metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_AUTO_PLAY, fallback=True)
@@ -184,31 +183,6 @@ class Plugin(PluginBase):
                 box_align='left')
             log(INFO, "The youtube queue was cleared.", origin=L_COMMAND)
 
-        elif command == "volume":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            try:
-                vol = float(message[1:].split(' ', 1)[1])
-            except IndexError:
-                GS.gui_service.quick_gui(
-                    f"Current youtube volume: {YH.volume}",
-                    text_type='header',
-                    box_align='left')
-                return
-
-            if vol > 1 or vol < 0:
-                GS.gui_service.quick_gui(
-                    "Invalid Volume Input: [0-1]",
-                    text_type='header',
-                    box_align='left')
-                return
-            YH.volume = vol
-            GS.gui_service.quick_gui(
-                f"Set volume to {YH.volume}",
-                text_type='header',
-                box_align='left')
-            log(INFO, f"The youtube audio volume was changed to {YH.volume}.", origin=L_COMMAND)
-
         elif command == "youtube":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
                 return
@@ -224,7 +198,6 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left')
                     return
-
             try:
                 search_term = message_parse[1]
             except IndexError:

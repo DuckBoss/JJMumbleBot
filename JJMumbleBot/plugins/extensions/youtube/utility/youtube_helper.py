@@ -5,7 +5,6 @@ from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
 from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
-import requests
 from PIL import Image
 from bs4 import BeautifulSoup
 import os
@@ -39,8 +38,6 @@ class YoutubeHelper:
     yt_metadata = None
     # Autoplay enabled/disabled
     autoplay = True
-    # default volume
-    volume = 0.5
     # max number of tracks in the queue.
     max_queue_size = 25
     # max track duration in seconds.
@@ -284,7 +281,6 @@ def stop_audio():
 def get_vid_list(search: str, max_results: int):
     search_results_list = []
     search_results = YoutubeSearch(search, max_results=max_results).to_dict()
-    print(search_results)
     for i in range(max_results):
         search_results_list.append(search_results[i])
     return search_results_list
@@ -386,7 +382,7 @@ def play_audio():
         if GS.audio_inst:
             raw_music = GS.audio_inst.stdout.read(1024)
             if raw_music and GS.audio_inst and YoutubeHelper.is_playing:
-                GS.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, YoutubeHelper.volume))
+                GS.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, runtime_utils.get_volume()))
             else:
                 if not YoutubeHelper.autoplay:
                     YoutubeHelper.is_playing = False

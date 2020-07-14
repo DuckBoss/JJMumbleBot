@@ -6,6 +6,8 @@ from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.resources.strings import *
 import datetime
+from threading import Thread
+from math import ceil
 
 
 def parse_message(text):
@@ -167,6 +169,91 @@ def get_users_in_channel(channel_name):
 
 def get_version():
     return META_VERSION
+
+
+def get_volume():
+    return ceil(runtime_settings.volume * 100) / 100.0
+
+
+def lerp_volume(cur_vol, targ_vol, lerp_time):
+    import time
+    cur_time = 0
+    while cur_time < 1:
+        runtime_settings.volume = cur_vol + cur_time * (targ_vol - cur_vol)
+        cur_time += lerp_time
+        time.sleep(0.01)
+    runtime_settings.volume = ceil(runtime_settings.volume * 100) / 100.0
+
+
+def set_volume(volume: float, auto=False):
+    if not auto:
+        runtime_settings.last_volume = volume
+    lerp_thr = Thread(target=lerp_volume, args=(runtime_settings.volume, volume, 0.025), daemon=True)
+    lerp_thr.start()
+
+
+def set_duck_volume(volume: float):
+    runtime_settings.ducking_volume = volume
+
+
+def get_ducking_volume():
+    return runtime_settings.ducking_volume
+
+
+def set_duck_threshold(threshold: float):
+    if threshold < 0 or threshold > 1:
+        return
+    runtime_settings.ducking_threshold = threshold
+
+
+def set_ducking_delay(delay: float):
+    if delay < 0 or delay > 1:
+        return
+    runtime_settings.ducking_delay = delay
+
+
+def get_ducking_threshold():
+    return runtime_settings.ducking_threshold
+
+
+def get_ducking_delay():
+    return runtime_settings.ducking_delay
+
+
+def set_volume_fast(volume: float, auto=False):
+    if not auto:
+        runtime_settings.last_volume = volume
+    runtime_settings.volume = volume
+
+
+def set_last_volume(volume: float):
+    runtime_settings.last_volume = volume
+
+
+def duck_volume():
+    if not is_ducking():
+        runtime_settings.is_ducking = True
+        set_volume(runtime_settings.ducking_volume, auto=True)
+
+
+def unduck_volume():
+    if is_ducking():
+        runtime_settings.is_ducking = False
+        set_volume(runtime_settings.last_volume, auto=True)
+        runtime_settings.duck_start = 0
+        runtime_settings.duck_end = 0
+
+
+def can_duck():
+    return runtime_settings.can_duck
+
+
+def is_ducking():
+    return runtime_settings.is_ducking
+
+
+def toggle_ducking():
+    runtime_settings.can_duck = not runtime_settings.can_duck
 
 
 def get_about():
