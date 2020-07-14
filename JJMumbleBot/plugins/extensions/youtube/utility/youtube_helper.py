@@ -284,7 +284,6 @@ def stop_audio():
 def get_vid_list(search: str, max_results: int):
     search_results_list = []
     search_results = YoutubeSearch(search, max_results=max_results).to_dict()
-    print(search_results)
     for i in range(max_results):
         search_results_list.append(search_results[i])
     return search_results_list
