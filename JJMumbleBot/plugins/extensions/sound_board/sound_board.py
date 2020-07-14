@@ -26,7 +26,6 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         sbu_settings.sound_board_metadata = self.metadata
-        sbu_settings.volume = float(self.metadata[C_PLUGIN_SETTINGS][P_DEF_VOL])
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -64,24 +63,6 @@ class Plugin(PluginBase):
                 sbu.stop_audio()
                 GS.gui_service.quick_gui("Stopping sound board audio thread...", text_type='header', box_align='left')
                 return
-
-        elif command == "sbvolume":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            try:
-                vol = float(message[1:].split(' ', 1)[1])
-            except IndexError:
-                GS.gui_service.quick_gui(f"Current sound board volume: {sbu_settings.volume}", text_type='header',
-                                         box_align='left')
-                return
-            if vol > 1 or vol < 0:
-                GS.gui_service.quick_gui("Invalid sound_board volume Input: [0-1]", text_type='header',
-                                         box_align='left')
-                return
-            sbu_settings.volume = vol
-            log(INFO, f"Set {self.plugin_name} volume to {sbu_settings.volume}", origin=L_COMMAND)
-            GS.gui_service.quick_gui(f"Set {self.plugin_name} volume to {sbu_settings.volume}", text_type='header',
-                                     box_align='left')
 
         elif command == "sblist":
             if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
