@@ -6,9 +6,7 @@ class Callbacks(dict):
         super().__init__()
         '''
         self.update({
-            'on_client_connect': None,
-            'on_client_disconnect': None,
-            'on_server_start': None,
+            'on_command': on_command 
         })
         '''
 
@@ -24,7 +22,7 @@ class Callbacks(dict):
 
     def get_callback(self, callback):
         try:
-            self[callback]
+            return self[callback]
         except KeyError:
             return None
 
@@ -38,8 +36,11 @@ class CommandCallbacks(dict):
     def __init__(self):
         super().__init__()
 
-    def register_command(self, command, callback_name):
-        self[command] = callback_name
+    def register_command(self, command, plugin, callback_name):
+        if command in self:
+            return False
+        self[command] = (plugin, callback_name)
+        return True
 
     def remove_command(self, command):
         try:
@@ -48,8 +49,8 @@ class CommandCallbacks(dict):
         except KeyError:
             return False
 
-    def get_command(self, get_command):
+    def get_command(self, command):
         try:
-            self[get_command]
+            return self[command]
         except KeyError:
             return None
