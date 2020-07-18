@@ -133,6 +133,10 @@ def msg_id(receiver_id, message):
             global_settings.mumble_inst.users[user].send_text_message(message)
 
 
+def get_command_token():
+    return runtime_settings.cmd_token
+
+
 def get_bot_name():
     return global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
 
