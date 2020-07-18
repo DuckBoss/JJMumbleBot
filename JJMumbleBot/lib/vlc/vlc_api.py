@@ -46,7 +46,7 @@ class VLCInterface:
                     if web_resp.ok:
                         return True
                     return False
-                elif current_json['state'] == 'stopped':
+                if current_json['state'] == 'stopped':
                     self.play()
             return False
         except requests.RequestException as e:

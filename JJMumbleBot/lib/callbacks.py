@@ -4,11 +4,6 @@ from threading import Thread
 class Callbacks(dict):
     def __init__(self):
         super().__init__()
-        '''
-        self.update({
-            'on_command': on_command 
-        })
-        '''
 
     def register_callback(self, callback, dest):
         self[callback] = dest
