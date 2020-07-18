@@ -1,9 +1,6 @@
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.settings import global_settings
-from JJMumbleBot.lib.utils.print_utils import dprint, rprint
-from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.resources.strings import C_PLUGIN_SETTINGS
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings
 from JJMumbleBot.lib.utils import runtime_utils
 import os
@@ -42,7 +39,7 @@ def download_clip(url, name):
             ydl.prepare_filename(info_dict)
             ydl.download([url])
             return True
-    except Exception:
+    except youtube_dl.DownloadError:
         return False
 
 
