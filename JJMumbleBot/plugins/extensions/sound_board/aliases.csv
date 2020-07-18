@@ -1,0 +1,6 @@
+alias,command
+sbv,!sbvolume
+sbs,!sbstop
+sbl,!sblist
+sble,!sblist_echo
+sbr,!sbrandom
