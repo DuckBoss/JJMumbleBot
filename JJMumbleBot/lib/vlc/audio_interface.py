@@ -11,6 +11,7 @@ def create_vlc_single_instance():
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_IP],
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PORT],
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS],
+            global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_QUIET, fallback=True),
             global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_STEREO, fallback=True)
         ),
         daemon=True
@@ -18,7 +19,7 @@ def create_vlc_single_instance():
     global_settings.vlc_thread.start()
 
 
-def create_vlc_thread(vlc_path, intf_ip, intf_port, intf_pass, stereo=True):
+def create_vlc_thread(vlc_path, intf_ip, intf_port, intf_pass, quiet=True, stereo=True):
     import subprocess as sp
     if stereo:
         global_settings.vlc_inst = sp.Popen(
@@ -26,7 +27,7 @@ def create_vlc_thread(vlc_path, intf_ip, intf_port, intf_pass, stereo=True):
                           '--http-host', f'{intf_ip}',
                           '--http-port', f'{intf_port}',
                           '--http-password', f'{intf_pass}',
-                          '--quiet',
+                          f'{"--quiet" if quiet else ""}',
                           '--one-instance',
                           '--sout',
                           '#transcode{acodec=s16le, channels=2, '
@@ -39,7 +40,7 @@ def create_vlc_thread(vlc_path, intf_ip, intf_port, intf_pass, stereo=True):
                           '--http-host', f'{intf_ip}',
                           '--http-port', f'{intf_port}',
                           '--http-password', f'{intf_pass}',
-                          '--quiet',
+                          f'{"--quiet" if quiet else ""}',
                           '--one-instance',
                           '--sout',
                           '#transcode{acodec=s16le, channels=2, '
