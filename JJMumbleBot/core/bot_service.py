@@ -68,8 +68,18 @@ class BotService:
         log(INFO, "Initialized PGUI.", origin=L_STARTUP)
         rprint("Initialized PGUI.", origin=L_STARTUP)
         # Initialize VLC interface.
-        global_settings.vlc_interface = VLCInterface("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
-        global_settings.vlc_status = VLCStatus("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
+        global_settings.vlc_interface = VLCInterface(
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_IP],
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PORT],
+            "",
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS]
+        )
+        global_settings.vlc_status = VLCStatus(
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_IP],
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PORT],
+            "",
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS]
+        )
         create_vlc_single_instance()
         # Initialize plugins.
         if global_settings.safe_mode:
