@@ -38,6 +38,7 @@ class BotServiceHelper:
         runtime_settings.max_logs = global_settings.cfg[C_LOGGING][P_LOG_MAX]
         runtime_settings.cmd_queue_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_QUEUE_LIM])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_HIST_LIM])
+        runtime_settings.can_duck = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_DUCK, fallback=False)
         if len(runtime_settings.cmd_token) != 1:
             rprint("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
             runtime_settings.cmd_token = '!'

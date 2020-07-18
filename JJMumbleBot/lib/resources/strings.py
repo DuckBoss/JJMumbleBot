@@ -37,6 +37,7 @@ P_MEDIA_VLC_IP = 'VLCServerIP'
 P_MEDIA_VLC_PORT = 'VLCServerPort'
 P_MEDIA_VLC_PASS = 'VLCPassword'
 P_MEDIA_VLC_STEREO = 'VLCStereoAudio'
+P_MEDIA_VLC_DUCK = 'VLCAudioDuck'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
