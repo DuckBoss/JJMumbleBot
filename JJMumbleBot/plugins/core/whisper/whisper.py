@@ -201,7 +201,7 @@ class Plugin(PluginBase):
             return
 
     def cmd_setwhisperme(self, data):
-        data_actor = GS.mumble_inst.users[data.actor]['name']
+        data_actor = GS.mumble_inst.users[data.actor]
         if data_actor == GS.cfg[C_CONNECTION_SETTINGS][P_USER_ID]:
             log(INFO, "I can't set the whisper target to myself!", origin=L_COMMAND)
             return
