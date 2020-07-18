@@ -133,7 +133,7 @@ class Plugin(PluginBase):
                 rprint(
                     f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
                 GS.gui_service.quick_gui(
-                    "An audio plugin is using the audio thread with no interruption mode enabled.",
+                    f"An audio plugin({GS.audio_dni[1]}) is using the audio thread with no interruption mode enabled.",
                     text_type='header',
                     box_align='left')
                 return
@@ -168,7 +168,7 @@ class Plugin(PluginBase):
                 rprint(
                     f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
                 GS.gui_service.quick_gui(
-                    "An audio plugin is using the audio thread with no interruption mode enabled.",
+                    f"An audio plugin({GS.audio_dni[1]}) is using the audio thread with no interruption mode enabled.",
                     text_type='header',
                     box_align='left')
                 return
@@ -203,7 +203,7 @@ class Plugin(PluginBase):
                 rprint(
                     f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
                 GS.gui_service.quick_gui(
-                    "An audio plugin is using the audio thread with no interruption mode enabled.",
+                    f"An audio plugin({GS.audio_dni[1]}) is using the audio thread with no interruption mode enabled.",
                     text_type='header',
                     box_align='left')
                 return
@@ -234,7 +234,7 @@ class Plugin(PluginBase):
                 rprint(
                     f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
                 GS.gui_service.quick_gui(
-                    "An audio plugin is using the audio thread with no interruption mode enabled.",
+                    f"An audio plugin({GS.audio_dni[1]}) is using the audio thread with no interruption mode enabled.",
                     text_type='header',
                     box_align='left')
                 return
@@ -268,7 +268,7 @@ class Plugin(PluginBase):
                 rprint(
                     f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
                 GS.gui_service.quick_gui(
-                    "An audio plugin is using the audio thread with no interruption mode enabled.",
+                    f"An audio plugin({GS.audio_dni[1]}) is using the audio thread with no interruption mode enabled.",
                     text_type='header',
                     box_align='left')
                 return
