@@ -87,12 +87,6 @@ def play_audio():
                 if raw_music and global_settings.vlc_inst:
                     global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, runtime_utils.get_volume()))
                 else:
-                    global_settings.vlc_interface.stop()
-                    global_settings.audio_dni = (False, None)
-                    global_settings.vlc_interface.toggle_repeat(repeat=False)
-                    global_settings.vlc_interface.toggle_loop(loop=False)
-                    global_settings.gui_service.quick_gui("Stopped text to speech audio.", text_type='header',
-                                             box_align='left')
                     return
             else:
                 return
