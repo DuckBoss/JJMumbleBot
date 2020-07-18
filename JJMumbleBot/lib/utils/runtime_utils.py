@@ -1,6 +1,5 @@
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
-from JJMumbleBot.lib.helpers import runtime_helper
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
@@ -49,31 +48,31 @@ def parse_message(text):
 
 
 def mute():
-    if runtime_helper.muted:
+    if runtime_settings.muted:
         return
     global_settings.mumble_inst.users.myself.mute()
-    runtime_helper.muted = True
+    runtime_settings.muted = True
     return
 
 
 def unmute():
-    if not runtime_helper.muted:
+    if not runtime_settings.muted:
         return
     global_settings.mumble_inst.users.myself.unmute()
-    runtime_helper.muted = False
+    runtime_settings.muted = False
     return
 
 
 def echo(channel, message_text, ignore_whisper=False):
     if channel is None:
         return
-    if runtime_helper.whisper_target is not None and not ignore_whisper:
-        if runtime_helper.whisper_target["type"] == 0:
-            global_settings.mumble_inst.channels[runtime_helper.whisper_target["id"]].send_text_message(message_text)
-        elif runtime_helper.whisper_target["type"] == 1:
-            msg_id(runtime_helper.whisper_target["id"], message_text)
-        elif runtime_helper.whisper_target["type"] == 2:
-            for person in runtime_helper.whisper_target["id"]:
+    if runtime_settings.whisper_target is not None and not ignore_whisper:
+        if runtime_settings.whisper_target["type"] == 0:
+            global_settings.mumble_inst.channels[runtime_settings.whisper_target["id"]].send_text_message(message_text)
+        elif runtime_settings.whisper_target["type"] == 1:
+            msg_id(runtime_settings.whisper_target["id"], message_text)
+        elif runtime_settings.whisper_target["type"] == 2:
+            for person in runtime_settings.whisper_target["id"]:
                 msg_id(person, message_text)
         return
     channel.send_text_message(message_text)
@@ -82,8 +81,8 @@ def echo(channel, message_text, ignore_whisper=False):
 def set_whisper_user(username):
     for user in global_settings.mumble_inst.users:
         if global_settings.mumble_inst.users[user]['name'] == username:
-            runtime_helper.whisper_target = {"id": global_settings.mumble_inst.users[user]['session'], "type": 1}
-            global_settings.mumble_inst.sound_output.set_whisper(runtime_helper.whisper_target["id"], channel=False)
+            runtime_settings.whisper_target = {"id": global_settings.mumble_inst.users[user]['session'], "type": 1}
+            global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=False)
 
 
 def set_whisper_multi_user(users_list):
@@ -95,35 +94,35 @@ def set_whisper_multi_user(users_list):
             whisper_targets.append(global_settings.mumble_inst.users[user]['session'])
     if len(whisper_targets) < 1:
         return
-    runtime_helper.whisper_target = {"id": whisper_targets, "type": 2}
-    global_settings.mumble_inst.sound_output.set_whisper(runtime_helper.whisper_target["id"], channel=False)
+    runtime_settings.whisper_target = {"id": whisper_targets, "type": 2}
+    global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=False)
 
 
 def set_whisper_channel(channel_name):
     channel_id = get_channel(channel_name)['channel_id']
-    runtime_helper.whisper_target = {"id": channel_id, "type": 0}
-    global_settings.mumble_inst.sound_output.set_whisper(runtime_helper.whisper_target["id"], channel=True)
+    runtime_settings.whisper_target = {"id": channel_id, "type": 0}
+    global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=True)
 
 
 def get_whisper_clients_by_type(wh_type: int):
-    if runtime_helper.whisper_target is None:
+    if runtime_settings.whisper_target is None:
         return None
     if wh_type == 0:
-        return global_settings.mumble_inst.channels[runtime_helper.whisper_target['id']]['name']
+        return global_settings.mumble_inst.channels[runtime_settings.whisper_target['id']]['name']
     if wh_type == 1:
         for user in global_settings.mumble_inst.users:
-            if global_settings.mumble_inst.users[user]['session'] == runtime_helper.whisper_target['id']:
+            if global_settings.mumble_inst.users[user]['session'] == runtime_settings.whisper_target['id']:
                 return global_settings.mumble_inst.users[user]['name']
     else:
         user_list = []
         for user in global_settings.mumble_inst.users:
-            if global_settings.mumble_inst.users[user]['session'] == runtime_helper.whisper_target['id']:
+            if global_settings.mumble_inst.users[user]['session'] == runtime_settings.whisper_target['id']:
                 user_list.append(global_settings.mumble_inst.users[user]['name'])
         return user_list
 
 
 def clear_whisper():
-    runtime_helper.whisper_target = None
+    runtime_settings.whisper_target = None
     global_settings.mumble_inst.sound_output.remove_whisper()
 
 
@@ -303,7 +302,7 @@ def remove_channel():
 
 
 def check_up_time():
-    cur_time = datetime.datetime.now() - runtime_helper.start_time
+    cur_time = datetime.datetime.now() - runtime_settings.start_time
     return f"{str(cur_time)[:-7]}"
 
 
@@ -346,10 +345,15 @@ def exit_bot():
         plugin.quit()
     if global_settings.flask_server:
         global_settings.flask_server.stop()
-        dprint("Terminated flask server instance.", origin=L_WEB_INTERFACE)
+        dprint("Terminated flask server instance.", origin=L_SHUTDOWN)
     if global_settings.socket_server:
         global_settings.socket_server = None
-        dprint("Terminated web socket server instance.", origin=L_WEB_INTERFACE)
+        dprint("Terminated web socket server instance.", origin=L_SHUTDOWN)
+    if global_settings.vlc_inst:
+        global_settings.vlc_inst.kill()
+        global_settings.vlc_inst = None
+        global_settings.vlc_interface = None
+        dprint("Terminated vlc web interface instance.", origin=L_SHUTDOWN)
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
     dprint("Cleared temporary directories on shutdown.")
     log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN)

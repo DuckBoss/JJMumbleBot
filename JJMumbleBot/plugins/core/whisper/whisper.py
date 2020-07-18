@@ -3,7 +3,7 @@ from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib.utils import runtime_utils as rutils
-from JJMumbleBot.lib.helpers import runtime_helper
+from JJMumbleBot.settings import runtime_settings as RS
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.resources.strings import *
 
@@ -25,29 +25,29 @@ class Plugin(PluginBase):
 
     def cmd_getwhisper(self, data):
         data_actor = GS.mumble_inst.users[data.actor]
-        if runtime_helper.whisper_target is None:
+        if RS.whisper_target is None:
             GS.gui_service.quick_gui("There is no whisper target set", text_type='header',
                                      box_align='left', user=data_actor['name'],
                                      ignore_whisper=True)
             return
-        if runtime_helper.whisper_target["type"] == 0:
-            ch = GS.mumble_inst.channels[runtime_helper.whisper_target['id']]['name']
+        if RS.whisper_target["type"] == 0:
+            ch = GS.mumble_inst.channels[RS.whisper_target['id']]['name']
             GS.gui_service.quick_gui(f"Current whisper channel: {ch}", text_type='header',
                                      box_align='left', user=data_actor['name'],
                                      ignore_whisper=True)
-        elif runtime_helper.whisper_target["type"] == 1:
+        elif RS.whisper_target["type"] == 1:
             us = ""
             for user in GS.mumble_inst.users:
-                if GS.mumble_inst.users[user]['session'] == runtime_helper.whisper_target['id']:
+                if GS.mumble_inst.users[user]['session'] == RS.whisper_target['id']:
                     us = GS.mumble_inst.users[user]['name']
             GS.gui_service.quick_gui(f"Current whisper user: {us}", text_type='header',
                                      box_align='left', user=data_actor['name'],
                                      ignore_whisper=True)
-        elif runtime_helper.whisper_target["type"] == 2:
+        elif RS.whisper_target["type"] == 2:
             users = ""
             counter = 0
             for i, user in enumerate(GS.mumble_inst.users):
-                if GS.mumble_inst.users[user]['session'] in runtime_helper.whisper_target['id']:
+                if GS.mumble_inst.users[user]['session'] in RS.whisper_target['id']:
                     users += f"<br>[{counter}] - {GS.mumble_inst.users[user]['name']}"
                     counter += 1
             GS.gui_service.quick_gui(f"Current whisper users: {users}", text_type='header',
@@ -83,8 +83,8 @@ class Plugin(PluginBase):
         data_actor = GS.mumble_inst.users[data.actor]
         try:
             username = all_data[1]
-            if runtime_helper.whisper_target is not None:
-                if not isinstance(runtime_helper.whisper_target['id'], list):
+            if RS.whisper_target is not None:
+                if not isinstance(RS.whisper_target['id'], list):
                     GS.gui_service.quick_gui("<br>The current whisper mode is set to single user/channel."
                                              "<br>You can only remove a user from a multi-user whisper mode."
                                              "<br>Did you mean to use the 'clearwhisper' command?",
@@ -100,8 +100,8 @@ class Plugin(PluginBase):
                 if GS.mumble_inst.users[user]['name'] == username:
                     user_id = GS.mumble_inst.users[user]['session']
             if user_id is not None:
-                if user_id in runtime_helper.whisper_target['id']:
-                    runtime_helper.whisper_target['id'].remove(user_id)
+                if user_id in RS.whisper_target['id']:
+                    RS.whisper_target['id'].remove(user_id)
                 else:
                     GS.gui_service.quick_gui(f"Could not find user: {username} in the whisper targets.",
                                              text_type='header',
@@ -114,10 +114,10 @@ class Plugin(PluginBase):
                                          box_align='left', user=data_actor['name'],
                                          ignore_whisper=True)
                 return
-            if len(runtime_helper.whisper_target['id']) < 1:
+            if len(RS.whisper_target['id']) < 1:
                 rutils.clear_whisper()
             else:
-                rutils.set_whisper_multi_user(runtime_helper.whisper_target['id'])
+                rutils.set_whisper_multi_user(RS.whisper_target['id'])
 
             GS.gui_service.quick_gui(f"Removed user: {username} from the whisper targets.", text_type='header',
                                      box_align='left', user=data_actor['name'],
@@ -141,8 +141,8 @@ class Plugin(PluginBase):
                                          box_align='left', user=data_actor['name'],
                                          ignore_whisper=True)
                 return
-            if runtime_helper.whisper_target is not None:
-                if not isinstance(runtime_helper.whisper_target['id'], list):
+            if RS.whisper_target is not None:
+                if not isinstance(RS.whisper_target['id'], list):
                     GS.gui_service.quick_gui(
                         "<br>The current whisper mode is set to single user.<br>Use the 'setwhisperusers' command for multi-user whispers.",
                         text_type='header',
@@ -152,15 +152,15 @@ class Plugin(PluginBase):
                 return
             for user in GS.mumble_inst.users:
                 if GS.mumble_inst.users[user]['name'] == username:
-                    if GS.mumble_inst.users[user]['session'] in runtime_helper.whisper_target['id']:
+                    if GS.mumble_inst.users[user]['session'] in RS.whisper_target['id']:
                         GS.gui_service.quick_gui(
                             "<br>This user is already one of the whisper targets!",
                             text_type='header',
                             box_align='left', user=data_actor['name'], ignore_whisper=True)
                         return
 
-            runtime_helper.whisper_target['id'].append(username)
-            rutils.set_whisper_multi_user(runtime_helper.whisper_target['id'])
+            RS.whisper_target['id'].append(username)
+            rutils.set_whisper_multi_user(RS.whisper_target['id'])
             rprint(f"Added new user: {username} to the whisper targets!", origin=L_COMMAND)
             GS.gui_service.quick_gui(f"Added new user: {username} to the whisper targets!", text_type='header',
                                      box_align='left', user=data_actor['name'],
@@ -234,7 +234,7 @@ class Plugin(PluginBase):
     def cmd_clearwhisper(self, data):
         data_actor = GS.mumble_inst.users[data.actor]
         rutils.clear_whisper()
-        if runtime_helper.whisper_target is None:
+        if RS.whisper_target is None:
             rprint(f"Cleared current whisper targets")
             GS.gui_service.quick_gui(f"Cleared current whisper", text_type='header',
                                      box_align='left', user=data_actor['name'],

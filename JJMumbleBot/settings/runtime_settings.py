@@ -32,6 +32,13 @@ ducking_delay: float = 1
 last_volume: float = 0.3
 volume: float = 0.3
 
+# Whisper Target
+whisper_target = None
+# Global Mute Access
+muted = False
+# Up-Time Tracking
+start_time = 0
+
 # DIRECTORY SETTINGS
 # User Privileges Path
 user_priv_path: str = ""
