@@ -47,7 +47,7 @@ class BotServiceHelper:
     @staticmethod
     def initialize_plugins_safe():
         import sys
-        import os
+        from os import path, listdir
         from json import loads
         from JJMumbleBot.lib.resources.strings import C_PLUGIN_SETTINGS, P_PLUG_SAFE
         if not global_settings.cfg:
@@ -65,12 +65,12 @@ class BotServiceHelper:
         # Load Core Plugins
         rprint("######### Initializing Core Plugins - Safe Mode #########")
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
-        all_imports = [name for name in os.listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
-                       os.path.isdir(
-                           os.path.join(f'{dir_utils.get_main_dir()}/plugins/core', name)) and name != "__pycache__"]
+        all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
+                       path.isdir(
+                           path.join(f'{dir_utils.get_main_dir()}/plugins/core', name)) and name != "__pycache__"]
         for p_file in all_imports:
             if p_file in safe_mode_plugins:
-                if not os.path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
+                if not path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
                     rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
@@ -113,14 +113,14 @@ class BotServiceHelper:
         # Load Extension Plugins
         rprint("######### Initializing Extension Plugins - Safe Mode #########")
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/extensions')
-        all_imports = [name for name in os.listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
-                       os.path.isdir(
-                           os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
-                                        name)) and name != "__pycache__"]
+        all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
+                       path.isdir(
+                           path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
+                                     name)) and name != "__pycache__"]
         for p_file in all_imports:
             if p_file in safe_mode_plugins:
-                if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
-                                                   p_file)):
+                if not path.exists(path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
+                                             p_file)):
                     rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
@@ -164,7 +164,7 @@ class BotServiceHelper:
     @staticmethod
     def initialize_plugins():
         import sys
-        import os
+        from os import path, listdir
         from json import loads
 
         # Clear plugins, plugins_help, and commands tables on launch.
@@ -180,11 +180,11 @@ class BotServiceHelper:
         # Load Core Plugins
         rprint("######### Initializing Core Plugins #########")
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
-        all_imports = [name for name in os.listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
-                       os.path.isdir(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
-                                                  name)) and name != "__pycache__"]
+        all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
+                       path.isdir(path.join(f'{dir_utils.get_main_dir()}/plugins/core',
+                                            name)) and name != "__pycache__"]
         for p_file in all_imports:
-            if not os.path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
+            if not path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
                 rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
@@ -226,12 +226,12 @@ class BotServiceHelper:
         # Load Extension Plugins
         rprint("######### Initializing Extension Plugins #########")
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/extensions')
-        all_imports = [name for name in os.listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
-                       os.path.isdir(
-                           os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
-                                        name)) and name != "__pycache__"]
+        all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
+                       path.isdir(
+                           path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
+                                     name)) and name != "__pycache__"]
         for p_file in all_imports:
-            if not os.path.exists(f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/metadata.ini'):
+            if not path.exists(f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/metadata.ini'):
                 rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
