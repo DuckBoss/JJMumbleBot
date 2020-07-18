@@ -59,4 +59,3 @@ def play_audio():
                     return
             else:
                 return
-        return
