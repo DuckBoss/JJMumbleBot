@@ -72,27 +72,6 @@ class Plugin(PluginBase):
                                      user=data_actor['name'])
         log(INFO, "Displayed a list of all local sound board files.")
 
-    def cmd_sblist_echo(self, data):
-        internal_list = []
-        gather_list = sbu.prepare_sb_list()
-        for i, item in enumerate(gather_list):
-            internal_list.append(
-                f"<br><font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{item}]")
-        cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Local Sound Board Files:</font>"
-        if len(internal_list) == 0:
-            cur_text += "<br>There are no local sound board files available."
-            GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
-            log(INFO, "Displayed a list of all local sound board files.")
-            return
-        for i, item in enumerate(internal_list):
-            cur_text += item
-            if i % 50 == 0 and i != 0:
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-                cur_text = ""
-        if cur_text != "":
-            GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-        log(INFO, "Displayed a list of all local sound board files.")
-
     def cmd_sbdownload(self, data):
         all_data = data.message.strip().split()
         url_stripped = BeautifulSoup(all_data[1], features='html.parser').get_text()
