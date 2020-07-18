@@ -6,13 +6,5 @@ class PluginBase(ABC):
         super().__init__()
 
     @abstractmethod
-    def process(self, text):
-        pass
-
-    @abstractmethod
     def quit(self):
-        pass
-
-    @abstractmethod
-    def get_metadata(self):
         pass
