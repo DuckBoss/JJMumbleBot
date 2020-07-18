@@ -19,7 +19,8 @@ from JJMumbleBot.lib import execute_cmd
 from JJMumbleBot.lib import errors
 from JJMumbleBot.lib.vlc.audio_interface import create_vlc_single_instance
 from JJMumbleBot.lib.vlc.vlc_api import VLCInterface, VLCStatus
-from time import sleep
+from time import sleep, time
+import audioop
 from datetime import datetime
 from copy import deepcopy
 
@@ -67,9 +68,9 @@ class BotService:
         log(INFO, "Initialized PGUI.", origin=L_STARTUP)
         rprint("Initialized PGUI.", origin=L_STARTUP)
         # Initialize VLC interface.
-        # global_settings.vlc_interface = VLCInterface("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
-        # global_settings.vlc_status = VLCStatus("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
-        # create_vlc_single_instance()
+        global_settings.vlc_interface = VLCInterface("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
+        global_settings.vlc_status = VLCStatus("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
+        create_vlc_single_instance()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -103,8 +104,10 @@ class BotService:
         global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id,
                                                       password=md.password, certfile=md.certificate, stereo=md.stereo)
         global_settings.mumble_inst.callbacks.set_callback('text_received', BotService.message_received)
+        global_settings.mumble_inst.callbacks.set_callback('sound_received', BotService.sound_received)
         global_settings.mumble_inst.callbacks.set_callback('connected', BotService.on_connected)
         global_settings.mumble_inst.set_codec_profile('audio')
+        global_settings.mumble_inst.set_receive_sound(True)
         global_settings.mumble_inst.start()
         global_settings.mumble_inst.is_ready()
         if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
@@ -189,8 +192,19 @@ class BotService:
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP)
 
     @staticmethod
+    def sound_received(user, audio_chunk):
+        # print(f'user:{user}')
+        # print(f'audio:{audio_chunk}')
+        if audioop.rms(audio_chunk.pcm, 2) > runtime_utils.get_ducking_threshold() and runtime_utils.can_duck():
+            runtime_utils.duck_volume()
+            runtime_settings.duck_start = time()
+            runtime_settings.duck_end = time() + runtime_utils.get_ducking_delay()
+
+    @staticmethod
     def loop():
         while not global_settings.exit_flag:
+            if time() > runtime_settings.duck_end and runtime_utils.is_ducking():
+                runtime_utils.unduck_volume()
             sleep(runtime_settings.tick_rate)
         BotService.stop()
 

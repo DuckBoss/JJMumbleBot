@@ -9,6 +9,11 @@ joinme,2
 joinuser,2
 msg,2
 leave,2
+volume,3
+duckaudio,4
+duckvolume,4
+duckthreshold,4
+duckdelay,4
 showprivileges,4
 setprivileges,4
 addprivileges,4

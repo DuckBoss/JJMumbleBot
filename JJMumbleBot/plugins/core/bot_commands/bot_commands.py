@@ -116,6 +116,108 @@ class Plugin(PluginBase):
                 box_align='left', user=GS.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
 
+    def cmd_duckaudio(self, data):
+        rutils.toggle_ducking()
+        GS.gui_service.quick_gui(
+            f"{'Enabled' if rutils.can_duck() else 'Disabled'} audio volume ducking.",
+            text_type='header',
+            box_align='left')
+        log(INFO, f"Audio ducking was {'enabled' if rutils.can_duck() else 'disabled'}.", origin=L_COMMAND)
+
+    def cmd_duckvolume(self, data):
+        try:
+            vol = float(data.message.strip().split(' ', 1)[1])
+        except IndexError:
+            GS.gui_service.quick_gui(
+                f"Current bot ducking volume: {rutils.get_ducking_volume()}",
+                text_type='header',
+                box_align='left')
+            return
+        if vol > 1 or vol < 0:
+            GS.gui_service.quick_gui(
+                "Invalid Volume Input: [0-1]",
+                text_type='header',
+                box_align='left')
+            return
+
+        rutils.set_duck_volume(vol)
+        GS.gui_service.quick_gui(
+            f"Set volume to {vol}",
+            text_type='header',
+            box_align='left')
+        log(INFO, f"The bot audio ducking volume was changed to {vol}.", origin=L_COMMAND)
+
+    def cmd_volume(self, data):
+        try:
+            vol = float(data.message.strip().split(' ', 1)[1])
+        except IndexError:
+            GS.gui_service.quick_gui(
+                f"Current bot volume: {rutils.get_volume()}",
+                text_type='header',
+                box_align='left')
+            return
+        if vol > 1 or vol < 0:
+            GS.gui_service.quick_gui(
+                "Invalid Volume Input: [0-1]",
+                text_type='header',
+                box_align='left')
+            return
+        if rutils.is_ducking():
+            rutils.set_last_volume(vol)
+        else:
+            rutils.set_volume(vol, auto=False)
+        GS.gui_service.quick_gui(
+            f"Set volume to {vol}",
+            text_type='header',
+            box_align='left')
+        log(INFO, f"The volume was changed to {vol}.", origin=L_COMMAND)
+
+    def cmd_duckthreshold(self, data):
+        try:
+            threshold = float(data.message.strip().split(' ', 1)[1])
+        except IndexError:
+            GS.gui_service.quick_gui(
+                f"Current bot ducking threshold: {rutils.get_ducking_threshold()}",
+                text_type='header',
+                box_align='left')
+            return
+        if threshold > 1 or threshold < 0:
+            GS.gui_service.quick_gui(
+                "Invalid Ducking Threshold Input: [0-1]",
+                text_type='header',
+                box_align='left')
+            return
+
+        rutils.set_duck_threshold(threshold)
+        GS.gui_service.quick_gui(
+            f"Set ducking threshold to {threshold}",
+            text_type='header',
+            box_align='left')
+        log(INFO, f"The bot audio ducking threshold was changed to {threshold}.", origin=L_COMMAND)
+
+    def cmd_duckdelay(self, data):
+        try:
+            delay = float(data.message.strip().split(' ', 1)[1])
+        except IndexError:
+            GS.gui_service.quick_gui(
+                f"Current bot ducking delay: {rutils.get_ducking_delay()}",
+                text_type='header',
+                box_align='left')
+            return
+        if delay > 1 or delay < 0:
+            GS.gui_service.quick_gui(
+                "Invalid Ducking Delay Input: [0-1]",
+                text_type='header',
+                box_align='left')
+            return
+
+        rutils.set_ducking_delay(delay)
+        GS.gui_service.quick_gui(
+            f"Set ducking delay to {delay}",
+            text_type='header',
+            box_align='left')
+        log(INFO, f"The bot audio ducking delay was changed to {delay}.", origin=L_COMMAND)
+
     def cmd_showprivileges(self, data):
         GS.gui_service.quick_gui(f"{privileges.get_all_privileges()}", text_type='header', box_align='left',
                                  text_align='left', user=GS.mumble_inst.users[data.actor]['name'],
