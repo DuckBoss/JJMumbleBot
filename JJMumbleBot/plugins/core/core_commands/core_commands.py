@@ -29,7 +29,7 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_sleep(self, data):
-        sleep_time = float(data.text.message.strip()[1:].split(' ', 1)[1].strip())
+        sleep_time = float(data.message.strip().split(' ', 1)[1])
         RS.tick_rate = sleep_time
         sleep(sleep_time)
         RS.tick_rate = float(GS.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE])
