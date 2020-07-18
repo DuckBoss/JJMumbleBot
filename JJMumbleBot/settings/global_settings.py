@@ -33,6 +33,9 @@ exit_flag: bool = False
 cmd_history = None
 # Command Queue
 cmd_queue = None
+# Callbacks
+all_callbacks = None
+cmd_callbacks = None
 # Aliases
 aliases = {}
 # Initialized Plugins.

@@ -7,6 +7,7 @@ from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.utils.database_utils import InsertDB, UtilityDB
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.callbacks import Callbacks, CommandCallbacks
 
 
 class BotServiceHelper:
@@ -26,6 +27,8 @@ class BotServiceHelper:
         import configparser
         global_settings.cfg = configparser.ConfigParser()
         global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
+        global_settings.all_callbacks = Callbacks()
+        global_settings.cmd_callbacks = CommandCallbacks()
 
         runtime_settings.tick_rate = float(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
@@ -145,6 +148,12 @@ class BotServiceHelper:
             UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
             # Import plugin help into the database.
             UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
+            # Register plugin command callbacks.
+            for plugin in global_settings.bot_plugins[p_file]:
+                for plugin_command in plugin.plugin_cmds:
+                    global_settings.cmd_callbacks.register_command(f'{plugin_command}', f'on_{plugin_command}')
+                    global_settings.all_callbacks.register_callback(f'on_{plugin_command}', f'on_{plugin_command}')
+                    rprint(f"Registered plugin command: {plugin_command}-on_{plugin_command}")
         sys.path.pop(0)
         rprint("######### Core Plugins Initialized #########")
         # Load Extension Plugins
