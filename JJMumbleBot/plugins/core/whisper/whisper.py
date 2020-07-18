@@ -208,7 +208,7 @@ class Plugin(PluginBase):
 
         rutils.set_whisper_user(data_actor)
         rprint(f"Set whisper to user: {data_actor['name']}", origin=L_COMMAND)
-        GS.gui_service.quick_gui(f"Set whisper to user: {data_actor}", text_type='header',
+        GS.gui_service.quick_gui(f"Set whisper to user: {data_actor['name']}", text_type='header',
                                  box_align='left', user=data_actor['name'],
                                  ignore_whisper=True)
         log(INFO, f"Set whisper to user: {data_actor['name']}.", origin=L_COMMAND)
