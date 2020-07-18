@@ -4,7 +4,6 @@ from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utility as sbu
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
