@@ -39,8 +39,12 @@ def parse_message(text):
         rprint(f"Message Received: [{user['name']} -> Hyperlink Data]")
         log(INFO, f"Message Received: [{user['name']} -> Hyperlink Data]")
     else:
-        rprint(f"Message Received: [{user['name']} -> {message}]")
-        log(INFO, f"Message Received: [{user['name']} -> {message}]")
+        if global_settings.cfg.getboolean(C_LOGGING, P_LOG_MESSAGES, fallback=True):
+            rprint(f"Message Received: [{user['name']} -> #####]")
+            log(INFO, f"Message Received: [{user['name']} -> #####]")
+        else:
+            rprint(f"Message Received: [{user['name']} -> {message}]")
+            log(INFO, f"Message Received: [{user['name']} -> {message}]")
     return None
 
 

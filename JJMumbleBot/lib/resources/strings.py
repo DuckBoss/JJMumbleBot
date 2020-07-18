@@ -57,6 +57,7 @@ P_PLUG_ALLOWED_CHANNELS = 'AllowedRootChannelsForTempChannels'
 # Logging
 P_LOG_ENABLE = 'EnableLogging'
 P_LOG_MAX = 'MaxLogs'
+P_LOG_MESSAGES = 'HideMessageLogging'
 P_LOG_DIR = 'LogDirectory'
 ###########################################################################
 # LOGGING STRINGS - DO NOT MODIFY
