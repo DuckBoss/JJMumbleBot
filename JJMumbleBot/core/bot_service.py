@@ -67,9 +67,9 @@ class BotService:
         log(INFO, "Initialized PGUI.", origin=L_STARTUP)
         rprint("Initialized PGUI.", origin=L_STARTUP)
         # Initialize VLC interface.
-        global_settings.vlc_interface = VLCInterface("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
-        global_settings.vlc_status = VLCStatus("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
-        create_vlc_single_instance()
+        # global_settings.vlc_interface = VLCInterface("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
+        # global_settings.vlc_status = VLCStatus("192.168.1.200", "8080", "", global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS])
+        # create_vlc_single_instance()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -182,19 +182,11 @@ class BotService:
 
     @staticmethod
     def process_command_queue(com):
-        try:
-            for plugin in global_settings.bot_plugins.values():
-                execute_cmd.execute_command(plugin, com)
-        except Exception:
-            from JJMumbleBot.lib.errors import ExitCodes
-            runtime_utils.exit_bot_error(ExitCodes.SAFE_MODE_ERROR)
-            raise errors.SafeModeError(
-                'The bot has no plugins configured for safe mode, so it was shutdown to prevent a '
-                'stalled process.')
+        execute_cmd.execute_command(com)
 
     @staticmethod
     def on_connected():
-        log(INFO, f"{runtime_utils.get_bot_name()} is online.", origin=L_STARTUP)
+        log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP)
 
     @staticmethod
     def loop():
