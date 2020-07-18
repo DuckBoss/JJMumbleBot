@@ -96,6 +96,7 @@ class Plugin(PluginBase):
                                  box_align='left', ignore_whisper=True)
 
         GS.mumble_inst.channels[data_actor['channel_id']].move_in()
+        dprint( f"Joined user: {data_actor['name']}", origin=L_COMMAND)
         log(INFO, f"Joined user: {data_actor['name']}", origin=L_COMMAND)
 
     def cmd_joinuser(self, data):
@@ -107,6 +108,7 @@ class Plugin(PluginBase):
                     GS.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
                                              box_align='left', ignore_whisper=True)
                     GS.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
+                    dprint(f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
                     log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}joinuser 'username'")
