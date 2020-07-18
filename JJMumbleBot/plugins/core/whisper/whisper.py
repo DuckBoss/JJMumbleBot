@@ -206,7 +206,7 @@ class Plugin(PluginBase):
             log(INFO, "I can't set the whisper target to myself!", origin=L_COMMAND)
             return
 
-        rutils.set_whisper_user(data_actor)
+        rutils.set_whisper_user(data_actor['name'])
         rprint(f"Set whisper to user: {data_actor['name']}", origin=L_COMMAND)
         GS.gui_service.quick_gui(f"Set whisper to user: {data_actor['name']}", text_type='header',
                                  box_align='left', user=data_actor['name'],
