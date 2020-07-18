@@ -4,7 +4,8 @@ from JJMumbleBot.lib.mumble_data import MumbleData
 from JJMumbleBot.lib.utils.database_management_utils import get_memory_db, save_memory_db_to_file
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.utils.database_utils import InsertDB, UtilityDB
+from JJMumbleBot.lib.utils.database_utils import InsertDB, UtilityDB, DeleteDB
+from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.callbacks import Callbacks, CommandCallbacks
@@ -27,7 +28,7 @@ class BotServiceHelper:
         import configparser
         global_settings.cfg = configparser.ConfigParser()
         global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
-        global_settings.all_callbacks = Callbacks()
+        global_settings.mtd_callbacks = Callbacks()
         global_settings.cmd_callbacks = CommandCallbacks()
 
         runtime_settings.tick_rate = float(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE])
@@ -46,7 +47,7 @@ class BotServiceHelper:
     def initialize_plugins_safe():
         import sys
         import os
-        import json
+        from json import loads
         from JJMumbleBot.lib.resources.strings import C_PLUGIN_SETTINGS, P_PLUG_SAFE
         if not global_settings.cfg:
             from JJMumbleBot.lib.errors import ExitCodes, ConfigError
@@ -59,7 +60,7 @@ class BotServiceHelper:
                                        csv_path=f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
 
         global_settings.bot_plugins = {}
-        safe_mode_plugins = json.loads(global_settings.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_SAFE))
+        safe_mode_plugins = loads(global_settings.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_SAFE))
         # Load Core Plugins
         rprint("######### Initializing Core Plugins - Safe Mode #########")
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
@@ -68,21 +69,42 @@ class BotServiceHelper:
                            os.path.join(f'{dir_utils.get_main_dir()}/plugins/core', name)) and name != "__pycache__"]
         for p_file in all_imports:
             if p_file in safe_mode_plugins:
-                if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
-                                                   p_file)):
+                if not os.path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
                     rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
-                # Import the core plugin.
-                global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+                # Import the core plugin class.
+                global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
+
+                # Register plugin command callbacks.
+                plugin_metadata = PluginUtilityService.process_metadata(f'plugins/core/{p_file}')
+                plugin_cmds = loads(plugin_metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+                for plugin_command in plugin_cmds:
+                    global_settings.cmd_callbacks.register_command(f'{plugin_command}', p_file,
+                                                                   f'{plugin_command}_clbk')
+                    global_settings.mtd_callbacks.register_callback(
+                        f'{plugin_command}_clbk',
+                        getattr(
+                            global_settings.bot_plugins[p_file],
+                            f'cmd_{plugin_command}',
+                            None
+                        )
+                    )
+                    rprint(f"Registered plugin command: "
+                           f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+                # Initialize the core plugin class instance.
+                global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
                 # Import core plugin into the database.
                 InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
                 # Import core plugin user privileges into the database.
-                UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/privileges.csv')
+                UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                                  csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/privileges.csv')
                 # Import plugin aliases into the database.
-                UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
+                UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                               csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
                 # Import plugin help into the database.
-                UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
+                UtilityDB.import_help_to_db(db_conn=get_memory_db(),
+                                            html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
         # help_plugin = __import__('help.help')
         # self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
@@ -101,16 +123,38 @@ class BotServiceHelper:
                     rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                     continue
-                # Import the core plugin.
-                global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+                # Import the core plugin class.
+                global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
+
+                # Register plugin command callbacks.
+                plugin_metadata = PluginUtilityService.process_metadata(f'plugins/core/{p_file}')
+                plugin_cmds = loads(plugin_metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+                for plugin_command in plugin_cmds:
+                    global_settings.cmd_callbacks.register_command(f'{plugin_command}', p_file,
+                                                                   f'{plugin_command}_clbk')
+                    global_settings.mtd_callbacks.register_callback(
+                        f'{plugin_command}_clbk',
+                        getattr(
+                            global_settings.bot_plugins[p_file],
+                            f'cmd_{plugin_command}',
+                            None
+                        )
+                    )
+                    rprint(f"Registered plugin command: "
+                           f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+                # Initialize the core plugin class instance.
+                global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
                 # Import core plugin into the database.
                 InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
                 # Import core plugin user privileges into the database.
-                UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/privileges.csv')
+                UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                                  csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/privileges.csv')
                 # Import plugin aliases into the database.
-                UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/aliases.csv')
+                UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                               csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/aliases.csv')
                 # Import plugin help into the database.
-                UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
+                UtilityDB.import_help_to_db(db_conn=get_memory_db(),
+                                            html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
         save_memory_db_to_file()
         sys.path.pop(0)
         rprint("######### Extension Plugins Initialized - Safe Mode #########")
@@ -120,6 +164,12 @@ class BotServiceHelper:
     def initialize_plugins():
         import sys
         import os
+        from json import loads
+
+        # Clear plugins, plugins_help, and commands tables on launch.
+        DeleteDB.delete_all_commands(db_conn=get_memory_db())
+        DeleteDB.delete_all_plugins_help(db_conn=get_memory_db())
+        DeleteDB.delete_all_plugins(db_conn=get_memory_db())
 
         # Import global aliases into the database.
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
@@ -133,27 +183,43 @@ class BotServiceHelper:
                        os.path.isdir(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
                                                   name)) and name != "__pycache__"]
         for p_file in all_imports:
-            if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/core',
-                                               p_file)):
+            if not os.path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
                 rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
-            # Import the core plugin.
-            global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+            # Import the core plugin class.
+            global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
+
+            # Register plugin command callbacks.
+            plugin_metadata = PluginUtilityService.process_metadata(f'plugins/core/{p_file}')
+            plugin_cmds = loads(plugin_metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+            for plugin_command in plugin_cmds:
+                global_settings.cmd_callbacks.register_command(f'{plugin_command}', p_file,
+                                                               f'{plugin_command}_clbk')
+                global_settings.mtd_callbacks.register_callback(
+                    f'{plugin_command}_clbk',
+                    getattr(
+                        global_settings.bot_plugins[p_file],
+                        f'cmd_{plugin_command}',
+                        None
+                    )
+                )
+                rprint(f"Registered plugin command: "
+                       f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+            # Initialize the core plugin class instance.
+            global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
+
             # Import core plugin into the database.
             InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
             # Import core plugin user privileges into the database.
-            UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/privileges.csv')
+            UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                              csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/privileges.csv')
             # Import plugin aliases into the database.
-            UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
+            UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                           csv_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/aliases.csv')
             # Import plugin help into the database.
-            UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
-            # Register plugin command callbacks.
-            for plugin in global_settings.bot_plugins[p_file]:
-                for plugin_command in plugin.plugin_cmds:
-                    global_settings.cmd_callbacks.register_command(f'{plugin_command}', f'on_{plugin_command}')
-                    global_settings.all_callbacks.register_callback(f'on_{plugin_command}', f'on_{plugin_command}')
-                    rprint(f"Registered plugin command: {plugin_command}-on_{plugin_command}")
+            UtilityDB.import_help_to_db(db_conn=get_memory_db(),
+                                        html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
         sys.path.pop(0)
         rprint("######### Core Plugins Initialized #########")
         # Load Extension Plugins
@@ -164,21 +230,42 @@ class BotServiceHelper:
                            os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
                                         name)) and name != "__pycache__"]
         for p_file in all_imports:
-            if not os.path.exists(os.path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
-                                               p_file)):
+            if not os.path.exists(f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/metadata.ini'):
                 rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
                 continue
-            # Import the core plugin.
-            global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin()
+            # Import the core plugin class.
+            global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
+
+            # Register plugin command callbacks.
+            plugin_metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{p_file}')
+            plugin_cmds = loads(plugin_metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+            for plugin_command in plugin_cmds:
+                global_settings.cmd_callbacks.register_command(f'{plugin_command}', p_file,
+                                                               f'{plugin_command}_clbk')
+                global_settings.mtd_callbacks.register_callback(
+                    f'{plugin_command}_clbk',
+                    getattr(
+                        global_settings.bot_plugins[p_file],
+                        f'cmd_{plugin_command}',
+                        None
+                    )
+                )
+                rprint(f"Registered plugin command: "
+                       f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+            # Initialize the core plugin class instance.
+            global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
             # Import core plugin into the database.
             InsertDB.insert_new_plugin(db_conn=get_memory_db(), plugin_name=p_file, ignore_file_save=True)
             # Import core plugin user privileges into the database.
-            UtilityDB.import_privileges_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/privileges.csv')
+            UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                              csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/privileges.csv')
             # Import plugin aliases into the database.
-            UtilityDB.import_aliases_to_db(db_conn=get_memory_db(), csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/aliases.csv')
+            UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                           csv_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/aliases.csv')
             # Import plugin help into the database.
-            UtilityDB.import_help_to_db(db_conn=get_memory_db(), html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
+            UtilityDB.import_help_to_db(db_conn=get_memory_db(),
+                                        html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
         save_memory_db_to_file()
         sys.path.pop(0)
         rprint("######### Extension Plugins Initialized #########")
