@@ -4,47 +4,36 @@ from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
-from JJMumbleBot.lib import privileges
 
 
 class Plugin(PluginBase):
-    # Don't modify this method unless you need to conduct some clean-up before the plugin exits.
-    def quit(self):
-        dprint(f"Exiting {self.plugin_name} plugin...")
-        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-
-    # Don't modify this method.
-    def get_metadata(self):
-        return self.metadata
-
     # Initializes the plugin with the main core information.
     def __init__(self):
         super().__init__()
-        import os
-        import json
-        self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
+        from os import path
+        from json import loads
+        self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
-        self.plugin_cmds = json.loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         # Add any custom initialization code here...
         # ...
         # ...
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
-    # The main method to process incoming commands to the plugin.
-    def process(self, text):
-        # By default, the method creates some variables that separate the command from the rest of the parameters.
-        message = text.message.strip()
-        message_parse = message[1:].split(' ', 1)
-        command = message_parse[0]
+    # Don't modify this method unless you need to conduct some clean-up before the plugin exits.
+    def quit(self):
+        dprint(f"Exiting {self.plugin_name} plugin...")
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
-        # A basic example command, using the if-else structure.
-        if command == "example_echo":
-            # Always check the user privileges at the start of your command processing.
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-
-            parameter = message_parse[1]
-            global_settings.gui_service.quick_gui(parameter, text_type='header', box_align='left', ignore_whisper=True)
-            log(INFO, f"Echo:[{parameter}]", origin=L_GENERAL)
-            return
+    # Each command must be it's own method definition
+    # All command methods must be prefixed with 'cmd' and require 'self','data' in the parameters.
+    # Example: !my_echo_command -> def cmd_mycommand(self, data)
+    # You can use the 'data' parameter to extract information such as the command name/message body.
+    # Example: !my_echo_command blah blah blah
+    #          data.command -> my_echo_command
+    #          data.message -> !my_echo_command blah blah blah
+    def cmd_my_echo_command(self, data):
+        text_to_echo = data.message.strip().split(' ', 1)[1]
+        global_settings.gui_service.quick_gui(text_to_echo, text_type='header', box_align='left', ignore_whisper=True)
+        log(INFO, f"Echo:[{text_to_echo}]", origin=L_GENERAL)
