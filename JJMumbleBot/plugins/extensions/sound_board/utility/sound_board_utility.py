@@ -57,7 +57,7 @@ def play_audio():
             if global_settings.vlc_inst:
                 raw_music = global_settings.vlc_inst.stdout.read(1024)
                 if raw_music and global_settings.vlc_inst:
-                    global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, settings.volume))
+                    global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, runtime_utils.get_volume()))
                 else:
                     return
             else:
