@@ -1,9 +1,10 @@
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
+from threading import Thread
+import vlc
 
 
 def create_vlc_single_instance():
-    from threading import Thread
     global_settings.vlc_thread = Thread(
         target=create_vlc_thread,
         args=(
@@ -17,6 +18,14 @@ def create_vlc_single_instance():
         daemon=True
     )
     global_settings.vlc_thread.start()
+
+
+def stop_vlc_instance():
+    if global_settings.vlc_inst:
+        global_settings.vlc_inst.kill()
+        global_settings.vlc_inst = None
+    if global_settings.vlc_thread:
+        global_settings.vlc_thread = None
 
 
 def create_vlc_thread(vlc_path, intf_ip, intf_port, intf_pass, quiet=True, stereo=True):
