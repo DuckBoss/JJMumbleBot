@@ -16,7 +16,6 @@ from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
-from JJMumbleBot.lib import errors
 from JJMumbleBot.lib.vlc.audio_interface import create_vlc_single_instance
 from JJMumbleBot.lib.vlc.vlc_api import VLCInterface, VLCStatus
 from time import sleep, time
