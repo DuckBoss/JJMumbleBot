@@ -230,11 +230,11 @@ class VLCInterface:
             else:
                 track_info = self.queue.pop_item()
                 self.status.set_track(track_info)
-                self.status.update_queue(list(self.queue))
+                self.status.update_queue(list(self.queue).reverse())
         else:
             track_info = self.queue.pop_item()
             self.status.set_track(track_info)
-            self.status.update_queue(list(self.queue))
+            self.status.update_queue(list(self.queue).reverse())
         if not track_info:
             global_settings.gui_service.quick_gui(
                 f"There is no track available to play",
@@ -251,6 +251,32 @@ class VLCInterface:
                 box_align='left')
         self.status.set_status(TrackStatus.PLAYING)
 
+    def skip(self, track_number):
+        if self.queue.is_empty():
+            print("queue is empty")
+            return
+        if track_number > self.queue.size() - 1:
+            print("given track number is larger than queue size")
+            return
+        for i in range(track_number):
+            self.queue.pop_item()
+        self.status.update_queue(list(self.queue).reverse())
+        global_settings.gui_service.quick_gui(
+            f"Skipping to track {track_number} in the audio queue.",
+            text_type='header',
+            box_align='left')
+        self.play(override=True)
+
+    def shuffle(self):
+        if self.queue.is_empty():
+            return
+        self.queue.shuffle()
+        self.status.update_queue(list(self.queue).reverse())
+        global_settings.gui_service.quick_gui(
+            f"Shuffled the audio queue.",
+            text_type='header',
+            box_align='left')
+
     def seek(self, seconds: int):
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
@@ -261,7 +287,8 @@ class VLCInterface:
             box_align='left')
 
     def stop(self):
-        audio_interface.stop_vlc_instance()
+        if global_settings.vlc_inst:
+            audio_interface.stop_vlc_instance()
         self.queue = queue_handler.QueueHandler([], maxlen=100)
         self.status.update({
             'plugin_owner': '',
@@ -324,7 +351,7 @@ class VLCInterface:
         else:
             self.queue.insert_item(track_obj)
         # Update interface status
-        self.status.update_queue(list(self.queue))
+        self.status.update_queue(list(self.queue).reverse())
 
     def loop_track(self):
         if self.status.is_looping():
@@ -345,7 +372,7 @@ class VLCInterface:
         # Remove track at the given index.
         else:
             self.queue.remove_item(track_index)
-        self.status.update_queue(list(self.queue))
+        self.status.update_queue(list(self.queue).reverse())
 
     def next_track(self):
         if self.status.is_looping():
@@ -360,7 +387,7 @@ class VLCInterface:
         track_to_play = self.queue.pop_item()
         if track_to_play:
             self.status.set_track(track_obj=track_to_play)
-            self.status.update_queue(list(self.queue))
+            self.status.update_queue(list(self.queue).reverse())
             if not track_to_play.quiet:
                 global_settings.gui_service.quick_gui(
                     f"Playing audio: {self.status.get_track().name}",
@@ -373,15 +400,16 @@ class VLCInterface:
     def get_track(self):
         return self.status.get_track()
 
-    def check_dni(self, plugin_name):
+    def check_dni(self, plugin_name, quiet=False):
         if global_settings.audio_dni == plugin_name or not global_settings.audio_dni:
             return True
-        dprint(
-            f'An audio plugin is using the audio thread with no interruption mode enabled. [{global_settings.audio_dni}]')
-        global_settings.gui_service.quick_gui(
-            f"An audio plugin({global_settings.audio_dni}) is using the audio thread with no interruption mode enabled.",
-            text_type='header',
-            box_align='left')
+        if not quiet:
+            dprint(
+                f'An audio plugin({global_settings.audio_dni}) is already using the audio interface.')
+            global_settings.gui_service.quick_gui(
+                f"An audio plugin({global_settings.audio_dni}) is already using the audio interface.",
+                text_type='header',
+                box_align='left')
         return False
 
     def check_dni_is_mine(self, plugin_name):
