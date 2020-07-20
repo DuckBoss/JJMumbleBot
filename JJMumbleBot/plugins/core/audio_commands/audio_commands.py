@@ -32,7 +32,7 @@ class Plugin(PluginBase):
             user=gs.mumble_inst.users[data.actor]['name']
         )
 
-    def cmd_stop(self):
+    def cmd_stop(self, data):
         if gs.vlc_interface.check_dni_active():
             gs.vlc_interface.stop()
             gs.gui_service.quick_gui("Stopped bot audio.", text_type='header',
