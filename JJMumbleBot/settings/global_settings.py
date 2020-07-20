@@ -18,7 +18,6 @@ mumble_inst = None
 mumble_db_string = None
 # Command Line Arguments
 safe_mode: bool = False
-debug_mode: bool = False
 quiet_mode: bool = False
 verbose_mode: bool = False
 # Audio Thread Instance
