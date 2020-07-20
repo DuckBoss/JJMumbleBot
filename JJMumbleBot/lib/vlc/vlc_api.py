@@ -6,7 +6,6 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
 from JJMumbleBot.lib.vlc import audio_interface
-from math import trunc
 from enum import Enum
 from threading import Thread
 
@@ -117,7 +116,7 @@ class VLCInterface:
             self['volume'] = volume
 
         def get_volume(self):
-            return trunc(self['volume'], 2)
+            return float(f"{self['volume']:.2f}")
 
         # Loop
         def enable_loop(self):
