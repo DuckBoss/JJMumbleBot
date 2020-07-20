@@ -230,11 +230,15 @@ class VLCInterface:
             else:
                 track_info = self.queue.pop_item()
                 self.status.set_track(track_info)
-                self.status.update_queue(list(self.queue).reverse())
+                reversed_list = list(self.queue)
+                reversed_list.reverse()
+                self.status.update_queue(reversed_list)
         else:
             track_info = self.queue.pop_item()
             self.status.set_track(track_info)
-            self.status.update_queue(list(self.queue).reverse())
+            reversed_list = list(self.queue)
+            reversed_list.reverse()
+            self.status.update_queue(reversed_list)
         if not track_info:
             global_settings.gui_service.quick_gui(
                 f"There is no track available to play",
@@ -253,14 +257,15 @@ class VLCInterface:
 
     def skip(self, track_number):
         if self.queue.is_empty():
-            print("queue is empty")
             return
         if track_number > self.queue.size() - 1:
-            print("given track number is larger than queue size")
             return
+
         for i in range(track_number):
             self.queue.pop_item()
-        self.status.update_queue(list(self.queue).reverse())
+        reversed_list = list(self.queue)
+        reversed_list.reverse()
+        self.status.update_queue(reversed_list)
         global_settings.gui_service.quick_gui(
             f"Skipping to track {track_number} in the audio queue.",
             text_type='header',
@@ -271,7 +276,9 @@ class VLCInterface:
         if self.queue.is_empty():
             return
         self.queue.shuffle()
-        self.status.update_queue(list(self.queue).reverse())
+        reversed_list = list(self.queue)
+        reversed_list.reverse()
+        self.status.update_queue(reversed_list)
         global_settings.gui_service.quick_gui(
             f"Shuffled the audio queue.",
             text_type='header',
@@ -351,7 +358,9 @@ class VLCInterface:
         else:
             self.queue.insert_item(track_obj)
         # Update interface status
-        self.status.update_queue(list(self.queue).reverse())
+        reversed_list = list(self.queue)
+        reversed_list.reverse()
+        self.status.update_queue(reversed_list)
 
     def loop_track(self):
         if self.status.is_looping():
@@ -372,7 +381,9 @@ class VLCInterface:
         # Remove track at the given index.
         else:
             self.queue.remove_item(track_index)
-        self.status.update_queue(list(self.queue).reverse())
+        reversed_list = list(self.queue)
+        reversed_list.reverse()
+        self.status.update_queue(reversed_list)
 
     def next_track(self):
         if self.status.is_looping():
@@ -387,7 +398,9 @@ class VLCInterface:
         track_to_play = self.queue.pop_item()
         if track_to_play:
             self.status.set_track(track_obj=track_to_play)
-            self.status.update_queue(list(self.queue).reverse())
+            reversed_list = list(self.queue)
+            reversed_list.reverse()
+            self.status.update_queue(reversed_list)
             if not track_to_play.quiet:
                 global_settings.gui_service.quick_gui(
                     f"Playing audio: {self.status.get_track().name}",
