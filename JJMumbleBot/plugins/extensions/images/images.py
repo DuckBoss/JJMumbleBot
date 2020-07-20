@@ -103,35 +103,3 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
                                      user=data_actor['name'])
         log(INFO, "Displayed a list of all local image files.")
-
-    def cmd_imglist_echo(self, data):
-        file_counter = 0
-        gather_list = []
-        internal_list = []
-
-        for file_item in os.listdir(f"{dir_utils.get_perm_med_dir()}/images/"):
-            if file_item.lower().endswith(".jpg") or file_item.lower().endswith(".png"):
-                gather_list.append(
-                    f"{file_item}")
-                file_counter += 1
-
-        gather_list.sort(key=str.lower)
-        for i, item in enumerate(gather_list):
-            internal_list.append(
-                f"<br><font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{item}]")
-
-        cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Local Image Files:</font>"
-        if len(internal_list) == 0:
-            cur_text += "<br>There are no local image files available."
-            GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
-            log(INFO, "Displayed a list of all local image files.")
-            return
-
-        for i, item in enumerate(internal_list):
-            cur_text += item
-            if i % 50 == 0 and i != 0:
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-                cur_text = ""
-        if cur_text != "":
-            GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-        log(INFO, "Displayed a list of all local image files.")
