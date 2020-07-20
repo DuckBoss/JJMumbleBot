@@ -70,8 +70,7 @@ class VLCInterface:
                        f"duration: {self['track'].duration}<br>" \
                        f"type: {self['track'].track_type.value}<br>" \
                        f"queue: ["
-            self_copy = deepcopy(self)
-            dict_str += ', '.join(x.name for x in self_copy['queue'])
+            dict_str += ', '.join(x.name for x in self['queue'])
             dict_str += f"]<br>queue_length: {self['queue_length']}<br>" \
                         f"status: {self['status'].value}<br>" \
                         f"volume: {self['volume']}<br>" \
@@ -265,12 +264,46 @@ class VLCInterface:
     def stop(self):
         audio_interface.stop_vlc_instance()
         self.queue = queue_handler.QueueHandler([], maxlen=100)
-        self.status = VLCInterface.Status()
+        self.status.update({
+            'plugin_owner': '',
+            'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
+            'queue': [],
+            'queue_length': 0,
+            'status': TrackStatus.STOPPED,
+            'volume': self.status['volume'],
+            'loop': self.status['loop'],
+            'duck_audio': self.status['duck_audio'],
+            'ducking_volume': self.status['ducking_volume'],
+            'ducking_threshold': self.status['ducking_threshold'],
+            'ducking_delay': self.status['ducking_delay'],
+            # Internal Audio Ducking Settings
+            'is_ducking': False,
+            'duck_start': 0.0,
+            'duck_end': 0.0,
+            'last_volume': self.status['last_volume']
+        })
         self.clear_dni()
 
     def reset(self):
         self.queue = queue_handler.QueueHandler([], maxlen=100)
-        self.status = VLCInterface.Status()
+        self.status.update({
+            'plugin_owner': '',
+            'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
+            'queue': [],
+            'queue_length': 0,
+            'status': TrackStatus.STOPPED,
+            'volume': self.status['volume'],
+            'loop': self.status['loop'],
+            'duck_audio': self.status['duck_audio'],
+            'ducking_volume': self.status['ducking_volume'],
+            'ducking_threshold': self.status['ducking_threshold'],
+            'ducking_delay': self.status['ducking_delay'],
+            # Internal Audio Ducking Settings
+            'is_ducking': False,
+            'duck_start': 0.0,
+            'duck_end': 0.0,
+            'last_volume': self.status['last_volume']
+        })
         self.clear_dni()
 
     def enqueue_track(self, track_obj, to_front=False):
