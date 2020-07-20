@@ -55,7 +55,7 @@ class VLCInterface:
                     'ducking_volume': 0.05,
                     'ducking_threshold': 4000.0,
                     'ducking_delay': 1.0,
-                    # Ducking Settings
+                    # Internal Audio Ducking Settings
                     'is_ducking': False,
                     'duck_start': 0.0,
                     'duck_end': 0.0,
@@ -227,7 +227,7 @@ class VLCInterface:
         if not override:
             if self.status.get_status() == TrackStatus.PLAYING:
                 return
-            elif self.status.get_status() == TrackStatus.PAUSED:
+            if self.status.get_status() == TrackStatus.PAUSED:
                 track_info = self.status.get_track()
             else:
                 track_info = self.queue.pop_item()
@@ -287,7 +287,10 @@ class VLCInterface:
             except EOFError:
                 track_length = -1
             track_obj.duration = track_length
-        self.queue.insert_priority_item(track_obj) if to_front else self.queue.insert_item(track_obj)
+        if to_front:
+            self.queue.insert_priority_item(track_obj)
+        else:
+            self.queue.insert_item(track_obj)
         # Update interface status
         self.status.update_queue(list(self.queue))
 
