@@ -2,6 +2,7 @@ command,level
 audiostatus,4
 shuffle,3
 playing,3
+replay,3
 skip,3
 stop,3
 clear,3

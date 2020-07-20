@@ -70,6 +70,10 @@ class Plugin(PluginBase):
         if gs.vlc_interface.check_dni_active():
             gs.vlc_interface.shuffle()
 
+    def cmd_replay(self, data):
+        if gs.vlc_interface.check_dni_active():
+            gs.vlc_interface.replay()
+
     def cmd_loop(self, data):
         gs.vlc_interface.loop_track()
         gs.gui_service.quick_gui(

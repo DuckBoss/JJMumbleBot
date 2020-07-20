@@ -272,6 +272,11 @@ class VLCInterface:
             box_align='left')
         self.play(override=True)
 
+    def replay(self):
+        if global_settings.vlc_inst:
+            audio_interface.stop_vlc_instance()
+        audio_interface.create_vlc_instance(self.status.get_track().uri)
+
     def shuffle(self):
         if self.queue.is_empty():
             return
@@ -289,7 +294,7 @@ class VLCInterface:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
         global_settings.gui_service.quick_gui(
-            f"Skipped ahead in the track by {seconds} seconds",
+            f"Skipped to {seconds} seconds in the audio track.",
             text_type='header',
             box_align='left')
 
@@ -357,6 +362,10 @@ class VLCInterface:
             except EOFError:
                 track_length = -1
             track_obj.duration = track_length
+        # New tracks must have a non-empty name.
+        if track_obj.name == '':
+            return
+        # Enqueue the track based on priority.
         if to_front:
             self.queue.insert_priority_item(track_obj)
         else:
