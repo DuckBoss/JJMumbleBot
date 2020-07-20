@@ -1,4 +1,5 @@
 alias,command
-v,!volume
-s,!stop
-now,!playing
+v,(volume)
+s,(stop)
+l,(loop)
+now,(playing)

@@ -154,12 +154,15 @@ class BotService:
                                 session=global_settings.mumble_inst.users.myself['session'],
                                 message=text.message,
                                 actor=global_settings.mumble_inst.users.myself['session'])
-                        if len(item[1:].split()) > 1:
-                            sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
+                        if len(item.split()) > 1:
+                            sub_text.message = f"{sub_item} {item.split(' ', 1)[1]}"
                         else:
                             sub_text.message = sub_item
                         try:
-                            sub_command = Command(sub_item[1:].split()[0], sub_text)
+                            com_parse = sub_item.split()[0]
+                            if com_parse[0] != '(' and com_parse[-1] != ')':
+                                return
+                            sub_command = Command(com_parse[1:][:-1], sub_text)
                         except IndexError:
                             continue
                         global_settings.cmd_queue.insert_item(sub_command)

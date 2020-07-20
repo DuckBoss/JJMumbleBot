@@ -146,7 +146,7 @@ class Plugin(PluginBase):
 
         GS.gui_service.close_box()
         GS.gui_service.display_box(channel=rutils.get_my_channel())
-        dprint(f"Conducted PGUI stress test in the channel.")
+        dprint(f"Conducted PGUI stress test in the channel.", origin=L_COMMAND)
         log(INFO, f"Conducted PGUI stress test in the channel.", origin=L_COMMAND)
 
     def cmd_help(self, data):
@@ -238,16 +238,36 @@ class Plugin(PluginBase):
             return
         alias_name = all_data[1]
 
+        all_coms = all_data[2].split('|')
+        for com in all_coms:
+            com_parse = com.split()[0]
+            if com_parse[0] != '(' and com_parse[-1] != ')':
+                dprint(
+                    f'Could not register [{alias_name}] due to incorrect formatting.',
+                    origin=L_ALIASES)
+                log(INFO,
+                    f'Could not register [{alias_name}] due to incorrect formatting.',
+                    origin=L_ALIASES)
+                GS.gui_service.quick_gui(
+                    f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}>Could not register</font> [{alias_name}] <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}>due to incorrect formatting.</font><br>"
+                    f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Single Command Alias Example:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters<br>"
+                    f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Multi-Command Alias Example:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>|</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters ...",
+                    text_type='header',
+                    text_align='left',
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GS.mumble_inst.users[data.actor]['name'])
+                return
         if aliases.add_to_aliases(alias_name, all_data[2]):
             GS.gui_service.quick_gui(
-                f"Registered new alias: [{alias_name}] - [{all_data[2]}]",
+                f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Registered new alias:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>[{alias_name}]</font> - [{all_data[2]}]",
                 text_type='header',
                 box_align='left',
                 ignore_whisper=True,
                 user=GS.mumble_inst.users[data.actor]['name'])
         elif aliases.set_alias(alias_name, all_data[2]):
             GS.gui_service.quick_gui(
-                f"Registered alias: [{alias_name}] - [{all_data[2]}]",
+                f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Registered alias:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>[{alias_name}]</font> - [{all_data[2]}]",
                 text_type='header',
                 box_align='left',
                 ignore_whisper=True,
@@ -288,7 +308,7 @@ class Plugin(PluginBase):
         alias_name = all_data[1]
         if aliases.remove_from_aliases(alias_name):
             GS.gui_service.quick_gui(
-                f'Removed [{alias_name}] from registered aliases.',
+                f'Removed <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{alias_name}]</font> from registered aliases.',
                 text_type='header',
                 box_align='left',
                 ignore_whisper=True,
@@ -296,7 +316,7 @@ class Plugin(PluginBase):
             )
         else:
             GS.gui_service.quick_gui(
-                f'Could not remove [{alias_name}] from registered aliases.',
+                f'Could not remove <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{alias_name}]</font> from registered aliases.',
                 text_type='header',
                 box_align='left',
                 ignore_whisper=True,
