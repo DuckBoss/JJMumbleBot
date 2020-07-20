@@ -8,7 +8,7 @@ if __name__ == "__main__":
         description="A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support "
                     "for custom plugins."
     )
-    parser.add_argument('-safe', dest='debug_mode', action='store_true', default=False,
+    parser.add_argument('-safe', dest='safe_mode', action='store_true', default=False,
                         help='Enables safe mode for the bot service which initializes the bot with safe-mode only '
                              'plugins.')
     parser.add_argument('-verbose', dest='verbose_mode', action='store_true', default=False,
