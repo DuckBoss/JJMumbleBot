@@ -339,6 +339,10 @@ class VLCInterface:
         })
         self.clear_dni()
 
+    def clear_queue(self):
+        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.status.update_queue(list(self.queue))
+
     def enqueue_track(self, track_obj, to_front=False):
         # Calculate track duration if a file is provided.
         if track_obj.track_type == TrackType.FILE and not track_obj.duration:

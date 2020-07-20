@@ -38,6 +38,12 @@ class Plugin(PluginBase):
             gs.gui_service.quick_gui("Stopped bot audio.", text_type='header',
                                      box_align='left')
 
+    def cmd_clear(self, data):
+        if gs.vlc_interface.check_dni_active():
+            gs.vlc_interface.clear_queue()
+            gs.gui_service.quick_gui("Cleared bot audio queue.", text_type='header',
+                                     box_align='left')
+
     def cmd_playing(self, data):
         if gs.vlc_interface.check_dni_active():
             track_info = gs.vlc_interface.status.get_track()

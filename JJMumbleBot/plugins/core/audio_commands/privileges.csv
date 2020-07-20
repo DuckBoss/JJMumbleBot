@@ -1,7 +1,10 @@
 command,level
 audiostatus,4
 shuffle,3
+playing,3
 skip,3
+stop,3
+clear,3
 loop,3
 remove,3
 seek,3
