@@ -91,7 +91,7 @@ class BotServiceHelper:
                             None
                         )
                     )
-                    rprint(f"Registered plugin command: "
+                    dprint(f"Registered plugin command: "
                            f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
                 # Initialize the core plugin class instance.
                 global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
@@ -141,7 +141,7 @@ class BotServiceHelper:
                             None
                         )
                     )
-                    rprint(f"Registered plugin command: "
+                    dprint(f"Registered plugin command: "
                            f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
                 # Initialize the core plugin class instance.
                 global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
@@ -205,7 +205,7 @@ class BotServiceHelper:
                         None
                     )
                 )
-                rprint(f"Registered plugin command: "
+                dprint(f"Registered plugin command: "
                        f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
             # Initialize the core plugin class instance.
             global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
@@ -252,7 +252,7 @@ class BotServiceHelper:
                         None
                     )
                 )
-                rprint(f"Registered plugin command: "
+                dprint(f"Registered plugin command: "
                        f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
             # Initialize the core plugin class instance.
             global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()

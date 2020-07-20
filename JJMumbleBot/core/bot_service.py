@@ -3,7 +3,6 @@ from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
-from JJMumbleBot.lib.helpers import runtime_helper
 from JJMumbleBot.lib.utils.logging_utils import log, initialize_logging
 from JJMumbleBot.lib.pgui import PseudoGUI
 from JJMumbleBot.lib.mumble_data import MumbleData
@@ -16,8 +15,7 @@ from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
-from JJMumbleBot.lib.vlc.audio_interface import create_vlc_single_instance
-from JJMumbleBot.lib.vlc.vlc_api import VLCInterface, VLCStatus
+from JJMumbleBot.lib.vlc.vlc_api import VLCInterface
 from time import sleep, time
 import audioop
 from datetime import datetime
@@ -39,11 +37,11 @@ class BotService:
         log(INFO, "######### Initializing JJMumbleBot #########", origin=L_STARTUP)
         rprint("######### Initializing JJMumbleBot #########", origin=L_STARTUP)
         # Initialize up-time tracking.
-        runtime_helper.start_time = datetime.now()
+        runtime_settings.start_time = datetime.now()
         # Set maximum multi-command limit.
         runtime_settings.multi_cmd_limit = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
         # Initialize command queue limit.
-        global_settings.cmd_queue = QueueHandler(runtime_settings.cmd_hist_lim)
+        global_settings.cmd_queue = QueueHandler([], runtime_settings.cmd_queue_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
         log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
@@ -67,19 +65,7 @@ class BotService:
         log(INFO, "Initialized PGUI.", origin=L_STARTUP)
         rprint("Initialized PGUI.", origin=L_STARTUP)
         # Initialize VLC interface.
-        global_settings.vlc_interface = VLCInterface(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_IP],
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PORT],
-            "",
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS]
-        )
-        global_settings.vlc_status = VLCStatus(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_IP],
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PORT],
-            "",
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PASS]
-        )
-        create_vlc_single_instance()
+        global_settings.vlc_interface = VLCInterface()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -179,17 +165,17 @@ class BotService:
                             sub_command = Command(sub_item[1:].split()[0], sub_text)
                         except IndexError:
                             continue
-                        global_settings.cmd_queue.insert(sub_command)
+                        global_settings.cmd_queue.insert_item(sub_command)
                 else:
                     # Insert command into the command queue
-                    global_settings.cmd_queue.insert(new_command)
+                    global_settings.cmd_queue.insert_item(new_command)
             else:
-                global_settings.cmd_queue.insert(new_command)
+                global_settings.cmd_queue.insert_item(new_command)
 
         # Process commands if the queue is not empty
         while not global_settings.cmd_queue.is_empty():
             # Process commands in the queue
-            BotService.process_command_queue(global_settings.cmd_queue.pop())
+            BotService.process_command_queue(global_settings.cmd_queue.pop_item())
             sleep(runtime_settings.tick_rate)
 
     @staticmethod
@@ -202,18 +188,16 @@ class BotService:
 
     @staticmethod
     def sound_received(user, audio_chunk):
-        # print(f'user:{user}')
-        # print(f'audio:{audio_chunk}')
-        if audioop.rms(audio_chunk.pcm, 2) > runtime_utils.get_ducking_threshold() and runtime_utils.can_duck():
-            runtime_utils.duck_volume()
-            runtime_settings.duck_start = time()
-            runtime_settings.duck_end = time() + runtime_utils.get_ducking_delay()
+        if audioop.rms(audio_chunk.pcm, 2) > global_settings.vlc_interface.status['ducking_threshold'] and global_settings.vlc_interface.status['duck_audio']:
+            global_settings.vlc_interface.audio_utilities.duck_volume()
+            global_settings.vlc_interface.status['duck_start'] = time()
+            global_settings.vlc_interface.status['duck_end'] = time() + global_settings.vlc_interface.audio_utilities.get_ducking_delay()
 
     @staticmethod
     def loop():
         while not global_settings.exit_flag:
-            if time() > runtime_settings.duck_end and runtime_utils.is_ducking():
-                runtime_utils.unduck_volume()
+            if time() > global_settings.vlc_interface.status['duck_end'] and global_settings.vlc_interface.audio_utilities.is_ducking():
+                global_settings.vlc_interface.audio_utilities.unduck_volume()
             sleep(runtime_settings.tick_rate)
         BotService.stop()
 

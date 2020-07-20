@@ -1,289 +1,368 @@
-from JJMumbleBot.lib.utils.print_utils import dprint
-import requests
+from datetime import timedelta
+from time import sleep
+import wave
+from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.settings import global_settings
+from JJMumbleBot.lib.helpers import queue_handler
+from JJMumbleBot.lib.vlc import audio_interface
+from copy import deepcopy
+from enum import Enum
+from threading import Thread
+
+
+class TrackStatus(Enum):
+    PLAYING = 'playing'
+    PAUSED = 'paused'
+    STOPPED = 'stopped'
+
+
+class TrackType(Enum):
+    FILE = 'file'
+    STREAM = 'stream'
+
+
+class TrackInfo:
+    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, quiet=False):
+        self.uri = uri
+        self.name = name
+        self.sender = sender
+        self.duration = duration
+        self.track_type = track_type
+        self.quiet = quiet
+
+    def __str__(self):
+        return str(self.to_dict())
+
+    def to_dict(self):
+        return {'uri': self.uri, 'name': self.name, 'sender': self.sender, 'duration': self.duration,
+                'track_type': self.track_type, 'quiet': self.quiet}
 
 
 class VLCInterface:
-    def __init__(self, web_host, web_port, web_user, web_pass):
-        self.vlc_host = web_host
-        self.vlc_port = web_port
-        self.vlc_user = web_user
-        self.vlc_pass = web_pass
-
-    def get_status_json(self):
-        try:
-            web_resp = requests.get(f'http://{self.vlc_host}:{self.vlc_port}/requests/status.json',
-                                    auth=(self.vlc_user, self.vlc_pass))
-            if web_resp.ok:
-                return web_resp.json()
-            return None
-        except requests.RequestException as e:
-            dprint(e)
-            return None
-
-    def get_playlist_json(self):
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/playlist.json',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return web_resp.content
-            return None
-        except requests.RequestException as e:
-            dprint(e)
-            return None
-
-    def toggle_pause(self, pause=True) -> bool:
-        try:
-            current_json = self.get_status_json()
-            if current_json:
-                if (current_json['state'] == 'playing' and pause is True) or (
-                        current_json['state'] == 'paused' and pause is False):
-                    web_resp = requests.post(
-                        f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_pause',
-                        auth=(self.vlc_user, self.vlc_pass)
-                    )
-                    if web_resp.ok:
-                        return True
-                    return False
-                if current_json['state'] == 'stopped':
-                    self.play()
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
-
-    def get_playlist(self):
-        playlist_json = self.get_playlist_json()
-        if playlist_json:
-            current_playlist = []
-            for track in playlist_json['children']['children']:
-                current_track = playlist_json['children']['children'][track]
-                current_track_dict = {
-                    "name": current_track['name'],
-                    "duration": current_track['duration'],
-                    "track_id": current_track['id'],
-                    "uri": current_track['uri'],
-                    "current": current_track['current']
+    class Status(dict):
+        def __init__(self):
+            super().__init__(
+                {
+                    'plugin_owner': '',
+                    'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
+                    'queue': [],
+                    'queue_length': 0,
+                    'status': TrackStatus.STOPPED,
+                    'volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME]),
+                    'loop': False,
+                    'duck_audio': False,
+                    'ducking_volume': 0.05,
+                    'ducking_threshold': 4000.0,
+                    'ducking_delay': 1.0,
+                    # Ducking Settings
+                    'is_ducking': False,
+                    'duck_start': 0.0,
+                    'duck_end': 0.0,
+                    'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME])
                 }
-                current_playlist.append(current_track_dict)
-            return current_playlist
-        return None
-
-    def clear_playlist(self) -> bool:
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_empty',
-                auth=(self.vlc_user, self.vlc_pass)
             )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
 
-    def add_to_playlist(self, mrl=None) -> bool:
-        try:
-            if mrl is None:
-                return False
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=in_enqueue&input={mrl}',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def __str__(self):
+            dict_str = f"plugin_owner: {self['plugin_owner']}<br>" \
+                       f"sender: {self['track'].sender}<br>" \
+                       f"track: {self['track'].name}<br>" \
+                       f"duration: {self['track'].duration}<br>" \
+                       f"type: {self['track'].track_type.value}<br>" \
+                       f"queue: ["
+            self_copy = deepcopy(self)
+            dict_str += ', '.join(x.name for x in self_copy['queue'])
+            dict_str += f"]<br>queue_length: {self['queue_length']}<br>" \
+                        f"status: {self['status'].value}<br>" \
+                        f"volume: {self['volume']}<br>" \
+                        f"loop: {self['loop']}<br>" \
+                        f"duck_audio: {self['duck_audio']}<br>" \
+                        f"ducking_volume: {self['ducking_volume']}<br>" \
+                        f"ducking_threshold: {self['ducking_threshold']}<br>" \
+                        f"ducking_delay: {self['ducking_delay']}"
+            return dict_str
 
-    def add_and_play_to_playlist(self, mrl=None):
-        try:
-            if mrl is None:
-                return False
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=in_play&input={mrl}',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        # Plugin owner
+        def get_plugin_owner(self):
+            return self.get('plugin_owner')
 
-    def next_track(self) -> bool:
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_next',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def set_plugin_owner(self, owner_name):
+            self['plugin_owner'] = owner_name
 
-    def last_track(self) -> bool:
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_previous',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def clear_plugin_owner(self):
+            self['plugin_owner'] = ''
 
-    def play(self) -> bool:
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_play',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        # Track
+        def get_track(self):
+            return self.get('track', TrackInfo('', '', '', None, TrackType.FILE))
 
-    def play_specific(self, track_id: int):
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_play&id={int(track_id)}',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def set_track(self, track_obj: TrackInfo):
+            self['track'] = track_obj
 
-    def stop(self) -> bool:
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_stop',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok and self.clear_playlist():
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def clear_track(self):
+            self['track'] = TrackInfo('', '', '', None, TrackType.FILE)
 
-    def seek(self, seconds: int = 0) -> bool:
-        try:
-            current_json = self.get_status_json()
-            if current_json:
-                if seconds > int(current_json['length']):
-                    self.stop()
-                    return True
-                web_resp = requests.post(
-                    f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=seek&val={seconds}',
-                    auth=(self.vlc_user, self.vlc_pass)
-                )
-                if web_resp.ok:
-                    return True
-                return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def clear_queue(self):
+            self['queue'] = []
+            self['queue_length'] = 0
 
-    def sort(self, sort_mode: int = 0) -> bool:
-        try:
-            web_resp = requests.post(
-                f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_sort&id=0&val={sort_mode}',
-                auth=(self.vlc_user, self.vlc_pass)
-            )
-            if web_resp.ok:
-                return True
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def update_queue(self, queue):
+            self['queue'] = queue
+            self['queue_length'] = len(queue)
 
-    def toggle_loop(self, loop=True) -> bool:
-        try:
-            current_json = self.get_status_json()
-            if current_json:
-                if (current_json['loop'] is False and loop is True) or (
-                        current_json['loop'] is True and loop is False):
-                    web_resp = requests.post(
-                        f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_loop',
-                        auth=(self.vlc_user, self.vlc_pass)
-                    )
-                    if web_resp.ok:
-                        return True
-                    return False
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        def get_queue_length(self):
+            return self['queue_length']
 
-    def toggle_repeat(self, repeat=True) -> bool:
-        try:
-            current_json = self.get_status_json()
-            if current_json:
-                if (current_json['repeat'] is False and repeat is True) or (
-                        current_json['repeat'] is True and repeat is False):
-                    web_resp = requests.post(
-                        f'http://{self.vlc_host}:{self.vlc_port}/requests/status.xml?command=pl_repeat',
-                        auth=(self.vlc_user, self.vlc_pass)
-                    )
-                    if web_resp.ok:
-                        return True
-                    return False
-            return False
-        except requests.RequestException as e:
-            dprint(e)
-            return False
+        # Volume
+        def set_volume(self, volume):
+            self['volume'] = volume
 
+        def get_volume(self):
+            return self['volume']
 
-class VLCStatus(VLCInterface):
-    def __init__(self, web_host, web_port, web_user, web_pass):
-        super().__init__(web_host, web_port, web_user, web_pass)
+        # Loop
+        def enable_loop(self):
+            self['loop'] = True
 
-    def get_current_time(self):
-        vlc_json = self.get_status_json()
-        if vlc_json:
-            return vlc_json['time']
-        return None
+        def disable_loop(self):
+            self['loop'] = False
 
-    def get_track_length(self):
-        vlc_json = self.get_status_json()
-        if vlc_json:
-            return vlc_json['length']
-        return None
+        def is_looping(self):
+            return self['loop']
 
-    def is_looping(self) -> bool:
-        vlc_json = self.get_status_json()
-        if vlc_json:
-            return vlc_json['loop']
+        # Playing status
+        def set_status(self, status: TrackStatus):
+            self['status'] = status
+
+        def get_status(self):
+            return self['status']
+
+        def is_playing(self):
+            return True if self['status'] == TrackStatus.PLAYING else False
+
+        def is_paused(self):
+            return True if self['status'] == TrackStatus.PAUSED else False
+
+        def is_stopped(self):
+            return True if self['status'] == TrackStatus.STOPPED else False
+
+    class AudioUtilites:
+        def __init__(self):
+            pass
+
+        def lerp_volume(self, cur_vol, targ_vol, lerp_time):
+            cur_time = 0
+            while cur_time < 1:
+                global_settings.vlc_interface.status.set_volume(cur_vol + cur_time * (targ_vol - cur_vol))
+                cur_time += lerp_time
+                sleep(0.01)
+            global_settings.vlc_interface.status.set_volume(targ_vol)
+
+        def set_volume(self, volume: float, auto=False):
+            if not auto:
+                global_settings.vlc_interface.status['last_volume'] = volume
+            lerp_thr = Thread(target=self.lerp_volume,
+                              args=(float(global_settings.vlc_interface.status['volume']), volume, 0.025),
+                              daemon=True)
+            lerp_thr.start()
+
+        def set_volume_fast(self, volume: float, auto=False):
+            if not auto:
+                global_settings.vlc_interface.status['last_volume'] = volume
+            global_settings.vlc_interface.status.set_volume(volume)
+
+        def set_last_volume(self, volume: float):
+            global_settings.vlc_interface.status['last_volume'] = volume
+
+        def duck_volume(self):
+            if not self.is_ducking():
+                global_settings.vlc_interface.status['is_ducking'] = True
+                self.set_volume(global_settings.vlc_interface.status['ducking_volume'], auto=True)
+
+        def set_duck_volume(self, volume: float):
+            global_settings.vlc_interface.status['ducking_volume'] = volume
+
+        def get_ducking_volume(self):
+            return global_settings.vlc_interface.status['ducking_volume']
+
+        def set_duck_threshold(self, threshold: float):
+            if threshold < 0:
+                return
+            global_settings.vlc_interface.status['ducking_threshold'] = threshold
+
+        def set_ducking_delay(self, delay: float):
+            if delay < 0 or delay > 5:
+                return
+            global_settings.vlc_interface.status['ducking_delay'] = delay
+
+        def get_ducking_threshold(self):
+            return global_settings.vlc_interface.status['ducking_threshold']
+
+        def get_ducking_delay(self):
+            return global_settings.vlc_interface.status['ducking_delay']
+
+        def unduck_volume(self):
+            if self.is_ducking():
+                self.set_volume(global_settings.vlc_interface.status['last_volume'], auto=True)
+                global_settings.vlc_interface.status['duck_start'] = 0.0
+                global_settings.vlc_interface.status['duck_end'] = 0.0
+                global_settings.vlc_interface.status['is_ducking'] = False
+
+        def is_ducking(self):
+            return global_settings.vlc_interface.status['is_ducking']
+
+        def can_duck(self):
+            return global_settings.vlc_interface.status['duck_audio']
+
+        def toggle_ducking(self):
+            global_settings.vlc_interface.status['duck_audio'] = not global_settings.vlc_interface.status['duck_audio']
+
+    def __init__(self):
+        self.status = VLCInterface.Status()
+        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.audio_utilities = VLCInterface.AudioUtilites()
+        self.exit_flag: bool = False
+
+    def play(self, override=False):
+        if not override:
+            if self.status.get_status() == TrackStatus.PLAYING:
+                return
+            elif self.status.get_status() == TrackStatus.PAUSED:
+                track_info = self.status.get_track()
+            else:
+                track_info = self.queue.pop_item()
+                self.status.set_track(track_info)
+                self.status.update_queue(list(self.queue))
+        else:
+            track_info = self.queue.pop_item()
+            self.status.set_track(track_info)
+            self.status.update_queue(list(self.queue))
+        if not track_info:
+            global_settings.gui_service.quick_gui(
+                f"There is no track available to play",
+                text_type='header',
+                box_align='left')
+            return
+        if global_settings.vlc_inst:
+            audio_interface.stop_vlc_instance()
+        audio_interface.create_vlc_instance(track_info.uri)
+        if not track_info.quiet:
+            global_settings.gui_service.quick_gui(
+                f"Playing audio: {self.status.get_track().name}",
+                text_type='header',
+                box_align='left')
+        self.status.set_status(TrackStatus.PLAYING)
+
+    def seek(self, seconds: int):
+        if global_settings.vlc_inst:
+            audio_interface.stop_vlc_instance()
+        audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
+        global_settings.gui_service.quick_gui(
+            f"Skipped ahead in the track by {seconds} seconds",
+            text_type='header',
+            box_align='left')
+
+    def stop(self):
+        audio_interface.stop_vlc_instance()
+        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.status = VLCInterface.Status()
+        self.clear_dni()
+
+    def reset(self):
+        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.status = VLCInterface.Status()
+        self.clear_dni()
+
+    def enqueue_track(self, track_obj, to_front=False):
+        # Calculate track duration if a file is provided.
+        if track_obj.track_type == TrackType.FILE and not track_obj.duration:
+            try:
+                with wave.open(track_obj.uri, 'r') as wfile:
+                    frames = wfile.getnframes()
+                    rate = wfile.getframerate()
+                    raw_length = frames / float(rate)
+                    track_length = str(timedelta(seconds=round(raw_length))) if raw_length > 0 else -1
+            except wave.Error:
+                track_length = -1
+            except EOFError:
+                track_length = -1
+            track_obj.duration = track_length
+        self.queue.insert_priority_item(track_obj) if to_front else self.queue.insert_item(track_obj)
+        # Update interface status
+        self.status.update_queue(list(self.queue))
+
+    def loop_track(self):
+        if self.status.is_looping():
+            self.status.disable_loop()
+            return
+        self.status.enable_loop()
+
+    def remove_track(self, track_index=0, track_name=None):
+        # Search and remove first occurrence of track by name.
+        if track_name:
+            to_remove = None
+            for i, track_info in enumerate(self.status['queue']):
+                if track_info.name == track_name:
+                    to_remove = i
+                    break
+            if to_remove:
+                self.queue.remove_item(to_remove)
+        # Remove track at the given index.
+        else:
+            self.queue.remove_item(track_index)
+        self.status.update_queue(list(self.queue))
+
+    def next_track(self):
+        if self.status.is_looping():
+            self.status.set_track(track_obj=self.status.get_track())
+            if not self.status.get_track().quiet:
+                global_settings.gui_service.quick_gui(
+                    f"Playing audio: {self.status.get_track().name}",
+                    text_type='header',
+                    box_align='left')
+            self.status.set_status(TrackStatus.PLAYING)
+            return True
+        track_to_play = self.queue.pop_item()
+        if track_to_play:
+            self.status.set_track(track_obj=track_to_play)
+            self.status.update_queue(list(self.queue))
+            if not track_to_play.quiet:
+                global_settings.gui_service.quick_gui(
+                    f"Playing audio: {self.status.get_track().name}",
+                    text_type='header',
+                    box_align='left')
+            self.status.set_status(TrackStatus.PLAYING)
+            return True
         return False
 
-    def is_repeating(self) -> bool:
-        vlc_json = self.get_status_json()
-        if vlc_json:
-            return vlc_json['repeat']
+    def get_track(self):
+        return self.status.get_track()
+
+    def check_dni(self, plugin_name):
+        if global_settings.audio_dni == plugin_name or not global_settings.audio_dni:
+            return True
+        rprint(
+            f'An audio plugin is using the audio thread with no interruption mode enabled. [{global_settings.audio_dni}]')
+        global_settings.gui_service.quick_gui(
+            f"An audio plugin({global_settings.audio_dni}) is using the audio thread with no interruption mode enabled.",
+            text_type='header',
+            box_align='left')
         return False
 
-    def is_playing(self) -> bool:
-        vlc_json = self.get_status_json()
-        if vlc_json:
-            if vlc_json['state'] == 'playing':
-                return True
+    def check_dni_is_mine(self, plugin_name):
+        if global_settings.audio_dni == plugin_name:
+            return True
         return False
 
-    def is_paused(self) -> bool:
-        vlc_json = self.get_status_json()
-        if vlc_json:
-            if vlc_json['state'] == 'paused':
-                return True
+    def check_dni_active(self):
+        if global_settings.audio_dni:
+            return True
         return False
+
+    def set_dni(self, plugin_name):
+        global_settings.audio_dni = plugin_name
+        self.status.set_plugin_owner(plugin_name)
+
+    def clear_dni(self):
+        global_settings.audio_dni = None
+        self.status.clear_plugin_owner()

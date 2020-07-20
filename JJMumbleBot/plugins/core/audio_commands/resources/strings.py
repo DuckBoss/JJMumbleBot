@@ -1,2 +1,2 @@
 ###########################################################################
-# SOUND BOARD PLUGIN CONFIG PARAMETER STRINGS
+# AUDIO COMMANDS PLUGIN CONFIG PARAMETER STRINGS

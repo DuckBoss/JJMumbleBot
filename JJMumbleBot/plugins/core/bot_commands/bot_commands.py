@@ -1,5 +1,5 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
-from JJMumbleBot.settings import global_settings as GS
+from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils import runtime_utils as rutils
 from JJMumbleBot.lib import privileges
@@ -25,7 +25,7 @@ class Plugin(PluginBase):
 
     def cmd_echo(self, data):
         to_echo = data.message.strip().split(' ', 1)[1]
-        GS.gui_service.quick_gui(to_echo, text_type='header', box_align='left', ignore_whisper=True)
+        gs.gui_service.quick_gui(to_echo, text_type='header', box_align='left', ignore_whisper=True)
         dprint(f"Echo:[{to_echo}]", origin=L_COMMAND)
         log(INFO, f"Echo:[{to_echo}]", origin=L_COMMAND)
 
@@ -34,7 +34,7 @@ class Plugin(PluginBase):
         send_to = split_data[1]
         message_to_send = split_data[2]
 
-        GS.gui_service.quick_gui(message_to_send, text_type='header', box_align='left',
+        gs.gui_service.quick_gui(message_to_send, text_type='header', box_align='left',
                                  user=send_to,
                                  ignore_whisper=True)
         dprint(f"Msg:[{send_to}]->[{message_to_send}]", origin=L_COMMAND)
@@ -46,20 +46,20 @@ class Plugin(PluginBase):
         log(INFO, f'Manually Logged: [{to_log}]', origin=L_LOGGING)
 
     def cmd_showplugins(self, data):
-        cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>All Plugins:</font>"
-        for i, plugin in enumerate(GS.bot_plugins.keys()):
-            cur_text += f"<br><font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{plugin}]"
-        GS.gui_service.quick_gui(
+        cur_text = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>All Plugins:</font>"
+        for i, plugin in enumerate(gs.bot_plugins.keys()):
+            cur_text += f"<br><font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{plugin}]"
+        gs.gui_service.quick_gui(
             cur_text,
             text_type='header',
             box_align='left',
             text_align='left',
             ignore_whisper=True,
-            user=GS.mumble_inst.users[data.actor]['name']
+            user=gs.mumble_inst.users[data.actor]['name']
         )
 
     def cmd_move(self, data):
-        data_actor = GS.mumble_inst.users[data.actor]['name']
+        data_actor = gs.mumble_inst.users[data.actor]['name']
         channel_name = data.message.strip().split(' ', 1)[1]
         if channel_name == "default" or channel_name == "Default":
             channel_name = rutils.get_default_channel()
@@ -67,14 +67,14 @@ class Plugin(PluginBase):
         if channel_search is None:
             return
         channel_search.move_in()
-        GS.gui_service.quick_gui(
+        gs.gui_service.quick_gui(
             f"{rutils.get_bot_name()} was moved by {data_actor}",
             text_type='header', box_align='left', ignore_whisper=True)
         dprint(f"Moved to channel: {channel_name} by {data_actor}", origin=L_COMMAND)
         log(INFO, f"Moved to channel: {channel_name} by {data_actor}", origin=L_COMMAND)
 
     def cmd_make(self, data):
-        data_actor = GS.mumble_inst.users[data.actor]['name']
+        data_actor = gs.mumble_inst.users[data.actor]['name']
         channel_name = data.message.strip().split(' ', 1)[1]
         rutils.make_channel(rutils.get_my_channel(), channel_name)
         dprint(f"Made a channel: {channel_name} by {data_actor}", origin=L_COMMAND)
@@ -91,11 +91,11 @@ class Plugin(PluginBase):
         log(INFO, "Removed current channel.", origin=L_COMMAND)
 
     def cmd_joinme(self, data):
-        data_actor = GS.mumble_inst.users[data.actor]
-        GS.gui_service.quick_gui(f"Joining user: {data_actor['name']}", text_type='header',
+        data_actor = gs.mumble_inst.users[data.actor]
+        gs.gui_service.quick_gui(f"Joining user: {data_actor['name']}", text_type='header',
                                  box_align='left', ignore_whisper=True)
 
-        GS.mumble_inst.channels[data_actor['channel_id']].move_in()
+        gs.mumble_inst.channels[data_actor['channel_id']].move_in()
         dprint( f"Joined user: {data_actor['name']}", origin=L_COMMAND)
         log(INFO, f"Joined user: {data_actor['name']}", origin=L_COMMAND)
 
@@ -105,153 +105,51 @@ class Plugin(PluginBase):
             all_users = rutils.get_all_users()
             for user_id in rutils.get_all_users():
                 if all_users[user_id]['name'] == to_join:
-                    GS.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
+                    gs.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
                                              box_align='left', ignore_whisper=True)
-                    GS.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
+                    gs.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
                     dprint(f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
                     log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}joinuser 'username'")
-            GS.gui_service.quick_gui(
+            gs.gui_service.quick_gui(
                 f"Incorrect format! Format: {rutils.get_command_token()}joinuser 'username'",
                 text_type='header',
-                box_align='left', user=GS.mumble_inst.users[data.actor]['name'],
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
 
-    def cmd_duckaudio(self, data):
-        rutils.toggle_ducking()
-        GS.gui_service.quick_gui(
-            f"{'Enabled' if rutils.can_duck() else 'Disabled'} audio volume ducking.",
-            text_type='header',
-            box_align='left')
-        log(INFO, f"Audio ducking was {'enabled' if rutils.can_duck() else 'disabled'}.", origin=L_COMMAND)
-
-    def cmd_duckvolume(self, data):
-        try:
-            vol = float(data.message.strip().split(' ', 1)[1])
-        except IndexError:
-            GS.gui_service.quick_gui(
-                f"Current bot ducking volume: {rutils.get_ducking_volume()}",
-                text_type='header',
-                box_align='left')
-            return
-        if vol > 1 or vol < 0:
-            GS.gui_service.quick_gui(
-                "Invalid Volume Input: [0-1]",
-                text_type='header',
-                box_align='left')
-            return
-
-        rutils.set_duck_volume(vol)
-        GS.gui_service.quick_gui(
-            f"Set volume to {vol}",
-            text_type='header',
-            box_align='left')
-        log(INFO, f"The bot audio ducking volume was changed to {vol}.", origin=L_COMMAND)
-
-    def cmd_volume(self, data):
-        try:
-            vol = float(data.message.strip().split(' ', 1)[1])
-        except IndexError:
-            GS.gui_service.quick_gui(
-                f"Current bot volume: {rutils.get_volume()}",
-                text_type='header',
-                box_align='left')
-            return
-        if vol > 1 or vol < 0:
-            GS.gui_service.quick_gui(
-                "Invalid Volume Input: [0-1]",
-                text_type='header',
-                box_align='left')
-            return
-        if rutils.is_ducking():
-            rutils.set_last_volume(vol)
-        else:
-            rutils.set_volume(vol, auto=False)
-        GS.gui_service.quick_gui(
-            f"Set volume to {vol}",
-            text_type='header',
-            box_align='left')
-        log(INFO, f"The volume was changed to {vol}.", origin=L_COMMAND)
-
-    def cmd_duckthreshold(self, data):
-        try:
-            threshold = float(data.message.strip().split(' ', 1)[1])
-        except IndexError:
-            GS.gui_service.quick_gui(
-                f"Current bot ducking threshold: {rutils.get_ducking_threshold()}",
-                text_type='header',
-                box_align='left')
-            return
-        if threshold > 1 or threshold < 0:
-            GS.gui_service.quick_gui(
-                "Invalid Ducking Threshold Input: [0-1]",
-                text_type='header',
-                box_align='left')
-            return
-
-        rutils.set_duck_threshold(threshold)
-        GS.gui_service.quick_gui(
-            f"Set ducking threshold to {threshold}",
-            text_type='header',
-            box_align='left')
-        log(INFO, f"The bot audio ducking threshold was changed to {threshold}.", origin=L_COMMAND)
-
-    def cmd_duckdelay(self, data):
-        try:
-            delay = float(data.message.strip().split(' ', 1)[1])
-        except IndexError:
-            GS.gui_service.quick_gui(
-                f"Current bot ducking delay: {rutils.get_ducking_delay()}",
-                text_type='header',
-                box_align='left')
-            return
-        if delay > 1 or delay < 0:
-            GS.gui_service.quick_gui(
-                "Invalid Ducking Delay Input: [0-1]",
-                text_type='header',
-                box_align='left')
-            return
-
-        rutils.set_ducking_delay(delay)
-        GS.gui_service.quick_gui(
-            f"Set ducking delay to {delay}",
-            text_type='header',
-            box_align='left')
-        log(INFO, f"The bot audio ducking delay was changed to {delay}.", origin=L_COMMAND)
-
     def cmd_showprivileges(self, data):
-        GS.gui_service.quick_gui(f"{privileges.get_all_privileges()}", text_type='header', box_align='left',
-                                 text_align='left', user=GS.mumble_inst.users[data.actor]['name'],
+        gs.gui_service.quick_gui(f"{privileges.get_all_privileges()}", text_type='header', box_align='left',
+                                 text_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                                  ignore_whisper=True)
-        log(INFO, f"Displayed user privileges to: {GS.mumble_inst.users[data.actor]['name']}", origin=L_COMMAND)
+        log(INFO, f"Displayed user privileges to: {gs.mumble_inst.users[data.actor]['name']}", origin=L_COMMAND)
 
     def cmd_setprivileges(self, data):
-        data_actor = GS.mumble_inst.users[data.actor]
+        data_actor = gs.mumble_inst.users[data.actor]
         try:
             username = data.message.strip().split()[1]
             level = int(data.message.strip().split()[2])
             result = privileges.set_privileges(username, level, data_actor)
             if result:
-                GS.gui_service.quick_gui(f"User: {username} privileges have been modified.", text_type='header',
+                gs.gui_service.quick_gui(f"User: {username} privileges have been modified.", text_type='header',
                                          box_align='left', user=data_actor['name'],
                                          ignore_whisper=True)
                 log(INFO, f"Modified user privileges for: {username}", origin=L_USER_PRIV)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}setprivileges 'username' 'level'")
-            GS.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}setprivileges 'username' 'level'",
+            gs.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}setprivileges 'username' 'level'",
                                      text_type='header',
                                      box_align='left', user=data_actor['name'],
                                      ignore_whisper=True)
 
     def cmd_addprivileges(self, data):
-        data_actor = GS.mumble_inst.users[data.actor]
+        data_actor = gs.mumble_inst.users[data.actor]
         try:
             username = data.message.strip().split()[1]
             level = int(data.message.strip().split()[2])
             result = privileges.add_to_privileges(username, level)
             if result:
-                GS.gui_service.quick_gui(f"Added a new user: {username} to the user privileges.",
+                gs.gui_service.quick_gui(f"Added a new user: {username} to the user privileges.",
                                          text_type='header',
                                          box_align='left',
                                          user=data_actor['name'],
@@ -259,17 +157,17 @@ class Plugin(PluginBase):
                 log(INFO, f"Added a new user: {username} to the user privileges.", origin=L_USER_PRIV)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}addprivileges 'username' 'level'")
-            GS.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}addprivileges 'username' 'level'",
+            gs.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}addprivileges 'username' 'level'",
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'],
                                      ignore_whisper=True)
 
     def cmd_showblacklist(self, data):
-        GS.gui_service.quick_gui(privileges.get_blacklist(), text_type='header',
+        gs.gui_service.quick_gui(privileges.get_blacklist(), text_type='header',
                                  box_align='left',
                                  text_align='left',
-                                 user=GS.mumble_inst.users[data.actor]['name'],
+                                 user=gs.mumble_inst.users[data.actor]['name'],
                                  ignore_whisper=True
                                  )
 
@@ -281,20 +179,20 @@ class Plugin(PluginBase):
                 reason = all_data[2]
             result = privileges.add_to_blacklist(all_data[1])
             if result:
-                GS.gui_service.quick_gui(f"User: {all_data[1]} added to the blacklist.<br>Reason: {reason}",
+                gs.gui_service.quick_gui(f"User: {all_data[1]} added to the blacklist.<br>Reason: {reason}",
                                          text_type='header',
                                          box_align='left',
                                          text_align='left',
-                                         user=GS.mumble_inst.users[data.actor]['name'],
+                                         user=gs.mumble_inst.users[data.actor]['name'],
                                          ignore_whisper=True
                                          )
                 log(INFO, f"Blacklisted user: {all_data[1]} <br>Reason: {reason}", origin=L_USER_PRIV)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}blacklistuser 'username'")
-            GS.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}blacklistuser 'username'",
+            gs.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}blacklistuser 'username'",
                                      text_type='header',
                                      box_align='left',
-                                     user=GS.mumble_inst.users[data.actor]['name'],
+                                     user=gs.mumble_inst.users[data.actor]['name'],
                                      ignore_whisper=True)
 
     def cmd_whitelistuser(self, data):
@@ -302,17 +200,17 @@ class Plugin(PluginBase):
             all_data = data.message.strip().split()
             result = privileges.remove_from_blacklist(all_data[1])
             if result:
-                GS.gui_service.quick_gui(f"User: {all_data[1]} removed from the blacklist.",
+                gs.gui_service.quick_gui(f"User: {all_data[1]} removed from the blacklist.",
                                          text_type='header',
                                          box_align='left',
-                                         user=GS.mumble_inst.users[data.actor]['name'],
+                                         user=gs.mumble_inst.users[data.actor]['name'],
                                          ignore_whisper=True
                                          )
                 log(INFO, f"User: {all_data[1]} removed from the blacklist.", origin=L_USER_PRIV)
         except IndexError:
-            GS.gui_service.quick_gui("Command format: !whitelist username",
+            gs.gui_service.quick_gui("Command format: !whitelist username",
                                      text_type='header',
                                      box_align='left',
-                                     user=GS.mumble_inst.users[data.actor]['name'],
+                                     user=gs.mumble_inst.users[data.actor]['name'],
                                      ignore_whisper=True
                                      )

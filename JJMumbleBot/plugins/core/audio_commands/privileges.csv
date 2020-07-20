@@ -1,0 +1,9 @@
+command,level
+audiostatus,4
+loop,3
+seek,3
+volume,3
+duckaudio,4
+duckvolume,4
+duckthreshold,4
+duckdelay,4
