@@ -6,7 +6,6 @@ from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utility as sbu
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
-from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
 from os import path
@@ -36,12 +35,6 @@ class Plugin(PluginBase):
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-
-    def cmd_sbstop(self, data):
-        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.stop()
-            gs.gui_service.quick_gui("Stopped sound board audio.", text_type='header',
-                                     box_align='left')
 
     def cmd_sblist(self, data):
         internal_list = []
@@ -87,17 +80,6 @@ class Plugin(PluginBase):
                 dir_utils.remove_file(all_data[1].strip(), f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")
                 gs.gui_service.quick_gui(f"Deleted sound clip : {all_data[1].strip()}", text_type='header',
                                          box_align='left')
-
-    def cmd_sbplaying(self, data):
-        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            track_info = gs.vlc_interface.status.get_track()
-            rprint(
-                f'{get_bot_name()}({self.plugin_name}) is playing: {track_info.name} (duration: {track_info.duration})',
-                origin=L_COMMAND)
-            gs.gui_service.quick_gui(
-                f'{get_bot_name()}({self.plugin_name}) is playing: {track_info.name} (duration: {track_info.duration})',
-                text_type='header',
-                box_align='left')
 
     def cmd_sbrandom(self, data):
         if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):

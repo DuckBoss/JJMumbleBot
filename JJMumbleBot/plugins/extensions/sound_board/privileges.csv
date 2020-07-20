@@ -1,13 +1,10 @@
 command,level
 sb,2
 sbquiet,3
-sbvolume,3
 sbrandom,3
 sbloop,3
 sbloopquiet,3
 sbskip,3
 sblist,2
-sbplaying,2
-sbstop,2
 sbdownload,4
 sbdelete,4
