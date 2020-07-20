@@ -2,3 +2,4 @@ alias,command
 sbl,(sblist)
 sbr,(sbrandom)
 sbq,(sbquiet)
+sbqo,(sbquietoverride)

@@ -142,7 +142,7 @@ class Plugin(PluginBase):
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME], quiet=True):
             gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
@@ -169,3 +169,36 @@ class Plugin(PluginBase):
             to_front=False
         )
         gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+
+    def cmd_sbquietoverride(self, data):
+        all_data = data.message.strip().split()
+        if len(all_data) < 2:
+            return
+
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME], quiet=True):
+            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+
+        to_play = all_data[1].strip()
+        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
+            gs.gui_service.quick_gui(
+                "The sound clip does not exist.",
+                text_type='header',
+                box_align='left')
+            if gs.vlc_interface.get_track().name == '':
+                gs.vlc_interface.clear_dni()
+            return
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
+            name=to_play,
+            sender=gs.mumble_inst.users[data.actor]['name'],
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
+        )
+        gs.vlc_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False
+        )
+        gs.vlc_interface.play(override=True)

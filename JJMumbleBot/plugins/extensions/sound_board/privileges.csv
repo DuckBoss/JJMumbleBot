@@ -1,6 +1,7 @@
 command,level
 sb,2
 sbquiet,3
+sbquietoverride,3
 sbrandom,3
 sblist,2
 sbdownload,4
