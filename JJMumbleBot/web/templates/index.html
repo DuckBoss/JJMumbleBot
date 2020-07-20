@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>{{ bot_name }} Web Interface</title>
+</head>
+<body>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page" id="bot-uptime">Home</li>
+      </ol>
+    </nav>
+
+    <div class="container border border-info rounded">
+    <form action="{{ url_for('post_message') }}" method="POST">
+        <div class="form-group">
+            <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="{{ command_token }}command ...">
+            <small id="commandHelp" class="form-text text-muted">Send commands to {{ bot_name }} from here.</small>
+            <button type="submit" class="btn btn-outline-success">Send Command</button>
+            <button class="btn btn-outline-secondary generate_button" onclick="download_report()">Download Bot Report</button>
+        </div>
+    </form>
+    </div>
+    <br>
+    <div class="container border border-dark rounded">
+        <div class="row">
+            <div class="col-8 border border-secondary">
+                <div class="panel-heading" id="commandOutputHeader"></div>
+                <div class="panel panel-primary" id="commandOutputPanel">
+                    <div class="panel-body" id="commandOutputData">NULL</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <center><b>Server Channels</b></center>
+                <figure id="channelsList">
+                </figure>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container border border-dark rounded">
+        <div class="form-group">
+            {% if plugins %}
+            <table class="table table-hover table-sm table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">Active Plugins:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in plugins %}
+                    <tr>
+                        <td scope='row'>
+                        {{ item }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="lead"><br>
+                <center>
+                    <p>There are no active plugins.</p>
+                </center>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var data_storage = {};
+        var commandOutputHeader = null;
+        var commandOutputData = null;
+        var botUpTime = null;
+
+        var ws = new WebSocket("ws://{{ server_ip }}:{{ socket_port }}/");
+        ws.onmessage = function(e) {
+          $.extend(data_storage, JSON.parse(e.data));
+          commandOutputHeader.innerHTML = "<center><b>Most Recent Message Output " + data_storage["last_cmd_type"] + "</b></center>";
+          commandOutputData.innerHTML = data_storage["last_cmd_output"];
+          botUpTime.innerHTML = `Up-time: ${data_storage["bot_uptime"]}`;
+
+          setChannelInformation();
+        }
+
+        function setChannelInformation() {
+          var channel_list_fig = document.getElementById("channelsList");
+          channel_list_fig.innerHTML = "";
+          for (var chan_key of Object.keys(data_storage["channels"])) {
+            var channel_name = document.createElement("figcaption");
+            channel_name.innerHTML = data_storage["channels"][parseInt(chan_key)]["name"];
+            channel_list_fig.appendChild(channel_name);
+
+            var channel_list_ul = document.createElement("ul");
+            channel_list_ul.classList.add("list-group");
+            channel_list_ul.classList.add("list-group-flush");
+            for (var user_key of Object.keys(data_storage["users"][parseInt(chan_key)])) {
+                var user_li = document.createElement("li");
+                user_li.classList.add("list-group-item");
+                user_li.innerHTML = `${data_storage["users"][parseInt(chan_key)][user_key]["name"]}`;
+                channel_list_ul.appendChild(user_li);
+            }
+            channel_list_fig.appendChild(channel_list_ul);
+          }
+        }
+
+        // Function to download data to a file
+        function download(data, filename, type) {
+            var file = new Blob([data], {type: type});
+            if (window.navigator.msSaveOrOpenBlob) // IE10+
+                window.navigator.msSaveOrOpenBlob(file, filename);
+            else { // Others
+                var a = document.createElement("a"),
+                        url = URL.createObjectURL(file);
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(function() {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 0);
+            }
+        }
+
+        function download_report() {
+            download(JSON.stringify(data_storage), 'bot_report.json', 'text/plain')
+        }
+
+        $(document).ready(function() {
+            commandOutputHeader = document.getElementById("commandOutputHeader");
+            commandOutputData = document.getElementById("commandOutputData");
+            botUpTime = document.getElementById("bot-uptime");
+
+            fetch('http://{{ server_ip }}:{{ server_port }}/plugins')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+            fetch('http://{{ server_ip }}:{{ server_port }}/channels')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+            fetch('http://{{ server_ip }}:{{ server_port }}/system')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+            fetch('http://{{ server_ip }}:{{ server_port }}/hardware')
+                .then(response => response.json())
+                .then(json => $.extend(data_storage, json));
+
+            $('form').on('submit', function(event) {
+                $.ajax({
+                    data: {
+                        commandInput: $('#commandInput').val()
+                    },
+                    type: 'POST',
+                    url: '/command'
+                })
+            this.reset();
+            event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>
