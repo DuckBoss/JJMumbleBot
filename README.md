@@ -64,4 +64,5 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-### Got any questions or concerns? Please post an issue report! 👋 
+### Got any questions or concerns? Please post an issue report 👋 
+#### Or email me @ <a href="mailto:duckboss@kakao.com">duckboss@kakao.com</a>
