@@ -1,7 +1,7 @@
 from datetime import timedelta
 from time import sleep
 import wave
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
@@ -376,7 +376,7 @@ class VLCInterface:
     def check_dni(self, plugin_name):
         if global_settings.audio_dni == plugin_name or not global_settings.audio_dni:
             return True
-        rprint(
+        dprint(
             f'An audio plugin is using the audio thread with no interruption mode enabled. [{global_settings.audio_dni}]')
         global_settings.gui_service.quick_gui(
             f"An audio plugin({global_settings.audio_dni}) is using the audio thread with no interruption mode enabled.",
