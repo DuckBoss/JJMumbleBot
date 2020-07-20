@@ -34,9 +34,12 @@ P_WEB_TICK_RATE = 'WebTickRate'
 # Media Settings
 P_MEDIA_VLC_PATH = 'VLCPath'
 P_MEDIA_VLC_STEREO = 'VLCStereoAudio'
-P_MEDIA_VLC_DUCK = 'VLCAudioDuck'
 P_MEDIA_VLC_QUIET = 'VLCRunQuiet'
 P_MEDIA_VLC_DEFAULT_VOLUME = 'VLCDefaultVolume'
+P_MEDIA_VLC_DUCK = 'VLCAudioDuck'
+P_MEDIA_VLC_DUCK_VOLUME = 'VLCDuckingVolume'
+P_MEDIA_VLC_DUCK_THRESHOLD = 'VLCDuckingThreshold'
+P_MEDIA_VLC_DUCK_DELAY = 'VLCDuckingDelay'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
