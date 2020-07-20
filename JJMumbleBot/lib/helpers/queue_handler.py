@@ -50,7 +50,9 @@ class QueueHandler(collections.deque):
         if not self.is_empty():
             temp_list = []
             while not self.is_empty():
-                temp_list.append(self.pop())
+                temp_list.append(self.pop_item())
+            if len(temp_list) == 0 or index > len(temp_list)-1:
+                return None
             ret_val = temp_list.pop(index)
             for i, item in enumerate(temp_list):
                 self.insert_item(item)

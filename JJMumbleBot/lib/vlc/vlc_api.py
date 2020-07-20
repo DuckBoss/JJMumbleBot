@@ -371,15 +371,17 @@ class VLCInterface:
     def remove_track(self, track_index=0, track_name=None):
         # Search and remove first occurrence of track by name.
         if track_name:
-            to_remove = None
+            track_index = None
             for i, track_info in enumerate(self.status['queue']):
                 if track_info.name == track_name:
-                    to_remove = i
+                    track_index = i
                     break
-            if to_remove:
-                self.queue.remove_item(to_remove)
+            if track_index:
+                self.queue.remove_item(track_index)
         # Remove track at the given index.
         else:
+            if track_index > self.queue.size() - 1:
+                return
             self.queue.remove_item(track_index)
         reversed_list = list(self.queue)
         reversed_list.reverse()

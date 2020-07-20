@@ -3,6 +3,7 @@ audiostatus,4
 shuffle,3
 skip,3
 loop,3
+remove,3
 seek,3
 volume,3
 duckaudio,4

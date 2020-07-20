@@ -71,6 +71,17 @@ class Plugin(PluginBase):
             text_type='header',
             box_align='left')
 
+    def cmd_remove(self, data):
+        if gs.vlc_interface.check_dni_active():
+            all_data = data.message.strip().split(' ', 1)
+            try:
+                to_remove = int(all_data[1])
+            except ValueError:
+                return
+            except IndexError:
+                return
+            gs.vlc_interface.remove_track(track_index=to_remove)
+
     def cmd_seek(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
