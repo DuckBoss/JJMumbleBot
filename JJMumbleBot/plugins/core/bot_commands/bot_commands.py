@@ -73,7 +73,7 @@ class Plugin(PluginBase):
         dprint(f"Moved to channel: {channel_name} by {data_actor}", origin=L_COMMAND)
         log(INFO, f"Moved to channel: {channel_name} by {data_actor}", origin=L_COMMAND)
 
-    def cmd_make(self, data):
+    def cmd_makechannel(self, data):
         data_actor = gs.mumble_inst.users[data.actor]['name']
         channel_name = data.message.strip().split(' ', 1)[1]
         rutils.make_channel(rutils.get_my_channel(), channel_name)
@@ -85,7 +85,7 @@ class Plugin(PluginBase):
         dprint(f"Returned to default channel.", origin=L_COMMAND)
         log(INFO, "Returned to default channel.", origin=L_COMMAND)
 
-    def cmd_remove(self, data):
+    def cmd_removechannel(self, data):
         rutils.remove_channel()
         dprint(f"Removed current channel.", origin=L_COMMAND)
         log(INFO, "Removed current channel.", origin=L_COMMAND)
