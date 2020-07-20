@@ -81,8 +81,8 @@ class Plugin(PluginBase):
 
     def cmd_setcomment(self, data):
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
-        all_data = data.message.strip()
-        new_comment = all_data[1:].split(' ', 1)[1]
+        all_data = data.message.strip().split(' ', 1)
+        new_comment = all_data[1]
         if len(all_data) < 2:
             return
         # Set the new comment.
@@ -122,7 +122,7 @@ class Plugin(PluginBase):
         log(INFO, f"Reset the bot\'s user comment.", origin=L_COMMAND)
 
     def cmd_pguistresstest(self, data):
-        all_data = data.message.strip()
+        all_data = data.message.strip().split(' ', 1)
         if len(all_data) < 2:
             num_of_lines = 5
         else:
@@ -233,7 +233,7 @@ class Plugin(PluginBase):
             log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND)
 
     def cmd_setalias(self, data):
-        all_data = data.message.strip()
+        all_data = data.message.strip().split(' ', 2)
         if len(all_data) < 2:
             return
         alias_name = all_data[1]
@@ -282,7 +282,7 @@ class Plugin(PluginBase):
         )
 
     def cmd_removealias(self, data):
-        all_data = data.message.strip()
+        all_data = data.message.strip().split(' ', 2)
         if len(all_data) < 2:
             return
         alias_name = all_data[1]
