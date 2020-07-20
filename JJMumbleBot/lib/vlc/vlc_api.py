@@ -6,7 +6,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
 from JJMumbleBot.lib.vlc import audio_interface
-from copy import deepcopy
+from math import trunc
 from enum import Enum
 from threading import Thread
 
@@ -117,7 +117,7 @@ class VLCInterface:
             self['volume'] = volume
 
         def get_volume(self):
-            return self['volume']
+            return trunc(self['volume'], 2)
 
         # Loop
         def enable_loop(self):
@@ -161,7 +161,7 @@ class VLCInterface:
             if not auto:
                 global_settings.vlc_interface.status['last_volume'] = volume
             lerp_thr = Thread(target=self.lerp_volume,
-                              args=(float(global_settings.vlc_interface.status['volume']), volume, 0.025),
+                              args=(float(global_settings.vlc_interface.status.get_volume()), volume, 0.025),
                               daemon=True)
             lerp_thr.start()
 
