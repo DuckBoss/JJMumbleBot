@@ -49,6 +49,21 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left')
 
+    def cmd_skip(self, data):
+        if gs.vlc_interface.check_dni_active():
+            all_data = data.message.strip().split(' ', 1)
+            try:
+                skip_to = int(all_data[1])
+            except ValueError:
+                return
+            except IndexError:
+                skip_to = 0
+            gs.vlc_interface.skip(skip_to)
+
+    def cmd_shuffle(self, data):
+        if gs.vlc_interface.check_dni_active():
+            gs.vlc_interface.shuffle()
+
     def cmd_loop(self, data):
         gs.vlc_interface.loop_track()
         gs.gui_service.quick_gui(
