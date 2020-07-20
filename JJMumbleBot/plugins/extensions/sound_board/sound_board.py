@@ -102,7 +102,7 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True if self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ALLOW_QUEUE, fallback=False) else False)
+        gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sb(self, data):
         all_data = data.message.strip().split()
@@ -135,7 +135,7 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True if self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ALLOW_QUEUE, fallback=False) else False)
+        gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbquiet(self, data):
         all_data = data.message.strip().split()
@@ -168,4 +168,4 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True if self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ALLOW_QUEUE, fallback=False) else False)
+        gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))

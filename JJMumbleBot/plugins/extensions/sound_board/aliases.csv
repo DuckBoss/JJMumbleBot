@@ -1,4 +1,4 @@
 alias,command
-sbs,(sbstop)
 sbl,(sblist)
 sbr,(sbrandom)
+sbq,(sbquiet)
