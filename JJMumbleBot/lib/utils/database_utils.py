@@ -393,7 +393,7 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            if db_conn.cursor().rowcount > 0:
+            if db_conn.cursor().rowcount == -1:
                 dprint(f"Deleted all alias in the database",
                        origin=L_DATABASE)
                 log(INFO, f"Deleted all alias in the database",
@@ -414,7 +414,7 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            if db_conn.cursor().rowcount > 0:
+            if db_conn.cursor().rowcount == -1:
                 dprint(f"Deleted all plugins in the database",
                        origin=L_DATABASE)
                 log(INFO, f"Deleted all plugins in the database",
@@ -435,7 +435,7 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            if db_conn.cursor().rowcount > 0:
+            if db_conn.cursor().rowcount == -1:
                 dprint(f"Deleted all plugins_help in the database",
                        origin=L_DATABASE)
                 log(INFO, f"Deleted all plugins_help in the database",
@@ -456,7 +456,7 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            if db_conn.cursor().rowcount > 0:
+            if db_conn.cursor().rowcount == -1:
                 dprint(f"Deleted all commands in the database",
                        origin=L_DATABASE)
                 log(INFO, f"Deleted all commands in the database",
