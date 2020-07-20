@@ -1,2 +1,4 @@
 alias,command
 v,!volume
+s,!stop
+now,!playing

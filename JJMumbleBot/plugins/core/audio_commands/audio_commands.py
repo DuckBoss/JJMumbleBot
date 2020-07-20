@@ -1,10 +1,10 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.utils import runtime_utils as rutils
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 
 
 class Plugin(PluginBase):
@@ -31,6 +31,23 @@ class Plugin(PluginBase):
             ignore_whisper=True,
             user=gs.mumble_inst.users[data.actor]['name']
         )
+
+    def cmd_stop(self):
+        if gs.vlc_interface.check_dni_active():
+            gs.vlc_interface.stop()
+            gs.gui_service.quick_gui("Stopped bot audio.", text_type='header',
+                                     box_align='left')
+
+    def cmd_playing(self, data):
+        if gs.vlc_interface.check_dni_active():
+            track_info = gs.vlc_interface.status.get_track()
+            rprint(
+                f'{get_bot_name()}({gs.vlc_interface.status.get_plugin_owner()}) is playing: {track_info.name} (duration: {track_info.duration})',
+                origin=L_COMMAND)
+            gs.gui_service.quick_gui(
+                f'{get_bot_name()}({gs.vlc_interface.status.get_plugin_owner()}) is playing: {track_info.name} (duration: {track_info.duration})',
+                text_type='header',
+                box_align='left')
 
     def cmd_loop(self, data):
         gs.vlc_interface.loop_track()
