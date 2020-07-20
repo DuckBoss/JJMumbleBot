@@ -4,6 +4,7 @@ from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utility as sbu
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
 from JJMumbleBot.lib.utils import dir_utils
@@ -101,7 +102,7 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True)
+        gs.vlc_interface.play(override=True if self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ALLOW_QUEUE, fallback=False) else False)
 
     def cmd_sb(self, data):
         all_data = data.message.strip().split()
@@ -134,7 +135,7 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True)
+        gs.vlc_interface.play(override=True if self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ALLOW_QUEUE, fallback=False) else False)
 
     def cmd_sbquiet(self, data):
         all_data = data.message.strip().split()
@@ -167,4 +168,4 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True)
+        gs.vlc_interface.play(override=True if self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ALLOW_QUEUE, fallback=False) else False)
