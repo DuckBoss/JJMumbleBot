@@ -90,7 +90,7 @@ class Plugin(PluginBase):
             )
         gs.vlc_interface.play()
 
-    def cmd_ytlink(self, data):
+    def cmd_link(self, data):
         if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
             gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
@@ -99,16 +99,16 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}ytlink 'youtube_link'",
+                f"Invalid formatting! Format: {get_command_token()}link 'youtube/soundcloud link'",
                 text_type='header',
                 box_align='left')
             return
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
-        if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+        if "youtube.com" in stripped_url or "youtu.be" in stripped_url or 'soundcloud' in stripped_url:
             if "playlist" in stripped_url or "list" in stripped_url:
                 gs.gui_service.quick_gui(
-                    "The given link was identified as a youtube playlist link!<br>Please use the playlist "
+                    "The given link was identified as a playlist link!<br>Please use the playlist "
                     "command to add playlists to the queue!",
                     text_type='header',
                     box_align='left')
@@ -144,7 +144,7 @@ class Plugin(PluginBase):
             )
             gs.vlc_interface.play()
 
-    def cmd_ytlinkfront(self, data):
+    def cmd_linkfront(self, data):
         if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
             gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
@@ -153,7 +153,7 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}ytlinkfront 'youtube_link'",
+                f"Invalid formatting! Format: {get_command_token()}linkfront 'youtube/soundcloud link'",
                 text_type='header',
                 box_align='left')
             return
@@ -162,7 +162,7 @@ class Plugin(PluginBase):
         if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
             if "playlist" in stripped_url or "list" in stripped_url:
                 gs.gui_service.quick_gui(
-                    "The given link was identified as a youtube playlist link!<br>Please use the playlist "
+                    "The given link was identified as a playlist link!<br>Please use the playlist "
                     "command to add playlists to the queue!",
                     text_type='header',
                     box_align='left')
