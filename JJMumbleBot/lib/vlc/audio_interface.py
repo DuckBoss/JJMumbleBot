@@ -34,6 +34,11 @@ def stop_vlc_instance():
 
 def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True):
     global_settings.mumble_inst.sound_output.clear_buffer()
+    if global_settings.vlc_inst:
+        global_settings.vlc_inst.terminate()
+        global_settings.vlc_inst.kill()
+        global_settings.vlc_inst = None
+
     if uri == '':
         return
 
