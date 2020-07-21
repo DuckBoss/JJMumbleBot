@@ -20,7 +20,6 @@ P_SELF_REGISTER = "SelfRegister"
 P_USER_COMMENT = "DefaultComment"
 # Main Settings
 P_DB_BACKUP = 'EnableDatabaseBackup'
-P_AUD_STEREO = 'UseStereoOutput'
 P_CMD_TICK_RATE = 'CommandTickRate'
 P_CMD_MULTI_LIM = 'MultiCommandLimit'
 P_CMD_TOKEN = 'CommandToken'
