@@ -241,7 +241,7 @@ class VLCInterface:
         # Execute any callbacks subscribed to next_track
         for clbk in global_settings.plugin_callbacks:
             split_clbk = clbk.split('|')
-            if split_clbk[0] == 'youtube' and split_clbk[1] == method_name:
+            if split_clbk[1] == method_name:
                 global_settings.plugin_callbacks[clbk]()
 
     def play(self, override=False):
