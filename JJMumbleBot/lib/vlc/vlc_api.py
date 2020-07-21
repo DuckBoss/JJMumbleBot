@@ -2,11 +2,13 @@ from datetime import timedelta
 from time import sleep
 import wave
 import os
+from zlib import crc32
 from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
 from JJMumbleBot.lib.vlc import audio_interface
+from JJMumbleBot.lib.utils.dir_utils import get_temp_med_dir
 from enum import Enum
 from threading import Thread
 
@@ -477,6 +479,7 @@ class VLCInterface:
         return self.status.get_track()
 
     def display_playing_gui(self):
+        cur_track_hashed_img_uri = hex(crc32(str.encode(self.get_track().track_id)) & 0xffffffff)
         if self.get_track().track_type == TrackType.FILE:
             global_settings.gui_service.quick_gui(
                 f"Playing audio: {self.status.get_track().name}",
@@ -485,8 +488,8 @@ class VLCInterface:
         elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
             image_uri_split = self.get_track().image_uri.rsplit('/', 1)
             image_dir = image_uri_split[0]
-            image_file = image_uri_split[-1]
-            if os.path.exists(self.get_track().image_uri):
+            image_file = cur_track_hashed_img_uri
+            if os.path.exists(f"{image_dir}/{image_file}.jpg"):
                 global_settings.gui_service.quick_gui_img(
                     image_dir,
                     image_file,
@@ -498,7 +501,7 @@ class VLCInterface:
                 from JJMumbleBot.lib.utils.dir_utils import get_main_dir
                 global_settings.gui_service.quick_gui_img(
                     f'{get_main_dir()}/lib/images',
-                    f'img_unavailable.jpg',
+                    f'img_unavailable',
                     caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
                     format_img=True,
                     img_size=32768
