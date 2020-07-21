@@ -11,6 +11,7 @@ class Test_Conn:
         global_settings.cfg = configparser.ConfigParser()
         global_settings.cfg.read(f"{get_main_dir()}/tests/dummy_config.ini")
         self.md = BotServiceHelper.retrieve_mumble_data()
+        self.mumble_inst = None
 
     def test_connectivity(self):
         self.mumble_inst = pymumble.Mumble(self.md.ip_address, port=self.md.port, user=self.md.user_id,

@@ -56,8 +56,8 @@ class Test_Cfg:
 
     # Web Interface Config Tests
     def test_web_intf(self):
-        enable_web_interface = global_settings.cfg.getboolean(C_WEB_SETTINGS, P_USER_COMMENT)
-        assert enable_web_interface is True
+        enable_web_interface = global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE)
+        assert enable_web_interface is False
 
     def test_web_ip(self):
         web_server_ip = global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP]
@@ -78,7 +78,7 @@ class Test_Cfg:
 
     # Media Settings Config Tests
     def test_vlc_location(self):
-        vlc_location = global_settings.cfg[C_MEDIA_SETTINGS][P_WEB_IP]
+        vlc_location = global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH]
         assert vlc_location == "vlc"
 
     def test_stereo_audio(self):
@@ -157,7 +157,7 @@ class Test_Cfg:
     # Main Settings Config Tests
     def test_enable_database_backup(self):
         enable_database_backup = global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_DB_BACKUP)
-        assert enable_database_backup is True
+        assert enable_database_backup is False
 
     def test_command_tick_rate(self):
         command_tick_rate = global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE]
