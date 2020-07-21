@@ -51,7 +51,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 
 ## Installation And Setup 🏃
 - Download and install python 3.7+
-    - Linux: `sudo apt-get install python3.7`
+    - Linux: Depends on distribution
     - Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a>
     - Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a>
 - Install project dependencies
