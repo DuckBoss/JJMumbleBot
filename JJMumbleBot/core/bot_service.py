@@ -38,7 +38,7 @@ class BotService:
         # Set maximum multi-command limit.
         runtime_settings.multi_cmd_limit = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
         # Initialize command queue limit.
-        global_settings.cmd_queue = QueueHandler([], runtime_settings.cmd_queue_lim)
+        global_settings.cmd_queue = QueueHandler([], maxlen=runtime_settings.cmd_queue_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
         log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
@@ -197,11 +197,17 @@ class BotService:
 
     @staticmethod
     def loop():
-        while not global_settings.exit_flag:
-            if time() > global_settings.vlc_interface.status['duck_end'] and global_settings.vlc_interface.audio_utilities.is_ducking():
-                global_settings.vlc_interface.audio_utilities.unduck_volume()
-            sleep(runtime_settings.tick_rate)
-        BotService.stop()
+        try:
+            while not global_settings.exit_flag:
+                if time() > global_settings.vlc_interface.status['duck_end'] and global_settings.vlc_interface.audio_utilities.is_ducking():
+                    global_settings.vlc_interface.audio_utilities.unduck_volume()
+                sleep(runtime_settings.tick_rate)
+            BotService.stop()
+        except KeyboardInterrupt:
+            rprint(f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).", origin=L_SHUTDOWN)
+            log(INFO, f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).", origin=L_SHUTDOWN)
+            runtime_utils.exit_bot()
+            BotService.stop()
 
     @staticmethod
     def stop():
