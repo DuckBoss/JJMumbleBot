@@ -48,7 +48,6 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 ### Web Interface
 ![WebInterfaceImage](https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png)
 
-
 ## Installation And Setup 🏃
 - Download and install python 3.7+
     - Linux: Depends on distribution
@@ -59,6 +58,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - <b>Note: You must have libopus installed and installation varies by operating system.</b>
 - Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)
 - Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
+- JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.
 
 ## Documentation 📝 
 <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">JJMumbleBot Documentation WIKI</a></b> <br>
