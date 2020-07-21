@@ -1,6 +1,7 @@
 from datetime import timedelta
 from time import sleep
 import wave
+import os
 from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
@@ -274,22 +275,7 @@ class VLCInterface:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(track_info.uri)
         if not track_info.quiet:
-            if self.get_track().track_type == TrackType.FILE:
-                global_settings.gui_service.quick_gui(
-                    f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
-                    text_type='header',
-                    box_align='left')
-            elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
-                image_uri_split = self.get_track().image_uri.rsplit('/', 1)
-                image_dir = image_uri_split[0]
-                image_file = image_uri_split[-1]
-                global_settings.gui_service.quick_gui_img(
-                    image_dir,
-                    image_file,
-                    caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
-                    format_img=True,
-                    img_size=32768
-                )
+            self.display_playing_gui()
         self.status.set_status(TrackStatus.PLAYING)
 
     def skip(self, track_number):
@@ -472,22 +458,7 @@ class VLCInterface:
         if self.status.is_looping():
             self.status.set_track(track_obj=self.status.get_track())
             if not self.status.get_track().quiet:
-                if self.get_track().track_type == TrackType.FILE:
-                    global_settings.gui_service.quick_gui(
-                        f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
-                        text_type='header',
-                        box_align='left')
-                elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
-                    image_uri_split = self.get_track().image_uri.rsplit('/', 1)
-                    image_dir = image_uri_split[0]
-                    image_file = image_uri_split[-1]
-                    global_settings.gui_service.quick_gui_img(
-                        image_dir,
-                        image_file,
-                        caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
-                        format_img=True,
-                        img_size=32768
-                    )
+                self.display_playing_gui()
             self.status.set_status(TrackStatus.PLAYING)
             return True
         track_to_play = self.queue.pop_item()
@@ -497,28 +468,41 @@ class VLCInterface:
             reversed_list.reverse()
             self.status.update_queue(reversed_list)
             if not track_to_play.quiet:
-                if self.get_track().track_type == TrackType.FILE:
-                    global_settings.gui_service.quick_gui(
-                        f"Playing audio: {self.status.get_track().name}",
-                        text_type='header',
-                        box_align='left')
-                elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
-                    image_uri_split = self.get_track().image_uri.rsplit('/', 1)
-                    image_dir = image_uri_split[0]
-                    image_file = image_uri_split[-1]
-                    global_settings.gui_service.quick_gui_img(
-                        image_dir,
-                        image_file,
-                        caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
-                        format_img=True,
-                        img_size=32768
-                    )
+                self.display_playing_gui()
             self.status.set_status(TrackStatus.PLAYING)
             return True
         return False
 
     def get_track(self):
         return self.status.get_track()
+
+    def display_playing_gui(self):
+        if self.get_track().track_type == TrackType.FILE:
+            global_settings.gui_service.quick_gui(
+                f"Playing audio: {self.status.get_track().name}",
+                text_type='header',
+                box_align='left')
+        elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
+            image_uri_split = self.get_track().image_uri.rsplit('/', 1)
+            image_dir = image_uri_split[0]
+            image_file = image_uri_split[-1]
+            if os.path.exists(self.get_track().image_uri):
+                global_settings.gui_service.quick_gui_img(
+                    image_dir,
+                    image_file,
+                    caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                    format_img=True,
+                    img_size=32768
+                )
+            else:
+                from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+                global_settings.gui_service.quick_gui_img(
+                    f'{get_main_dir()}/lib/images',
+                    f'img_unavailable.jpg',
+                    caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                    format_img=True,
+                    img_size=32768
+                )
 
     def check_dni(self, plugin_name, quiet=False):
         if global_settings.audio_dni == plugin_name or not global_settings.audio_dni:
