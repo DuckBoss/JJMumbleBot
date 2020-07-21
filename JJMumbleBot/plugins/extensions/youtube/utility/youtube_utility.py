@@ -9,6 +9,7 @@ from JJMumbleBot.lib.utils import print_utils
 from JJMumbleBot.plugins.extensions.youtube.utility import settings
 from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
 import os
+from zlib import crc32
 
 
 def on_next_track():
@@ -22,98 +23,48 @@ def on_next_track():
 
         # Get the first track in the queue.
         next_track = gs.vlc_interface.status.get_queue()[0]
-
-        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.jpg"):
-            print_utils.dprint(f"Thumbnail exists for '{next_track.name}.jpg'...skipping")
-            return
-        try:
-            ydl_opts = {
-                'quiet': True,
-                'logger': gs.log_service,
-                'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.jpg',
-                'skip_download': True,
-                'writethumbnail': True
-            }
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.cache.remove()
-                ydl.extract_info(next_track.alt_uri, download=True)
-        except youtube_dl.utils.DownloadError as e:
-            print_utils.dprint(e)
-        # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
-        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.webp"):
-            im = Image.open(
-                f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.webp").convert(
-                "RGB")
-            im.save(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.jpg",
-                    "jpeg")
-            os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.webp")
-            print_utils.dprint(f"Fixed thumbnail for {next_track.track_id}")
+        download_thumbnail(next_track)
 
 
 def on_play():
     if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
-        cur_track = gs.vlc_interface.get_track()
-        print(cur_track)
-
-        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.jpg"):
-            print_utils.dprint(f"Thumbnail exists for '{cur_track.name}.jpg'...skipping")
-            return
-        try:
-            ydl_opts = {
-                'quiet': True,
-                'logger': gs.log_service,
-                'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.jpg',
-                'skip_download': True,
-                'writethumbnail': True
-            }
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.cache.remove()
-                ydl.extract_info(cur_track.alt_uri, download=True)
-        except youtube_dl.utils.DownloadError as e:
-            print_utils.dprint(e)
-        # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
-        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp"):
-            im = Image.open(
-                f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp").convert(
-                "RGB")
-            im.save(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.jpg",
-                    "jpeg")
-            os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp")
-            print_utils.dprint(f"Fixed thumbnail for {cur_track.track_id}")
+        download_thumbnail(gs.vlc_interface.get_track())
 
 
 def on_skip():
     if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
         # Clear the thumbnails since the queue order has shifted.
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
+        download_thumbnail(gs.vlc_interface.get_track())
 
-        cur_track = gs.vlc_interface.get_track()
 
-        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.jpg"):
-            print_utils.dprint(f"Thumbnail exists for '{cur_track.name}.jpg'...skipping")
-            return
-        try:
-            ydl_opts = {
-                'quiet': True,
-                'logger': gs.log_service,
-                'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.jpg',
-                'skip_download': True,
-                'writethumbnail': True
-            }
-            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-                ydl.cache.remove()
-                ydl.extract_info(cur_track.alt_uri, download=True)
-        except youtube_dl.utils.DownloadError as e:
-            print_utils.dprint(e)
-        # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
-        if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp"):
-            im = Image.open(
-                f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp").convert(
-                "RGB")
-            im.save(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.jpg",
-                    "jpeg")
-            os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp")
-            print_utils.dprint(f"Fixed thumbnail for {cur_track.track_id}")
+def download_thumbnail(cur_track):
+    cur_track_hashed_img_uri = hex(crc32(str.encode(cur_track.track_id)) & 0xffffffff)
+    if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg"):
+        print_utils.dprint(f"Thumbnail exists for '{cur_track.name}'...skipping")
+        return
+    try:
+        ydl_opts = {
+            'quiet': True,
+            'logger': gs.log_service,
+            'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg',
+            'skip_download': True,
+            'writethumbnail': True
+        }
+        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl.cache.remove()
+            ydl.extract_info(cur_track.alt_uri, download=True)
+    except youtube_dl.utils.DownloadError as e:
+        print_utils.dprint(e)
+    # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
+    if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp"):
+        im = Image.open(
+            f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp").convert(
+            "RGB")
+        im.save(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg",
+                "jpeg")
+        os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp")
+        print_utils.dprint(f"Fixed thumbnail for {cur_track.name}")
 
 
 def on_stop():
