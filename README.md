@@ -44,9 +44,9 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 
 ## Screenshots
 ### Audio Interface System (youtube plugin, sound board plugin, etc)
-![image](https://user-images.githubusercontent.com/20238115/88001012-0e956680-cacd-11ea-8cdc-02671145d446.png)
+![AudioInterfaceImage](https://user-images.githubusercontent.com/20238115/88094381-75fcf600-cb61-11ea-8113-495db67a415d.png)
 ### Web Interface
-![image](https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png)
+![WebInterfaceImage](https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png)
 
 
 ## Installation And Setup 🏃
