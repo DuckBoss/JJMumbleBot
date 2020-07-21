@@ -233,7 +233,7 @@ class VLCInterface:
 
     def __init__(self):
         self.status = VLCInterface.Status()
-        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.audio_utilities = VLCInterface.AudioUtilites()
         self.exit_flag: bool = False
 
@@ -242,7 +242,6 @@ class VLCInterface:
         for clbk in global_settings.plugin_callbacks:
             split_clbk = clbk.split('|')
             if split_clbk[0] == 'youtube' and split_clbk[1] == method_name:
-                print(f"callback found for next_track: {clbk}")
                 global_settings.plugin_callbacks[clbk]()
 
     def play(self, override=False):
@@ -348,7 +347,7 @@ class VLCInterface:
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
         self.callback_check('on_stop')
-        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
             'sender': '',
@@ -376,7 +375,7 @@ class VLCInterface:
 
     def reset(self):
         self.callback_check('on_reset')
-        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
             'sender': '',
@@ -403,7 +402,7 @@ class VLCInterface:
         self.clear_dni()
 
     def clear_queue(self):
-        self.queue = queue_handler.QueueHandler([], maxlen=100)
+        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update_queue(list(self.queue))
 
     def enqueue_track(self, track_obj, to_front=False):
@@ -482,8 +481,6 @@ class VLCInterface:
                     image_uri_split = self.get_track().image_uri.rsplit('/', 1)
                     image_dir = image_uri_split[0]
                     image_file = image_uri_split[-1]
-                    print(image_dir)
-                    print(image_file)
                     global_settings.gui_service.quick_gui_img(
                         image_dir,
                         image_file,

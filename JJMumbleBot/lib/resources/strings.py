@@ -41,6 +41,7 @@ P_MEDIA_VLC_DUCK = 'VLCAudioDuck'
 P_MEDIA_VLC_DUCK_VOLUME = 'VLCDuckingVolume'
 P_MEDIA_VLC_DUCK_THRESHOLD = 'VLCDuckingThreshold'
 P_MEDIA_VLC_DUCK_DELAY = 'VLCDuckingDelay'
+P_MEDIA_VLC_QUEUE_LEN = 'VLCMaxQueueLength'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
