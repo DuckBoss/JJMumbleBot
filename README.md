@@ -43,7 +43,10 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
 ## Screenshots
+### Audio Interface System (youtube plugin, sound board plugin, etc)
 ![image](https://user-images.githubusercontent.com/20238115/88001012-0e956680-cacd-11ea-8cdc-02671145d446.png)
+### Web Interface
+![image](https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png)
 
 
 ## Installation And Setup 🏃
