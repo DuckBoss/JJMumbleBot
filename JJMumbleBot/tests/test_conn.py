@@ -13,16 +13,16 @@ class Test_Conn:
         self.md = BotServiceHelper.retrieve_mumble_data()
 
     def test_connectivity(self):
-        mumble_inst = pymumble.Mumble(self.md.ip_address, port=self.md.port, user=self.md.user_id,
+        self.mumble_inst = pymumble.Mumble(self.md.ip_address, port=self.md.port, user=self.md.user_id,
                                       password=self.md.password, stereo=self.md.stereo)
-        assert mumble_inst is not None
+        assert self.mumble_inst is not None
 
     def test_server_ip(self):
         server_ip = self.md.ip_address
         assert server_ip == "127.0.0.1"
 
     def test_user_id(self):
-        user_id = self.md.user_id
+        user_id = self.mumble_inst.users.myself['name']
         assert user_id == "TravisCIClient"
 
     def test_server_pass(self):
