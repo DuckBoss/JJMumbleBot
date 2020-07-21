@@ -47,23 +47,7 @@ class Plugin(PluginBase):
 
     def cmd_playing(self, data):
         if gs.vlc_interface.check_dni_active():
-            track_info = gs.vlc_interface.status.get_track()
-            if track_info.track_type == TrackType.FILE:
-                gs.gui_service.quick_gui(
-                    f"Now playing[{track_info.track_type.value}]: <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_info.name}</font> by {track_info.sender}",
-                    text_type='header',
-                    box_align='left')
-            elif track_info.track_type == TrackType.STREAM and track_info.image_uri and track_info.track_id:
-                image_uri_split = track_info.image_uri.rsplit('/', 1)
-                image_dir = image_uri_split[0]
-                image_file = image_uri_split[-1]
-                gs.gui_service.quick_gui_img(
-                    image_dir,
-                    image_file,
-                    caption=f"Now playing[{track_info.track_type.value}]: <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_info.name}</font> by {track_info.sender}",
-                    format_img=True,
-                    img_size=32768
-                )
+            gs.vlc_interface.display_playing_gui()
 
     def cmd_queue(self, data):
         if gs.vlc_interface.check_dni_active():
