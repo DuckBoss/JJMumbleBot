@@ -45,7 +45,7 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
                                f'--start-time={skipto}',
                                '--sout',
                                '#transcode{acodec=s16le, channels=2, '
-                               'samplerate=48000, ab=192}:std{access=file, '
+                               'samplerate=48000, ab=192, threads=8}:std{access=file, '
                                'mux=wav, dst=-}',
                                'vlc://quit'],
             stdout=sp.PIPE, bufsize=1024)
@@ -57,7 +57,7 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
                                f'--start-time={skipto}',
                                '--sout',
                                '#transcode{acodec=s16le, channels=2, '
-                               'samplerate=24000, ab=192}:std{access=file, '
+                               'samplerate=24000, ab=192, threads=8}:std{access=file, '
                                'mux=wav, dst=-}',
                                'vlc://quit'],
             stdout=sp.PIPE, bufsize=1024)

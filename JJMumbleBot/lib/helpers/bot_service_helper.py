@@ -30,6 +30,7 @@ class BotServiceHelper:
         global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
         global_settings.mtd_callbacks = Callbacks()
         global_settings.cmd_callbacks = CommandCallbacks()
+        global_settings.plugin_callbacks = Callbacks()
 
         runtime_settings.tick_rate = float(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])

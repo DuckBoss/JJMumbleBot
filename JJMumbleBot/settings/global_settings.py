@@ -34,6 +34,7 @@ cmd_queue = None
 # Callbacks
 cmd_callbacks = None
 mtd_callbacks = None
+plugin_callbacks = None
 # Aliases
 aliases = {}
 # Initialized Plugins.

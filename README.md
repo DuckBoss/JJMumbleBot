@@ -42,6 +42,10 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
+## Screenshots
+![image](https://user-images.githubusercontent.com/20238115/88001012-0e956680-cacd-11ea-8cdc-02671145d446.png)
+
+
 ## Installation And Setup 🏃
 - Download and install python 3.7+
     - Linux: `sudo apt-get install python3.7`

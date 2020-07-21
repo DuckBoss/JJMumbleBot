@@ -1,10 +1,11 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
+from JJMumbleBot.lib.vlc.vlc_api import TrackType
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.plugins.core.audio_commands.utility import audio_commands_utility as ac_utility
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 
 
 class Plugin(PluginBase):
@@ -47,12 +48,39 @@ class Plugin(PluginBase):
     def cmd_playing(self, data):
         if gs.vlc_interface.check_dni_active():
             track_info = gs.vlc_interface.status.get_track()
-            rprint(
-                f'{get_bot_name()}({gs.vlc_interface.status.get_plugin_owner()}) is playing: {track_info.name} (duration: {track_info.duration})',
-                origin=L_COMMAND)
+            if track_info.track_type == TrackType.FILE:
+                gs.gui_service.quick_gui(
+                    f"Now playing[{track_info.track_type.value}]: <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_info.name}</font> by {track_info.sender}",
+                    text_type='header',
+                    box_align='left')
+            elif track_info.track_type == TrackType.STREAM and track_info.image_uri and track_info.track_id:
+                image_uri_split = track_info.image_uri.rsplit('/', 1)
+                image_dir = image_uri_split[0]
+                image_file = image_uri_split[-1]
+                gs.gui_service.quick_gui_img(
+                    image_dir,
+                    image_file,
+                    caption=f"Now playing[{track_info.track_type.value}]: <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_info.name}</font> by {track_info.sender}",
+                    format_img=True,
+                    img_size=32768
+                )
+
+    def cmd_queue(self, data):
+        if gs.vlc_interface.check_dni_active():
+            queue_list = ac_utility.get_queue_list()
+            if len(queue_list) == 0:
+                gs.gui_service.quick_gui(
+                    f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>The audio queue is empty.</font>",
+                    text_type='header',
+                    box_align='left')
+                return
+            out_str = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Audio Queue:</font>"
+            for i, item in enumerate(queue_list):
+                out_str += item
             gs.gui_service.quick_gui(
-                f'{get_bot_name()}({gs.vlc_interface.status.get_plugin_owner()}) is playing: {track_info.name} (duration: {track_info.duration})',
+                out_str,
                 text_type='header',
+                text_align='left',
                 box_align='left')
 
     def cmd_skip(self, data):
@@ -102,6 +130,31 @@ class Plugin(PluginBase):
             except ValueError:
                 return
 
+    def cmd_volume(self, data):
+        try:
+            vol = float(data.message.strip().split(' ', 1)[1])
+        except IndexError:
+            gs.gui_service.quick_gui(
+                f"Current audio volume: {gs.vlc_interface.status.get_volume()}",
+                text_type='header',
+                box_align='left')
+            return
+        if vol > 1 or vol < 0:
+            gs.gui_service.quick_gui(
+                "Invalid Volume Input: [0-1]",
+                text_type='header',
+                box_align='left')
+            return
+        if gs.vlc_interface.audio_utilities.is_ducking():
+            gs.vlc_interface.audio_utilities.set_last_volume(vol)
+        else:
+            gs.vlc_interface.audio_utilities.set_volume(vol, auto=False)
+        gs.gui_service.quick_gui(
+            f"Set volume to {vol}",
+            text_type='header',
+            box_align='left')
+        log(INFO, f"The volume was changed to {vol}.", origin=L_COMMAND)
+
     def cmd_duckaudio(self, data):
         gs.vlc_interface.audio_utilities.toggle_ducking()
         gs.gui_service.quick_gui(
@@ -132,31 +185,6 @@ class Plugin(PluginBase):
             text_type='header',
             box_align='left')
         log(INFO, f"The bot audio ducking volume was changed to {vol}.", origin=L_COMMAND)
-
-    def cmd_volume(self, data):
-        try:
-            vol = float(data.message.strip().split(' ', 1)[1])
-        except IndexError:
-            gs.gui_service.quick_gui(
-                f"Current bot volume: {gs.vlc_interface.status.get_volume()}",
-                text_type='header',
-                box_align='left')
-            return
-        if vol > 1 or vol < 0:
-            gs.gui_service.quick_gui(
-                "Invalid Volume Input: [0-1]",
-                text_type='header',
-                box_align='left')
-            return
-        if gs.vlc_interface.audio_utilities.is_ducking():
-            gs.vlc_interface.audio_utilities.set_last_volume(vol)
-        else:
-            gs.vlc_interface.audio_utilities.set_volume(vol, auto=False)
-        gs.gui_service.quick_gui(
-            f"Set volume to {vol}",
-            text_type='header',
-            box_align='left')
-        log(INFO, f"The volume was changed to {vol}.", origin=L_COMMAND)
 
     def cmd_duckthreshold(self, data):
         try:

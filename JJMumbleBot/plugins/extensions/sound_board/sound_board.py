@@ -87,13 +87,14 @@ class Plugin(PluginBase):
             gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
+        sender = gs.mumble_inst.users[data.actor]['name']
         gather_list = sbu.prepare_sb_list()
         random.seed(datetime.now())
         random_sfx = random.choice(gather_list)[:-4]
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav',
             name=random_sfx,
-            sender=gs.mumble_inst.users[data.actor]['name'],
+            sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=False
@@ -114,6 +115,7 @@ class Plugin(PluginBase):
         else:
             return
 
+        sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
         if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
             gs.gui_service.quick_gui(
@@ -126,7 +128,7 @@ class Plugin(PluginBase):
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
             name=to_play,
-            sender=gs.mumble_inst.users[data.actor]['name'],
+            sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=False
@@ -147,6 +149,7 @@ class Plugin(PluginBase):
         else:
             return
 
+        sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
         if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
             gs.gui_service.quick_gui(
@@ -159,7 +162,7 @@ class Plugin(PluginBase):
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
             name=to_play,
-            sender=gs.mumble_inst.users[data.actor]['name'],
+            sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=True
@@ -180,6 +183,7 @@ class Plugin(PluginBase):
         else:
             return
 
+        sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
         if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
             gs.gui_service.quick_gui(
@@ -192,7 +196,7 @@ class Plugin(PluginBase):
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
             name=to_play,
-            sender=gs.mumble_inst.users[data.actor]['name'],
+            sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=True

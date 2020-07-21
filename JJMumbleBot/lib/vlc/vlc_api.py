@@ -22,12 +22,15 @@ class TrackType(Enum):
 
 
 class TrackInfo:
-    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, quiet=False):
+    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, track_id=None, alt_uri=None, image_uri=None, quiet=False):
         self.uri = uri
         self.name = name
         self.sender = sender
         self.duration = duration
         self.track_type = track_type
+        self.alt_uri = alt_uri
+        self.image_uri = image_uri
+        self.track_id = track_id
         self.quiet = quiet
 
     def __str__(self):
@@ -35,7 +38,7 @@ class TrackInfo:
 
     def to_dict(self):
         return {'uri': self.uri, 'name': self.name, 'sender': self.sender, 'duration': self.duration,
-                'track_type': self.track_type, 'quiet': self.quiet}
+                'track_type': self.track_type, 'track_id': self.track_id, 'alt_uri': self.alt_uri, 'image_uri': self.image_uri, 'quiet': self.quiet}
 
 
 class VLCInterface:
@@ -44,7 +47,12 @@ class VLCInterface:
             super().__init__(
                 {
                     'plugin_owner': '',
+                    'sender': '',
                     'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
+                    'track_uri': '',
+                    'alt_uri': '',
+                    'image_uri': '',
+                    'track_id': '',
                     'queue': [],
                     'queue_length': 0,
                     'status': TrackStatus.STOPPED,
@@ -66,6 +74,11 @@ class VLCInterface:
             dict_str = f"plugin_owner: {self['plugin_owner']}<br>" \
                        f"sender: {self['track'].sender}<br>" \
                        f"track: {self['track'].name}<br>" \
+                       f"track_uri: {self['track'].uri[:25]+(self['track'].uri[25:] and '...')}<br>" \
+                       f"alt_uri: {self['track'].alt_uri[:25]+(self['track'].alt_uri[25:] and '...')}<br>" \
+                       f"image_uri: {self['track'].image_uri[:25]+(self['track'].image_uri[25:] and '...')}<br>" \
+                       f"track_id: {self['track'].track_id}<br>" \
+                       f"quiet: {self['track'].quiet}<br>" \
                        f"duration: {self['track'].duration}<br>" \
                        f"type: {self['track'].track_type.value}<br>" \
                        f"queue: ["
@@ -99,6 +112,9 @@ class VLCInterface:
 
         def clear_track(self):
             self['track'] = TrackInfo('', '', '', None, TrackType.FILE)
+
+        def get_queue(self):
+            return self['queue']
 
         def clear_queue(self):
             self['queue'] = []
@@ -221,6 +237,14 @@ class VLCInterface:
         self.audio_utilities = VLCInterface.AudioUtilites()
         self.exit_flag: bool = False
 
+    def callback_check(self, method_name):
+        # Execute any callbacks subscribed to next_track
+        for clbk in global_settings.plugin_callbacks:
+            split_clbk = clbk.split('|')
+            if split_clbk[0] == 'youtube' and split_clbk[1] == method_name:
+                print(f"callback found for next_track: {clbk}")
+                global_settings.plugin_callbacks[clbk]()
+
     def play(self, override=False):
         if not override:
             if self.status.get_status() == TrackStatus.PLAYING:
@@ -245,14 +269,28 @@ class VLCInterface:
                 text_type='header',
                 box_align='left')
             return
+        self.callback_check('on_play')
+
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(track_info.uri)
         if not track_info.quiet:
-            global_settings.gui_service.quick_gui(
-                f"Playing audio: {self.status.get_track().name}",
-                text_type='header',
-                box_align='left')
+            if self.get_track().track_type == TrackType.FILE:
+                global_settings.gui_service.quick_gui(
+                    f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                    text_type='header',
+                    box_align='left')
+            elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
+                image_uri_split = self.get_track().image_uri.rsplit('/', 1)
+                image_dir = image_uri_split[0]
+                image_file = image_uri_split[-1]
+                global_settings.gui_service.quick_gui_img(
+                    image_dir,
+                    image_file,
+                    caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                    format_img=True,
+                    img_size=32768
+                )
         self.status.set_status(TrackStatus.PLAYING)
 
     def skip(self, track_number):
@@ -266,10 +304,18 @@ class VLCInterface:
         reversed_list = list(self.queue)
         reversed_list.reverse()
         self.status.update_queue(reversed_list)
-        global_settings.gui_service.quick_gui(
-            f"Skipping to track {track_number} in the audio queue.",
-            text_type='header',
-            box_align='left')
+
+        self.callback_check('on_skip')
+        if track_number == 0:
+            global_settings.gui_service.quick_gui(
+                f"Skipping to next track in the audio queue.",
+                text_type='header',
+                box_align='left')
+        else:
+            global_settings.gui_service.quick_gui(
+                f"Skipping to track {track_number} in the audio queue.",
+                text_type='header',
+                box_align='left')
         self.play(override=True)
 
     def replay(self):
@@ -301,10 +347,16 @@ class VLCInterface:
     def stop(self):
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
+        self.callback_check('on_stop')
         self.queue = queue_handler.QueueHandler([], maxlen=100)
         self.status.update({
             'plugin_owner': '',
+            'sender': '',
             'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
+            'track_uri': '',
+            'alt_uri': '',
+            'image_uri': '',
+            'track_id': '',
             'queue': [],
             'queue_length': 0,
             'status': TrackStatus.STOPPED,
@@ -323,10 +375,16 @@ class VLCInterface:
         self.clear_dni()
 
     def reset(self):
+        self.callback_check('on_reset')
         self.queue = queue_handler.QueueHandler([], maxlen=100)
         self.status.update({
             'plugin_owner': '',
+            'sender': '',
             'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
+            'track_uri': '',
+            'alt_uri': '',
+            'image_uri': '',
+            'track_id': '',
             'queue': [],
             'queue_length': 0,
             'status': TrackStatus.STOPPED,
@@ -349,6 +407,12 @@ class VLCInterface:
         self.status.update_queue(list(self.queue))
 
     def enqueue_track(self, track_obj, to_front=False):
+        if self.queue.is_full():
+            global_settings.gui_service.quick_gui(
+                "Cannot add any more tracks because the audio queue is full!",
+                text_type='header',
+                box_align='left')
+            return
         # Calculate track duration if a file is provided.
         if track_obj.track_type == TrackType.FILE and not track_obj.duration:
             try:
@@ -362,6 +426,8 @@ class VLCInterface:
             except EOFError:
                 track_length = -1
             track_obj.duration = track_length
+        elif track_obj.track_type == TrackType.STREAM and not track_obj.duration:
+            track_obj.duration = -1
         # New tracks must have a non-empty name.
         if track_obj.name == '':
             return
@@ -401,13 +467,30 @@ class VLCInterface:
         self.status.update_queue(reversed_list)
 
     def next_track(self):
+        # Execute any callbacks subscribed to next_track
+        self.callback_check('on_next_track')
+
         if self.status.is_looping():
             self.status.set_track(track_obj=self.status.get_track())
             if not self.status.get_track().quiet:
-                global_settings.gui_service.quick_gui(
-                    f"Playing audio: {self.status.get_track().name}",
-                    text_type='header',
-                    box_align='left')
+                if self.get_track().track_type == TrackType.FILE:
+                    global_settings.gui_service.quick_gui(
+                        f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                        text_type='header',
+                        box_align='left')
+                elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
+                    image_uri_split = self.get_track().image_uri.rsplit('/', 1)
+                    image_dir = image_uri_split[0]
+                    image_file = image_uri_split[-1]
+                    print(image_dir)
+                    print(image_file)
+                    global_settings.gui_service.quick_gui_img(
+                        image_dir,
+                        image_file,
+                        caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                        format_img=True,
+                        img_size=32768
+                    )
             self.status.set_status(TrackStatus.PLAYING)
             return True
         track_to_play = self.queue.pop_item()
@@ -417,10 +500,22 @@ class VLCInterface:
             reversed_list.reverse()
             self.status.update_queue(reversed_list)
             if not track_to_play.quiet:
-                global_settings.gui_service.quick_gui(
-                    f"Playing audio: {self.status.get_track().name}",
-                    text_type='header',
-                    box_align='left')
+                if self.get_track().track_type == TrackType.FILE:
+                    global_settings.gui_service.quick_gui(
+                        f"Playing audio: {self.status.get_track().name}",
+                        text_type='header',
+                        box_align='left')
+                elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
+                    image_uri_split = self.get_track().image_uri.rsplit('/', 1)
+                    image_dir = image_uri_split[0]
+                    image_file = image_uri_split[-1]
+                    global_settings.gui_service.quick_gui_img(
+                        image_dir,
+                        image_file,
+                        caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                        format_img=True,
+                        img_size=32768
+                    )
             self.status.set_status(TrackStatus.PLAYING)
             return True
         return False
