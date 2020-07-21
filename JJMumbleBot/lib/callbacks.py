@@ -1,6 +1,3 @@
-from threading import Thread
-
-
 class Callbacks(dict):
     def __init__(self):
         super().__init__()
@@ -22,9 +19,10 @@ class Callbacks(dict):
             return None
 
     def callback(self, callback, *params):
-        if self[callback]:
-            thr = Thread(target=self[callback], args=params)
-            thr.start()
+        self[callback](params)
+        #if self[callback]:
+        #    thr = Thread(target=self[callback], args=params)
+        #    thr.start()
 
 
 class CommandCallbacks(dict):

@@ -7,6 +7,7 @@ from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.vlc.vlc_api import TrackType
 from JJMumbleBot.lib.utils import print_utils
 from JJMumbleBot.plugins.extensions.youtube.utility import settings
+from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
 import os
 
 
@@ -18,13 +19,7 @@ def on_next_track():
         # If the queue is empty, there is no track image to download.
         if gs.vlc_interface.status.get_queue_length() == 0:
             return
-        '''
-        try:
-            dir_utils.remove_file(f"{gs.vlc_interface.get_track().track_id}.jpg",
-                                  f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
-        except FileNotFoundError:
-            pass
-        '''
+
         # Get the first track in the queue.
         next_track = gs.vlc_interface.status.get_queue()[0]
 
@@ -53,8 +48,6 @@ def on_next_track():
                     "jpeg")
             os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{next_track.track_id}.webp")
             print_utils.dprint(f"Fixed thumbnail for {next_track.track_id}")
-    else:
-        print("On Next Called!")
 
 
 def on_play():
@@ -87,8 +80,6 @@ def on_play():
                     "jpeg")
             os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp")
             print_utils.dprint(f"Fixed thumbnail for {cur_track.track_id}")
-    else:
-        print("On Play Called!")
 
 
 def on_skip():
@@ -123,18 +114,20 @@ def on_skip():
                     "jpeg")
             os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track.track_id}.webp")
             print_utils.dprint(f"Fixed thumbnail for {cur_track.track_id}")
-    else:
-        print("On Skip Called!")
 
 
 def on_stop():
     # Clear the thumbnails since the queue is cleared.
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
+    settings.can_play = False
+    settings.search_results = None
 
 
 def on_reset():
     # Clear the thumbnails since the queue is cleared.
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
+    settings.can_play = False
+    settings.search_results = None
 
 
 def get_video_info(video_url):
@@ -235,3 +228,20 @@ def get_playlist_info(playlist_url):
             }
             all_videos.append(prep_struct)
         return all_videos
+
+
+def get_search_results(search_term, results_length):
+    search_results_list = []
+    search_results = YoutubeSearch(search_term, max_results=results_length).to_dict()
+    settings.search_results = search_results
+    for i in range(results_length):
+        search_results_list.append(search_results[i])
+
+    if len(search_results_list) == 0:
+        list_urls = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>No youtube search results found for: [{search_term}].</font><br>"
+        return list_urls
+    list_urls = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Search Results:</font><br>"
+    for i, item in enumerate(search_results_list):
+        completed_url = f"https://youtube.com{item['href']}"
+        list_urls += f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{completed_url}'>[{item['title']}]</a><br>"
+    return list_urls
