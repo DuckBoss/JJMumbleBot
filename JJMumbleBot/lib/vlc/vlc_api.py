@@ -22,7 +22,7 @@ class TrackType(Enum):
 
 
 class TrackInfo:
-    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, track_id=None, alt_uri=None, image_uri=None, quiet=False):
+    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, track_id='', alt_uri='', image_uri='', quiet=False):
         self.uri = uri
         self.name = name
         self.sender = sender
@@ -74,9 +74,9 @@ class VLCInterface:
             dict_str = f"plugin_owner: {self['plugin_owner']}<br>" \
                        f"sender: {self['track'].sender}<br>" \
                        f"track: {self['track'].name}<br>" \
-                       f"track_uri: {self['track'].uri[:25]+(self['track'].uri[25:] and '...')}<br>" \
-                       f"alt_uri: {self['track'].alt_uri[:25]+(self['track'].alt_uri[25:] and '...')}<br>" \
-                       f"image_uri: {self['track'].image_uri[:25]+(self['track'].image_uri[25:] and '...')}<br>" \
+                       f"track_uri: {(self['track'].uri[:25]+(self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>" \
+                       f"alt_uri: {(self['track'].alt_uri[:25]+(self['track'].alt_uri[25:] and '...')) if len(self['track'].alt_uri) > 0 else self['track'].alt_uri}<br>" \
+                       f"image_uri: {(self['track'].image_uri[:25]+(self['track'].image_uri[25:] and '...')) if len(self['track'].image_uri) > 0 else self['track'].image_uri}<br>" \
                        f"track_id: {self['track'].track_id}<br>" \
                        f"quiet: {self['track'].quiet}<br>" \
                        f"duration: {self['track'].duration}<br>" \
