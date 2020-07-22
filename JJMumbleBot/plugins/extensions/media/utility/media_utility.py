@@ -42,31 +42,7 @@ def on_next_track():
             return
 
         # Get the first track in the queue.
-        next_track = gs.vlc_interface.status.get_queue()[0]
-        download_thumbnail(next_track)
-
-        # Get the video metadata and fill in the information if the next track is missing metadata information.
-        if next_track.uri == '':
-            if next_track.alt_uri == '':
-                return
-            song_data = get_video_info(next_track.alt_uri)
-            if song_data is None:
-                return
-            track_obj = TrackInfo(
-                uri=song_data['main_url'],
-                name=next_track.name,
-                sender=next_track.sender,
-                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
-                track_type=TrackType.STREAM,
-                track_id=next_track.track_id,
-                alt_uri=next_track.alt_uri,
-                image_uri=next_track.image_uri,
-                quiet=False
-            )
-            gs.vlc_interface.queue.pop_item()
-            gs.vlc_interface.queue.insert_priority_item(track_obj)
-            gs.vlc_interface.status.update_queue(gs.vlc_interface.queue)
-            # gs.vlc_interface.status.get_queue()[0] = track_obj
+        on_play()
 
 
 def on_play():
