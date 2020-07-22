@@ -1,6 +1,5 @@
 alias,command
 v,(volume)
-s,(stop)
 l,(loop)
 q,(queue)
 now,(playing)
