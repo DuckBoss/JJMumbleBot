@@ -105,6 +105,30 @@ class Plugin(PluginBase):
         )
         gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
+    def cmd_sbrandomnow(self, data):
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        sender = gs.mumble_inst.users[data.actor]['name']
+        gather_list = sbu.prepare_sb_list()
+        random.seed(datetime.now())
+        random_sfx = random.choice(gather_list)[:-4]
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav',
+            name=random_sfx,
+            sender=sender,
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=False
+        )
+        gs.vlc_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.vlc_interface.play(override=True)
+
     def cmd_sb(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
@@ -135,9 +159,44 @@ class Plugin(PluginBase):
         )
         gs.vlc_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False
+            to_front=False,
         )
         gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+
+    def cmd_sbnow(self, data):
+        all_data = data.message.strip().split()
+        if len(all_data) < 2:
+            return
+
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+
+        sender = gs.mumble_inst.users[data.actor]['name']
+        to_play = all_data[1].strip()
+        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
+            gs.gui_service.quick_gui(
+                f"The sound clip '{to_play}.wav' does not exist.",
+                text_type='header',
+                box_align='left')
+            if gs.vlc_interface.get_track().name == '':
+                gs.vlc_interface.clear_dni()
+            return
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
+            name=to_play,
+            sender=sender,
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=False
+        )
+        gs.vlc_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.vlc_interface.play(override=True)
 
     def cmd_sbquiet(self, data):
         all_data = data.message.strip().split()
@@ -169,11 +228,12 @@ class Plugin(PluginBase):
         )
         gs.vlc_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False
+            to_front=False,
+            quiet=True
         )
         gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
-    def cmd_sbquietoverride(self, data):
+    def cmd_sbquietnow(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
             return
@@ -203,6 +263,7 @@ class Plugin(PluginBase):
         )
         gs.vlc_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False
+            to_front=False,
+            quiet=True
         )
         gs.vlc_interface.play(override=True)

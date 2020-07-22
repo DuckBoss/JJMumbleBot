@@ -1,8 +1,10 @@
 command,level
 sb,2
+sbnow,2
 sbquiet,3
-sbquietoverride,3
+sbquietnow,3
 sbrandom,3
+sbrandomnow,3
 sblist,2
 sbdownload,4
 sbdelete,4

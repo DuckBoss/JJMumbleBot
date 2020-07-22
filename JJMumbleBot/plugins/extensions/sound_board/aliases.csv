@@ -1,5 +1,7 @@
 alias,command
 sbl,(sblist)
+sbn,(sbnow)
 sbr,(sbrandom)
+sbrn,(sbrandomnow)
 sbq,(sbquiet)
-sbqo,(sbquietoverride)
+sbqn,(sbquietnow)
