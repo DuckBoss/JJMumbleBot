@@ -99,6 +99,10 @@ class Plugin(PluginBase):
                         to_front=False,
                         quiet=True
                     )
+                gs.gui_service.quick_gui(
+                    "The playlist was generated and added to the audio queue.",
+                    text_type='header',
+                    box_align='left')
                 gs.vlc_interface.play()
             else:
                 gs.vlc_interface.clear_dni()
