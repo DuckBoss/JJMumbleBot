@@ -77,7 +77,7 @@ class Plugin(PluginBase):
                 uri=song_data['main_url'],
                 name=song_data['main_title'],
                 sender=sender,
-                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+                duration=-1,
                 track_type=TrackType.STREAM,
                 track_id=song_data['main_id'],
                 alt_uri=song_data['std_url'],
@@ -86,7 +86,8 @@ class Plugin(PluginBase):
             )
             gs.vlc_interface.enqueue_track(
                 track_obj=track_obj,
-                to_front=False
+                to_front=False,
+                quiet=True
             )
         gs.vlc_interface.play()
 
