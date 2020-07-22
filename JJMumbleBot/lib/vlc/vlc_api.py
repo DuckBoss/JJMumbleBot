@@ -296,6 +296,9 @@ class VLCInterface:
         self.status.update_queue(reversed_list)
 
         self.callback_check('on_skip')
+        if global_settings.vlc_inst:
+            audio_interface.stop_vlc_instance()
+
         if track_number == 0:
             global_settings.gui_service.quick_gui(
                 f"Skipping to next track in the audio queue.",
