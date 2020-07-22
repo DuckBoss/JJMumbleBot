@@ -68,35 +68,35 @@ class Plugin(PluginBase):
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
 
-        if "soundcloud" in stripped_url:
+        if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
+            all_song_data = yt_utility.get_playlist_info(stripped_url)
+            if all_song_data is None:
+                return
+
+            for i, song_data in enumerate(all_song_data):
+                track_obj = TrackInfo(
+                    uri=song_data['main_url'],
+                    name=song_data['main_title'],
+                    sender=sender,
+                    duration=-1,
+                    track_type=TrackType.STREAM,
+                    track_id=song_data['main_id'],
+                    alt_uri=song_data['std_url'],
+                    image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
+                    quiet=False
+                )
+                gs.vlc_interface.enqueue_track(
+                    track_obj=track_obj,
+                    to_front=False,
+                    quiet=True
+                )
+            gs.vlc_interface.play()
+        else:
             gs.gui_service.quick_gui(
-                "The given link was identified as a SoundCloud link!<br>SoundCloud playlists are not supported.",
+                "The given link was not identified as a youtube playlist link!<br>SoundCloud playlists are not supported.",
                 text_type='header',
                 box_align='left')
             return
-
-        all_song_data = yt_utility.get_playlist_info(stripped_url)
-        if all_song_data is None:
-            return
-
-        for i, song_data in enumerate(all_song_data):
-            track_obj = TrackInfo(
-                uri=song_data['main_url'],
-                name=song_data['main_title'],
-                sender=sender,
-                duration=-1,
-                track_type=TrackType.STREAM,
-                track_id=song_data['main_id'],
-                alt_uri=song_data['std_url'],
-                image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
-                quiet=False
-            )
-            gs.vlc_interface.enqueue_track(
-                track_obj=track_obj,
-                to_front=False,
-                quiet=True
-            )
-        gs.vlc_interface.play()
 
     def cmd_link(self, data):
         if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
