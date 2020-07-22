@@ -150,7 +150,8 @@ class Plugin(PluginBase):
         )
         gs.vlc_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False
+            to_front=False,
+            quiet=True
         )
         gs.vlc_interface.play(override=True)
 
@@ -191,7 +192,8 @@ class Plugin(PluginBase):
                 )
                 gs.vlc_interface.enqueue_track(
                     track_obj=track_obj,
-                    to_front=False
+                    to_front=False,
+                    quiet=True
                 )
                 gs.vlc_interface.play(override=True)
         elif len(all_data) == 3:
@@ -218,7 +220,8 @@ class Plugin(PluginBase):
                 )
                 gs.vlc_interface.enqueue_track(
                     track_obj=track_obj,
-                    to_front=False
+                    to_front=False,
+                    quiet=True
                 )
                 gs.vlc_interface.play(override=True)
         else:
