@@ -25,7 +25,8 @@ class TrackType(Enum):
 
 
 class TrackInfo:
-    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, track_id='', alt_uri='', image_uri='', quiet=False):
+    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, track_id='', alt_uri='',
+                 image_uri='', quiet=False):
         self.uri = uri
         self.name = name
         self.sender = sender
@@ -41,7 +42,8 @@ class TrackInfo:
 
     def to_dict(self):
         return {'uri': self.uri, 'name': self.name, 'sender': self.sender, 'duration': self.duration,
-                'track_type': self.track_type, 'track_id': self.track_id, 'alt_uri': self.alt_uri, 'image_uri': self.image_uri, 'quiet': self.quiet}
+                'track_type': self.track_type, 'track_id': self.track_id, 'alt_uri': self.alt_uri,
+                'image_uri': self.image_uri, 'quiet': self.quiet}
 
 
 class VLCInterface:
@@ -77,9 +79,9 @@ class VLCInterface:
             dict_str = f"plugin_owner: {self['plugin_owner']}<br>" \
                        f"sender: {self['track'].sender}<br>" \
                        f"track: {self['track'].name}<br>" \
-                       f"track_uri: {(self['track'].uri[:25]+(self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>" \
-                       f"alt_uri: {(self['track'].alt_uri[:25]+(self['track'].alt_uri[25:] and '...')) if len(self['track'].alt_uri) > 0 else self['track'].alt_uri}<br>" \
-                       f"image_uri: {(self['track'].image_uri[:25]+(self['track'].image_uri[25:] and '...')) if len(self['track'].image_uri) > 0 else self['track'].image_uri}<br>" \
+                       f"track_uri: {(self['track'].uri[:25] + (self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>" \
+                       f"alt_uri: {(self['track'].alt_uri[:25] + (self['track'].alt_uri[25:] and '...')) if len(self['track'].alt_uri) > 0 else self['track'].alt_uri}<br>" \
+                       f"image_uri: {(self['track'].image_uri[:25] + (self['track'].image_uri[25:] and '...')) if len(self['track'].image_uri) > 0 else self['track'].image_uri}<br>" \
                        f"track_id: {self['track'].track_id}<br>" \
                        f"quiet: {self['track'].quiet}<br>" \
                        f"duration: {self['track'].duration}<br>" \
@@ -236,7 +238,8 @@ class VLCInterface:
 
     def __init__(self):
         self.status = VLCInterface.Status()
-        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+        self.queue = queue_handler.QueueHandler([], maxlen=int(
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.audio_utilities = VLCInterface.AudioUtilites()
         self.exit_flag: bool = False
 
@@ -275,7 +278,7 @@ class VLCInterface:
 
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
-        audio_interface.create_vlc_instance(track_info.uri)
+        audio_interface.create_vlc_instance(self.status.get_track().uri)
         if not track_info.quiet:
             self.display_playing_gui()
         self.status.set_status(TrackStatus.PLAYING)
@@ -335,7 +338,8 @@ class VLCInterface:
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
         self.callback_check('on_stop')
-        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+        self.queue = queue_handler.QueueHandler([], maxlen=int(
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
             'sender': '',
@@ -363,7 +367,8 @@ class VLCInterface:
 
     def reset(self):
         self.callback_check('on_reset')
-        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+        self.queue = queue_handler.QueueHandler([], maxlen=int(
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
             'sender': '',
@@ -390,15 +395,17 @@ class VLCInterface:
         self.clear_dni()
 
     def clear_queue(self):
-        self.queue = queue_handler.QueueHandler([], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+        self.queue = queue_handler.QueueHandler([], maxlen=int(
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update_queue(list(self.queue))
 
-    def enqueue_track(self, track_obj, to_front=False):
+    def enqueue_track(self, track_obj, to_front=False, quiet=False):
         if self.queue.is_full():
-            global_settings.gui_service.quick_gui(
-                "Cannot add any more tracks because the audio queue is full!",
-                text_type='header',
-                box_align='left')
+            if not quiet:
+                global_settings.gui_service.quick_gui(
+                    "Cannot add any more tracks because the audio queue is full!",
+                    text_type='header',
+                    box_align='left')
             return
         # Calculate track duration if a file is provided.
         if track_obj.track_type == TrackType.FILE and not track_obj.duration:
@@ -427,6 +434,11 @@ class VLCInterface:
         reversed_list = list(self.queue)
         reversed_list.reverse()
         self.status.update_queue(reversed_list)
+        if not quiet:
+            global_settings.gui_service.quick_gui(
+                f"{track_obj.sender} added <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_obj.name}<font> to the audio queue.",
+                text_type='header',
+                box_align='left')
 
     def loop_track(self):
         if self.status.is_looping():
@@ -458,7 +470,6 @@ class VLCInterface:
         self.callback_check('on_next_track')
 
         if self.status.is_looping():
-            self.status.set_track(track_obj=self.status.get_track())
             if not self.status.get_track().quiet:
                 self.display_playing_gui()
             self.status.set_status(TrackStatus.PLAYING)
