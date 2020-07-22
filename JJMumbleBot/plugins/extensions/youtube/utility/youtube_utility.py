@@ -4,18 +4,38 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.vlc.vlc_api import TrackType
+from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
 from JJMumbleBot.lib.utils import print_utils
 from JJMumbleBot.plugins.extensions.youtube.utility import settings
 from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
 import os
 from zlib import crc32
+from datetime import timedelta
 
 
 def on_next_track():
     if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
         # If the track is looping, there is no need to download the next track image.
         if gs.vlc_interface.status.is_looping():
+            # Get new set of metadata for the current track if it is looping
+            # because the link may expire and cause an issue.
+            cur_track = gs.vlc_interface.get_track()
+            song_data = get_video_info(cur_track.alt_uri)
+            if song_data is None:
+                return
+            track_obj = TrackInfo(
+                uri=song_data['main_url'],
+                name=cur_track.name,
+                sender=cur_track.sender,
+                duration=str(timedelta(seconds=int(song_data['duration']))) if int(
+                    song_data['duration']) > 0 else -1,
+                track_type=TrackType.STREAM,
+                track_id=cur_track.track_id,
+                alt_uri=cur_track.alt_uri,
+                image_uri=cur_track.image_uri,
+                quiet=False
+            )
+            gs.vlc_interface.status.set_track(track_obj)
             return
         # If the queue is empty, there is no track image to download.
         if gs.vlc_interface.status.get_queue_length() == 0:
@@ -25,17 +45,60 @@ def on_next_track():
         next_track = gs.vlc_interface.status.get_queue()[0]
         download_thumbnail(next_track)
 
+        # Get the video metadata and fill in the information if the next track is missing metadata information.
+        if next_track.uri == '':
+            if next_track.alt_uri == '':
+                return
+            song_data = get_video_info(next_track.alt_uri)
+            if song_data is None:
+                return
+            track_obj = TrackInfo(
+                uri=song_data['main_url'],
+                name=next_track.name,
+                sender=next_track.sender,
+                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+                track_type=TrackType.STREAM,
+                track_id=next_track.track_id,
+                alt_uri=next_track.alt_uri,
+                image_uri=next_track.image_uri,
+                quiet=False
+            )
+            gs.vlc_interface.queue.pop_item()
+            gs.vlc_interface.queue.insert_priority_item(track_obj)
+            gs.vlc_interface.status.update_queue(gs.vlc_interface.queue)
+            # gs.vlc_interface.status.get_queue()[0] = track_obj
+
 
 def on_play():
     if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
-        download_thumbnail(gs.vlc_interface.get_track())
+        cur_track = gs.vlc_interface.get_track()
+        download_thumbnail(cur_track)
+
+        # Get the video metadata and fill in the information if the current track is missing metadata information.
+        if cur_track.uri == '':
+            if cur_track.alt_uri == '':
+                return
+            song_data = get_video_info(cur_track.alt_uri)
+            if song_data is None:
+                return
+            track_obj = TrackInfo(
+                uri=song_data['main_url'],
+                name=cur_track.name,
+                sender=cur_track.sender,
+                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+                track_type=TrackType.STREAM,
+                track_id=cur_track.track_id,
+                alt_uri=cur_track.alt_uri,
+                image_uri=cur_track.image_uri,
+                quiet=False
+            )
+            gs.vlc_interface.status.set_track(track_obj)
 
 
 def on_skip():
     if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
         # Clear the thumbnails since the queue order has shifted.
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
-        download_thumbnail(gs.vlc_interface.get_track())
 
 
 def download_thumbnail(cur_track):
@@ -88,12 +151,15 @@ def get_video_info(video_url):
             'quiet': True,
             'format': 'bestaudio/best',
             'noplaylist': True,
+            'youtube_include_dash_manifest': False,
             'logger': gs.log_service,
             'skip_download': True
         }
+
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.cache.remove()
             info_dict = ydl.extract_info(video_url, download=False)
+
             prep_struct = {
                 'std_url': video_url,
                 'main_url': info_dict['url'],
@@ -112,9 +178,9 @@ def get_playlist_info(playlist_url):
         'quiet': True,
         'format': 'bestaudio/best',
         'noplaylist': False,
+        'youtube_include_dash_manifest': False,
         'extract_flat': True,
         'logger': gs.log_service,
-        'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/%(id)s.jpg',
         'skip_download': True,
         'writethumbnail': False,
         'ignoreerrors': True
@@ -124,9 +190,9 @@ def get_playlist_info(playlist_url):
             'quiet': True,
             'format': 'bestaudio/best',
             'noplaylist': False,
+            'youtube_include_dash_manifest': False,
             'extract_flat': True,
             'logger': gs.log_service,
-            'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/%(id)s.jpg',
             'skip_download': True,
             'writethumbnail': True,
             'ignoreerrors': True,
@@ -155,7 +221,7 @@ def get_playlist_info(playlist_url):
             "The playlist is being generated...this might take a while.",
             text_type='header',
             box_align='left')
-        playlist_dict = ydl.extract_info(playlist_url, download=False)
+        playlist_dict = ydl.extract_info(playlist_url, download=False, process=False)
         all_videos = []
         if not playlist_dict['entries']:
             gs.gui_service.quick_gui(
@@ -167,15 +233,12 @@ def get_playlist_info(playlist_url):
             if not video:
                 print_utils.dprint("Unable to get video information...skipping.")
                 continue
-            temp_song_data = get_video_info(f"https://www.youtube.com/watch?v={video['url']}")
-            if temp_song_data is None:
-                continue
             prep_struct = {
-                'std_url': temp_song_data['std_url'],
-                'main_url': temp_song_data['main_url'],
-                'main_title': temp_song_data['main_title'],
-                'main_id': temp_song_data['main_id'],
-                'duration': temp_song_data['duration']
+                'std_url': f"https://www.youtube.com/watch?v={video['url']}",
+                'main_url': '',
+                'main_title': video['title'],
+                'main_id': video['id'],
+                'duration': '',
             }
             all_videos.append(prep_struct)
         return all_videos
