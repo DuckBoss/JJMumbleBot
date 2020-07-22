@@ -68,6 +68,13 @@ class Plugin(PluginBase):
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
 
+        if "soundcloud" in stripped_url:
+            gs.gui_service.quick_gui(
+                "The given link was identified as a SoundCloud link!<br>SoundCloud playlists are not supported.",
+                text_type='header',
+                box_align='left')
+            return
+
         all_song_data = yt_utility.get_playlist_info(stripped_url)
         if all_song_data is None:
             return
