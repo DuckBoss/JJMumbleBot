@@ -12,6 +12,7 @@ from JJMumbleBot.plugins.extensions.media.utility import settings as md_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 import warnings
 import os
+import requests
 from datetime import timedelta
 from bs4 import BeautifulSoup
 
@@ -64,39 +65,53 @@ class Plugin(PluginBase):
                 f"Invalid formatting! Format: {get_command_token()}ytplaylist 'youtube_playlist_link'",
                 text_type='header',
                 box_align='left')
+            gs.vlc_interface.clear_dni()
             return
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
 
-        if "media.com" in stripped_url or "youtu.be" in stripped_url:
-            all_song_data = md_utility.get_playlist_info(stripped_url)
-            if all_song_data is None:
-                return
+        check_url_request = requests.get(f'https://www.youtube.com/oembed?format=json&url={stripped_url}')
+        if check_url_request.status_code == 200 and check_url_request.content != "Not Found":
+            if "list" in check_url_request.json()['html']:
+                all_song_data = md_utility.get_playlist_info(stripped_url)
+                if all_song_data is None:
+                    gs.gui_service.quick_gui(
+                        "The youtube playlist information could not be retrieved.",
+                        text_type='header',
+                        box_align='left')
+                    gs.vlc_interface.clear_dni()
+                    return
 
-            for i, song_data in enumerate(all_song_data):
-                track_obj = TrackInfo(
-                    uri=song_data['main_url'],
-                    name=song_data['main_title'],
-                    sender=sender,
-                    duration=-1,
-                    track_type=TrackType.STREAM,
-                    track_id=song_data['main_id'],
-                    alt_uri=song_data['std_url'],
-                    image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
-                    quiet=False
-                )
-                gs.vlc_interface.enqueue_track(
-                    track_obj=track_obj,
-                    to_front=False,
-                    quiet=True
-                )
-            gs.vlc_interface.play()
+                for i, song_data in enumerate(all_song_data):
+                    track_obj = TrackInfo(
+                        uri=song_data['main_url'],
+                        name=song_data['main_title'],
+                        sender=sender,
+                        duration=-1,
+                        track_type=TrackType.STREAM,
+                        track_id=song_data['main_id'],
+                        alt_uri=song_data['std_url'],
+                        image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
+                        quiet=False
+                    )
+                    gs.vlc_interface.enqueue_track(
+                        track_obj=track_obj,
+                        to_front=False,
+                        quiet=True
+                    )
+                gs.vlc_interface.play()
+            else:
+                gs.vlc_interface.clear_dni()
+                gs.gui_service.quick_gui(
+                    "The given link was not a playlist.<br>Only use the !ytplaylist command for playlist links.",
+                    text_type='header',
+                    box_align='left')
         else:
+            gs.vlc_interface.clear_dni()
             gs.gui_service.quick_gui(
-                "The given link was not identified as a media playlist link!<br>SoundCloud playlists are not supported.",
+                "The given link was not identified as a Youtube playlist link!<br>SoundCloud playlists are not supported.",
                 text_type='header',
                 box_align='left')
-            return
 
     def cmd_link(self, data):
         if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
@@ -110,30 +125,34 @@ class Plugin(PluginBase):
                 f"Invalid formatting! Format: {get_command_token()}link 'media/soundcloud link'",
                 text_type='header',
                 box_align='left')
+            gs.vlc_interface.clear_dni()
             return
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
-        if "media.com" in stripped_url or "youtu.be" in stripped_url or 'soundcloud' in stripped_url:
-            if ("media.com" in stripped_url and "list" in stripped_url) or ("soundcloud" in stripped_url and "sets" in stripped_url):
+        if "youtube.com" in stripped_url or "youtu.be" in stripped_url or 'soundcloud' in stripped_url:
+            if ("youtube.com" in stripped_url and "list" in stripped_url) or ("soundcloud" in stripped_url and "sets" in stripped_url):
                 gs.gui_service.quick_gui(
                     "The given link was identified as a playlist link!<br>Please use the playlist "
                     "command to add playlists to the queue!",
                     text_type='header',
                     box_align='left')
+                gs.vlc_interface.clear_dni()
                 return
 
             song_data = md_utility.get_video_info(stripped_url)
             if song_data is None:
                 gs.gui_service.quick_gui(
-                    "The media video information could not be retrieved.",
+                    "The media track information could not be retrieved.",
                     text_type='header',
                     box_align='left')
+                gs.vlc_interface.clear_dni()
                 return
             if int(song_data['duration']) > int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN]):
                 gs.gui_service.quick_gui(
-                    f"The media video provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
+                    f"The media track provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
                     text_type='header',
                     box_align='left')
+                gs.vlc_interface.clear_dni()
                 return
             track_obj = TrackInfo(
                 uri=song_data['main_url'],
@@ -164,6 +183,7 @@ class Plugin(PluginBase):
                 f"Invalid formatting! Format: {get_command_token()}linkfront 'media/soundcloud link'",
                 text_type='header',
                 box_align='left')
+            gs.vlc_interface.clear_dni()
             return
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
@@ -175,21 +195,24 @@ class Plugin(PluginBase):
                     "command to add playlists to the queue!",
                     text_type='header',
                     box_align='left')
+                gs.vlc_interface.clear_dni()
                 return
 
             song_data = md_utility.get_video_info(stripped_url)
             if song_data is None:
                 gs.gui_service.quick_gui(
-                    "The media video information could not be retrieved.",
+                    "The media track information could not be retrieved.",
                     text_type='header',
                     box_align='left')
+                gs.vlc_interface.clear_dni()
                 return
 
             if int(song_data['duration']) > int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN]):
                 gs.gui_service.quick_gui(
-                    f"The media video provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
+                    f"The media track provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
                     text_type='header',
                     box_align='left')
+                gs.vlc_interface.clear_dni()
                 return
             track_obj = TrackInfo(
                 uri=song_data['main_url'],
