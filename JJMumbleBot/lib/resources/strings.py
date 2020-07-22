@@ -5,7 +5,7 @@ C_MAIN_SETTINGS = 'Main Settings'
 C_WEB_SETTINGS = 'Web Interface'
 C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
-C_MEDIA_DIR = 'Media Directories'
+C_MEDIA_SETTINGS = 'Media Settings'
 C_LOGGING = 'Logging'
 # PROGRAM CONFIG PARAMETER STRINGS
 # Connection Settings
@@ -20,7 +20,6 @@ P_SELF_REGISTER = "SelfRegister"
 P_USER_COMMENT = "DefaultComment"
 # Main Settings
 P_DB_BACKUP = 'EnableDatabaseBackup'
-P_AUD_STEREO = 'UseStereoOutput'
 P_CMD_TICK_RATE = 'CommandTickRate'
 P_CMD_MULTI_LIM = 'MultiCommandLimit'
 P_CMD_TOKEN = 'CommandToken'
@@ -32,9 +31,17 @@ P_WEB_IP = 'WebServerIP'
 P_WEB_PAGE_PORT = 'WebPagePort'
 P_WEB_SOCK_PORT = 'WebSocketPort'
 P_WEB_TICK_RATE = 'WebTickRate'
-# Permanent Directories
+# Media Settings
+P_MEDIA_VLC_PATH = 'VLCPath'
+P_MEDIA_VLC_STEREO = 'VLCStereoAudio'
+P_MEDIA_VLC_QUIET = 'VLCRunQuiet'
+P_MEDIA_VLC_DEFAULT_VOLUME = 'VLCDefaultVolume'
+P_MEDIA_VLC_DUCK = 'VLCAudioDuck'
+P_MEDIA_VLC_DUCK_VOLUME = 'VLCDuckingVolume'
+P_MEDIA_VLC_DUCK_THRESHOLD = 'VLCDuckingThreshold'
+P_MEDIA_VLC_DUCK_DELAY = 'VLCDuckingDelay'
+P_MEDIA_VLC_QUEUE_LEN = 'VLCMaxQueueLength'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
-# Temporary Directories
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
 P_CANVAS_BG_COL = 'CanvasBGColor'
@@ -53,6 +60,7 @@ P_PLUG_ALLOWED_CHANNELS = 'AllowedRootChannelsForTempChannels'
 # Logging
 P_LOG_ENABLE = 'EnableLogging'
 P_LOG_MAX = 'MaxLogs'
+P_LOG_MESSAGES = 'HideMessageLogging'
 P_LOG_DIR = 'LogDirectory'
 ###########################################################################
 # LOGGING STRINGS - DO NOT MODIFY
@@ -96,5 +104,5 @@ P_THREAD_SINGLE = 'UseSingleThread'
 ###########################################################################
 # BOT META INFORMATION STRINGS
 META_NAME = "JJMumbleBot"
-META_VERSION = "3.1.4"
+META_VERSION = "4.0.0"
 ###########################################################################

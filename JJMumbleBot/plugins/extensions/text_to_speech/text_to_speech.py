@@ -2,8 +2,9 @@ from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
-from JJMumbleBot.settings import global_settings as GS
-from JJMumbleBot.lib import privileges
+from JJMumbleBot.lib.vlc.vlc_api import TrackInfo, TrackType
+from JJMumbleBot.settings import global_settings as gs
+from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.text_to_speech.utility import text_to_speech_utility as ttsu
 from JJMumbleBot.plugins.extensions.text_to_speech.utility import settings as tts_settings
@@ -19,232 +20,213 @@ class Plugin(PluginBase):
         self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
-        dir_utils.make_directory(f'{GS.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/{self.plugin_name}/')
-        tts_settings.tts_metadata = self.metadata
+        dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
+        dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
+        tts_settings.plugin_name = self.plugin_name
         tts_settings.voice_list = loads(self.metadata.get(C_PLUGIN_SETTINGS, P_TTS_ALL_VOICE))
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        ttsu.clear_audio_thread()
-        ttsu.stop_audio()
+        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.stop()
+            gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
-        tts_settings.exit_flag = True
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
-    def get_metadata(self):
-        return self.metadata
+    def cmd_ttsstop(self, data):
+        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.stop()
+            gs.gui_service.quick_gui("Stopped text-to-speech audio.", text_type='header',
+                                     box_align='left')
 
-    def process(self, text):
-        message = text.message.strip()
-        message_parse = message[1:].split(' ', 1)
-        command = message_parse[0]
+    def cmd_ttslist(self, data):
+        data_actor = gs.mumble_inst.users[data.actor]
+        internal_list = []
+        gather_list = ttsu.prepare_tts_list()
+        for i, item in enumerate(gather_list):
+            internal_list.append(
+                f"<br><font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{item}]")
+        cur_text = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Local TTS Files:</font>"
+        if len(internal_list) == 0:
+            cur_text += "<br>There are no local text to speech files available."
+            gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left',
+                                     user=data_actor['name'])
+            gs.log_service.info("Displayed a list of all local text to speech files.")
+            return
+        for i, item in enumerate(internal_list):
+            cur_text += item
+            if i % 50 == 0 and i != 0:
+                gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
+                                         user=data_actor['name'])
+                cur_text = ""
+        if cur_text != "":
+            gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
+                                     user=data_actor['name'])
+        log(INFO, "Displayed a list of all local text to speech files.", origin=L_COMMAND)
 
-        if command == "ttsstop":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            if tts_settings.is_playing and GS.audio_inst is not None:
-                if not GS.audio_dni[0]:
-                    GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
-                else:
-                    if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
-                        rprint(
-                            f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
-                        GS.gui_service.quick_gui(
-                            "An audio plugin is using the audio thread with no interruption mode enabled.",
-                            text_type='header',
-                            box_align='left')
-                        return
-                ttsu.stop_audio()
-                GS.gui_service.quick_gui("Stopping text to speech audio thread...", text_type='header',
-                                         box_align='left')
-                return
-
-        elif command == "ttslist":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            internal_list = []
-            gather_list = ttsu.prepare_tts_list()
-            for i, item in enumerate(gather_list):
-                internal_list.append(
-                    f"<br><font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{item}]")
-            cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Local TTS Files:</font>"
-            if len(internal_list) == 0:
-                cur_text += "<br>There are no local text to speech files available."
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left',
-                                         user=GS.mumble_inst.users[text.actor]['name'])
-                GS.log_service.info("Displayed a list of all local text to speech files.")
-                return
-            for i, item in enumerate(internal_list):
-                cur_text += item
-                if i % 50 == 0 and i != 0:
-                    GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
-                                             user=GS.mumble_inst.users[text.actor]['name'])
-                    cur_text = ""
-            if cur_text != "":
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
-                                         user=GS.mumble_inst.users[text.actor]['name'])
-            log(INFO, "Displayed a list of all local text to speech files.", origin=L_COMMAND)
-
-        elif command == "ttslist_echo":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            internal_list = []
-            gather_list = ttsu.prepare_tts_list()
-
-            for i, item in enumerate(gather_list):
-                internal_list.append(
-                    f"<br><font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - [{item}]")
-            cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Local TTS Files:</font>"
-            if len(internal_list) == 0:
-                cur_text += "<br>There are no local text to speech files available."
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
-                log(INFO, "Displayed a list of all local text to speech files.", origin=L_COMMAND)
-                return
-            for i, item in enumerate(internal_list):
-                cur_text += item
-                if i % 50 == 0 and i != 0:
-                    GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-                    cur_text = ""
-            if cur_text != "":
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left')
-            log(INFO, "Displayed a list of all text to speech board files.", origin=L_COMMAND)
-
-        elif command == "ttsvoices":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            if len(tts_settings.voice_list) == 0:
-                cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Available Voices:</font> None"
-                GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
-                log(INFO, "Displayed a list of all available text to speech voices.", origin=L_COMMAND)
-                return
-            cur_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Available Voices:</font>"
-            for i, voice_name in enumerate(tts_settings.voice_list):
-                cur_text += f"[{i}] - {voice_name}<br>"
-            GS.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
+    def cmd_ttsvoices(self, data):
+        if len(tts_settings.voice_list) == 0:
+            cur_text = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Available Voices:</font> None"
+            gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
             log(INFO, "Displayed a list of all available text to speech voices.", origin=L_COMMAND)
+            return
+        cur_text = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Available Voices:</font>"
+        for i, voice_name in enumerate(tts_settings.voice_list):
+            cur_text += f"[{i}] - {voice_name}<br>"
+        gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left')
+        log(INFO, "Displayed a list of all available text to speech voices.", origin=L_COMMAND)
 
-        elif command == "ttsdownload":
-            from JJMumbleBot.plugins.extensions.text_to_speech.resources.strings import P_VLC_DIR
+    def cmd_ttsdownload(self, data):
+        all_data = data.message.strip().split(' ', 3)
+        if ttsu.download_clip(all_data[1].strip(), all_data[2].strip(), all_data[3].strip()):
+            gs.gui_service.quick_gui(f"Downloaded text-to-speech clip as : {all_data[1].strip()}",
+                                     text_type='header',
+                                     box_align='left')
+            return
 
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            all_messages = message[1:].split(' ', 3)
-            if ttsu.download_clip(all_messages[1].strip(), all_messages[2].strip(), all_messages[3].strip()):
-                GS.gui_service.quick_gui(f"Downloaded text to speech clip as : {all_messages[1].strip()}.oga",
-                                         text_type='header',
-                                         box_align='left')
-                return
+    def cmd_ttsdelete(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if ".wav" in all_data[1].strip():
+            dir_utils.remove_file(all_data[1].strip(), f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")
+            gs.gui_service.quick_gui(f"Deleted text-to-speech clip : {all_data[1].strip()}",
+                                     text_type='header',
+                                     box_align='left')
+            return
+        return
 
-        elif command == "ttsdelete":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            all_messages = message[1:].split()
-            if len(all_messages) == 2:
-                if ".oga" in all_messages[1].strip():
-                    dir_utils.remove_file(all_messages[1].strip(), f"{dir_utils.get_perm_med_dir()}/text_to_speech/")
-                    GS.gui_service.quick_gui(f"Deleted text to speech clip : {all_messages[1].strip()}",
-                                             text_type='header',
-                                             box_align='left')
-                    return
-                return
+    def cmd_ttsplay(self, data):
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        all_data = data.message.strip().split(' ', 1)
+        to_play = all_data[1].strip()
+        if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.oga"):
+            gs.gui_service.quick_gui(
+                f"The text-to-speech clip '{to_play}.oga' does not exist.",
+                text_type='header',
+                box_align='left')
+            if gs.vlc_interface.get_track().name == '':
+                gs.vlc_interface.clear_dni()
+            return
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.oga',
+            name=to_play,
+            sender=gs.mumble_inst.users[data.actor]['name'],
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=False
+        )
+        gs.vlc_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False
+        )
+        gs.vlc_interface.play(override=True)
 
-        elif command == "ttsplay":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
-                return
-            if not GS.audio_dni[0]:
-                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
-            else:
-                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
-                    rprint(
-                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
-                    GS.gui_service.quick_gui(
-                        "An audio plugin is using the audio thread with no interruption mode enabled.",
-                        text_type='header',
-                        box_align='left')
-                    return
-            parameter = message_parse[1].strip()
-            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/text_to_speech/{parameter}.oga"):
-                GS.gui_service.quick_gui(
-                    "The text to speech clip does not exist.",
+    def cmd_ttsplayquiet(self, data):
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        all_data = data.message.strip().split(' ', 1)
+        to_play = all_data[1].strip()
+        if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.oga"):
+            gs.gui_service.quick_gui(
+                f"The text-to-speech clip '{to_play}.oga' does not exist.",
+                text_type='header',
+                box_align='left')
+            if gs.vlc_interface.get_track().name == '':
+                gs.vlc_interface.clear_dni()
+            return
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.oga',
+            name=to_play,
+            sender=gs.mumble_inst.users[data.actor]['name'],
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
+        )
+        gs.vlc_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.vlc_interface.play(override=True)
+
+    def cmd_tts(self, data):
+        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        data_actor = gs.mumble_inst.users[data.actor]
+        all_data = data.message.strip().split(' ', 2)
+
+        if all_data[1].strip() in tts_settings.voice_list:
+            all_data = data.message.strip().split(' ', 2)
+        else:
+            all_data = data.message.strip().split(' ', 1)
+
+        if len(all_data) == 2:
+            if len(all_data[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
+                gs.gui_service.quick_gui(
+                    f"The text-to-speech message exceeded the character limit:"
+                    f" [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
                     text_type='header',
-                    box_align='left')
-                return False
-            tts_settings.current_track = parameter
-            ttsu.play_audio()
-
-        elif command == "ttsplayquiet":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+                    box_align='left',
+                    user=data_actor['name'])
                 return
-            if not GS.audio_dni[0]:
-                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
-            else:
-                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
-                    return
-            parameter = message_parse[1].strip()
-            if not os.path.isfile(f"{dir_utils.get_perm_med_dir()}/text_to_speech/{parameter}.oga"):
-                return False
-            tts_settings.current_track = parameter
-            ttsu.play_audio()
-
-        elif command == "tts":
-            if not privileges.plugin_privilege_checker(text, command, self.plugin_name):
+            if ttsu.download_clip("_temp",
+                                  self.metadata[C_PLUGIN_SETTINGS][P_TTS_DEF_VOICE],
+                                  all_data[1].strip(),
+                                  directory=f'{dir_utils.get_temp_med_dir()}'
+                                  ):
+                track_obj = TrackInfo(
+                    uri=f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}/_temp.oga',
+                    name='text-to-speech clip',
+                    sender=gs.mumble_inst.users[data.actor]['name'],
+                    duration=None,
+                    track_type=TrackType.FILE,
+                    quiet=True
+                )
+                gs.vlc_interface.enqueue_track(
+                    track_obj=track_obj,
+                    to_front=False,
+                    quiet=True
+                )
+                gs.vlc_interface.play(override=True)
+        elif len(all_data) == 3:
+            if len(all_data[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
+                gs.gui_service.quick_gui(
+                    f"The text to speech message exceeded the character limit:"
+                    f" [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
+                    text_type='header',
+                    box_align='left',
+                    user=data_actor['name'])
                 return
-            if not GS.audio_dni[0]:
-                GS.audio_dni = (True, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
-            else:
-                if GS.audio_dni[1] != self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]:
-                    rprint(
-                        f'An audio plugin is using the audio thread with no interruption mode enabled. [{GS.audio_dni[1]}]')
-                    GS.gui_service.quick_gui(
-                        "An audio plugin is using the audio thread with no interruption mode enabled.",
-                        text_type='header',
-                        box_align='left')
-                    return
-            all_messages = message[1:].split(' ', 2)
-            if all_messages[1].strip() in tts_settings.voice_list:
-                all_messages = message[1:].split(' ', 2)
-            else:
-                all_messages = message[1:].split(' ', 1)
-
-            if len(all_messages) == 2:
-                if len(all_messages[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
-                    GS.gui_service.quick_gui(
-                        f"The text to speech message exceeded the character limit:"
-                        f" [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
-                        text_type='header',
-                        box_align='left',
-                        user=GS.mumble_inst.users[text.actor]['name'])
-                    return
-                if ttsu.download_clip("_temp",
-                                      self.metadata[C_PLUGIN_SETTINGS][P_TTS_DEF_VOICE],
-                                      all_messages[1].strip(),
-                                      directory=f'{dir_utils.get_temp_med_dir()}'
-                                      ):
-                    tts_settings.current_track = "_temp"
-                    ttsu.play_audio(mode=0)
-                    return
-            elif len(all_messages) == 3:
-                if len(all_messages[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
-                    GS.gui_service.quick_gui(
-                        f"The text to speech message exceeded the character limit:"
-                        f" [{self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]}].",
-                        text_type='header',
-                        box_align='left',
-                        user=GS.mumble_inst.users[text.actor]['name'])
-                    return
-                if ttsu.download_clip("_temp",
-                                      all_messages[1].strip(),
-                                      all_messages[2].strip(),
-                                      directory=f'{dir_utils.get_temp_med_dir()}'
-                                      ):
-                    tts_settings.current_track = "_temp"
-                    ttsu.play_audio(mode=0)
-                    return
-            GS.gui_service.quick_gui(
-                f"Incorrect Format:<br>!tts 'voice_name' 'message'<br>OR<br>!tts 'message'",
+            if ttsu.download_clip("_temp",
+                                  all_data[1].strip(),
+                                  all_data[2].strip(),
+                                  directory=f'{dir_utils.get_temp_med_dir()}'
+                                  ):
+                track_obj = TrackInfo(
+                    uri=f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}/_temp.oga',
+                    name='text-to-speech clip',
+                    sender=gs.mumble_inst.users[data.actor]['name'],
+                    duration=None,
+                    track_type=TrackType.FILE,
+                    quiet=True
+                )
+                gs.vlc_interface.enqueue_track(
+                    track_obj=track_obj,
+                    to_front=False,
+                    quiet=True
+                )
+                gs.vlc_interface.play(override=True)
+        else:
+            gs.gui_service.quick_gui(
+                f"Incorrect Format:<br>{get_command_token()}tts 'voice_name' 'message'<br>OR<br>{get_command_token()}tts 'message'",
                 text_type='header',
                 box_align='left',
-                user=GS.mumble_inst.users[text.actor]['name'])
+                user=data_actor['name'])

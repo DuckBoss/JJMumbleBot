@@ -3,7 +3,6 @@ from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
-from JJMumbleBot.lib.helpers import runtime_helper
 from JJMumbleBot.lib.utils.logging_utils import log, initialize_logging
 from JJMumbleBot.lib.pgui import PseudoGUI
 from JJMumbleBot.lib.mumble_data import MumbleData
@@ -16,7 +15,7 @@ from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
-from JJMumbleBot.lib import errors
+from JJMumbleBot.lib.vlc.vlc_api import VLCInterface
 from time import sleep, time
 import audioop
 from datetime import datetime
@@ -31,18 +30,15 @@ class BotService:
         BotServiceHelper.initialize_settings()
         # Initialize logging services.
         initialize_logging()
-        # Check and classify system arguments.
-        import JJMumbleBot.core.cla_classifier as cla
-        cla.classify()
 
         log(INFO, "######### Initializing JJMumbleBot #########", origin=L_STARTUP)
         rprint("######### Initializing JJMumbleBot #########", origin=L_STARTUP)
         # Initialize up-time tracking.
-        runtime_helper.start_time = datetime.now()
+        runtime_settings.start_time = datetime.now()
         # Set maximum multi-command limit.
         runtime_settings.multi_cmd_limit = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
         # Initialize command queue limit.
-        global_settings.cmd_queue = QueueHandler(runtime_settings.cmd_hist_lim)
+        global_settings.cmd_queue = QueueHandler([], maxlen=runtime_settings.cmd_queue_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
         log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
@@ -53,20 +49,22 @@ class BotService:
             if db_backup:
                 log(INFO, f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
                 rprint(f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
-        # Initialize bot database.
+        # Initialize internal database.
         global_settings.mumble_db = init_database()
         log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)
         rprint("######### Initialized Internal Database #########", origin=L_DATABASE)
         # Initialize major directories.
-        dir_utils.make_directory(global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR])
-        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/images')
-        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_DIR][P_TEMP_MED_DIR]}/internal/audio')
+        dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
+        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
+        dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
         log(INFO, "Initialized Temporary Directories.", origin=L_STARTUP)
         rprint("Initialized Temporary Directories.", origin=L_STARTUP)
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
         log(INFO, "Initialized PGUI.", origin=L_STARTUP)
         rprint("Initialized PGUI.", origin=L_STARTUP)
+        # Initialize VLC interface.
+        global_settings.vlc_interface = VLCInterface()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -158,42 +156,44 @@ class BotService:
                                 session=global_settings.mumble_inst.users.myself['session'],
                                 message=text.message,
                                 actor=global_settings.mumble_inst.users.myself['session'])
-                        if len(item[1:].split()) > 1:
-                            sub_text.message = f"{sub_item} {item[1:].split(' ', 1)[1]}"
+                        if len(item.split()) > 1:
+                            sub_text.message = f"{sub_item} {item.split(' ', 1)[1]}"
                         else:
                             sub_text.message = sub_item
                         try:
-                            sub_command = Command(sub_item[1:].split()[0], sub_text)
+                            com_parse = sub_item.split()[0]
+                            if com_parse[0] != '(' and com_parse[-1] != ')':
+                                return
+                            sub_command = Command(com_parse[1:][:-1], sub_text)
                         except IndexError:
                             continue
-                        global_settings.cmd_queue.insert(sub_command)
+                        global_settings.cmd_queue.insert_item(sub_command)
                 else:
                     # Insert command into the command queue
-                    global_settings.cmd_queue.insert(new_command)
+                    global_settings.cmd_queue.insert_item(new_command)
             else:
-                global_settings.cmd_queue.insert(new_command)
+                global_settings.cmd_queue.insert_item(new_command)
 
         # Process commands if the queue is not empty
         while not global_settings.cmd_queue.is_empty():
             # Process commands in the queue
-            BotService.process_command_queue(global_settings.cmd_queue.pop())
+            BotService.process_command_queue(global_settings.cmd_queue.pop_item())
             sleep(runtime_settings.tick_rate)
 
     @staticmethod
     def process_command_queue(com):
-        try:
-            for plugin in global_settings.bot_plugins.values():
-                execute_cmd.execute_command(plugin, com)
-        except Exception:
-            from JJMumbleBot.lib.errors import ExitCodes
-            runtime_utils.exit_bot_error(ExitCodes.SAFE_MODE_ERROR)
-            raise errors.SafeModeError(
-                'The bot has no plugins configured for safe mode, so it was shutdown to prevent a '
-                'stalled process.')
+        execute_cmd.execute_command(com)
 
     @staticmethod
     def on_connected():
-        log(INFO, f"{runtime_utils.get_bot_name()} is online.", origin=L_STARTUP)
+        log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP)
+
+    @staticmethod
+    def sound_received(user, audio_chunk):
+        if audioop.rms(audio_chunk.pcm, 2) > global_settings.vlc_interface.status['ducking_threshold'] and global_settings.vlc_interface.status['duck_audio']:
+            global_settings.vlc_interface.audio_utilities.duck_volume()
+            global_settings.vlc_interface.status['duck_start'] = time()
+            global_settings.vlc_interface.status['duck_end'] = time() + global_settings.vlc_interface.audio_utilities.get_ducking_delay()
 
     @staticmethod
     def sound_received(user, audio_chunk):
@@ -206,11 +206,17 @@ class BotService:
 
     @staticmethod
     def loop():
-        while not global_settings.exit_flag:
-            if time() > runtime_settings.duck_end and runtime_utils.is_ducking():
-                runtime_utils.unduck_volume()
-            sleep(runtime_settings.tick_rate)
-        BotService.stop()
+        try:
+            while not global_settings.exit_flag:
+                if time() > global_settings.vlc_interface.status['duck_end'] and global_settings.vlc_interface.audio_utilities.is_ducking():
+                    global_settings.vlc_interface.audio_utilities.unduck_volume()
+                sleep(runtime_settings.tick_rate)
+            BotService.stop()
+        except KeyboardInterrupt:
+            rprint(f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).", origin=L_SHUTDOWN)
+            log(INFO, f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).", origin=L_SHUTDOWN)
+            runtime_utils.exit_bot()
+            BotService.stop()
 
     @staticmethod
     def stop():

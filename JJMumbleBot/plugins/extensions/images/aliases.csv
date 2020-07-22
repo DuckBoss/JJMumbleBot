@@ -1,3 +1,2 @@
 alias,command
-imgl,!imglist
-imgle,!imglist_echo
+imgl,(imglist)

@@ -18,18 +18,23 @@ mumble_inst = None
 mumble_db_string = None
 # Command Line Arguments
 safe_mode: bool = False
-debug_mode: bool = False
 quiet_mode: bool = False
 verbose_mode: bool = False
 # Audio Thread Instance
-audio_inst = None
-audio_dni = (False, None)
+vlc_inst = None
+vlc_thread = None
+audio_dni = None
+vlc_interface = None
 # Bot State
 exit_flag: bool = False
 # Command History
 cmd_history = None
 # Command Queue
 cmd_queue = None
+# Callbacks
+cmd_callbacks = None
+mtd_callbacks = None
+plugin_callbacks = None
 # Aliases
 aliases = {}
 # Initialized Plugins.

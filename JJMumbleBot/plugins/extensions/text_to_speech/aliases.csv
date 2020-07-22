@@ -1,1 +1,5 @@
 alias,command
+ttsv,(ttsvoices)
+ttsp,(ttsplay)
+ttspq,(ttsplayquiet)
+ttsl,(ttslist)

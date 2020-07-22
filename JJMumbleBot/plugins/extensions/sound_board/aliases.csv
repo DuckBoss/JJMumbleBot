@@ -1,5 +1,7 @@
 alias,command
-sbs,!sbstop
-sbl,!sblist
-sble,!sblist_echo
-sbr,!sbrandom
+sbl,(sblist)
+sbn,(sbnow)
+sbr,(sbrandom)
+sbrn,(sbrandomnow)
+sbq,(sbquiet)
+sbqn,(sbquietnow)

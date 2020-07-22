@@ -14,7 +14,7 @@ class Test_Conn:
 
     def test_connectivity(self):
         mumble_inst = pymumble.Mumble(self.md.ip_address, port=self.md.port, user=self.md.user_id,
-                                      password=self.md.password, stereo=self.md.stereo)
+                                           password=self.md.password, stereo=self.md.stereo)
         assert mumble_inst is not None
 
     def test_server_ip(self):

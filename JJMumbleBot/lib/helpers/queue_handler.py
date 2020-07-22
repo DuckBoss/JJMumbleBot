@@ -2,31 +2,36 @@ import collections
 from random import shuffle
 
 
-class QueueHandler:
-    queue_storage = None
+class QueueHandler(collections.deque):
     queue_size = 0
 
-    def __init__(self, max_size):
-        self.queue_storage = collections.deque([], maxlen=max_size)
+    def __init__(self, iterable, maxlen):
+        super(QueueHandler, self).__init__(iterable, maxlen)
 
-    def insert_priority(self, item):
+    def __str__(self):
+        return str(list(self))
+
+    def to_list(self):
+        return list(self)
+
+    def insert_priority_item(self, item):
         if not self.is_full():
-            self.queue_storage.append(item)
+            self.append(item)
             self.queue_size += 1
 
-    def insert(self, item):
+    def insert_item(self, item):
         if not self.is_full():
-            self.queue_storage.appendleft(item)
+            self.appendleft(item)
             self.queue_size += 1
 
-    def pop(self):
+    def pop_item(self):
         if not self.is_empty():
-            item = self.queue_storage.pop()
+            item = self.pop()
             self.queue_size -= 1
             return item
 
     def is_full(self):
-        if self.queue_size < self.queue_storage.maxlen:
+        if self.queue_size < self.maxlen:
             return False
         return True
 
@@ -37,18 +42,20 @@ class QueueHandler:
 
     def shuffle(self):
         if not self.is_empty():
-            shuffle(self.queue_storage)
+            shuffle(self)
             return True
         return False
 
-    def remove(self, index):
+    def remove_item(self, index):
         if not self.is_empty():
             temp_list = []
             while not self.is_empty():
-                temp_list.append(self.pop())
+                temp_list.append(self.pop_item())
+            if len(temp_list) == 0 or index > len(temp_list)-1:
+                return None
             ret_val = temp_list.pop(index)
             for i, item in enumerate(temp_list):
-                self.insert(item)
+                self.insert_item(item)
             return ret_val
         return None
 
@@ -56,5 +63,5 @@ class QueueHandler:
         return self.queue_size
 
     def clear(self):
-        self.queue_storage.clear()
+        self.clear()
         self.queue_size = 0

@@ -393,10 +393,73 @@ class DeleteDB:
             save_memory_db(db_conn)
             if not ignore_file_save:
                 save_memory_db_to_file()
-            if db_conn.cursor().rowcount > 0:
+            if db_conn.cursor().rowcount == -1:
                 dprint(f"Deleted all alias in the database",
                        origin=L_DATABASE)
                 log(INFO, f"Deleted all alias in the database",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            dprint(err)
+            return False
+
+    @staticmethod
+    def delete_all_plugins(db_conn, ignore_file_save=False):
+        delete_plugins_query = f"""
+                DELETE FROM plugins;
+            """
+        try:
+            db_conn.cursor().execute(delete_plugins_query)
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Deleted all plugins in the database",
+                       origin=L_DATABASE)
+                log(INFO, f"Deleted all plugins in the database",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            dprint(err)
+            return False
+
+    @staticmethod
+    def delete_all_plugins_help(db_conn, ignore_file_save=False):
+        delete_plugins_help_query = f"""
+                    DELETE FROM plugins_help;
+                """
+        try:
+            db_conn.cursor().execute(delete_plugins_help_query)
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Deleted all plugins_help in the database",
+                       origin=L_DATABASE)
+                log(INFO, f"Deleted all plugins_help in the database",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            dprint(err)
+            return False
+
+    @staticmethod
+    def delete_all_commands(db_conn, ignore_file_save=False):
+        delete_commands_query = f"""
+                        DELETE FROM commands;
+                    """
+        try:
+            db_conn.cursor().execute(delete_commands_query)
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Deleted all commands in the database",
+                       origin=L_DATABASE)
+                log(INFO, f"Deleted all commands in the database",
                     origin=L_DATABASE)
                 return True
             return False

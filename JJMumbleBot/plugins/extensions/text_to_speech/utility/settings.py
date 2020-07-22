@@ -1,5 +1,2 @@
-exit_flag = False
-current_track = None
-is_playing = False
-tts_metadata = None
+plugin_name = None
 voice_list = []
