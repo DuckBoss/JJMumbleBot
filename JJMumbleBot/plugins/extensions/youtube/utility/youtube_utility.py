@@ -202,7 +202,7 @@ def get_playlist_info(playlist_url):
         playlist_dict_check = ydl.extract_info(playlist_url, download=False, process=False)
         if playlist_dict_check is None:
             gs.gui_service.quick_gui(
-                f"ERROR: This playlist is private or protected. Only unlisted/public playlists can be played.",
+                f"This playlist is private or protected. Only unlisted/public playlists can be played.",
                 text_type='header',
                 box_align='left')
             return None
@@ -212,7 +212,7 @@ def get_playlist_info(playlist_url):
         if count > int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]):
             if not settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
                 gs.gui_service.quick_gui(
-                    f"ERROR: This playlist is longer than the limit set in the config.<br>The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}.",
+                    f"This playlist is longer than the limit set in the config.<br>The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}.",
                     text_type='header',
                     box_align='left')
                 return None
@@ -225,7 +225,7 @@ def get_playlist_info(playlist_url):
         all_videos = []
         if not playlist_dict['entries']:
             gs.gui_service.quick_gui(
-                "ERROR: Unable to get playlist information.",
+                "Unable to get playlist information.",
                 text_type='header',
                 box_align='left')
             return None
