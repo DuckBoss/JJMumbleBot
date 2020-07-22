@@ -168,7 +168,8 @@ class Plugin(PluginBase):
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
         if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
-            if "playlist" in stripped_url or "list" in stripped_url:
+            if ("youtube.com" in stripped_url and "list" in stripped_url) or (
+                    "soundcloud" in stripped_url and "sets" in stripped_url):
                 gs.gui_service.quick_gui(
                     "The given link was identified as a playlist link!<br>Please use the playlist "
                     "command to add playlists to the queue!",
