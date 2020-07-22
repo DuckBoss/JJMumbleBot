@@ -146,8 +146,7 @@ class Plugin(PluginBase):
                 f"The sound clip '{to_play}.wav' does not exist.",
                 text_type='header',
                 box_align='left')
-            if gs.vlc_interface.get_track().name == '':
-                gs.vlc_interface.clear_dni()
+            gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
@@ -180,8 +179,7 @@ class Plugin(PluginBase):
                 f"The sound clip '{to_play}.wav' does not exist.",
                 text_type='header',
                 box_align='left')
-            if gs.vlc_interface.get_track().name == '':
-                gs.vlc_interface.clear_dni()
+            gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
@@ -215,8 +213,7 @@ class Plugin(PluginBase):
                 "The sound clip does not exist.",
                 text_type='header',
                 box_align='left')
-            if gs.vlc_interface.get_track().name == '':
-                gs.vlc_interface.clear_dni()
+            gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
@@ -250,8 +247,7 @@ class Plugin(PluginBase):
                 "The sound clip does not exist.",
                 text_type='header',
                 box_align='left')
-            if gs.vlc_interface.get_track().name == '':
-                gs.vlc_interface.clear_dni()
+            gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
