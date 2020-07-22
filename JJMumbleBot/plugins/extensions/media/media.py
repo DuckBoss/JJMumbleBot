@@ -6,9 +6,9 @@ from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.vlc.vlc_api import TrackInfo, TrackType
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
-from JJMumbleBot.plugins.extensions.youtube.utility import youtube_utility as yt_utility
-from JJMumbleBot.plugins.extensions.youtube.utility import settings as yt_settings
+from JJMumbleBot.plugins.extensions.media.resources.strings import *
+from JJMumbleBot.plugins.extensions.media.utility import media_utility as md_utility
+from JJMumbleBot.plugins.extensions.media.utility import settings as md_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 import warnings
 import os
@@ -26,8 +26,8 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         warnings.filterwarnings("ignore", category=UserWarning, module='bs4')
-        yt_settings.youtube_metadata = self.metadata
-        yt_settings.plugin_name = self.plugin_name
+        md_settings.youtube_metadata = self.metadata
+        md_settings.plugin_name = self.plugin_name
         self.register_callbacks()
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
@@ -41,15 +41,15 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def register_callbacks(self):
-        for method_name in dir(yt_utility):
-            if callable(getattr(yt_utility, method_name)) and not method_name[0].isupper() \
+        for method_name in dir(md_utility):
+            if callable(getattr(md_utility, method_name)) and not method_name[0].isupper() \
                     and not method_name[0] == '_' \
                     and not method_name == 'register_callbacks'\
                     and not method_name[:3] == 'cmd'\
                     and not method_name == 'quit':
                 gs.plugin_callbacks.register_callback(
                     f'{self.plugin_name}|{method_name}|clbk',
-                    getattr(yt_utility, method_name)
+                    getattr(md_utility, method_name)
                 )
 
     def cmd_ytplaylist(self, data):
@@ -68,8 +68,8 @@ class Plugin(PluginBase):
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
 
-        if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
-            all_song_data = yt_utility.get_playlist_info(stripped_url)
+        if "media.com" in stripped_url or "youtu.be" in stripped_url:
+            all_song_data = md_utility.get_playlist_info(stripped_url)
             if all_song_data is None:
                 return
 
@@ -93,7 +93,7 @@ class Plugin(PluginBase):
             gs.vlc_interface.play()
         else:
             gs.gui_service.quick_gui(
-                "The given link was not identified as a youtube playlist link!<br>SoundCloud playlists are not supported.",
+                "The given link was not identified as a media playlist link!<br>SoundCloud playlists are not supported.",
                 text_type='header',
                 box_align='left')
             return
@@ -107,14 +107,14 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}link 'youtube/soundcloud link'",
+                f"Invalid formatting! Format: {get_command_token()}link 'media/soundcloud link'",
                 text_type='header',
                 box_align='left')
             return
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
-        if "youtube.com" in stripped_url or "youtu.be" in stripped_url or 'soundcloud' in stripped_url:
-            if ("youtube.com" in stripped_url and "list" in stripped_url) or ("soundcloud" in stripped_url and "sets" in stripped_url):
+        if "media.com" in stripped_url or "youtu.be" in stripped_url or 'soundcloud' in stripped_url:
+            if ("media.com" in stripped_url and "list" in stripped_url) or ("soundcloud" in stripped_url and "sets" in stripped_url):
                 gs.gui_service.quick_gui(
                     "The given link was identified as a playlist link!<br>Please use the playlist "
                     "command to add playlists to the queue!",
@@ -122,16 +122,16 @@ class Plugin(PluginBase):
                     box_align='left')
                 return
 
-            song_data = yt_utility.get_video_info(stripped_url)
+            song_data = md_utility.get_video_info(stripped_url)
             if song_data is None:
                 gs.gui_service.quick_gui(
-                    "The youtube video information could not be retrieved.",
+                    "The media video information could not be retrieved.",
                     text_type='header',
                     box_align='left')
                 return
             if int(song_data['duration']) > int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN]):
                 gs.gui_service.quick_gui(
-                    f"The youtube video provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
+                    f"The media video provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
                     text_type='header',
                     box_align='left')
                 return
@@ -161,14 +161,14 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}linkfront 'youtube/soundcloud link'",
+                f"Invalid formatting! Format: {get_command_token()}linkfront 'media/soundcloud link'",
                 text_type='header',
                 box_align='left')
             return
         sender = gs.mumble_inst.users[data.actor]['name']
         stripped_url = BeautifulSoup(all_data[1], features='html.parser').get_text()
-        if "youtube.com" in stripped_url or "youtu.be" in stripped_url:
-            if ("youtube.com" in stripped_url and "list" in stripped_url) or (
+        if "media.com" in stripped_url or "youtu.be" in stripped_url:
+            if ("media.com" in stripped_url and "list" in stripped_url) or (
                     "soundcloud" in stripped_url and "sets" in stripped_url):
                 gs.gui_service.quick_gui(
                     "The given link was identified as a playlist link!<br>Please use the playlist "
@@ -177,17 +177,17 @@ class Plugin(PluginBase):
                     box_align='left')
                 return
 
-            song_data = yt_utility.get_video_info(stripped_url)
+            song_data = md_utility.get_video_info(stripped_url)
             if song_data is None:
                 gs.gui_service.quick_gui(
-                    "The youtube video information could not be retrieved.",
+                    "The media video information could not be retrieved.",
                     text_type='header',
                     box_align='left')
                 return
 
             if int(song_data['duration']) > int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN]):
                 gs.gui_service.quick_gui(
-                    f"The youtube video provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
+                    f"The media video provided is longer than the maximum allowed video duration: [{str(timedelta(seconds=int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_VID_LEN])))}]",
                     text_type='header',
                     box_align='left')
                 return
@@ -218,21 +218,21 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left')
             return
-        search_results = yt_utility.get_search_results(search_term, int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]))
+        search_results = md_utility.get_search_results(search_term, int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]))
         log(INFO, "Displayed youtube search results.", origin=L_COMMAND)
         gs.gui_service.quick_gui(
             search_results,
             text_type='header',
             text_align='left',
             box_align='left')
-        yt_settings.can_play = True
+        md_settings.can_play = True
 
     def cmd_ytplay(self, data):
         if not gs.vlc_interface.check_dni_active() or gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
             all_data = data.message.strip().split()
             sender = gs.mumble_inst.users[data.actor]['name']
             if len(all_data) == 1:
-                song_data = yt_utility.get_video_info(f"https://www.youtube.com{yt_settings.search_results[0]['href']}")
+                song_data = md_utility.get_video_info(f"https://www.youtube.com{md_settings.search_results[0]['href']}")
                 if song_data is None:
                     gs.gui_service.quick_gui(
                         f"There was an error with the chosen video.",
@@ -240,10 +240,10 @@ class Plugin(PluginBase):
                         box_align='left')
                     return
                 gs.gui_service.quick_gui(
-                    f"Automatically chosen: {yt_settings.search_results[0]['title']}",
+                    f"Automatically chosen: {md_settings.search_results[0]['title']}",
                     text_type='header',
                     box_align='left')
-                yt_settings.can_play = False
+                md_settings.can_play = False
                 gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
                 track_obj = TrackInfo(
                     uri=song_data['main_url'],
@@ -253,7 +253,7 @@ class Plugin(PluginBase):
                         song_data['duration']) > 0 else -1,
                     track_type=TrackType.STREAM,
                     track_id=song_data['main_id'],
-                    alt_uri=f"https://www.youtube.com{yt_settings.search_results[0]['href']}",
+                    alt_uri=f"https://www.youtube.com{md_settings.search_results[0]['href']}",
                     image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
                     quiet=False
                 )
@@ -261,11 +261,11 @@ class Plugin(PluginBase):
                     track_obj=track_obj,
                     to_front=False
                 )
-                yt_settings.search_results = None
+                md_settings.search_results = None
                 gs.vlc_interface.play()
             elif len(all_data) == 2:
                 if int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]) >= int(all_data[1]) >= 0:
-                    song_data = yt_utility.get_video_info(f"https://www.youtube.com{yt_settings.search_results[int(all_data[1])]['href']}")
+                    song_data = md_utility.get_video_info(f"https://www.youtube.com{md_settings.search_results[int(all_data[1])]['href']}")
                     if song_data is None:
                         gs.gui_service.quick_gui(
                             f"There was an error with the chosen video.",
@@ -273,16 +273,16 @@ class Plugin(PluginBase):
                             box_align='left')
                         return
                     gs.gui_service.quick_gui(
-                        f"You've chosen: {yt_settings.search_results[int(all_data[1])]['title']}",
+                        f"You've chosen: {md_settings.search_results[int(all_data[1])]['title']}",
                         text_type='header',
                         box_align='left')
-                    yt_settings.can_play = False
+                    md_settings.can_play = False
                 else:
                     gs.gui_service.quick_gui(
                         f"Invalid choice! Valid Range [0-{int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN])}]",
                         text_type='header',
                         box_align='left')
-                    yt_settings.can_play = False
+                    md_settings.can_play = False
                     return
                 gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
                 track_obj = TrackInfo(
@@ -293,7 +293,7 @@ class Plugin(PluginBase):
                         song_data['duration']) > 0 else -1,
                     track_type=TrackType.STREAM,
                     track_id=song_data['main_id'],
-                    alt_uri=f"https://www.youtube.com{yt_settings.search_results[int(all_data[1])]['href']}",
+                    alt_uri=f"https://www.youtube.com{md_settings.search_results[int(all_data[1])]['href']}",
                     image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
                     quiet=False
                 )
@@ -301,11 +301,11 @@ class Plugin(PluginBase):
                     track_obj=track_obj,
                     to_front=False
                 )
-                yt_settings.search_results = None
+                md_settings.search_results = None
                 gs.vlc_interface.play()
             else:
-                yt_settings.can_play = False
-                yt_settings.search_results = None
+                md_settings.can_play = False
+                md_settings.search_results = None
                 gs.gui_service.quick_gui(
                     f"Invalid formatting! Format: {get_command_token()}ytplay 'track_number'",
                     text_type='header',

@@ -1,13 +1,13 @@
 import youtube_dl
 from PIL import Image
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.plugins.extensions.youtube.resources.strings import *
+from JJMumbleBot.plugins.extensions.media.resources.strings import *
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
 from JJMumbleBot.lib.utils import print_utils
-from JJMumbleBot.plugins.extensions.youtube.utility import settings
-from JJMumbleBot.plugins.extensions.youtube.utility.youtube_search import YoutubeSearch
+from JJMumbleBot.plugins.extensions.media.utility import settings
+from JJMumbleBot.plugins.extensions.media.utility.youtube_search import YoutubeSearch
 import os
 from zlib import crc32
 from datetime import timedelta
@@ -145,7 +145,7 @@ def on_reset():
 
 
 def get_video_info(video_url):
-    # Update the audio interface status with the youtube mrl, duration, and video title.
+    # Update the audio interface status with the media mrl, duration, and video title.
     try:
         ydl_opts = {
             'quiet': True,
