@@ -436,7 +436,7 @@ class VLCInterface:
         self.status.update_queue(reversed_list)
         if not quiet:
             global_settings.gui_service.quick_gui(
-                f"{track_obj.sender} added <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_obj.name}<font> to the audio queue.",
+                f"{track_obj.sender} added <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_obj.name}</font> to the audio queue.",
                 text_type='header',
                 box_align='left')
 
