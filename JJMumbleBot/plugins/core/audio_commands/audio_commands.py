@@ -78,6 +78,15 @@ class Plugin(PluginBase):
                 skip_to = 0
             gs.vlc_interface.skip(skip_to)
 
+    def cmd_pause(self, data):
+        if gs.vlc_interface.check_dni_active():
+            gs.vlc_interface.pause()
+
+    def cmd_resume(self, data):
+        if gs.vlc_interface.check_dni_active():
+            if gs.vlc_interface.status.is_paused():
+                gs.vlc_interface.resume()
+
     def cmd_shuffle(self, data):
         if gs.vlc_interface.check_dni_active():
             gs.vlc_interface.shuffle()
