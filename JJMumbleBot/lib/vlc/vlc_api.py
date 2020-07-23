@@ -1,4 +1,3 @@
-from datetime import timedelta
 from time import sleep, time
 import wave
 import os
@@ -72,7 +71,9 @@ class VLCInterface:
                     'duck_start': 0.0,
                     'duck_end': 0.0,
                     'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME]),
-                    'pause_time': 0
+                    'start_time': 0,
+                    'pause_time': 0,
+                    'progress_time': 0
                 }
             )
 
@@ -91,8 +92,10 @@ class VLCInterface:
             dict_str += ', '.join(x.name for x in self['queue'])
             dict_str += f"]<br>queue_length: {self['queue_length']}<br>" \
                         f"status: {self['status'].value}<br>" \
+                        f"start_time: {self['start_time']}<br>" \
                         f"pause_time: {self['pause_time']}<br>" \
-                        f"volume: {self['volume']}<br>" \
+                        f"progress_time: {self['progress_time']}<br>" \
+                        f"volume: {self.get_volume()}<br>" \
                         f"loop: {self['loop']}<br>" \
                         f"duck_audio: {self['duck_audio']}<br>" \
                         f"ducking_volume: {self['ducking_volume']}<br>" \
@@ -256,13 +259,11 @@ class VLCInterface:
                 global_settings.plugin_callbacks[clbk]()
 
     def play(self, override=False):
-        skip_to = 0
         if not override:
             if self.status.get_status() == TrackStatus.PLAYING:
                 return
             if self.status.get_status() == TrackStatus.PAUSED:
                 track_info = self.status.get_track()
-                skip_to = time() - self.status['pause_time']
             else:
                 track_info = self.queue.pop_item()
                 self.status.set_track(track_info)
@@ -275,7 +276,6 @@ class VLCInterface:
             reversed_list = list(self.queue)
             reversed_list.reverse()
             self.status.update_queue(reversed_list)
-            skip_to = 0
         if not track_info:
             global_settings.gui_service.quick_gui(
                 f"There is no track available to play",
@@ -285,25 +285,49 @@ class VLCInterface:
         self.callback_check('on_play')
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
-        audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=skip_to)
-        self.status['pause_time'] = 0
+        audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=self.status['progress_time'])
+        self.status['start_time'] = int(time())
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
             self.display_playing_gui()
+
+    def calculate_progress(self):
+        if self.status.is_playing():
+            if self.status['progress_time'] == 0:
+                if self.status['pause_time'] == 0:
+                    self.status['progress_time'] = int(time()) - self.status['start_time']
+                else:
+                    self.status['progress_time'] = self.status['pause_time'] - self.status['start_time']
+            else:
+                if self.status['pause_time'] == 0:
+                    self.status['progress_time'] = int(time()) - self.status['start_time']
+                else:
+                    if self.status['pause_time'] != self.status['start_time']:
+                        self.status['progress_time'] = self.status['progress_time'] + (
+                                    self.status['pause_time'] - self.status['start_time'])
+                    else:
+                        self.status['progress_time'] = self.status['progress_time'] + (
+                                int(time()) - self.status['start_time'])
+                        self.status['start_time'] = int(time())
+                        self.status['pause_time'] = int(time())
 
     def pause(self):
         if self.status.is_playing():
             if global_settings.vlc_inst:
                 audio_interface.stop_vlc_instance()
+            self.calculate_progress()
             self.status['pause_time'] = int(time())
+
             self.status.set_status(TrackStatus.PAUSED)
             global_settings.gui_service.quick_gui(
-                f"Paused track at {self.audio_utilities.sec_formatted(time() - self.status['pause_time'])}",
+                f"Paused track at {self.audio_utilities.sec_formatted(self.status['progress_time'])}",
                 text_type='header',
                 box_align='left')
 
     def resume(self):
         if self.status.is_paused():
+            self.status['start_time'] = int(time())
+            self.status['pause_time'] = int(time())
             self.play()
 
     def skip(self, track_number):
@@ -332,14 +356,15 @@ class VLCInterface:
                 f"Skipping to track {track_number} in the audio queue.",
                 text_type='header',
                 box_align='left')
-        self.status['pause_time'] = 0
+
+        self.status['start_time'] = int(time())
+        self.status['pause_time'] = int(time())
+        self.status['progress_time'] = 0
+
         self.play(override=True)
 
     def replay(self):
-        if global_settings.vlc_inst:
-            audio_interface.stop_vlc_instance()
-        self.status['pause_time'] = 0
-        audio_interface.create_vlc_instance(self.status.get_track().uri)
+        self.seek(0)
 
     def shuffle(self):
         if self.queue.is_empty():
@@ -358,6 +383,11 @@ class VLCInterface:
             if global_settings.vlc_inst:
                 audio_interface.stop_vlc_instance()
             audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
+
+            self.status['start_time'] = int(time())
+            self.status['pause_time'] = int(time())
+            self.status['progress_time'] = int(seconds)
+
             global_settings.gui_service.quick_gui(
                 f"Skipped to {str(timedelta(seconds=int(seconds)))} in the audio track.",
                 text_type='header',
@@ -381,6 +411,8 @@ class VLCInterface:
             'queue_length': 0,
             'status': TrackStatus.STOPPED,
             'pause_time': 0,
+            'start_time': 0,
+            'progress_time': 0,
             'volume': self.status['volume'],
             'loop': self.status['loop'],
             'duck_audio': self.status['duck_audio'],
@@ -411,6 +443,8 @@ class VLCInterface:
             'queue_length': 0,
             'status': TrackStatus.STOPPED,
             'pause_time': 0,
+            'start_time': 0,
+            'progress_time': 0,
             'volume': self.status['volume'],
             'loop': self.status['loop'],
             'duck_audio': self.status['duck_audio'],
@@ -534,7 +568,8 @@ class VLCInterface:
                 global_settings.gui_service.quick_gui_img(
                     image_dir,
                     image_file,
-                    caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}({cur_track.duration})]: "
+                    caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
+                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{cur_track.duration})]: "
                             f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
                     caption_align='left',
                     format_img=True,
@@ -545,7 +580,8 @@ class VLCInterface:
                 global_settings.gui_service.quick_gui_img(
                     f'{get_main_dir()}/lib/images',
                     f'img_unavailable',
-                    caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}({cur_track.duration})]: "
+                    caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
+                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{cur_track.duration})]: "
                             f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
                     caption_align='left',
                     format_img=True,

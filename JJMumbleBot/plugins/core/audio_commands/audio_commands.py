@@ -24,6 +24,7 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_audiostatus(self, data):
+        gs.vlc_interface.calculate_progress()
         gs.gui_service.quick_gui(
             str(gs.vlc_interface.status),
             text_type='header',
@@ -47,6 +48,7 @@ class Plugin(PluginBase):
 
     def cmd_playing(self, data):
         if gs.vlc_interface.check_dni_active():
+            gs.vlc_interface.calculate_progress()
             gs.vlc_interface.display_playing_gui()
 
     def cmd_queue(self, data):
