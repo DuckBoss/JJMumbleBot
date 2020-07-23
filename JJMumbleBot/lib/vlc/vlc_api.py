@@ -279,7 +279,7 @@ class VLCInterface:
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri)
-        if not track_info.quiet and not self.status.is_looping():
+        if not track_info.quiet:
             self.display_playing_gui()
         self.status.set_status(TrackStatus.PLAYING)
 
@@ -473,8 +473,6 @@ class VLCInterface:
         self.callback_check('on_next_track')
 
         if self.status.is_looping():
-            if not self.status.get_track().quiet:
-                self.display_playing_gui()
             self.status.set_status(TrackStatus.PLAYING)
             return True
         track_to_play = self.queue.pop_item()
