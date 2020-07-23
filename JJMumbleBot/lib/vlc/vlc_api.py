@@ -333,7 +333,7 @@ class VLCInterface:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
         global_settings.gui_service.quick_gui(
-            f"Skipped to {seconds} seconds in the audio track.",
+            f"Skipped to {seconds if seconds > 0 else 0} seconds in the audio track.",
             text_type='header',
             box_align='left')
 
