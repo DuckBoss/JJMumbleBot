@@ -95,7 +95,7 @@ class BotService:
 
     @staticmethod
     def initialize_mumble(md: MumbleData):
-        global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id,
+        global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id, reconnect=md.auto_reconnect,
                                                       password=md.password, certfile=md.certificate, stereo=md.stereo)
         global_settings.mumble_inst.callbacks.set_callback('text_received', BotService.message_received)
         global_settings.mumble_inst.callbacks.set_callback('sound_received', BotService.sound_received)

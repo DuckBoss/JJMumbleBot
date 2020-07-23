@@ -19,9 +19,10 @@ class BotServiceHelper:
         server_port: int = int(global_settings.cfg[C_CONNECTION_SETTINGS][P_SERVER_PORT])
         user_id: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
         user_cert: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
-        use_stereo: bool = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_STEREO)
+        use_stereo: bool = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_STEREO, fallback=True)
+        use_reconnect: bool = global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SERVER_RECONNECT, fallback=False)
         return MumbleData(ip=server_ip, port=server_port, uid=user_id, pwd=server_pass, cert=user_cert,
-                          stereo=use_stereo)
+                          stereo=use_stereo, reconnect=use_reconnect)
 
     @staticmethod
     def initialize_settings():

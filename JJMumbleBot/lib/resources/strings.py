@@ -14,6 +14,7 @@ P_SERVER_PASS = 'ServerPassword'
 P_SERVER_PORT = 'ServerPort'
 P_USER_ID = 'UserID'
 P_USER_CERT = 'UserCertification'
+P_SERVER_RECONNECT = 'AutoReconnect'
 P_CHANNEL_DEF = 'DefaultChannel'
 P_DEFAULT_SU = 'DefaultSuperUser'
 P_SELF_REGISTER = "SelfRegister"
