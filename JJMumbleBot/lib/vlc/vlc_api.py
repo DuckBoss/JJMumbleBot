@@ -279,7 +279,7 @@ class VLCInterface:
         if global_settings.vlc_inst:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri)
-        if not track_info.quiet:
+        if not track_info.quiet and not self.status.is_looping():
             self.display_playing_gui()
         self.status.set_status(TrackStatus.PLAYING)
 
