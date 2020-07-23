@@ -171,6 +171,9 @@ class VLCInterface:
         def __init__(self):
             pass
 
+        def sec_formatted(self, duration):
+            return str(timedelta(seconds=int(duration)))
+
         def lerp_volume(self, cur_vol, targ_vol, lerp_time):
             cur_time = 0
             while cur_time < 1:
@@ -335,7 +338,7 @@ class VLCInterface:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
         global_settings.gui_service.quick_gui(
-            f"Skipped to {str(timedelta(seconds=seconds))} in the audio track.",
+            f"Skipped to {str(timedelta(seconds=int(seconds)))} in the audio track.",
             text_type='header',
             box_align='left')
 
@@ -503,11 +506,14 @@ class VLCInterface:
             image_uri_split = self.get_track().image_uri.rsplit('/', 1)
             image_dir = image_uri_split[0]
             image_file = cur_track_hashed_img_uri
+            cur_track = self.status.get_track()
             if os.path.exists(f"{image_dir}/{image_file}.jpg"):
                 global_settings.gui_service.quick_gui_img(
                     image_dir,
                     image_file,
-                    caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                    caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Now playing</font>[{cur_track.track_type.value}({cur_track.duration})]: "
+                            f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
+                    caption_align='left',
                     format_img=True,
                     img_size=32768
                 )
@@ -516,7 +522,9 @@ class VLCInterface:
                 global_settings.gui_service.quick_gui_img(
                     f'{get_main_dir()}/lib/images',
                     f'img_unavailable',
-                    caption=f"Now playing[{self.status.get_track().track_type.value}]: <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{self.status.get_track().name}</font> by {self.status.get_track().sender}",
+                    caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Now playing</font>[{cur_track.track_type.value}({cur_track.duration})]: "
+                            f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
+                    caption_align='left',
                     format_img=True,
                     img_size=32768
                 )
