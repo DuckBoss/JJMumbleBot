@@ -4,6 +4,7 @@ from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.resources.strings import *
+from pymumble_py3 import errors
 import datetime
 from threading import Thread
 from math import ceil
@@ -83,6 +84,8 @@ def set_whisper_user(username):
         if global_settings.mumble_inst.users[user]['name'] == username:
             runtime_settings.whisper_target = {"id": global_settings.mumble_inst.users[user]['session'], "type": 1}
             global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=False)
+            return True
+    return False
 
 
 def set_whisper_multi_user(users_list):
@@ -99,9 +102,13 @@ def set_whisper_multi_user(users_list):
 
 
 def set_whisper_channel(channel_name):
-    channel_id = get_channel(channel_name)['channel_id']
-    runtime_settings.whisper_target = {"id": channel_id, "type": 0}
-    global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=True)
+    try:
+        channel_id = get_channel(channel_name)['channel_id']
+        runtime_settings.whisper_target = {"id": channel_id, "type": 0}
+        global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=True)
+        return True
+    except errors.UnknownChannelError:
+        return False
 
 
 def get_whisper_clients_by_type(wh_type: int):

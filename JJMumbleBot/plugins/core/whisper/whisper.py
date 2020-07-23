@@ -55,7 +55,7 @@ class Plugin(PluginBase):
                                      ignore_whisper=True)
 
     def cmd_setwhisperuser(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         data_actor = GS.mumble_inst.users[data.actor]
         try:
             parameter = all_data[1]
@@ -65,11 +65,16 @@ class Plugin(PluginBase):
                                          box_align='left', user=data_actor['name'],
                                          ignore_whisper=True)
                 return
-            rutils.set_whisper_user(parameter)
-            GS.gui_service.quick_gui(f"Set whisper to User: {parameter}", text_type='header',
+            if rutils.set_whisper_user(parameter):
+                GS.gui_service.quick_gui(f"Set whisper to User: {parameter}", text_type='header',
+                                         box_align='left', user=data_actor['name'],
+                                         ignore_whisper=True)
+                rprint(f"Set whisper to User: {parameter}.", origin=L_COMMAND)
+                log(INFO, f"Set whisper to User: {parameter}.", origin=L_COMMAND)
+
+            GS.gui_service.quick_gui(f"Could not find User: {parameter}", text_type='header',
                                      box_align='left', user=data_actor['name'],
                                      ignore_whisper=True)
-            log(INFO, f"Set whisper to User: {parameter}.", origin=L_COMMAND)
         except IndexError:
             GS.gui_service.quick_gui(
                 f"Invalid whisper command!<br>Command format: {rutils.get_command_token()}setwhisperuser username",
@@ -79,7 +84,7 @@ class Plugin(PluginBase):
             return
 
     def cmd_removewhisperuser(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         data_actor = GS.mumble_inst.users[data.actor]
         try:
             username = all_data[1]
@@ -131,7 +136,7 @@ class Plugin(PluginBase):
             return
 
     def cmd_addwhisperuser(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         data_actor = GS.mumble_inst.users[data.actor]
         try:
             username = all_data[1]
@@ -214,17 +219,20 @@ class Plugin(PluginBase):
         log(INFO, f"Set whisper to user: {data_actor['name']}.", origin=L_COMMAND)
 
     def cmd_setwhisperchannel(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         data_actor = GS.mumble_inst.users[data.actor]
         try:
             parameter = all_data[1]
-            rutils.set_whisper_channel(parameter)
-
-            GS.gui_service.quick_gui(f"Set whisper to channel: {parameter}", text_type='header',
-                                     box_align='left', user=data_actor['name'],
-                                     ignore_whisper=True)
-            rprint(f"Set whisper to channel: {parameter}.", origin=L_COMMAND)
-            log(INFO, f"Set whisper to channel: {parameter}.", origin=L_COMMAND)
+            if rutils.set_whisper_channel(parameter):
+                GS.gui_service.quick_gui(f"Set whisper to channel: {parameter}", text_type='header',
+                                         box_align='left', user=data_actor['name'],
+                                         ignore_whisper=True)
+                rprint(f"Set whisper to channel: {parameter}.", origin=L_COMMAND)
+                log(INFO, f"Set whisper to channel: {parameter}.", origin=L_COMMAND)
+            else:
+                GS.gui_service.quick_gui(f"Could not find channel: {parameter}", text_type='header',
+                                         box_align='left', user=data_actor['name'],
+                                         ignore_whisper=True)
         except IndexError:
             GS.gui_service.quick_gui("Command format: !setwhisperchannel channel_name", text_type='header',
                                      box_align='left', user=data_actor['name'],
