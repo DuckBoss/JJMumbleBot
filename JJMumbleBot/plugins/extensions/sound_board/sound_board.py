@@ -7,6 +7,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utility as sbu
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
+from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
 from os import path
@@ -63,16 +64,26 @@ class Plugin(PluginBase):
         log(INFO, "Displayed a list of all local sound board files.")
 
     def cmd_sbdownload(self, data):
-        all_data = data.message.strip().split()
-        url_stripped = BeautifulSoup(all_data[1], features='html.parser').get_text()
-        if len(all_data) > 2:
-            if "youtube.com" in url_stripped or "youtu.be" in url_stripped:
-                sbu.download_clip(url_stripped, all_data[2].strip())
+        data_stripped = BeautifulSoup(data.message.strip(), features='html.parser').get_text()
+        all_data = data_stripped.split()
+        print(all_data)
+
+        if len(all_data) == 3:
+            if "youtube.com" in data_stripped or "youtu.be" in data_stripped:
+                sbu.download_clip(all_data[1], all_data[2].strip())
                 gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}.wav",
                                          text_type='header',
                                          box_align='left')
-                return
-            return
+            else:
+                gs.gui_service.quick_gui(
+                    f"The given link was not identified as a youtube link!",
+                    text_type='header',
+                    box_align='left')
+        else:
+            gs.gui_service.quick_gui(
+                f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name'",
+                text_type='header',
+                box_align='left')
 
     def cmd_sbdelete(self, data):
         all_data = data.message().strip().split()
