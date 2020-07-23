@@ -1,5 +1,5 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
-from JJMumbleBot.lib.vlc.vlc_api import TrackType
+from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
@@ -106,13 +106,53 @@ class Plugin(PluginBase):
 
     def cmd_seek(self, data):
         all_data = data.message.strip().split()
-        if len(all_data) < 2:
+        if len(all_data) != 2:
             return
         if gs.vlc_interface.check_dni_active():
-            try:
-                gs.vlc_interface.seek(int(all_data[1]))
-            except ValueError:
-                return
+            given_time = all_data[1]
+            if ":" in given_time:
+                time_split = given_time.split(':')
+                print(time_split)
+                try:
+                    if len(time_split) == 1:
+                        # No ':' separator means that it is in seconds, no minutes/hours
+                        given_time = int(all_data[1])
+                        gs.vlc_interface.seek(given_time)
+                    elif len(time_split) == 2:
+                        # One ':' separators means that is in mins:secs, no hours
+                        mins = int(time_split[0])
+                        secs = int(time_split[1])
+                        given_time = (mins * 60) + secs
+                        gs.vlc_interface.seek(given_time)
+                    elif len(time_split) == 3:
+                        # Two ':' separators means that it is in hrs:mins:secs
+                        hours = int(time_split[0])
+                        mins = int(time_split[1])
+                        secs = int(time_split[2])
+                        given_time = (hours * 3600) + (mins * 60) + secs
+                        gs.vlc_interface.seek(given_time)
+                except ValueError:
+                    gs.gui_service.quick_gui(
+                        f"Invalid Formatting! "
+                        f"<br>Available Formats:"
+                        f"<br>{get_command_token()}seek 'hrs:mins:secs'"
+                        f"<br>{get_command_token()}seek 'mins:secs'"
+                        f"<br>{get_command_token()}seek 'seconds'",
+                        text_type='header',
+                        box_align='left')
+                    return
+            else:
+                try:
+                    gs.vlc_interface.seek(int(all_data[1]))
+                except ValueError:
+                    gs.gui_service.quick_gui(
+                        f"Invalid Formatting! "
+                        f"<br>Available Formats:"
+                        f"<br>{get_command_token()}seek 'hrs:mins:secs'"
+                        f"<br>{get_command_token()}seek 'mins:secs'"
+                        f"<br>{get_command_token()}seek 'seconds'",
+                        text_type='header',
+                        box_align='left')
 
     def cmd_volume(self, data):
         try:
