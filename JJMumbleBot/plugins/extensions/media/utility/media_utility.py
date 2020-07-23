@@ -127,7 +127,6 @@ def get_video_info(video_url):
             'quiet': True,
             'format': 'bestaudio/best',
             'noplaylist': True,
-            'youtube_include_dash_manifest': False,
             'logger': gs.log_service,
             'skip_download': True
         }
@@ -154,7 +153,6 @@ def get_playlist_info(playlist_url):
         'quiet': True,
         'format': 'bestaudio/best',
         'noplaylist': False,
-        'youtube_include_dash_manifest': False,
         'extract_flat': True,
         'logger': gs.log_service,
         'skip_download': True,
@@ -166,7 +164,6 @@ def get_playlist_info(playlist_url):
             'quiet': True,
             'format': 'bestaudio/best',
             'noplaylist': False,
-            'youtube_include_dash_manifest': False,
             'extract_flat': True,
             'logger': gs.log_service,
             'skip_download': True,
