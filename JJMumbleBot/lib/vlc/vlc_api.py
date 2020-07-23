@@ -8,7 +8,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
 from JJMumbleBot.lib.vlc import audio_interface
-from JJMumbleBot.lib.utils.dir_utils import get_temp_med_dir
+from datetime import timedelta
 from enum import Enum
 from threading import Thread
 
@@ -71,7 +71,9 @@ class VLCInterface:
                     'is_ducking': False,
                     'duck_start': 0.0,
                     'duck_end': 0.0,
-                    'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME])
+                    'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME]),
+                    'system_start_time': '',
+                    'system_stop_time': ''
                 }
             )
 
@@ -333,7 +335,7 @@ class VLCInterface:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
         global_settings.gui_service.quick_gui(
-            f"Skipped to {seconds if seconds > 0 else 0} seconds in the audio track.",
+            f"Skipped to {str(timedelta(seconds=seconds))} in the audio track.",
             text_type='header',
             box_align='left')
 
@@ -472,7 +474,7 @@ class VLCInterface:
         # Execute any callbacks subscribed to next_track
         self.callback_check('on_next_track')
 
-        if self.status.is_looping():
+        if self.status.is_looping() and self.status.get_track().alt_uri != '':
             self.status.set_status(TrackStatus.PLAYING)
             return True
         track_to_play = self.queue.pop_item()
