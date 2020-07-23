@@ -1,7 +1,7 @@
 ---
 name: Wiki Issue / Feature Request
 about: Describe any issue/feature request relating to the wiki.
-title: ''
+title: "[Wiki]"
 labels: Wiki
 assignees: DuckBoss
 
