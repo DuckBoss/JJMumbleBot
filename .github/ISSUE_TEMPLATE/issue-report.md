@@ -1,7 +1,7 @@
 ---
 name: Issue report
 about: Please try to create a report as best as you can according to this template.
-title: ''
+title: "[Bug]"
 labels: ''
 assignees: DuckBoss
 
