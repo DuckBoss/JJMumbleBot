@@ -33,53 +33,66 @@ def stop_vlc_instance():
 
 
 def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True):
-    global_settings.mumble_inst.sound_output.clear_buffer()
-    if global_settings.vlc_inst:
-        global_settings.vlc_inst.terminate()
-        global_settings.vlc_inst.kill()
-        global_settings.vlc_inst = None
-
     if uri == '':
         return
 
-    if stereo:
-        global_settings.vlc_inst = sp.Popen(
-            [vlc_path, uri] + ['-I', 'dummy',
-                               f'{"--quiet" if quiet else ""}',
-                               '--one-instance',
-                               f'--start-time={skipto}',
-                               '--sout',
-                               '#transcode{acodec=s16le, channels=2, '
-                               'samplerate=48000, ab=192, threads=8}:std{access=file, '
-                               'mux=wav, dst=-}',
-                               'vlc://quit'],
-            stdout=sp.PIPE, bufsize=1024)
-    else:
-        global_settings.vlc_inst = sp.Popen(
-            [vlc_path, uri] + ['-I', 'dummy',
-                               f'{"--quiet" if quiet else ""}',
-                               '--one-instance',
-                               f'--start-time={skipto}',
-                               '--sout',
-                               '#transcode{acodec=s16le, channels=2, '
-                               'samplerate=24000, ab=192, threads=8}:std{access=file, '
-                               'mux=wav, dst=-}',
-                               'vlc://quit'],
-            stdout=sp.PIPE, bufsize=1024)
-    rutils.unmute()
-
-    while not global_settings.vlc_interface.exit_flag and global_settings.vlc_inst:
-        while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not global_settings.vlc_interface.exit_flag:
-            sleep(0.01)
+    thr_settings = {
+        'vlc_path': vlc_path,
+        'uri': uri,
+        'skipto': skipto,
+        'quiet': quiet,
+        'stereo': stereo,
+        'exit_flag': False
+    }
+    while not thr_settings['exit_flag']:
+        global_settings.mumble_inst.sound_output.clear_buffer()
         if global_settings.vlc_inst:
-            raw_music = global_settings.vlc_inst.stdout.read(1024)
-            if raw_music and global_settings.vlc_inst and global_settings.vlc_interface.status.is_playing():
-                global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, global_settings.vlc_interface.status.get_volume()))
-            else:
-                if global_settings.vlc_interface.next_track():
-                    create_vlc_thread(vlc_path=vlc_path, uri=global_settings.vlc_interface.status.get_track().uri, skipto=0, quiet=quiet, stereo=stereo)
-                else:
-                    global_settings.vlc_interface.reset()
-                return
+            global_settings.vlc_inst.terminate()
+            global_settings.vlc_inst.kill()
+            global_settings.vlc_inst = None
+
+        if stereo:
+            global_settings.vlc_inst = sp.Popen(
+                [vlc_path, uri] + ['-I', 'dummy',
+                                   f'{"--quiet" if thr_settings["quiet"] else ""}',
+                                   '--one-instance',
+                                   f'--start-time={thr_settings["skipto"]}',
+                                   '--sout',
+                                   '#transcode{acodec=s16le, channels=2, '
+                                   'samplerate=48000, ab=192, threads=8}:std{access=file, '
+                                   'mux=wav, dst=-}',
+                                   'vlc://quit'],
+                stdout=sp.PIPE, bufsize=1024)
         else:
-            return
+            global_settings.vlc_inst = sp.Popen(
+                [vlc_path, uri] + ['-I', 'dummy',
+                                   f'{"--quiet" if thr_settings["quiet"] else ""}',
+                                   '--one-instance',
+                                   f'--start-time={thr_settings[skipto]}',
+                                   '--sout',
+                                   '#transcode{acodec=s16le, channels=2, '
+                                   'samplerate=24000, ab=192, threads=8}:std{access=file, '
+                                   'mux=wav, dst=-}',
+                                   'vlc://quit'],
+                stdout=sp.PIPE, bufsize=1024)
+        rutils.unmute()
+
+        while not global_settings.vlc_interface.exit_flag and global_settings.vlc_inst:
+            while global_settings.mumble_inst.sound_output.get_buffer_size() > 0.5 and not global_settings.vlc_interface.exit_flag:
+                sleep(0.01)
+            if global_settings.vlc_inst:
+                raw_music = global_settings.vlc_inst.stdout.read(1024)
+                if raw_music and global_settings.vlc_inst and global_settings.vlc_interface.status.is_playing():
+                    global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, global_settings.vlc_interface.status.get_volume()))
+                else:
+                    if global_settings.vlc_interface.next_track():
+                        thr_settings['uri'] = global_settings.vlc_interface.status.get_track().uri
+                        thr_settings['skipto'] = 0
+                        break
+                        #create_vlc_thread(vlc_path=vlc_path, uri=global_settings.vlc_interface.status.get_track().uri, skipto=0, quiet=quiet, stereo=stereo)
+                    else:
+                        thr_settings['exit_flag'] = True
+                        global_settings.vlc_interface.reset()
+                    return
+            else:
+                return
