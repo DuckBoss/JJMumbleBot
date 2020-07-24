@@ -31,7 +31,7 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+        if gs.vlc_interface.check_dni_is_mine(self.plugin_name):
             gs.vlc_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
@@ -100,8 +100,8 @@ class Plugin(PluginBase):
                                          box_align='left')
 
     def cmd_sbrandom(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         sender = gs.mumble_inst.users[data.actor]['name']
@@ -124,8 +124,8 @@ class Plugin(PluginBase):
         gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbrandomnow(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         sender = gs.mumble_inst.users[data.actor]['name']
@@ -172,8 +172,8 @@ class Plugin(PluginBase):
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -188,6 +188,7 @@ class Plugin(PluginBase):
             )
             gs.vlc_interface.clear_dni()
             return
+        print(f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}')
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
@@ -207,8 +208,8 @@ class Plugin(PluginBase):
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -243,8 +244,8 @@ class Plugin(PluginBase):
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME], quiet=True):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name, quiet=True):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -279,8 +280,8 @@ class Plugin(PluginBase):
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME], quiet=True):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name, quiet=True):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 

@@ -41,8 +41,26 @@ def on_next_track():
         if gs.vlc_interface.status.get_queue_length() == 0:
             return
 
-        # Get the first track in the queue.
-        on_play()
+        download_thumbnail(gs.vlc_interface.status.get_queue()[0])
+        # Get the video metadata and fill in the information if the current track is missing metadata information.
+        if gs.vlc_interface.status.get_queue()[0].uri == '':
+            if gs.vlc_interface.status.get_queue()[0].alt_uri == '':
+                return
+            song_data = get_video_info(gs.vlc_interface.status.get_queue()[0].alt_uri)
+            if song_data is None:
+                return
+            track_obj = TrackInfo(
+                uri=song_data['main_url'],
+                name=gs.vlc_interface.status.get_queue()[0].name,
+                sender=gs.vlc_interface.status.get_queue()[0].sender,
+                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+                track_type=TrackType.STREAM,
+                track_id=gs.vlc_interface.status.get_queue()[0].track_id,
+                alt_uri=gs.vlc_interface.status.get_queue()[0].alt_uri,
+                image_uri=gs.vlc_interface.status.get_queue()[0].image_uri,
+                quiet=False
+            )
+            gs.vlc_interface.status.set_track(track_obj)
 
 
 def on_play():
@@ -129,7 +147,8 @@ def get_video_info(video_url):
             'format': 'bestaudio/best',
             'noplaylist': True,
             'logger': gs.log_service,
-            'skip_download': True
+            'skip_download': True,
+            'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         }
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:

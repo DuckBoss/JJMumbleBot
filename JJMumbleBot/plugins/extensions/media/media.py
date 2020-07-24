@@ -34,7 +34,7 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+        if gs.vlc_interface.check_dni_is_mine(self.plugin_name):
             gs.vlc_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
@@ -52,10 +52,11 @@ class Plugin(PluginBase):
                     f'{self.plugin_name}|{method_name}|clbk',
                     getattr(md_utility, method_name)
                 )
+                dprint(f"Registered audio interface callback {self.plugin_name}|{method_name}|clbk")
 
     def cmd_ytplaylist(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -118,8 +119,8 @@ class Plugin(PluginBase):
                 box_align='left')
 
     def cmd_link(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -176,8 +177,8 @@ class Plugin(PluginBase):
             gs.vlc_interface.play()
 
     def cmd_linkfront(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -254,7 +255,7 @@ class Plugin(PluginBase):
         md_settings.can_play = True
 
     def cmd_ytplay(self, data):
-        if not gs.vlc_interface.check_dni_active() or gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+        if not gs.vlc_interface.check_dni_active() or gs.vlc_interface.check_dni_is_mine(self.plugin_name):
             all_data = data.message.strip().split()
             sender = gs.mumble_inst.users[data.actor]['name']
             if len(all_data) == 1:
@@ -270,7 +271,7 @@ class Plugin(PluginBase):
                     text_type='header',
                     box_align='left')
                 md_settings.can_play = False
-                gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+                gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
                 track_obj = TrackInfo(
                     uri=song_data['main_url'],
                     name=song_data['main_title'],
@@ -310,7 +311,7 @@ class Plugin(PluginBase):
                         box_align='left')
                     md_settings.can_play = False
                     return
-                gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+                gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
                 track_obj = TrackInfo(
                     uri=song_data['main_url'],
                     name=song_data['main_title'],

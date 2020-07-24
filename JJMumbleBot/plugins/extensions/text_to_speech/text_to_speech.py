@@ -28,7 +28,7 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+        if gs.vlc_interface.check_dni_is_mine(self.plugin_name):
             gs.vlc_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
@@ -97,8 +97,8 @@ class Plugin(PluginBase):
         return
 
     def cmd_ttsplay(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         all_data = data.message.strip().split(' ', 1)
@@ -126,8 +126,8 @@ class Plugin(PluginBase):
         gs.vlc_interface.play(override=True)
 
     def cmd_ttsplayquiet(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         all_data = data.message.strip().split(' ', 1)
@@ -156,8 +156,8 @@ class Plugin(PluginBase):
         gs.vlc_interface.play(override=True)
 
     def cmd_tts(self, data):
-        if gs.vlc_interface.check_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.set_dni(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.vlc_interface.check_dni(self.plugin_name):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         data_actor = gs.mumble_inst.users[data.actor]

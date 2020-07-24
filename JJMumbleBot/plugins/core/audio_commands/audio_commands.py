@@ -123,7 +123,6 @@ class Plugin(PluginBase):
             given_time = all_data[1]
             if ":" in given_time:
                 time_split = given_time.split(':')
-                print(time_split)
                 try:
                     if len(time_split) == 1:
                         # No ':' separator means that it is in seconds, no minutes/hours

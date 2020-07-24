@@ -51,6 +51,7 @@ class VLCInterface:
             super().__init__(
                 {
                     'plugin_owner': '',
+                    'plugin_name': '',
                     'sender': '',
                     'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
                     'track_uri': '',
@@ -79,6 +80,7 @@ class VLCInterface:
 
         def __str__(self):
             dict_str = f"plugin_owner: {self['plugin_owner']}<br>" \
+                       f"plugin_name: {self['plugin_name']}<br>" \
                        f"sender: {self['track'].sender}<br>" \
                        f"track: {self['track'].name}<br>" \
                        f"track_uri: {(self['track'].uri[:25] + (self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>" \
@@ -255,7 +257,7 @@ class VLCInterface:
         # Execute any callbacks subscribed to next_track
         for clbk in global_settings.plugin_callbacks:
             split_clbk = clbk.split('|')
-            if split_clbk[1] == method_name:
+            if split_clbk[0] == self.status['plugin_name'] and split_clbk[1] == method_name:
                 global_settings.plugin_callbacks[clbk]()
 
     def play(self, override=False):
@@ -304,7 +306,7 @@ class VLCInterface:
                 else:
                     if self.status['pause_time'] != self.status['start_time']:
                         self.status['progress_time'] = self.status['progress_time'] + (
-                                    self.status['pause_time'] - self.status['start_time'])
+                                self.status['pause_time'] - self.status['start_time'])
                     else:
                         self.status['progress_time'] = self.status['progress_time'] + (
                                 int(time()) - self.status['start_time'])
@@ -358,7 +360,7 @@ class VLCInterface:
                 box_align='left')
 
         self.status['start_time'] = int(time())
-        self.status['pause_time'] = int(time())
+        self.status['pause_time'] = 0
         self.status['progress_time'] = 0
 
         self.play(override=True)
@@ -401,6 +403,7 @@ class VLCInterface:
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
+            'plugin_name': '',
             'sender': '',
             'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
             'track_uri': '',
@@ -433,6 +436,7 @@ class VLCInterface:
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
+            'plugin_name': '',
             'sender': '',
             'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
             'track_uri': '',
@@ -534,6 +538,9 @@ class VLCInterface:
         # Execute any callbacks subscribed to next_track
         self.callback_check('on_next_track')
 
+        self.status['start_time'] = int(time())
+        self.status['pause_time'] = 0
+        self.status['progress_time'] = 0
         if self.status.is_looping() and self.status.get_track().alt_uri != '':
             self.status.set_status(TrackStatus.PLAYING)
             return True
@@ -555,8 +562,11 @@ class VLCInterface:
     def display_playing_gui(self):
         cur_track_hashed_img_uri = hex(crc32(str.encode(self.get_track().track_id)) & 0xffffffff)
         if self.get_track().track_type == TrackType.FILE:
+            cur_track = self.status.get_track()
             global_settings.gui_service.quick_gui(
-                f"Playing audio: {self.status.get_track().name}",
+                f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
+                f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{cur_track.duration})]: "
+                f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
                 text_type='header',
                 box_align='left')
         elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
@@ -610,10 +620,12 @@ class VLCInterface:
             return True
         return False
 
-    def set_dni(self, plugin_name):
+    def set_dni(self, plugin_name, plugin_title):
         global_settings.audio_dni = plugin_name
-        self.status.set_plugin_owner(plugin_name)
+        self.status['plugin_name'] = plugin_name
+        self.status.set_plugin_owner(plugin_title)
 
     def clear_dni(self):
         global_settings.audio_dni = None
+        self.status['plugin_name'] = ''
         self.status.clear_plugin_owner()
