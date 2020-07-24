@@ -2,6 +2,21 @@ import psutil
 import platform
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_all_channels
+from copy import deepcopy
+
+
+def get_audio_info():
+    copied_status = deepcopy(global_settings.vlc_interface.status)
+    modified_audio_data = {
+        "audio_data": copied_status
+    }
+    modified_audio_data["audio_data"]["track"] = copied_status.get_track().to_dict()
+    modified_audio_data["audio_data"]["status"] = copied_status.get_status().value
+    modified_audio_data["audio_data"]["track"]["track_type"] = copied_status.get_track()["track_type"].value
+    for i, track_item in enumerate(modified_audio_data["audio_data"]["queue"]):
+        modified_audio_data["audio_data"]["queue"][i] = track_item.to_dict()
+        modified_audio_data["audio_data"]["queue"][i]["track_type"] = modified_audio_data["audio_data"]["queue"][i]["track_type"].value
+    return modified_audio_data
 
 
 def get_all_users():

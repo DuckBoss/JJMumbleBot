@@ -76,6 +76,20 @@
             {% endif %}
         </div>
     </div>
+    <br>
+    <div class="container border border-dark rounded">
+        <div class="form-group">
+            <table class="table table-hover table-sm table-dark" id="audio-queue-table">
+                <thead id="audio-queue-table-head">
+                    <tr>
+                        <th scope="col" id="audio-queue-now-playing">Now Playing: </th>
+                    </tr>
+                </thead>
+                <tbody id="audio-queue-table-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <script type="text/javascript">
         var data_storage = {};
@@ -90,7 +104,28 @@
           commandOutputData.innerHTML = data_storage["last_cmd_output"];
           botUpTime.innerHTML = `Up-time: ${data_storage["bot_uptime"]}`;
 
+          console.log(data_storage["audio_data"]);
           setChannelInformation();
+          setAudioQueueInformation();
+        }
+
+        function setAudioQueueInformation() {
+          document.getElementById("audio-queue-table-body").innerHTML = "";
+          var now_playing_text = document.getElementById("audio-queue-now-playing");
+          now_playing_text.innerHTML = `Now Playing: ${data_storage["audio_data"]["track"]["name"]}`;
+
+          var table_body = document.getElementById("audio-queue-table-body");
+          var queue_item_count = 1
+          for (var queue_item of Object.keys(data_storage["audio_data"]["queue"])) {
+            var track_row = document.createElement("tr");
+            var track_data = document.createElement("td");
+            track_data.setAttribute("scope", "row");
+            track_data.innerHTML = `<font color="cyan">[${queue_item_count}]</font> - ${data_storage["audio_data"]["queue"][queue_item]["name"]}`;
+
+            track_row.appendChild(track_data);
+            table_body.appendChild(track_row);
+            queue_item_count++;
+          }
         }
 
         function setChannelInformation() {

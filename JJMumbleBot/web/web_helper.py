@@ -29,6 +29,7 @@ async def send_message(websocket, path):
             web_data.update({"bot_uptime": f'{check_up_time()}'})
             web_data.update(monitor_service.get_last_command_output())
             web_data.update(monitor_service.get_all_online())
+            web_data.update(monitor_service.get_audio_info())
             packed_data = json.dumps(web_data)
             await websocket.send(packed_data)
             await asyncio.sleep(web_tick_rate)
