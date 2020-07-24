@@ -12,86 +12,96 @@
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tabs.css') }}">
     <title>{{ bot_name }} Web Interface</title>
 </head>
 <body>
     <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page" id="bot-uptime">Home</li>
-      </ol>
-    </nav>
-
-    <div class="container border border-info rounded">
-    <form action="{{ url_for('post_message') }}" method="POST">
-        <div class="form-group">
-            <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="{{ command_token }}command ...">
-            <small id="commandHelp" class="form-text text-muted">Send commands to {{ bot_name }} from here.</small>
-            <button type="submit" class="btn btn-outline-success">Send Command</button>
-            <button class="btn btn-outline-secondary generate_button" onclick="download_report()">Download Bot Report</button>
+        <div class="tab">
+            <button class="tablinks active" onclick="openPage(event, 'Main')">Main</button>
+            <button class="tablinks" onclick="openPage(event, 'Audio')">Audio Interface</button>
         </div>
-    </form>
-    </div>
+    </nav>
     <br>
-    <div class="container border border-dark rounded">
-        <div class="row">
-            <div class="col-8 border border-secondary">
-                <div class="panel-heading" id="commandOutputHeader"></div>
-                <div class="panel panel-primary" id="commandOutputPanel">
-                    <div class="panel-body" id="commandOutputData">NULL</div>
+
+    <div id="Main" class="tabcontent active">
+        <div class="container border border-info rounded">
+            <div id="bot-uptime">
+                Uptime
+            </div>
+            <form action="{{ url_for('post_message') }}" method="POST">
+                <div class="form-group">
+                    <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="{{ command_token }}command ...">
+                    <small id="commandHelp" class="form-text text-muted">Send commands to {{ bot_name }} from here.</small>
+                    <button type="submit" class="btn btn-outline-success">Send Command</button>
+                    <button class="btn btn-outline-secondary generate_button" onclick="download_report()">Download Bot Report</button>
+                </div>
+            </form>
+        </div>
+        <br>
+        <div class="container border border-dark rounded">
+            <div class="row">
+                <div class="col-8 border border-secondary">
+                    <div class="panel-heading" id="commandOutputHeader"></div>
+                    <div class="panel panel-primary" id="commandOutputPanel">
+                        <div class="panel-body" id="commandOutputData">NULL</div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <center><b>Server Channels</b></center>
+                    <figure id="channelsList">
+                    </figure>
                 </div>
             </div>
-            <div class="col-4">
-                <center><b>Server Channels</b></center>
-                <figure id="channelsList">
-                </figure>
-            </div>
         </div>
-    </div>
-    <br>
-    <div class="container border border-dark rounded">
-        <div class="form-group">
-            {% if plugins %}
-            <table class="table table-hover table-sm table-dark">
-                <thead>
-                    <tr>
-                        <th scope="col">Active Plugins:</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in plugins %}
-                    <tr>
-                        <td scope='row'>
-                        {{ item }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div class="lead"><br>
-                <center>
-                    <p>There are no active plugins.</p>
-                </center>
+        <br>
+        <div class="container border border-dark rounded">
+            <div class="form-group">
+                {% if plugins %}
+                <table class="table table-hover table-sm table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col">Active Plugins:</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in plugins %}
+                        <tr>
+                            <td scope='row'>
+                            {{ item }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <div class="lead"><br>
+                    <center>
+                        <p>There are no active plugins.</p>
+                    </center>
+                </div>
+                {% endif %}
             </div>
-            {% endif %}
-        </div>
-    </div>
-    <br>
-    <div class="container border border-dark rounded">
-        <div class="form-group">
-            <table class="table table-hover table-sm table-dark" id="audio-queue-table">
-                <thead id="audio-queue-table-head">
-                    <tr>
-                        <th scope="col" id="audio-queue-now-playing">Now Playing: </th>
-                    </tr>
-                </thead>
-                <tbody id="audio-queue-table-body">
-                </tbody>
-            </table>
         </div>
     </div>
 
-    <script type="text/javascript">
+    <div id="Audio" class="tabcontent">
+        <div class="container border border-dark rounded">
+            <div class="form-group">
+                <table class="table table-hover table-sm table-dark" id="audio-queue-table">
+                    <thead id="audio-queue-table-head">
+                        <tr>
+                            <th scope="col" id="audio-queue-now-playing">Now Playing: </th>
+                        </tr>
+                    </thead>
+                    <tbody id="audio-queue-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
         var data_storage = {};
         var commandOutputHeader = null;
         var commandOutputData = null;
@@ -104,78 +114,15 @@
           commandOutputData.innerHTML = data_storage["last_cmd_output"];
           botUpTime.innerHTML = `Up-time: ${data_storage["bot_uptime"]}`;
 
-          console.log(data_storage["audio_data"]);
           setChannelInformation();
           setAudioQueueInformation();
-        }
-
-        function setAudioQueueInformation() {
-          document.getElementById("audio-queue-table-body").innerHTML = "";
-          var now_playing_text = document.getElementById("audio-queue-now-playing");
-          now_playing_text.innerHTML = `Now Playing: ${data_storage["audio_data"]["track"]["name"]}`;
-
-          var table_body = document.getElementById("audio-queue-table-body");
-          var queue_item_count = 1
-          for (var queue_item of Object.keys(data_storage["audio_data"]["queue"])) {
-            var track_row = document.createElement("tr");
-            var track_data = document.createElement("td");
-            track_data.setAttribute("scope", "row");
-            track_data.innerHTML = `<font color="cyan">[${queue_item_count}]</font> - ${data_storage["audio_data"]["queue"][queue_item]["name"]}`;
-
-            track_row.appendChild(track_data);
-            table_body.appendChild(track_row);
-            queue_item_count++;
-          }
-        }
-
-        function setChannelInformation() {
-          var channel_list_fig = document.getElementById("channelsList");
-          channel_list_fig.innerHTML = "";
-          for (var chan_key of Object.keys(data_storage["channels"])) {
-            var channel_name = document.createElement("figcaption");
-            channel_name.innerHTML = data_storage["channels"][parseInt(chan_key)]["name"];
-            channel_list_fig.appendChild(channel_name);
-
-            var channel_list_ul = document.createElement("ul");
-            channel_list_ul.classList.add("list-group");
-            channel_list_ul.classList.add("list-group-flush");
-            for (var user_key of Object.keys(data_storage["users"][parseInt(chan_key)])) {
-                var user_li = document.createElement("li");
-                user_li.classList.add("list-group-item");
-                user_li.innerHTML = `${data_storage["users"][parseInt(chan_key)][user_key]["name"]}`;
-                channel_list_ul.appendChild(user_li);
-            }
-            channel_list_fig.appendChild(channel_list_ul);
-          }
-        }
-
-        // Function to download data to a file
-        function download(data, filename, type) {
-            var file = new Blob([data], {type: type});
-            if (window.navigator.msSaveOrOpenBlob) // IE10+
-                window.navigator.msSaveOrOpenBlob(file, filename);
-            else { // Others
-                var a = document.createElement("a"),
-                        url = URL.createObjectURL(file);
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(function() {
-                    document.body.removeChild(a);
-                    window.URL.revokeObjectURL(url);
-                }, 0);
-            }
-        }
-
-        function download_report() {
-            download(JSON.stringify(data_storage), 'bot_report.json', 'text/plain')
         }
 
         $(document).ready(function() {
             commandOutputHeader = document.getElementById("commandOutputHeader");
             commandOutputData = document.getElementById("commandOutputData");
             botUpTime = document.getElementById("bot-uptime");
+            document.getElementById("Main").style.display = "block";
 
             fetch('http://{{ server_ip }}:{{ server_port }}/plugins')
                 .then(response => response.json())
@@ -203,5 +150,6 @@
             });
         });
     </script>
+    <script src="{{ url_for('static', filename='js/index.js') }}" crossorigin="anonymous"></script>
 </body>
 </html>
