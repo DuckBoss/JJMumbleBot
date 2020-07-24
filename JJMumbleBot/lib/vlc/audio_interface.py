@@ -55,9 +55,8 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
         try:
             os.kill(pid, 0)
             global_settings.vlc_inst.kill()
-            print("Forced kill")
         except OSError as e:
-            print("Terminated gracefully")
+            pass
         global_settings.vlc_inst = None
 
     if stereo:

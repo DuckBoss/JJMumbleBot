@@ -43,6 +43,7 @@ P_MEDIA_VLC_DUCK_THRESHOLD = 'VLCDuckingThreshold'
 P_MEDIA_VLC_DUCK_DELAY = 'VLCDuckingDelay'
 P_MEDIA_VLC_QUEUE_LEN = 'VLCMaxQueueLength'
 P_MEDIA_PROXY_URL = 'YoutubeDLProxyURL'
+P_MEDIA_COOKIE_FILE = 'YoutubeDLCookieFile'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
 P_TEMP_MED_DIR = 'TemporaryMediaDirectory'
 # PGUI Settings
