@@ -127,6 +127,7 @@ config.ini
 *.py.save
 *.db
 *.dll
+cookies.txt
 JJMumbleBot/cfg/global_aliases.csv
 JJMumbleBot/cfg/backups/
 # Ignore extra plugins that are available in the extra plugin repository
