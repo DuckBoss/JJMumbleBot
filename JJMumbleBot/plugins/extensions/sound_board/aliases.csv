@@ -2,6 +2,7 @@ alias,command
 sbl,(sblist)
 sbn,(sbnow)
 sbr,(sbrandom)
+sbs,(sbsearch)
 sbrn,(sbrandomnow)
 sbq,(sbquiet)
 sbqn,(sbquietnow)

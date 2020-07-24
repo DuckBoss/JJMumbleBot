@@ -35,11 +35,13 @@ def find_files(query: str):
     return match_list
 
 
-def download_clip(url, name):
+def download_clip(url, name, proxy=''):
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': f'{dir_utils.get_perm_med_dir()}/{settings.plugin_name}/{name}.webm',
-        'noplaylist': True
+        'noplaylist': True,
+        'youtube_skip_dash_manifest': True,
+        'proxy': proxy
     }
     try:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:

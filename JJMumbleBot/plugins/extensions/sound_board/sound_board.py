@@ -75,7 +75,7 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left')
                     return
-                sbu.download_clip(all_data[1], all_data[2].strip())
+                sbu.download_clip(all_data[1], all_data[2].strip(), proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
                 gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
                                          text_type='header',
                                          box_align='left')

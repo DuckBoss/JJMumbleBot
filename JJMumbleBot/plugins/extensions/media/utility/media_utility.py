@@ -88,7 +88,8 @@ def download_thumbnail(cur_track):
             'logger': gs.log_service,
             'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg',
             'skip_download': True,
-            'writethumbnail': True
+            'writethumbnail': True,
+            'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         }
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.cache.remove()
@@ -157,7 +158,8 @@ def get_playlist_info(playlist_url):
         'logger': gs.log_service,
         'skip_download': True,
         'writethumbnail': False,
-        'ignoreerrors': True
+        'ignoreerrors': True,
+        'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
     }
     if settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
         ydl_opts = {
@@ -169,6 +171,7 @@ def get_playlist_info(playlist_url):
             'skip_download': True,
             'writethumbnail': True,
             'ignoreerrors': True,
+            'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
             'playlistend': int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN])
         }
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
