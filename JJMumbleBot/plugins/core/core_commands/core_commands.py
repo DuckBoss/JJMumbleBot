@@ -233,8 +233,17 @@ class Plugin(PluginBase):
             log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND)
 
     def cmd_setalias(self, data):
-        all_data = data.message.strip().split(' ', 2)
-        if len(all_data) < 2:
+        all_data = data.message.strip().split(' ', 3)
+        if len(all_data) < 3:
+            GS.gui_service.quick_gui(
+                f"Incorrect Formatting!<br>"
+                f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Single Command Alias Example:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters<br>"
+                f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Multi-Command Alias Example:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>|</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters ...",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
             return
         alias_name = all_data[1]
 
