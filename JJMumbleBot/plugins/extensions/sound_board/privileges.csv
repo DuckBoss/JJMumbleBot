@@ -5,6 +5,7 @@ sbquiet,3
 sbquietnow,3
 sbrandom,3
 sbrandomnow,3
+sbsearch,2
 sblist,2
 sbdownload,4
 sbdelete,4

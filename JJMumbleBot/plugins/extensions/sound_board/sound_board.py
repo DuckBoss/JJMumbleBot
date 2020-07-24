@@ -66,12 +66,17 @@ class Plugin(PluginBase):
     def cmd_sbdownload(self, data):
         data_stripped = BeautifulSoup(data.message.strip(), features='html.parser').get_text()
         all_data = data_stripped.split()
-        print(all_data)
 
         if len(all_data) == 3:
             if "youtube.com" in data_stripped or "youtu.be" in data_stripped:
+                if sbu.find_file(all_data[2].strip):
+                    gs.gui_service.quick_gui(
+                        f"A sound clip with the name {all_data[2].strip()} already exists!",
+                        text_type='header',
+                        box_align='left')
+                    return
                 sbu.download_clip(all_data[1], all_data[2].strip())
-                gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}.wav",
+                gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
                                          text_type='header',
                                          box_align='left')
             else:
@@ -88,9 +93,10 @@ class Plugin(PluginBase):
     def cmd_sbdelete(self, data):
         all_data = data.message().strip().split()
         if len(all_data) == 2:
-            if ".wav" in all_data[1].strip():
-                dir_utils.remove_file(all_data[1].strip(), f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")
-                gs.gui_service.quick_gui(f"Deleted sound clip : {all_data[1].strip()}", text_type='header',
+            audio_clip = sbu.find_file(all_data[1].strip())
+            if audio_clip:
+                dir_utils.remove_file(audio_clip, f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")
+                gs.gui_service.quick_gui(f"Deleted sound clip : {audio_clip}", text_type='header',
                                          box_align='left')
 
     def cmd_sbrandom(self, data):
@@ -101,9 +107,10 @@ class Plugin(PluginBase):
         sender = gs.mumble_inst.users[data.actor]['name']
         gather_list = sbu.prepare_sb_list()
         random.seed(datetime.now())
-        random_sfx = random.choice(gather_list)[:-4]
+        random_sfx = random.choice(gather_list)
+        audio_clip = sbu.find_file(random_sfx)
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=random_sfx,
             sender=sender,
             duration=None,
@@ -124,9 +131,10 @@ class Plugin(PluginBase):
         sender = gs.mumble_inst.users[data.actor]['name']
         gather_list = sbu.prepare_sb_list()
         random.seed(datetime.now())
-        random_sfx = random.choice(gather_list)[:-4]
+        random_sfx = random.choice(gather_list)
+        audio_clip = sbu.find_file(random_sfx)
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}.wav',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=random_sfx,
             sender=sender,
             duration=None,
@@ -140,6 +148,25 @@ class Plugin(PluginBase):
         )
         gs.vlc_interface.play(override=True)
 
+    def cmd_sbsearch(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            return
+        search_query = all_data[1].strip()
+        audio_clips = sbu.find_files(search_query)
+        match_str = f"Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
+        if len(audio_clips) > 0:
+            for i, clip in enumerate(audio_clips):
+                match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i+1}]</font> - {clip}"
+        else:
+            match_str += "None"
+        gs.gui_service.quick_gui(
+            match_str,
+            text_type='header',
+            text_align='left',
+            box_align='left'
+        )
+
     def cmd_sb(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
@@ -152,15 +179,17 @@ class Plugin(PluginBase):
 
         sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
-        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
+        audio_clip = sbu.find_file(to_play)
+        if not audio_clip:
             gs.gui_service.quick_gui(
-                f"The sound clip '{to_play}.wav' does not exist.",
+                f"The sound clip '{to_play}' does not exist.",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
@@ -185,15 +214,17 @@ class Plugin(PluginBase):
 
         sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
-        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
+        audio_clip = sbu.find_file(to_play)
+        if not audio_clip:
             gs.gui_service.quick_gui(
-                f"The sound clip '{to_play}.wav' does not exist.",
+                f"The sound clip '{to_play}' does not exist.",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
@@ -219,15 +250,17 @@ class Plugin(PluginBase):
 
         sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
-        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
+        audio_clip = sbu.find_file(to_play)
+        if not audio_clip:
             gs.gui_service.quick_gui(
-                "The sound clip does not exist.",
+                f"The sound clip '{to_play}' does not exist.",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
@@ -253,15 +286,17 @@ class Plugin(PluginBase):
 
         sender = gs.mumble_inst.users[data.actor]['name']
         to_play = all_data[1].strip()
-        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav"):
+        audio_clip = sbu.find_file(to_play)
+        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}"):
             gs.gui_service.quick_gui(
-                "The sound clip does not exist.",
+                f"The sound clip '{to_play}' does not exist.",
                 text_type='header',
-                box_align='left')
+                box_align='left'
+            )
             gs.vlc_interface.clear_dni()
             return
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.wav',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
