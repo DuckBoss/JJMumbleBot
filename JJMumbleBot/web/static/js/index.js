@@ -1,3 +1,5 @@
+
+// https://www.w3schools.com/howto/howto_js_tabs.asp
 function openPage(evt, pageName) {
   // Declare all variables
   var i, tabcontent, tablinks;
