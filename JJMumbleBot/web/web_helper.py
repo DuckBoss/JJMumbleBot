@@ -37,7 +37,7 @@ async def send_message(websocket, path):
         return
 
 
-@web_app.route("/command", methods=["GET", "POST"])
+@web_app.route("/command", methods=["POST"])
 def post_message():
     content = request.form['commandInput']
     if len(content) > 0:
@@ -49,6 +49,31 @@ def post_message():
             global_settings.bot_service.message_received(text=text, remote_cmd=True)
             # print(text.message)
     return content
+
+
+@web_app.route("/pause", methods=["POST"])
+def pause_audio():
+    if global_settings.vlc_interface.status.is_playing():
+        global_settings.vlc_interface.pause()
+    return ''
+
+
+@web_app.route("/resume", methods=["POST"])
+def resume_audio():
+    if global_settings.vlc_interface.status.is_paused():
+        global_settings.vlc_interface.resume()
+    return ''
+
+
+@web_app.route("/stop", methods=["POST"])
+def stop_audio():
+    if not global_settings.vlc_interface.status.is_stopped():
+        global_settings.vlc_interface.stop()
+        global_settings.gui_service.quick_gui(
+            f"Stopped audio interface.",
+            text_type='header',
+            box_align='left')
+    return ''
 
 
 @web_app.route("/plugins", methods=['GET'])

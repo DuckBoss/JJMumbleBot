@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tabs.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/audio_controls.css') }}">
     <title>{{ bot_name }} Web Interface</title>
 </head>
 <body>
@@ -87,6 +88,21 @@
 
     <div id="Audio" class="tabcontent">
         <div class="container border border-dark rounded">
+            <div class="audio-controls">
+                <form action="{{ url_for('pause_audio') }}" method="POST" class="audio_control_buttons">
+                    <button type="submit" class="pause_form btn btn-outline-secondary btn-sm" id="audio-control-pause">Pause</button>
+                </form>
+                <form action="{{ url_for('resume_audio') }}" method="POST" class="audio_control_buttons">
+                    <button type="submit" class="resume_form btn btn-outline-secondary btn-sm" id="audio-control-resume">Resume</button>
+                </form>
+                <form action="{{ url_for('stop_audio') }}" method="POST" class="audio_control_buttons">
+                    <button type="submit" class="stop_form btn btn-outline-secondary btn-sm" id="audio-control-stop">Stop</button>
+                </form>
+            </div>
+            <div id="audio-status">
+
+            </div>
+            <br>
             <div class="form-group">
                 <table class="table table-hover table-sm table-dark" id="audio-queue-table">
                     <thead id="audio-queue-table-head">
@@ -100,6 +116,7 @@
             </div>
         </div>
     </div>
+    <br>
 
     <script>
         var data_storage = {};
@@ -113,6 +130,8 @@
           commandOutputHeader.innerHTML = "<center><b>Most Recent Message Output " + data_storage["last_cmd_type"] + "</b></center>";
           commandOutputData.innerHTML = data_storage["last_cmd_output"];
           botUpTime.innerHTML = `Up-time: ${data_storage["bot_uptime"]}`;
+          audioStatus.innerHTML = `${data_storage["audio_data"]["status"]}`;
+          console.log(data_storage);
 
           setChannelInformation();
           setAudioQueueInformation();
@@ -122,6 +141,7 @@
             commandOutputHeader = document.getElementById("commandOutputHeader");
             commandOutputData = document.getElementById("commandOutputData");
             botUpTime = document.getElementById("bot-uptime");
+            audioStatus = document.getElementById("audio-status");
             document.getElementById("Main").style.display = "block";
 
             fetch('http://{{ server_ip }}:{{ server_port }}/plugins')
@@ -146,6 +166,33 @@
                     url: '/command'
                 })
             this.reset();
+            event.preventDefault();
+            });
+
+            $('.pause_form').click(function(event) {
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: 'POST',
+                    url: '/pause'
+                })
+            event.preventDefault();
+            });
+
+            $('.resume_form').click(function(event) {
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: 'POST',
+                    url: '/resume'
+                })
+            event.preventDefault();
+            });
+
+            $('.stop_form').click(function(event) {
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: 'POST',
+                    url: '/stop'
+                })
             event.preventDefault();
             });
         });
