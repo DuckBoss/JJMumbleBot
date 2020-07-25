@@ -141,6 +141,10 @@ class VLCInterface:
 
         # Volume
         def set_volume(self, volume):
+            if volume > 1:
+                volume = 1
+            elif volume < 0:
+                volume = 0
             self['volume'] = volume
 
         def get_volume(self):

@@ -78,6 +78,18 @@ def shuffle_audio():
     return ''
 
 
+@web_app.route("/decreasevolume", methods=["POST"])
+def decrease_volume_audio():
+    global_settings.vlc_interface.audio_utilities.set_volume_fast(global_settings.vlc_interface.status.get_volume()-0.1, auto=False)
+    return ''
+
+
+@web_app.route("/increasevolume", methods=["POST"])
+def increase_volume_audio():
+    global_settings.vlc_interface.audio_utilities.set_volume_fast(global_settings.vlc_interface.status.get_volume()+0.1, auto=False)
+    return ''
+
+
 @web_app.route("/loop", methods=["POST"])
 def loop_audio():
     global_settings.vlc_interface.loop_track()

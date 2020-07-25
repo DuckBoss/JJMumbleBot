@@ -16,6 +16,7 @@ def get_audio_info():
     modified_audio_data["audio_data"]["status"] = copied_status.get_status().value
     modified_audio_data["audio_data"]["track"]["track_type"] = copied_status.get_track()["track_type"].value
     modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
+    modified_audio_data["audio_data"]["volume"] = copied_status.get_volume()
     modified_audio_data["audio_data"]["progress_string"] = str(
         timedelta(seconds=int(modified_audio_data["audio_data"]["progress_time"])))
     for i, track_item in enumerate(modified_audio_data["audio_data"]["queue"]):

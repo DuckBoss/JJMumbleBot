@@ -50,7 +50,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 #### Web Interface - Main Page
 ![WebInterfaceImage](https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png)
 #### Web Interface - Media Player
-![MediaPlayerImage](https://user-images.githubusercontent.com/20238115/88464880-46fdc180-ce8c-11ea-9dda-157c4b282873.png)
+![MediaPlayImage](https://user-images.githubusercontent.com/20238115/88467150-cfd32800-cea1-11ea-9923-6b76002598f5.png)
 
 ## Installation And Setup 🏃
 - Download and install python 3.7+
