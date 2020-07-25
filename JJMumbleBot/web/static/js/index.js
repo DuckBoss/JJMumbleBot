@@ -27,7 +27,7 @@ function setAudioQueueInformation() {
   now_playing_text.innerHTML = `Now Playing: ${data_storage["audio_data"]["track"]["name"]}`;
 
   var table_body = document.getElementById("audio-queue-table-body");
-  var queue_item_count = 1
+  var queue_item_count = 0
   for (var queue_item of Object.keys(data_storage["audio_data"]["queue"])) {
     var track_row = document.createElement("tr");
     var track_data = document.createElement("td");
