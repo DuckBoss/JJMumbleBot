@@ -45,10 +45,12 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>User Privileges System</b> - Set user privileges to server users to limit the command usage on a per-user basis.
 
 ## Screenshots
-### Audio Interface System (youtube plugin, sound board plugin, etc)
+#### Audio Interface System (youtube plugin, sound board plugin, etc)
 ![AudioInterfaceImage](https://user-images.githubusercontent.com/20238115/88094381-75fcf600-cb61-11ea-8113-495db67a415d.png)
-### Web Interface
+#### Web Interface - Main Page
 ![WebInterfaceImage](https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png)
+#### Web Interface - Media Player
+![MediaPlayerImage](https://user-images.githubusercontent.com/20238115/88464880-46fdc180-ce8c-11ea-9dda-157c4b282873.png)
 
 ## Installation And Setup 🏃
 - Download and install python 3.7+
