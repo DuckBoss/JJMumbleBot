@@ -1,3 +1,4 @@
+from datetime import timedelta
 import psutil
 import platform
 from JJMumbleBot.settings import global_settings
@@ -6,6 +7,7 @@ from copy import deepcopy
 
 
 def get_audio_info():
+    global_settings.vlc_interface.calculate_progress()
     copied_status = deepcopy(global_settings.vlc_interface.status)
     modified_audio_data = {
         "audio_data": copied_status
@@ -13,6 +15,9 @@ def get_audio_info():
     modified_audio_data["audio_data"]["track"] = copied_status.get_track().to_dict()
     modified_audio_data["audio_data"]["status"] = copied_status.get_status().value
     modified_audio_data["audio_data"]["track"]["track_type"] = copied_status.get_track()["track_type"].value
+    modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
+    modified_audio_data["audio_data"]["progress_string"] = str(
+        timedelta(seconds=int(modified_audio_data["audio_data"]["progress_time"])))
     for i, track_item in enumerate(modified_audio_data["audio_data"]["queue"]):
         modified_audio_data["audio_data"]["queue"][i] = track_item.to_dict()
         modified_audio_data["audio_data"]["queue"][i]["track_type"] = modified_audio_data["audio_data"]["queue"][i]["track_type"].value

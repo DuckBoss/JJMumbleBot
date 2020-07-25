@@ -19,25 +19,7 @@ function openPage(evt, pageName) {
   // Show the current tab, and add an "active" class to the button that opened the tab
   document.getElementById(pageName).style.display = "block";
   evt.currentTarget.className += " active";
-}
-
-function setAudioQueueInformation() {
-  document.getElementById("audio-queue-table-body").innerHTML = "";
-  var now_playing_text = document.getElementById("audio-queue-now-playing");
-  now_playing_text.innerHTML = `Now Playing: ${data_storage["audio_data"]["track"]["name"]}`;
-
-  var table_body = document.getElementById("audio-queue-table-body");
-  var queue_item_count = 0
-  for (var queue_item of Object.keys(data_storage["audio_data"]["queue"])) {
-    var track_row = document.createElement("tr");
-    var track_data = document.createElement("td");
-    track_data.setAttribute("scope", "row");
-    track_data.innerHTML = `<font color="cyan">[${queue_item_count}]</font> - ${data_storage["audio_data"]["queue"][queue_item]["name"]}`;
-
-    track_row.appendChild(track_data);
-    table_body.appendChild(track_row);
-    queue_item_count++;
-  }
+  setAudioQueueInformation();
 }
 
 function setChannelInformation() {
@@ -83,3 +65,23 @@ function download(data, filename, type) {
 function download_report() {
     download(JSON.stringify(data_storage), 'bot_report.json', 'text/plain')
 }
+
+function skipto_command (button_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/skipto',
+        contentType: "application/json",
+        data: JSON.stringify({'data': button_id})
+    })
+    setAudioQueueInformation();
+};
+function removetrack_command (button_id) {
+    $.ajax({
+        type: 'POST',
+        url: '/removetrack',
+        contentType: "application/json",
+        data: JSON.stringify({'data': button_id})
+    })
+    setAudioQueueInformation();
+};
+

@@ -30,6 +30,7 @@
             <div id="bot-uptime">
                 Uptime
             </div>
+            <br>
             <form action="{{ url_for('post_message') }}" method="POST">
                 <div class="form-group">
                     <input type="text" id="commandInput" class="form-control" autocomplete="off" placeholder="{{ command_token }}command ...">
@@ -90,24 +91,41 @@
         <div class="container border border-dark rounded">
             <div class="audio-controls">
                 <form action="{{ url_for('pause_audio') }}" method="POST" class="audio_control_buttons">
-                    <button type="submit" class="pause_form btn btn-outline-secondary btn-sm" id="audio-control-pause">Pause</button>
+                    <button type="submit" class="pause_form btn btn-outline-warning btn-sm" id="audio-control-pause">Pause</button>
                 </form>
                 <form action="{{ url_for('resume_audio') }}" method="POST" class="audio_control_buttons">
-                    <button type="submit" class="resume_form btn btn-outline-secondary btn-sm" id="audio-control-resume">Resume</button>
+                    <button type="submit" class="resume_form btn btn-outline-success btn-sm" id="audio-control-resume">Resume</button>
                 </form>
                 <form action="{{ url_for('stop_audio') }}" method="POST" class="audio_control_buttons">
-                    <button type="submit" class="stop_form btn btn-outline-secondary btn-sm" id="audio-control-stop">Stop</button>
+                    <button type="submit" class="stop_form btn btn-outline-danger btn-sm" id="audio-control-stop">Stop</button>
                 </form>
+                <form action="{{ url_for('next_audio') }}" method="POST" class="audio_control_buttons">
+                    <button type="submit" class="next_form btn btn-outline-info btn-sm" id="audio-control-next">Next</button>
+                </form>
+                <form action="{{ url_for('shuffle_audio') }}" method="POST" class="audio_control_buttons">
+                    <button type="submit" class="shuffle_form btn btn-outline-info btn-sm" id="audio-control-shuffle">Shuffle</button>
+                </form>
+                <form action="{{ url_for('loop_audio') }}" method="POST" class="audio_control_buttons">
+                    <button type="submit" class="loop_form btn btn-outline-info btn-sm" id="audio-control-loop">Loop</button>
+                </form>
+                <button style="float:right" class="refresh_form btn btn-outline-secondary btn-sm" id="audio-control-refresh">Refresh</button>
             </div>
+            <br>
             <div id="audio-status">
 
             </div>
             <br>
             <div class="form-group">
-                <table class="table table-hover table-sm table-dark" id="audio-queue-table">
-                    <thead id="audio-queue-table-head">
+                <table class="table table-striped table-dark" id="audio-queue-table">
+                    <thead class="thead-dark" id="audio-queue-table-head">
                         <tr>
-                            <th scope="col" id="audio-queue-now-playing">Now Playing: </th>
+                            <th colspan="4" id="audio-queue-now-playing"></th>
+                        </tr>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Track</th>
+                            <th scope="col">Url</th>
+                            <th scope="col">Commands</th>
                         </tr>
                     </thead>
                     <tbody id="audio-queue-table-body">
@@ -130,11 +148,71 @@
           commandOutputHeader.innerHTML = "<center><b>Most Recent Message Output " + data_storage["last_cmd_type"] + "</b></center>";
           commandOutputData.innerHTML = data_storage["last_cmd_output"];
           botUpTime.innerHTML = `Up-time: ${data_storage["bot_uptime"]}`;
-          audioStatus.innerHTML = `${data_storage["audio_data"]["status"]}`;
-          console.log(data_storage);
+          audioStatus.innerHTML = `Status: ${data_storage["audio_data"]["status"]}<br>Loop Mode: ${data_storage["audio_data"]["loop"]}<br>Progress: [${data_storage["audio_data"]["progress_string"]} - ${data_storage["audio_data"]["duration_string"]}]`;
 
-          setChannelInformation();
           setAudioQueueInformation();
+          setChannelInformation();
+        }
+
+        function setAudioQueueInformation() {
+          document.getElementById("audio-queue-table-body").innerHTML = "";
+          var now_playing_text = document.getElementById("audio-queue-now-playing");
+          now_playing_text.innerHTML = `Now Playing: ${data_storage["audio_data"]["track"]["name"]}`;
+
+          var table_body = document.getElementById("audio-queue-table-body");
+          var queue_item_count = 0
+          for (var queue_item of Object.keys(data_storage["audio_data"]["queue"])) {
+            var track_row = document.createElement("tr");
+            var track_data_1 = document.createElement("th");
+            track_data_1.style.width = "10%";
+            track_data_1.innerHTML = `${queue_item_count}`;
+
+            var track_data_2 = document.createElement("td");
+            track_data_2.style.width = "50%";
+            track_data_2.innerHTML = `${data_storage["audio_data"]["queue"][queue_item]["name"]}`
+
+            var track_data_3 = document.createElement("td");
+            track_data_3.style.width = "20%";
+            track_data_3.innerHTML = `${data_storage["audio_data"]["queue"][queue_item]["alt_uri"]}`
+
+            var track_data_4 = document.createElement("td");
+            track_data_4.style.width = "20%";
+
+
+            var command_skip = document.createElement("button");
+            command_skip.setAttribute("id", `${queue_item_count}-skip_form_button`);
+            command_skip.setAttribute("onclick", "skipto_command(this.id)");
+            command_skip.innerHTML = "Skip To";
+            command_skip.classList.add("skip_form");
+            command_skip.classList.add("btn");
+            command_skip.classList.add("btn-outline");
+            command_skip.classList.add("btn-outline-info");
+            command_skip.classList.add("btn-sm");
+            command_skip.classList.add("no-transition");
+
+            var command_remove = document.createElement("button");
+            command_remove.setAttribute("id", `${queue_item_count}-remove_form`);
+            command_remove.setAttribute("onclick", "removetrack_command(this.id)");
+            command_remove.innerHTML = "Remove";
+            command_remove.classList.add("remove_form");
+            command_remove.classList.add("btn");
+            command_remove.classList.add("btn-outline");
+            command_remove.classList.add("btn-outline-danger");
+            command_remove.classList.add("btn-sm");
+            command_remove.classList.add("no-transition");
+
+
+            track_data_4.appendChild(command_remove);
+            track_data_4.appendChild(command_skip);
+
+            track_row.appendChild(track_data_1);
+            track_row.appendChild(track_data_2);
+            track_row.appendChild(track_data_3);
+            track_row.appendChild(track_data_4);
+
+            table_body.appendChild(track_row);
+            queue_item_count++;
+          }
         }
 
         $(document).ready(function() {
@@ -169,13 +247,24 @@
             event.preventDefault();
             });
 
+            $('.remove_form').click(function(event) {
+                $.ajax({
+                    data: {
+                        toRemove: $(this).attr("id")
+                    },
+                    type: 'POST',
+                    url: '/removetrack'
+                })
+            setAudioQueueInformation();
+            });
+
             $('.pause_form').click(function(event) {
                 $.ajax({
                     data: $(this).serialize(),
                     type: 'POST',
                     url: '/pause'
                 })
-            event.preventDefault();
+            setAudioQueueInformation();
             });
 
             $('.resume_form').click(function(event) {
@@ -184,7 +273,7 @@
                     type: 'POST',
                     url: '/resume'
                 })
-            event.preventDefault();
+            setAudioQueueInformation();
             });
 
             $('.stop_form').click(function(event) {
@@ -193,7 +282,38 @@
                     type: 'POST',
                     url: '/stop'
                 })
-            event.preventDefault();
+            setAudioQueueInformation();
+            });
+
+            $('.next_form').click(function(event) {
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: 'POST',
+                    url: '/nexttrack'
+                })
+            setAudioQueueInformation();
+            });
+
+            $('.shuffle_form').click(function(event) {
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: 'POST',
+                    url: '/shuffle'
+                })
+            setAudioQueueInformation();
+            });
+
+            $('.loop_form').click(function(event) {
+                $.ajax({
+                    data: $(this).serialize(),
+                    type: 'POST',
+                    url: '/loop'
+                })
+            setAudioQueueInformation();
+            });
+
+            $('.refresh_form').click(function(event) {
+            setAudioQueueInformation();
             });
         });
     </script>

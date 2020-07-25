@@ -15,6 +15,7 @@ from JJMumbleBot.lib.utils.runtime_utils import check_up_time, get_bot_name
 import json
 from os import urandom
 
+
 web_app = Flask(__name__)
 web_app.config['SECRET_KEY'] = urandom(16)
 
@@ -63,6 +64,40 @@ def resume_audio():
     if global_settings.vlc_interface.status.is_paused():
         global_settings.vlc_interface.resume()
     return ''
+
+
+@web_app.route("/nexttrack", methods=["POST"])
+def next_audio():
+    global_settings.vlc_interface.skip(0)
+    return ''
+
+
+@web_app.route("/shuffle", methods=["POST"])
+def shuffle_audio():
+    global_settings.vlc_interface.shuffle()
+    return ''
+
+
+@web_app.route("/loop", methods=["POST"])
+def loop_audio():
+    global_settings.vlc_interface.loop_track()
+    return ''
+
+
+@web_app.route("/skipto", methods=["POST"])
+def skip_to_track():
+    if request.json:
+        skip_to = request.json['data'].split('-', 1)[0]
+        global_settings.vlc_interface.skip(int(skip_to))
+    return {}
+
+
+@web_app.route("/removetrack", methods=["POST"])
+def remove_track():
+    if request.json:
+        remove = request.json['data'].split('-', 1)[0]
+        global_settings.vlc_interface.remove_track(track_index=int(remove))
+    return {}
 
 
 @web_app.route("/stop", methods=["POST"])
