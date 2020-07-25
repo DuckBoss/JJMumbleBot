@@ -550,6 +550,7 @@ class VLCInterface:
             reversed_list = list(self.queue)
             reversed_list.reverse()
             self.status.update_queue(reversed_list)
+            self.callback_check('song_integrity_check')
             if not track_to_play.quiet:
                 self.display_playing_gui()
             self.status.set_status(TrackStatus.PLAYING)

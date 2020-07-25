@@ -63,6 +63,29 @@ def on_next_track():
             gs.vlc_interface.status.set_track(track_obj)
 
 
+def song_integrity_check():
+    # Get the video metadata and fill in the information if the current track is missing metadata information.
+    cur_track = gs.vlc_interface.status.get_track()
+    if cur_track.uri == '':
+        if cur_track.alt_uri == '':
+            return
+        song_data = get_video_info(cur_track.alt_uri)
+        if song_data is None:
+            return
+        track_obj = TrackInfo(
+            uri=song_data['main_url'],
+            name=cur_track.name,
+            sender=cur_track.sender,
+            duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+            track_type=TrackType.STREAM,
+            track_id=cur_track.track_id,
+            alt_uri=cur_track.alt_uri,
+            image_uri=cur_track.image_uri,
+            quiet=False
+        )
+        gs.vlc_interface.status.set_track(track_obj)
+
+
 def on_play():
     if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
         cur_track = gs.vlc_interface.get_track()
@@ -191,7 +214,7 @@ def get_playlist_info(playlist_url):
             'extract_flat': True,
             'logger': gs.log_service,
             'skip_download': True,
-            'writethumbnail': True,
+            'writethumbnail': False,
             'ignoreerrors': True,
             'cookiefile': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE],
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
