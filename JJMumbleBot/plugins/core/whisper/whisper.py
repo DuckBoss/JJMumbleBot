@@ -180,12 +180,12 @@ class Plugin(PluginBase):
             return
 
     def cmd_setwhisperusers(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         data_actor = GS.mumble_inst.users[data.actor]
         try:
             parameter = all_data[1]
 
-            users_list = [user.strip() for user in parameter.split(',') if
+            users_list = [user.strip() for user in parameter if
                           not user.strip() == GS.cfg[C_CONNECTION_SETTINGS][P_USER_ID]]
             if len(users_list) < 2:
                 GS.gui_service.quick_gui("Use the 'setwhisperuser' command for a single user!", text_type='header',
