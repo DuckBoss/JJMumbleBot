@@ -50,7 +50,7 @@ function skipto_command (button_id) {
         data: JSON.stringify({'data': button_id})
     })
     setAudioQueueInformation();
-};
+}
 function removetrack_command (button_id) {
     $.ajax({
         type: 'POST',
@@ -59,5 +59,5 @@ function removetrack_command (button_id) {
         data: JSON.stringify({'data': button_id})
     })
     setAudioQueueInformation();
-};
+}
 
