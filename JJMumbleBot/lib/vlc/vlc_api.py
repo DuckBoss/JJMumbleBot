@@ -57,6 +57,7 @@ class VLCInterface:
                     'track_uri': '',
                     'alt_uri': '',
                     'image_uri': '',
+                    'img_uri_hashed': '',
                     'track_id': '',
                     'queue': [],
                     'queue_length': 0,
@@ -86,6 +87,7 @@ class VLCInterface:
                        f"track_uri: {(self['track'].uri[:25] + (self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>" \
                        f"alt_uri: {(self['track'].alt_uri[:25] + (self['track'].alt_uri[25:] and '...')) if len(self['track'].alt_uri) > 0 else self['track'].alt_uri}<br>" \
                        f"image_uri: {(self['track'].image_uri[:25] + (self['track'].image_uri[25:] and '...')) if len(self['track'].image_uri) > 0 else self['track'].image_uri}<br>" \
+                       f"img_uri_hashed: {self['img_uri_hashed']}<br>" \
                        f"track_id: {self['track'].track_id}<br>" \
                        f"quiet: {self['track'].quiet}<br>" \
                        f"duration: {self['track'].duration}<br>" \
@@ -413,6 +415,7 @@ class VLCInterface:
             'track_uri': '',
             'alt_uri': '',
             'image_uri': '',
+            'img_uri_hashed': '',
             'track_id': '',
             'queue': [],
             'queue_length': 0,
@@ -446,6 +449,7 @@ class VLCInterface:
             'track_uri': '',
             'alt_uri': '',
             'image_uri': '',
+            'img_uri_hashed': '',
             'track_id': '',
             'queue': [],
             'queue_length': 0,
@@ -565,7 +569,6 @@ class VLCInterface:
         return self.status.get_track()
 
     def display_playing_gui(self):
-        cur_track_hashed_img_uri = hex(crc32(str.encode(self.get_track().track_id)) & 0xffffffff)
         if self.get_track().track_type == TrackType.FILE:
             cur_track = self.status.get_track()
             global_settings.gui_service.quick_gui(
@@ -575,6 +578,8 @@ class VLCInterface:
                 text_type='header',
                 box_align='left')
         elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
+            cur_track_hashed_img_uri = hex(crc32(str.encode(self.get_track().track_id)) & 0xffffffff)
+            self.status["img_uri_hashed"] = cur_track_hashed_img_uri
             image_uri_split = self.get_track().image_uri.rsplit('/', 1)
             image_dir = image_uri_split[0]
             image_file = cur_track_hashed_img_uri

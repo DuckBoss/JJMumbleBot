@@ -3,6 +3,7 @@ import psutil
 import platform
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_all_channels
+from JJMumbleBot.lib.helpers.image_helper import format_image
 from copy import deepcopy
 
 
@@ -12,13 +13,27 @@ def get_audio_info():
     modified_audio_data = {
         "audio_data": copied_status
     }
+
     modified_audio_data["audio_data"]["track"] = copied_status.get_track().to_dict()
     modified_audio_data["audio_data"]["status"] = copied_status.get_status().value
+
+    if len(modified_audio_data["audio_data"]["img_uri_hashed"]) > 1:
+        img_hashed_uri = modified_audio_data["audio_data"]["img_uri_hashed"]
+        image_uri_split = modified_audio_data["audio_data"]["track"]["image_uri"].rsplit('/', 1)
+        image_dir = image_uri_split[0]
+
+        modified_audio_data["audio_data"]["img_uri_formatted"] = format_image(f"{img_hashed_uri}", "jpg", image_dir, size_goal=32768)
+    else:
+        modified_audio_data["audio_data"]["img_uri_formatted"] = ''
     modified_audio_data["audio_data"]["track"]["track_type"] = copied_status.get_track()["track_type"].value
-    modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
     modified_audio_data["audio_data"]["volume"] = copied_status.get_volume()
-    modified_audio_data["audio_data"]["progress_string"] = str(
-        timedelta(seconds=int(modified_audio_data["audio_data"]["progress_time"])))
+    if int(modified_audio_data["audio_data"]["progress_time"]) > 0:
+        modified_audio_data["audio_data"]["progress_string"] = str(
+            timedelta(seconds=int(modified_audio_data["audio_data"]["progress_time"])))
+        modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
+    else:
+        modified_audio_data["audio_data"]["progress_string"] = 0
+        modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
     for i, track_item in enumerate(modified_audio_data["audio_data"]["queue"]):
         modified_audio_data["audio_data"]["queue"][i] = track_item.to_dict()
         modified_audio_data["audio_data"]["queue"][i]["track_type"] = modified_audio_data["audio_data"]["queue"][i]["track_type"].value

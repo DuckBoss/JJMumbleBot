@@ -40,6 +40,9 @@ figcaption {
     font-size: small;
     background-color: #212529;
 }
+img {
+    border-radius: 5%;
+}
 body {
     color: rgb(218, 215, 210);
     background-color: rgb(24, 26, 27);

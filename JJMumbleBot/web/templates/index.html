@@ -155,7 +155,7 @@
           commandOutputHeader.innerHTML = "<center><b>Most Recent Message Output " + data_storage["last_cmd_type"] + "</b></center>";
           commandOutputData.innerHTML = data_storage["last_cmd_output"];
           botUpTime.innerHTML = `Up-time: ${data_storage["bot_uptime"]}`;
-          audioStatus.innerHTML = `Status: ${data_storage["audio_data"]["status"]}<br>Loop Mode: ${data_storage["audio_data"]["loop"]}<br>Progress: [${data_storage["audio_data"]["progress_string"]} - ${data_storage["audio_data"]["duration_string"]}]<br>Volume: ${data_storage["audio_data"]["volume"]}`;
+          audioStatus.innerHTML = `Status: ${data_storage["audio_data"]["status"]}<br>Loop Mode: ${data_storage["audio_data"]["loop"]}<br>Volume: ${data_storage["audio_data"]["volume"]}`;
 
           setAudioQueueInformation();
           setChannelInformation();
@@ -164,7 +164,7 @@
         function setAudioQueueInformation() {
           document.getElementById("audio-queue-table-body").innerHTML = "";
           var now_playing_text = document.getElementById("audio-queue-now-playing");
-          now_playing_text.innerHTML = `Now Playing: ${data_storage["audio_data"]["track"]["name"]}`;
+          now_playing_text.innerHTML = `Now Playing:<br>${data_storage["audio_data"]["track"]["name"]}<br>${data_storage["audio_data"]["img_uri_formatted"]}<br>Progress: [${data_storage["audio_data"]["progress_string"]} - ${data_storage["audio_data"]["duration_string"]}]`;
 
           var table_body = document.getElementById("audio-queue-table-body");
           var queue_item_count = 0

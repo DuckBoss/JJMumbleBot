@@ -61,6 +61,8 @@ def on_next_track():
                 quiet=False
             )
             gs.vlc_interface.status.set_track(track_obj)
+            cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
+            gs.vlc_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def song_integrity_check():
@@ -84,6 +86,8 @@ def song_integrity_check():
             quiet=False
         )
         gs.vlc_interface.status.set_track(track_obj)
+        cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
+        gs.vlc_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def on_play():
@@ -110,6 +114,8 @@ def on_play():
                 quiet=False
             )
             gs.vlc_interface.status.set_track(track_obj)
+            cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
+            gs.vlc_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def on_skip():
