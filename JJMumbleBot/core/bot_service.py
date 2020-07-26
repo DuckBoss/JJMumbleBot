@@ -196,15 +196,6 @@ class BotService:
             global_settings.vlc_interface.status['duck_end'] = time() + global_settings.vlc_interface.audio_utilities.get_ducking_delay()
 
     @staticmethod
-    def sound_received(user, audio_chunk):
-        # print(f'user:{user}')
-        # print(f'audio:{audio_chunk}')
-        if audioop.rms(audio_chunk.pcm, 2) > runtime_utils.get_ducking_threshold() and runtime_utils.can_duck():
-            runtime_utils.duck_volume()
-            runtime_settings.duck_start = time()
-            runtime_settings.duck_end = time() + runtime_utils.get_ducking_delay()
-
-    @staticmethod
     def loop():
         try:
             while not global_settings.exit_flag:
