@@ -136,9 +136,10 @@ def download_thumbnail(cur_track):
             'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg',
             'skip_download': True,
             'writethumbnail': True,
-            'cookiefile': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE],
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         }
+        if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
+            ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.cache.remove()
             ydl.extract_info(cur_track.alt_uri, download=True)
@@ -178,9 +179,10 @@ def get_video_info(video_url):
             'noplaylist': True,
             'logger': gs.log_service,
             'skip_download': True,
-            'cookiefile': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE],
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         }
+        if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
+            ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
 
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.cache.remove()
@@ -209,9 +211,10 @@ def get_playlist_info(playlist_url):
         'skip_download': True,
         'writethumbnail': False,
         'ignoreerrors': True,
-        'cookiefile': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE],
         'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
     }
+    if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
+        ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
     if settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
         ydl_opts = {
             'quiet': True,
@@ -222,10 +225,11 @@ def get_playlist_info(playlist_url):
             'skip_download': True,
             'writethumbnail': False,
             'ignoreerrors': True,
-            'cookiefile': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE],
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
             'playlistend': int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN])
         }
+        if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
+            ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         playlist_dict_check = ydl.extract_info(playlist_url, download=False, process=False)
         if playlist_dict_check is None:
