@@ -108,9 +108,8 @@ class Plugin(PluginBase):
         gather_list = sbu.prepare_sb_list()
         random.seed(datetime.now())
         random_sfx = random.choice(gather_list)
-        audio_clip = sbu.find_file(random_sfx)
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}',
             name=random_sfx,
             sender=sender,
             duration=None,
@@ -132,9 +131,8 @@ class Plugin(PluginBase):
         gather_list = sbu.prepare_sb_list()
         random.seed(datetime.now())
         random_sfx = random.choice(gather_list)
-        audio_clip = sbu.find_file(random_sfx)
         track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}',
             name=random_sfx,
             sender=sender,
             duration=None,
