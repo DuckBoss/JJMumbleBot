@@ -140,11 +140,6 @@ def get_system_info():
     return json.dumps(monitor_service.get_system_info())
 
 
-@web_app.route("/hardware", methods=['GET'])
-def get_hardware_info():
-    return json.dumps(monitor_service.get_hardware_info())
-
-
 @web_app.route("/", methods=['GET', 'POST'])
 def main():
     return render_template(
