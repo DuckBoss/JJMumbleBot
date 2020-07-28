@@ -173,7 +173,7 @@ class Plugin(PluginBase):
 
     def cmd_blacklistuser(self, data):
         try:
-            all_data = data.message.strip().split()
+            all_data = data.message.strip().split(' ', 2)
             reason = "No reason provided."
             if len(all_data) > 2:
                 reason = all_data[2]
@@ -197,7 +197,7 @@ class Plugin(PluginBase):
 
     def cmd_whitelistuser(self, data):
         try:
-            all_data = data.message.strip().split()
+            all_data = data.message.strip().split(' ', 1)
             result = privileges.remove_from_blacklist(all_data[1])
             if result:
                 gs.gui_service.quick_gui(f"User: {all_data[1]} removed from the blacklist.",
@@ -208,7 +208,7 @@ class Plugin(PluginBase):
                                          )
                 log(INFO, f"User: {all_data[1]} removed from the blacklist.", origin=L_USER_PRIV)
         except IndexError:
-            gs.gui_service.quick_gui("Command format: !whitelist username",
+            gs.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}whitelistuser 'username'",
                                      text_type='header',
                                      box_align='left',
                                      user=gs.mumble_inst.users[data.actor]['name'],
