@@ -1,12 +1,6 @@
 function get_connection_settings() {
   return `
 [Connection Settings]
-; Enter your server ip here, don't use quotations.
-ServerIP = ${document.getElementById('server-ip').value}
-; Enter the server password here to authenticate the bot. If your server has no password, leave it blank.
-ServerPassword = ${document.getElementById('server-pass').value}
-; Enter the server port number here so the bot can connect to the server.
-ServerPort = ${document.getElementById('server-port').value}
 ; Enter your bot username here, If the bot is registered with a certificate, the name must match the name in the certificate.
 UserID = ${document.getElementById('server-user').value}
 ; Enter the file path to your certificate. If your server doesn't require a certificate, leave this blank.
@@ -25,6 +19,28 @@ DefaultComment = ${document.getElementById('server-comment').value}
 function get_media_directories() {
   return `
 [Media Directories]
+; VLC location
+VLCPath = ${document.getElementById('media-vlc-path').value}
+; Use Stereo Audio
+VLCStereoAudio = ${document.getElementById('media-stereo-enable').value}
+; Enable/Disable VLC Console Messages
+VLCRunQuiet = ${document.getElementById('media-quiet-enable').value}
+; The default volume when the bot starts (default=0.3)
+VLCDefaultVolume = ${document.getElementById('media-default-volume').value}
+; Enable Audio Ducking (off by default, use !duckaudio to toggle on and off)
+VLCAudioDuck = ${document.getElementById('media-duck-audio-enable').value}
+; The default audio ducking volume (How low the volume will drop down when ducking) (default=0.05)
+VLCDuckingVolume: ${document.getElementById('media-ducking-volume').value}
+; The default threshold before audio is ducked (default=2500.0)
+VLCDuckingThreshold: ${document.getElementById('media-ducking-threshold').value}
+; The default delay before the audio ducking reacts to user voices (default=1.0)
+VLCDuckingDelay: ${document.getElementById('media-ducking-delay').value}
+; The default maximum queue length for the audio interface (default=50)
+VLCMaxQueueLength = ${document.getElementById('media-max-queue-length').value}
+; Optional Proxy URL - If you want to use a proxy server to use the youtube-dl library, fill this out.
+YoutubeDLProxyURL = ${document.getElementById('media-proxy-url').value}
+; Optionally use a cookies.txt file for the youtube-dl library (useful to deal with rate limits).
+YoutubeDLCookieFile = ${document.getElementById('media-cookies-path').value}
 ; Temporary media directory to store youtube thumbnails and other images content. This directory is cleared when the bot exits
 TemporaryMediaDirectory = ${document.getElementById('media-temp-path').value}
 ; Permanent media directory to store sound board clips, and other media that won't be deleted when the bot exits
@@ -39,6 +55,8 @@ function get_logging() {
 EnableLogging = ${document.getElementById('logging-enable').value}
 ; This sets the maximum number of logs the bot can have at a time before it overwrites the oldest one.
 MaxLogs = ${document.getElementById('logging-max-logs').value}
+; Enable/Disable channel message logging (Enabling it will hide message logs to: Message Received: [User -> #####])
+HideMessageLogging = ${document.getElementById('logging-hide-message-enable').value}
 ; This is the path to directory where logs are stored. All bot logs will be stored in this directory.
 LogDirectory = ${document.getElementById('logging-path').value}
 `;
@@ -68,7 +86,7 @@ WebPagePort = ${document.getElementById('web-interface-server-port').value}
 ; This sets the port of the web socket on the web interface providing live data.
 WebSocketPort = ${document.getElementById('web-interface-socket-port').value}
 ; This sets the tick rate of the loop that sends data to the web interface.
-WebTickRate = ${document.getElementById('web-interface-tick-rate-port').value}
+WebTickRate = ${document.getElementById('web-interface-tick-rate').value}
 `;
 }
 
@@ -77,8 +95,6 @@ function get_main_settings() {
 [Main Settings]
 ; Enable or disable automatic internal database backups
 EnableDatabaseBackup = ${document.getElementById('main-settings-db-backups').value}
-; To enable stereo output for the bot, check the box. Uncheck it to disable.
-UseStereoOutput = ${document.getElementById('main-settings-stereo').value}
 ; The execution tick rate of commands in the command queue [Must be an integer/float].
 CommandTickRate  = ${document.getElementById('main-settings-cmd-tick-rate').value}
 ; Maximum commands in a multi-command input (this includes multi-commands in aliases) [Must be an integer] This determines the number of commands that can be inputted in a single line
