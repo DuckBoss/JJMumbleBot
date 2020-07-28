@@ -9,9 +9,6 @@ C_MEDIA_SETTINGS = 'Media Settings'
 C_LOGGING = 'Logging'
 # PROGRAM CONFIG PARAMETER STRINGS
 # Connection Settings
-P_SERVER_IP = 'ServerIP'
-P_SERVER_PASS = 'ServerPassword'
-P_SERVER_PORT = 'ServerPort'
 P_USER_ID = 'UserID'
 P_USER_CERT = 'UserCertification'
 P_SERVER_RECONNECT = 'AutoReconnect'
