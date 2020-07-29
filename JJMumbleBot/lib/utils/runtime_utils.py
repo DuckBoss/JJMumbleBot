@@ -341,12 +341,13 @@ def refresh_plugins():
 
 def exit_bot():
     from JJMumbleBot.lib.utils import dir_utils
-    global_settings.gui_service.quick_gui(
-        f"{get_bot_name()} is being shutdown.",
-        text_type='header',
-        box_align='left',
-        ignore_whisper=True,
-    )
+    if global_settings.mumble_inst:
+        global_settings.gui_service.quick_gui(
+            f"{get_bot_name()} is being shutdown.",
+            text_type='header',
+            box_align='left',
+            ignore_whisper=True,
+        )
     for plugin in global_settings.bot_plugins.values():
         plugin.quit()
     if global_settings.flask_server:
@@ -368,13 +369,14 @@ def exit_bot():
 
 def exit_bot_error(error_code: ExitCodes):
     from JJMumbleBot.lib.utils import dir_utils
-    global_settings.gui_service.quick_gui(
-        f"{get_bot_name()} has encountered an error and is being shutdown.<br>Please check the bot logs/console."
-        f"<br>Exit Code: {error_code.value}",
-        text_type='header',
-        box_align='center',
-        ignore_whisper=True,
-    )
+    if global_settings.mumble_inst:
+        global_settings.gui_service.quick_gui(
+            f"{get_bot_name()} has encountered an error and is being shutdown.<br>Please check the bot logs/console."
+            f"<br>Exit Code: {error_code.value}",
+            text_type='header',
+            box_align='center',
+            ignore_whisper=True,
+        )
     try:
         for plugin in global_settings.bot_plugins.values():
             plugin.quit()

@@ -2,11 +2,14 @@ function setChannelInformation() {
   var channel_list_fig = document.getElementById("channelsList");
   channel_list_fig.innerHTML = "";
   for (var chan_key of Object.keys(data_storage["channels"])) {
-    var channel_name = document.createElement("figcaption");
+    var channel_name = document.createElement("ul");
+    channel_name.classList.add("list-group");
+    channel_name.classList.add("list-group-flush");
     channel_name.innerHTML = data_storage["channels"][parseInt(chan_key)]["name"];
     channel_list_fig.appendChild(channel_name);
 
     var channel_list_ul = document.createElement("ul");
+    channel_list_fig.appendChild(channel_list_ul)
     channel_list_ul.classList.add("list-group");
     channel_list_ul.classList.add("list-group-flush");
     for (var user_key of Object.keys(data_storage["users"][parseInt(chan_key)])) {

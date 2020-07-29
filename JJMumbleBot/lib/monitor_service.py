@@ -1,5 +1,4 @@
 from datetime import timedelta
-import psutil
 import platform
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_all_channels
@@ -68,13 +67,6 @@ def get_all_online():
     online_user_info["channels"] = all_channels_dict
     online_user_info["users"] = users_in_channels
     return online_user_info
-
-
-def get_hardware_info():
-    return {
-        "cpu_usage": f'{psutil.cpu_percent()}%',
-        "mem_usage": f'{psutil.virtual_memory().percent}%'
-    }
 
 
 def get_last_command_output():

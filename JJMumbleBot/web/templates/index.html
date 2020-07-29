@@ -240,9 +240,6 @@
             fetch('http://{{ server_ip }}:{{ server_port }}/system')
                 .then(response => response.json())
                 .then(json => $.extend(data_storage, json));
-            fetch('http://{{ server_ip }}:{{ server_port }}/hardware')
-                .then(response => response.json())
-                .then(json => $.extend(data_storage, json));
 
             $('form').on('submit', function(event) {
                 $.ajax({
