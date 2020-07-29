@@ -34,12 +34,13 @@ class PseudoGUI:
         self.display_box(channel=channel, user=user, ignore_whisper=ignore_whisper)
         self.clear_display()
 
-    def quick_gui_img(self, directory, img_data, format_img=False, caption=None, caption_align='center', caption_font=None, bgcolor="black", channel=None, user=None, img_size=65536, cellspacing="5"):
+    def quick_gui_img(self, directory, img_data, format_img=False, caption=None, caption_align='center', caption_font=None, bgcolor=None, channel=None, user=None, img_size=65536, cellspacing="5"):
         if self.box_open:
             return False
         if channel is None:
             channel = runtime_utils.get_my_channel()
-
+        if bgcolor is None:
+            bgcolor = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_IMG_BG_COL]
         self.open_box(align='left', bgcolor=bgcolor, cellspacing=cellspacing)
 
         if format_img:
@@ -94,13 +95,15 @@ class PseudoGUI:
         self.content += content
         return True
 
-    def make_content(self, text, text_type="data", text_color=None, text_font=None, text_align="center", bgcolor="black", image_bgcolor=None, image=False):
+    def make_content(self, text, text_type="data", text_color=None, text_font=None, text_align="center", bgcolor=None, image_bgcolor=None, image=False):
         if not self.box_open:
             return None
         if image:
             if image_bgcolor is None:
                 image_bgcolor = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_IMG_BG_COL]
             return PGUIHelper.img_content(text, text_align, image_bgcolor)
+        if bgcolor is None:
+            bgcolor = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_BG_COL]
         if text_color is None:
             text_color = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_TXT_COL]
         if text_font is None:
