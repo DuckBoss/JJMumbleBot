@@ -24,8 +24,6 @@ async def send_message(websocket, path):
     web_tick_rate = float(global_settings.cfg[C_WEB_SETTINGS][P_WEB_TICK_RATE])
     try:
         while True:
-            # web_data = monitor_service.get_hardware_info()
-            # web_data.update(monitor_service.get_system_info())
             web_data = {"cur_time": str(datetime.now()).split('.')[0]}
             web_data.update({"bot_uptime": f'{check_up_time()}'})
             web_data.update(monitor_service.get_last_command_output())
