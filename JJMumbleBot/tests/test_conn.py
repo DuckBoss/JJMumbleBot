@@ -10,7 +10,7 @@ class Test_Conn:
         # Initialize configs.
         global_settings.cfg = configparser.ConfigParser()
         global_settings.cfg.read(f"{get_main_dir()}/tests/dummy_config.ini")
-        self.md = BotServiceHelper.retrieve_mumble_data()
+        self.md = BotServiceHelper.retrieve_mumble_data('127.0.0.1', 64738, 'test')
 
     def test_connectivity(self):
         mumble_inst = pymumble.Mumble(self.md.ip_address, port=self.md.port, user=self.md.user_id,

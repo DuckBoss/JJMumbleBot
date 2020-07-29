@@ -23,7 +23,7 @@ from copy import deepcopy
 
 
 class BotService:
-    def __init__(self):
+    def __init__(self, serv_ip, serv_port, serv_pass):
         # Initialize bot services.
         global_settings.bot_service = self
         # Initialize user settings.
@@ -57,12 +57,12 @@ class BotService:
         dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
-        log(INFO, "Initialized Temporary Directories.", origin=L_STARTUP)
-        rprint("Initialized Temporary Directories.", origin=L_STARTUP)
+        log(INFO, "######### Initialized Temporary Directories #########", origin=L_STARTUP)
+        rprint("######### Initialized Temporary Directories #########", origin=L_STARTUP)
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
-        log(INFO, "Initialized PGUI.", origin=L_STARTUP)
-        rprint("Initialized PGUI.", origin=L_STARTUP)
+        log(INFO, "######### Initialized PGUI #########", origin=L_STARTUP)
+        rprint("######### Initialized PGUI #########", origin=L_STARTUP)
         # Initialize VLC interface.
         global_settings.vlc_interface = VLCInterface()
         # Initialize plugins.
@@ -73,12 +73,10 @@ class BotService:
             rprint("Initialized plugins with safe mode.", origin=L_STARTUP)
         else:
             BotServiceHelper.initialize_plugins()
-            log(INFO, "Initialized all plugins.", origin=L_STARTUP)
-            rprint("Initialized all plugins.", origin=L_STARTUP)
         log(INFO, "######### Initializing Mumble Client #########", origin=L_STARTUP)
         rprint("######### Initializing Mumble Client #########", origin=L_STARTUP)
         # Retrieve mumble client data from configs.
-        mumble_login_data = BotServiceHelper.retrieve_mumble_data()
+        mumble_login_data = BotServiceHelper.retrieve_mumble_data(serv_ip, serv_port, serv_pass)
         BotService.initialize_mumble(mumble_login_data)
         log(INFO, "######### Initialized Mumble Client #########", origin=L_STARTUP)
         rprint("######### Initialized Mumble Client #########", origin=L_STARTUP)
@@ -96,7 +94,7 @@ class BotService:
     @staticmethod
     def initialize_mumble(md: MumbleData):
         global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id, reconnect=md.auto_reconnect,
-                                                      password=md.password, certfile=md.certificate, stereo=md.stereo)
+                                                  password=md.password, certfile=md.certificate, stereo=md.stereo)
         global_settings.mumble_inst.callbacks.set_callback('text_received', BotService.message_received)
         global_settings.mumble_inst.callbacks.set_callback('sound_received', BotService.sound_received)
         global_settings.mumble_inst.callbacks.set_callback('connected', BotService.on_connected)
@@ -104,7 +102,8 @@ class BotService:
         global_settings.mumble_inst.set_receive_sound(True)
         global_settings.mumble_inst.start()
         global_settings.mumble_inst.is_ready()
-        if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER):
+
+        if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER, fallback=False):
             global_settings.mumble_inst.users.myself.register()
         global_settings.mumble_inst.users.myself.comment(
             f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')

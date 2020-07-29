@@ -13,14 +13,14 @@ from threading import Thread
 
 
 class TrackStatus(Enum):
-    PLAYING = 'playing'
-    PAUSED = 'paused'
-    STOPPED = 'stopped'
+    PLAYING = 'Playing'
+    PAUSED = 'Paused'
+    STOPPED = 'Stopped'
 
 
 class TrackType(Enum):
-    FILE = 'file'
-    STREAM = 'stream'
+    FILE = 'File'
+    STREAM = 'Stream'
 
 
 class TrackInfo:

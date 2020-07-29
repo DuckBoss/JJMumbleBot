@@ -16,21 +16,9 @@ class Test_Cfg:
         assert bot_version == META_VERSION
 
     # Connection Config Tests
-    def test_server_ip(self):
-        server_ip = self.cfg[C_CONNECTION_SETTINGS][P_SERVER_IP]
-        assert server_ip == "SERVER_IP"
-
     def test_user_id(self):
         user_id = self.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
         assert user_id == "USERNAME"
-
-    def test_server_pass(self):
-        server_pass = self.cfg[C_CONNECTION_SETTINGS][P_SERVER_PASS]
-        assert server_pass == "PASSWORD"
-
-    def test_server_port(self):
-        server_port = self.cfg[C_CONNECTION_SETTINGS][P_SERVER_PORT]
-        assert server_port == "PORT_NUMBER"
 
     def test_user_cert(self):
         user_cert = self.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
@@ -111,6 +99,14 @@ class Test_Cfg:
     def test_vlc_max_queue_length(self):
         vlc_max_queue_length = int(self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN])
         assert vlc_max_queue_length == 50
+
+    def test_youtube_dl_proxy(self):
+        youtube_dl_proxy = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
+        assert youtube_dl_proxy == ""
+
+    def test_youtube_dl_cookie(self):
+        youtube_dl_cookie = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
+        assert youtube_dl_cookie == ""
 
     def test_temp_media_directory(self):
         temp_media_directory = self.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]
