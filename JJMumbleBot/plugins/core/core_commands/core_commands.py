@@ -233,7 +233,7 @@ class Plugin(PluginBase):
             log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND)
 
     def cmd_setalias(self, data):
-        all_data = data.message.strip().split(' ', 3)
+        all_data = data.message.strip().split(' ', 2)
         if len(all_data) < 3:
             GS.gui_service.quick_gui(
                 f"Incorrect Formatting!<br>"
