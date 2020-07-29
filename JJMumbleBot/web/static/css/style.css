@@ -23,6 +23,13 @@
 figcaption {
     text-decoration: underline;
 }
+.nav a {
+    background-color: #212529;
+    color: rgb(218, 215, 210);
+}
+.nav-link hover {
+    color: rgb(218, 215, 210);
+}
 .row {
     padding: 10px;
 }
