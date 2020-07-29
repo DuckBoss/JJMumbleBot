@@ -101,11 +101,11 @@ class Test_Cfg:
         assert vlc_max_queue_length == 50
 
     def test_youtube_dl_proxy(self):
-        youtube_dl_proxy = self.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]
+        youtube_dl_proxy = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         assert youtube_dl_proxy == "YOUTUBE_DL_PROXY_URL"
 
     def test_youtube_dl_cookie(self):
-        youtube_dl_cookie = self.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]
+        youtube_dl_cookie = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
         assert youtube_dl_cookie == "YOUTUBE_DL_COOKIE_PATH"
 
     def test_temp_media_directory(self):
