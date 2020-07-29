@@ -23,6 +23,10 @@
 figcaption {
     text-decoration: underline;
 }
+.nav-link {
+    background-color: #212529;
+    color: rgb(218, 215, 210);
+}
 .row {
     padding: 10px;
 }
