@@ -8,9 +8,6 @@
 
 A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for custom plugins.
 
-
-### NOTICE: The master branch and wiki/documentation is in the process of being updated for v4.0.0 release. Please use the release builds instead of the master branch if you are a new user!
-
 ## Features  🚀 
 - <b>Built-in Plugins</b> - Fast, responsive, plugin-based system for easy expandability.
   - <b>Media Plugin</b> - Streams Youtube/SoundCloud audio in the channel.
