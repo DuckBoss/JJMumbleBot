@@ -1,6 +1,5 @@
 alias,command
 quit,(exit)
-p,(play)
 v,(volume)
 q,(queue)
 rp,(replay)
