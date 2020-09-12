@@ -10,9 +10,10 @@ from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_s
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
+from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 from os import path
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 from bs4 import BeautifulSoup
 
 
@@ -27,6 +28,7 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         sbu_settings.sound_board_metadata = self.metadata
         sbu_settings.plugin_name = self.plugin_name
+        self.register_callbacks()
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
@@ -37,6 +39,39 @@ class Plugin(PluginBase):
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+
+    def register_callbacks(self):
+        from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED
+        if self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
+            gs.core_callbacks.append_to_callback(PYMUMBLE_CLBK_USERCREATED, self.on_new_user_connected)
+
+    def on_new_user_connected(self, user):
+        if gs.vlc_interface.check_dni(self.plugin_name, quiet=True):
+            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+
+        to_play = self.metadata[C_PLUGIN_SET][P_AUDIO_CLIP_TO_PLAY_ON_USER_JOIN]
+        if not to_play:
+            return
+        audio_clip = sbu.find_file(to_play)
+        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}"):
+            gs.vlc_interface.clear_dni()
+            return
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            name=to_play,
+            sender=get_bot_name(),
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
+        )
+        gs.vlc_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.vlc_interface.play(override=True)
 
     def cmd_sblist(self, data):
         internal_list = []
