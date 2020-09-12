@@ -12,6 +12,7 @@ from threading import Thread
 from JJMumbleBot.lib import monitor_service
 from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
 from JJMumbleBot.lib.utils.runtime_utils import check_up_time, get_bot_name
+from pymumble_py3.constants import PYMUMBLE_CLBK_TEXTMESSAGERECEIVED
 import json
 from os import urandom
 
@@ -45,7 +46,7 @@ def post_message():
                                      session=global_settings.mumble_inst.users.myself['session'],
                                      message=content,
                                      actor=global_settings.mumble_inst.users.myself['session'])
-            global_settings.bot_service.message_received(text=text, remote_cmd=True)
+            global_settings.core_callbacks.callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, text, True)
             # print(text.message)
     return content
 
