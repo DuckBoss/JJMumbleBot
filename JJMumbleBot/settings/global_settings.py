@@ -32,9 +32,11 @@ cmd_history = None
 # Command Queue
 cmd_queue = None
 # Callbacks
+clbk_service = None
 cmd_callbacks = None
 mtd_callbacks = None
 plugin_callbacks = None
+core_callbacks = None
 # Aliases
 aliases = {}
 # Initialized Plugins.

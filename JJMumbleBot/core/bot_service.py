@@ -1,4 +1,8 @@
 import pymumble_py3 as pymumble
+from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED, PYMUMBLE_CLBK_CONNECTED, PYMUMBLE_CLBK_SOUNDRECEIVED, \
+    PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, PYMUMBLE_CLBK_DISCONNECTED, PYMUMBLE_CLBK_CHANNELUPDATED, \
+    PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED
+from JJMumbleBot.core.callback_service import CallbackService
 from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
@@ -26,6 +30,7 @@ class BotService:
     def __init__(self, serv_ip, serv_port, serv_pass):
         # Initialize bot services.
         global_settings.bot_service = self
+        global_settings.clbk_service = CallbackService()
         # Initialize user settings.
         BotServiceHelper.initialize_settings()
         # Initialize logging services.
@@ -77,7 +82,7 @@ class BotService:
         rprint("######### Initializing Mumble Client #########", origin=L_STARTUP)
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data(serv_ip, serv_port, serv_pass)
-        BotService.initialize_mumble(mumble_login_data)
+        self.initialize_mumble(mumble_login_data)
         log(INFO, "######### Initialized Mumble Client #########", origin=L_STARTUP)
         rprint("######### Initialized Mumble Client #########", origin=L_STARTUP)
         # Initialize web interface
@@ -91,13 +96,43 @@ class BotService:
         # Start runtime loop.
         BotService.loop()
 
-    @staticmethod
-    def initialize_mumble(md: MumbleData):
+    def initialize_mumble(self, md: MumbleData):
         global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id, reconnect=md.auto_reconnect,
                                                   password=md.password, certfile=md.certificate, stereo=md.stereo)
-        global_settings.mumble_inst.callbacks.set_callback('text_received', BotService.message_received)
-        global_settings.mumble_inst.callbacks.set_callback('sound_received', BotService.sound_received)
-        global_settings.mumble_inst.callbacks.set_callback('connected', BotService.on_connected)
+        # Callback - message_received
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED,
+                                                           global_settings.clbk_service.message_received)
+        global_settings.core_callbacks.append_to_callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, self.message_received)
+        # Callback - sound_received
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_SOUNDRECEIVED,
+                                                           global_settings.clbk_service.sound_received)
+        global_settings.core_callbacks.append_to_callback(PYMUMBLE_CLBK_SOUNDRECEIVED, self.sound_received)
+        # Callback - on_connected
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_CONNECTED,
+                                                           global_settings.clbk_service.connected)
+        global_settings.core_callbacks.append_to_callback(PYMUMBLE_CLBK_CONNECTED, self.on_connected)
+        # Callback - disconnected
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_DISCONNECTED,
+                                                           global_settings.clbk_service.disconnected)
+        # Callback - user_created
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_USERCREATED,
+                                                           global_settings.clbk_service.user_created)
+        # Callback - user_updated
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_USERUPDATED,
+                                                           global_settings.clbk_service.user_updated)
+        # Callback - user_removed
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_USERREMOVED,
+                                                           global_settings.clbk_service.user_removed)
+        # Callback - channel_created
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_CHANNELCREATED,
+                                                           global_settings.clbk_service.channel_created)
+        # Callback - channel_removed
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_CHANNELREMOVED,
+                                                           global_settings.clbk_service.channel_removed)
+        # Callback - channel_updated
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_CHANNELUPDATED,
+                                                           global_settings.clbk_service.channel_updated)
+
         global_settings.mumble_inst.set_codec_profile('audio')
         global_settings.mumble_inst.set_receive_sound(True)
         global_settings.mumble_inst.start()
@@ -110,8 +145,9 @@ class BotService:
         runtime_utils.mute()
         runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]).move_in()
 
-    @staticmethod
-    def message_received(text, remote_cmd=False):
+    def message_received(self, message):
+        text = message[0]
+        remote_cmd = message[1]
         all_commands = runtime_utils.parse_message(text)
         if all_commands is None:
             return
@@ -183,12 +219,12 @@ class BotService:
     def process_command_queue(com):
         execute_cmd.execute_command(com)
 
-    @staticmethod
-    def on_connected():
+    def on_connected(self):
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP)
 
-    @staticmethod
-    def sound_received(user, audio_chunk):
+    def sound_received(self, audio_data):
+        user = audio_data[0]
+        audio_chunk = audio_data[1]
         if audioop.rms(audio_chunk.pcm, 2) > global_settings.vlc_interface.status['ducking_threshold'] and global_settings.vlc_interface.status['duck_audio']:
             global_settings.vlc_interface.audio_utilities.duck_volume()
             global_settings.vlc_interface.status['duck_start'] = time()

@@ -42,6 +42,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
 - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 - <b>User Privileges System</b> - Set user privileges to server users to limit the command usage on a per-user basis.
+- <b>Extensive Callback System</b> - Create custom callbacks to mumble server events and more.
 
 ## Screenshots
 #### Audio Interface System (youtube plugin, sound board plugin, etc)

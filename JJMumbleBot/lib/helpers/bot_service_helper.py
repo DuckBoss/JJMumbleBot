@@ -8,7 +8,7 @@ from JJMumbleBot.lib.utils.database_utils import InsertDB, UtilityDB, DeleteDB
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.callbacks import Callbacks, CommandCallbacks
+from JJMumbleBot.lib.callbacks import Callbacks, CommandCallbacks, CoreCallbacks
 
 
 class BotServiceHelper:
@@ -32,6 +32,7 @@ class BotServiceHelper:
         global_settings.mtd_callbacks = Callbacks()
         global_settings.cmd_callbacks = CommandCallbacks()
         global_settings.plugin_callbacks = Callbacks()
+        global_settings.core_callbacks = CoreCallbacks()
 
         runtime_settings.tick_rate = float(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
