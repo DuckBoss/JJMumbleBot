@@ -38,16 +38,6 @@ def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool =
     if uri == '':
         return
 
-    '''
-    thr_settings = {
-        'ffmpeg_path': ffmpeg_path,
-        'uri': uri,
-        'skipto': skipto,
-        'quiet': quiet,
-        'stereo': stereo,
-        'exit_flag': False
-    }
-    '''
     global_settings.mumble_inst.sound_output.clear_buffer()
     if global_settings.audio_inst:
         pid = global_settings.audio_inst.pid
@@ -60,37 +50,11 @@ def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool =
         global_settings.audio_inst = None
 
     if stereo:
-        '''
-        global_settings.audio_inst = sp.Popen(
-            [ffmpeg_path, uri] + ['-I', 'dummy',
-                               f'{"--quiet" if quiet else ""}',
-                               '--one-instance',
-                               f'--start-time={skipto}',
-                               '--sout',
-                               '#transcode{acodec=s16le, channels=2, '
-                               'samplerate=48000, ab=192, threads=8}:std{access=file, '
-                               'mux=wav, dst=-}',
-                               'audio://quit'],
-            stdout=sp.PIPE, bufsize=1024)
-        '''
         global_settings.audio_inst = sp.Popen(
             [ffmpeg_path, "-loglevel", f'{"quiet" if quiet else "panic"}', "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le", "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
             stdout=sp.PIPE, bufsize=1024
         )
     else:
-        '''
-        global_settings.audio_inst = sp.Popen(
-            [ffmpeg_path, uri] + ['-I', 'dummy',
-                               f'{"--quiet" if quiet else ""}',
-                               '--one-instance',
-                               f'--start-time={skipto}',
-                               '--sout',
-                               '#transcode{acodec=s16le, channels=2, '
-                               'samplerate=24000, ab=192, threads=8}:std{access=file, '
-                               'mux=wav, dst=-}',
-                               'audio://quit'],
-            stdout=sp.PIPE, bufsize=1024)
-        '''
         global_settings.audio_inst = sp.Popen(
             [ffmpeg_path, "-loglevel", "quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
              "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
