@@ -102,7 +102,7 @@ class Plugin(PluginBase):
         data_stripped = BeautifulSoup(data.message.strip(), features='html.parser').get_text()
         all_data = data_stripped.split()
 
-        if len(all_data) == 3:
+        if len(all_data) >= 3:
             if "youtube.com" in data_stripped or "youtu.be" in data_stripped:
                 if sbu.find_file(all_data[2].strip):
                     gs.gui_service.quick_gui(
@@ -110,10 +110,30 @@ class Plugin(PluginBase):
                         text_type='header',
                         box_align='left')
                     return
-                sbu.download_clip(all_data[1], all_data[2].strip(), proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
-                gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
-                                         text_type='header',
-                                         box_align='left')
+                if len(all_data) == 4:
+                    time_range = all_data[3].strip().split('-')
+                    if time_range:
+                        print(time_range)
+                        sbu.download_clip(all_data[1], all_data[2].strip(), time_range=time_range, proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
+                        gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}[{time_range[0]}-{time_range[1]}]",
+                                                 text_type='header',
+                                                 box_align='left')
+                    else:
+                        gs.gui_service.quick_gui(
+                            f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name' 'XXh:XXm:XXs-XXh:XXm:XXs",
+                            text_type='header',
+                            box_align='left')
+                else:
+                    if "youtube.com" in data_stripped or "youtu.be" in all_data[1]:
+                        sbu.download_clip(all_data[1], all_data[2].strip(), proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
+                        gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
+                                                 text_type='header',
+                                                 box_align='left')
+                    else:
+                        gs.gui_service.quick_gui(
+                            f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name' 'XXh:XXm:XXs-XXh:XXm:XXs",
+                            text_type='header',
+                            box_align='left')
             else:
                 gs.gui_service.quick_gui(
                     f"The given link was not identified as a youtube link!",
@@ -121,12 +141,12 @@ class Plugin(PluginBase):
                     box_align='left')
         else:
             gs.gui_service.quick_gui(
-                f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name'",
+                f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name' 'XXh:XXm:XXs-XXh:XXm:XXs'(optional)",
                 text_type='header',
                 box_align='left')
 
     def cmd_sbdelete(self, data):
-        all_data = data.message().strip().split()
+        all_data = data.message.strip().split()
         if len(all_data) == 2:
             audio_clip = sbu.find_file(all_data[1].strip())
             if audio_clip:
