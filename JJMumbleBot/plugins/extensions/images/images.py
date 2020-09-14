@@ -1,6 +1,7 @@
 import os
 
 from bs4 import BeautifulSoup
+from fuzzywuzzy import process
 from requests import exceptions
 
 from JJMumbleBot.lib.helpers import image_helper as IH
@@ -69,6 +70,32 @@ class Plugin(PluginBase):
                                      cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                      format_img=False)
         log(INFO, f"Posted an image to the mumble channel chat from: {img_url}.")
+
+    def cmd_imgsearch(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            return
+        search_query = all_data[1].strip()
+
+        img_list = [file_item for file_item in os.listdir(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")]
+        file_ratios = process.extract(search_query, img_list)
+        match_list = []
+        for file_item in file_ratios:
+            if file_item[1] > 80 and len(match_list) < 10:
+                match_list.append(file_item[0])
+
+        match_str = f"Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
+        if len(match_list) > 0:
+            for i, clip in enumerate(match_list):
+                match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i + 1}]</font> - {clip}"
+        else:
+            match_str += "None"
+        gs.gui_service.quick_gui(
+            match_str,
+            text_type='header',
+            text_align='left',
+            box_align='left'
+        )
 
     def cmd_img(self, data):
         all_data = data.message.strip().split()
