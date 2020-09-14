@@ -56,7 +56,7 @@ def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool =
         )
     else:
         global_settings.audio_inst = sp.Popen(
-            [ffmpeg_path, "-loglevel", "quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+            [ffmpeg_path, "-loglevel", f'{"quiet" if quiet else "panic"}', "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
              "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
             stdout=sp.PIPE, bufsize=1024
         )
