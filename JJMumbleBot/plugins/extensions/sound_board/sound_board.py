@@ -244,6 +244,7 @@ class Plugin(PluginBase):
         print(f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}')
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
@@ -279,6 +280,7 @@ class Plugin(PluginBase):
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
@@ -315,6 +317,7 @@ class Plugin(PluginBase):
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
@@ -351,6 +354,7 @@ class Plugin(PluginBase):
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
