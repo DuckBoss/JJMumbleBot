@@ -7,6 +7,7 @@ from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.images.resources.strings import *
 from JJMumbleBot.lib.helpers import image_helper as IH
+from requests import exceptions
 import os
 from bs4 import BeautifulSoup
 import time
@@ -28,23 +29,45 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_post(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         img_url = all_data[1]
         # Download image
-        img_url = ''.join(BeautifulSoup(img_url, 'html.parser').findAll(text=True))
-        IH.download_image_stream(img_url)
-        # Format image
-        time.sleep(1)
+        img_url = BeautifulSoup(img_url, 'html.parser').get_text()
+        try:
+            IH.download_image_stream(img_url)
+        except exceptions.HTTPError:
+            gs.gui_service.quick_gui(
+                "Encountered an HTTP Error while trying to retrieve the image.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
+        except exceptions.InvalidSchema:
+            gs.gui_service.quick_gui(
+                "Encountered an Invalid Schema Error while trying to retrieve the image.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
+        except exceptions.RequestException:
+            gs.gui_service.quick_gui(
+                "Encountered a Request Error while trying to retrieve the image.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
         img_ext = img_url.rsplit('.', 1)[1]
-        formatted_string = IH.format_image("_image", img_ext, f'{dir_utils.get_temp_med_dir()}/images')
+        formatted_string = IH.format_image("_image", img_ext, f'{dir_utils.get_temp_med_dir()}/internal/images')
         rprint("Posting an image to the mumble channel chat.")
         # Display image with PGUI system
-        gs.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/images", formatted_string,
+        gs.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/internal/images", formatted_string,
                                      bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                      cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                      format_img=False)
         log(INFO, f"Posted an image to the mumble channel chat from: {img_url}.")
-        dir_utils.remove_file("_image.jpg", f'{dir_utils.get_temp_med_dir()}/images')
 
     def cmd_img(self, data):
         all_data = data.message.strip().split()
