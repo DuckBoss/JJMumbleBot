@@ -60,6 +60,7 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
         global_settings.vlc_inst = None
 
     if stereo:
+        '''
         global_settings.vlc_inst = sp.Popen(
             [vlc_path, uri] + ['-I', 'dummy',
                                f'{"--quiet" if quiet else ""}',
@@ -71,6 +72,11 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
                                'mux=wav, dst=-}',
                                'vlc://quit'],
             stdout=sp.PIPE, bufsize=1024)
+        '''
+        global_settings.vlc_inst = sp.Popen(
+            ["ffmpeg", "-loglevel", "quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le", "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
+            stdout=sp.PIPE, bufsize=1024
+        )
     else:
         global_settings.vlc_inst = sp.Popen(
             [vlc_path, uri] + ['-I', 'dummy',
