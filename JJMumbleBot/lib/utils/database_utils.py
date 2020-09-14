@@ -686,6 +686,23 @@ class GetDB:
             dprint(err)
             return None
 
+    @staticmethod
+    def get_all_commands(db_cursor):
+        get_commands_query = f"""
+            SELECT commands.name, commands.level, plugins.name AS plugin
+            FROM commands, plugins
+            WHERE commands.plugin_id = plugins.plugin_id
+        """
+        try:
+            db_cursor.execute(get_commands_query)
+            result_row = db_cursor.fetchall()
+            if result_row is None:
+                return None
+            return result_row
+        except Error as err:
+            dprint(err)
+            return None
+
 
 class UpdateDB:
     @staticmethod
