@@ -356,11 +356,11 @@ def exit_bot():
     if global_settings.socket_server:
         global_settings.socket_server = None
         dprint("Terminated web socket server instance.", origin=L_SHUTDOWN)
-    if global_settings.vlc_inst:
-        global_settings.vlc_inst.kill()
-        global_settings.vlc_inst = None
-        global_settings.vlc_interface.exit_flag = True
-        dprint("Terminated vlc web interface instance.", origin=L_SHUTDOWN)
+    if global_settings.audio_inst:
+        global_settings.audio_inst.kill()
+        global_settings.audio_inst = None
+        global_settings.aud_interface.exit_flag = True
+        dprint("Terminated audio web interface instance.", origin=L_SHUTDOWN)
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
     dprint("Cleared temporary directories on shutdown.")
     log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN)

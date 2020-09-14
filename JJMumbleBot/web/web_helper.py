@@ -53,45 +53,45 @@ def post_message():
 
 @web_app.route("/pause", methods=["POST"])
 def pause_audio():
-    if global_settings.vlc_interface.status.is_playing():
-        global_settings.vlc_interface.pause()
+    if global_settings.aud_interface.status.is_playing():
+        global_settings.aud_interface.pause()
     return ''
 
 
 @web_app.route("/resume", methods=["POST"])
 def resume_audio():
-    if global_settings.vlc_interface.status.is_paused():
-        global_settings.vlc_interface.resume()
+    if global_settings.aud_interface.status.is_paused():
+        global_settings.aud_interface.resume()
     return ''
 
 
 @web_app.route("/nexttrack", methods=["POST"])
 def next_audio():
-    global_settings.vlc_interface.skip(0)
+    global_settings.aud_interface.skip(0)
     return ''
 
 
 @web_app.route("/shuffle", methods=["POST"])
 def shuffle_audio():
-    global_settings.vlc_interface.shuffle()
+    global_settings.aud_interface.shuffle()
     return ''
 
 
 @web_app.route("/decreasevolume", methods=["POST"])
 def decrease_volume_audio():
-    global_settings.vlc_interface.audio_utilities.set_volume_fast(global_settings.vlc_interface.status.get_volume()-0.1, auto=False)
+    global_settings.aud_interface.audio_utilities.set_volume_fast(global_settings.aud_interface.status.get_volume() - 0.1, auto=False)
     return ''
 
 
 @web_app.route("/increasevolume", methods=["POST"])
 def increase_volume_audio():
-    global_settings.vlc_interface.audio_utilities.set_volume_fast(global_settings.vlc_interface.status.get_volume()+0.1, auto=False)
+    global_settings.aud_interface.audio_utilities.set_volume_fast(global_settings.aud_interface.status.get_volume() + 0.1, auto=False)
     return ''
 
 
 @web_app.route("/loop", methods=["POST"])
 def loop_audio():
-    global_settings.vlc_interface.loop_track()
+    global_settings.aud_interface.loop_track()
     return ''
 
 
@@ -99,7 +99,7 @@ def loop_audio():
 def skip_to_track():
     if request.json:
         skip_to = request.json['data'].split('-', 1)[0]
-        global_settings.vlc_interface.skip(int(skip_to))
+        global_settings.aud_interface.skip(int(skip_to))
     return {}
 
 
@@ -107,14 +107,14 @@ def skip_to_track():
 def remove_track():
     if request.json:
         remove = request.json['data'].split('-', 1)[0]
-        global_settings.vlc_interface.remove_track(track_index=int(remove))
+        global_settings.aud_interface.remove_track(track_index=int(remove))
     return {}
 
 
 @web_app.route("/stop", methods=["POST"])
 def stop_audio():
-    if not global_settings.vlc_interface.status.is_stopped():
-        global_settings.vlc_interface.stop()
+    if not global_settings.aud_interface.status.is_stopped():
+        global_settings.aud_interface.stop()
         global_settings.gui_service.quick_gui(
             f"Stopped audio interface.",
             text_type='header',

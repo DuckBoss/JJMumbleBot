@@ -19,7 +19,7 @@ from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
-from JJMumbleBot.lib.vlc.vlc_api import VLCInterface
+from JJMumbleBot.lib.audio.audio_api import VLCInterface
 from time import sleep, time
 import audioop
 from datetime import datetime
@@ -69,7 +69,7 @@ class BotService:
         log(INFO, "######### Initialized PGUI #########", origin=L_STARTUP)
         rprint("######### Initialized PGUI #########", origin=L_STARTUP)
         # Initialize VLC interface.
-        global_settings.vlc_interface = VLCInterface()
+        global_settings.aud_interface = VLCInterface()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -225,17 +225,17 @@ class BotService:
     def sound_received(self, audio_data):
         user = audio_data[0]
         audio_chunk = audio_data[1]
-        if audioop.rms(audio_chunk.pcm, 2) > global_settings.vlc_interface.status['ducking_threshold'] and global_settings.vlc_interface.status['duck_audio']:
-            global_settings.vlc_interface.audio_utilities.duck_volume()
-            global_settings.vlc_interface.status['duck_start'] = time()
-            global_settings.vlc_interface.status['duck_end'] = time() + global_settings.vlc_interface.audio_utilities.get_ducking_delay()
+        if audioop.rms(audio_chunk.pcm, 2) > global_settings.aud_interface.status['ducking_threshold'] and global_settings.aud_interface.status['duck_audio']:
+            global_settings.aud_interface.audio_utilities.duck_volume()
+            global_settings.aud_interface.status['duck_start'] = time()
+            global_settings.aud_interface.status['duck_end'] = time() + global_settings.aud_interface.audio_utilities.get_ducking_delay()
 
     @staticmethod
     def loop():
         try:
             while not global_settings.exit_flag:
-                if time() > global_settings.vlc_interface.status['duck_end'] and global_settings.vlc_interface.audio_utilities.is_ducking():
-                    global_settings.vlc_interface.audio_utilities.unduck_volume()
+                if time() > global_settings.aud_interface.status['duck_end'] and global_settings.aud_interface.audio_utilities.is_ducking():
+                    global_settings.aud_interface.audio_utilities.unduck_volume()
                 sleep(runtime_settings.tick_rate)
             BotService.stop()
         except KeyboardInterrupt:
