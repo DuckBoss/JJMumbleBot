@@ -57,7 +57,6 @@ def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool =
             global_settings.audio_inst.kill()
         except OSError as e:
             dprint(e)
-            pass
         global_settings.audio_inst = None
 
     if stereo:
