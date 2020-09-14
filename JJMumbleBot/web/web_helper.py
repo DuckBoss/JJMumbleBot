@@ -1,21 +1,22 @@
 import asyncio
-import websockets
-from JJMumbleBot.settings import global_settings
-from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.utils.print_utils import dprint, rprint
-from JJMumbleBot.lib.utils.logging_utils import log
+import json
 from datetime import datetime
+from os import urandom
+from threading import Thread
+
+import websockets
 from flask import Flask, request
 from flask import render_template
 from gevent.pywsgi import WSGIServer
-from threading import Thread
-from JJMumbleBot.lib import monitor_service
-from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
-from JJMumbleBot.lib.utils.runtime_utils import check_up_time, get_bot_name
 from pymumble_py3.constants import PYMUMBLE_CLBK_TEXTMESSAGERECEIVED
-import json
-from os import urandom
 
+from JJMumbleBot.lib import monitor_service
+from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.utils.print_utils import rprint
+from JJMumbleBot.lib.utils.runtime_utils import check_up_time, get_bot_name
+from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
+from JJMumbleBot.settings import global_settings
 
 web_app = Flask(__name__)
 web_app.config['SECRET_KEY'] = urandom(16)
