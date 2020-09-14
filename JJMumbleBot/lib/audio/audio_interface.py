@@ -71,12 +71,8 @@ def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool =
                 global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, global_settings.aud_interface.status.get_volume()))
             else:
                 if global_settings.aud_interface.next_track():
-                    # thr_settings['uri'] = global_settings.aud_interface.status.get_track().uri
-                    # thr_settings['skipto'] = 0
-                    # break
                     create_vlc_thread(ffmpeg_path=ffmpeg_path, uri=global_settings.aud_interface.status.get_track().uri, skipto=0, quiet=quiet, stereo=stereo)
                 else:
-                    # thr_settings['exit_flag'] = True
                     global_settings.aud_interface.reset()
                 return
         else:
