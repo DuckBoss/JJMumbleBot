@@ -1,6 +1,7 @@
 import audioop
 import os
 from time import sleep
+from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils as rutils
@@ -56,6 +57,7 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
             os.kill(pid, 0)
             global_settings.vlc_inst.kill()
         except OSError as e:
+            dprint(e)
             pass
         global_settings.vlc_inst = None
 
@@ -78,6 +80,7 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
             stdout=sp.PIPE, bufsize=1024
         )
     else:
+        '''
         global_settings.vlc_inst = sp.Popen(
             [vlc_path, uri] + ['-I', 'dummy',
                                f'{"--quiet" if quiet else ""}',
@@ -89,6 +92,12 @@ def create_vlc_thread(vlc_path: str, uri: str, skipto: int = 0, quiet: bool = Tr
                                'mux=wav, dst=-}',
                                'vlc://quit'],
             stdout=sp.PIPE, bufsize=1024)
+        '''
+        global_settings.vlc_inst = sp.Popen(
+            ["ffmpeg", "-loglevel", "quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+             "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
+            stdout=sp.PIPE, bufsize=1024
+        )
     rutils.unmute()
 
     while not global_settings.vlc_interface.exit_flag and global_settings.vlc_inst:
