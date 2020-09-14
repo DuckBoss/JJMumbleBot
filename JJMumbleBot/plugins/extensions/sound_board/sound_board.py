@@ -113,8 +113,10 @@ class Plugin(PluginBase):
                 if len(all_data) == 4:
                     time_range = all_data[3].strip().split('-')
                     if time_range:
-                        print(time_range)
-                        sbu.download_clip(all_data[1], all_data[2].strip(), time_range=time_range, proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
+                        sbu.download_clip(all_data[1], all_data[2].strip(),
+                                          time_range=time_range,
+                                          ffmpeg_path=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH],
+                                          proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
                         gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}[{time_range[0]}-{time_range[1]}]",
                                                  text_type='header',
                                                  box_align='left')
@@ -125,7 +127,9 @@ class Plugin(PluginBase):
                             box_align='left')
                 else:
                     if "youtube.com" in data_stripped or "youtu.be" in all_data[1]:
-                        sbu.download_clip(all_data[1], all_data[2].strip(), proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
+                        sbu.download_clip(all_data[1], all_data[2].strip(),
+                                          ffmpeg_path=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH],
+                                          proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
                         gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
                                                  text_type='header',
                                                  box_align='left')
@@ -241,7 +245,7 @@ class Plugin(PluginBase):
             )
             gs.aud_interface.clear_dni()
             return
-        print(f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}')
+        # print(f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}')
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
