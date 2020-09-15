@@ -10,7 +10,6 @@
           padding: 15px;
           background-color: rgb(28, 30, 31);
       }
-
       body {
           color: rgb(218, 215, 210);
           background-color: rgb(24, 26, 27);
@@ -123,10 +122,10 @@
       <h3>Media Settings</h3>
       <br>
       <div class='container bg-dark text-white rounded'>
-        <p>The file path to VLC.</p>
-        <b>[Example: path/to/vlc]</b><br>
-        <label for='media-vlc-path-input'>VLC Path:</label><br>
-        <input type="text" id="media-vlc-path" name='media-vlc-path-input' class='required form-control border border-danger' size='100' value="vlc" required>
+        <p>The file path to FFmpeg.</p>
+        <b>[Example: path/to/ffmpeg]</b><br>
+        <label for='media-vlc-path-input'>FFmpeg Path:</label><br>
+        <input type="text" id="media-ffmpeg-path" name='media-ffmpeg-path-input' class='required form-control border border-danger' size='100' value="ffmpeg" required>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
@@ -136,15 +135,15 @@
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
-        <p>To enable vlc quiet mode, check the box.</p>
+        <p>To enable ffmpeg quiet mode, check the box.</p>
         <input type="checkbox" id="media-quiet-enable" name='media-quiet-enable-input' class='required' checked required>
-        <label for='media-quiet-enable-input'>Enable VLC Quiet</label>
+        <label for='media-quiet-enable-input'>Enable FFmpeg Quiet Mode</label>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
         <p>The default volume when the bot starts.</p>
         <b>[Default: 0.3]</b><br>
-        <label for='media-default-volume-input'>VLC Default Volume:</label><br>
+        <label for='media-default-volume-input'>Audio Default Volume:</label><br>
         <input type="number" id="media-default-volume" name='media-default-volume-input' class='required form-control border border-danger' size='100' value="0.3" required>
       </div>
       <br>
@@ -157,28 +156,28 @@
       <div class='container bg-dark text-white rounded'>
         <p>The default audio ducking volume (How low the volume will drop down when ducking)</p>
         <b>[Default: 0.05]</b><br>
-        <label for='media-ducking-volume-input'>VLC Ducking Volume:</label><br>
+        <label for='media-ducking-volume-input'>Audio Ducking Volume:</label><br>
         <input type="number" id="media-ducking-volume" name='media-ducking-volume-input' class='required form-control border border-danger' size='100' value="0.05" required>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
         <p>The default threshold before audio is ducked.</p>
         <b>[Default: 2500.0]</b><br>
-        <label for='media-ducking-threshold-input'>VLC Ducking Threshold:</label><br>
+        <label for='media-ducking-threshold-input'>Audio Ducking Threshold:</label><br>
         <input type="number" id="media-ducking-threshold" name='media-ducking-threshold-input' class='required form-control border border-danger' size='100' value="2500.0" required>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
         <p>The default delay before the audio ducking reacts to user voices.</p>
         <b>[Default: 1.0]</b><br>
-        <label for='media-ducking-delay-input'>VLC Ducking Delay:</label><br>
+        <label for='media-ducking-delay-input'>Audio Ducking Delay:</label><br>
         <input type="number" id="media-ducking-delay" name='media-ducking-delay-input' class='required form-control border border-danger' size='100' value="1.0" required>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
         <p>The default maximum queue length for the audio interface.</p>
         <b>[Default: 50]</b><br>
-        <label for='media-max-queue-length-input'>VLC Max Queue Length:</label><br>
+        <label for='media-max-queue-length-input'>Audio Max Queue Length:</label><br>
         <input type="number" id="media-max-queue-length" name='media-max-queue-length-input' class='required form-control border border-danger' size='100' value="50" required>
       </div>
       <br>
