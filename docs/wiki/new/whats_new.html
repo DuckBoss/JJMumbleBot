@@ -27,8 +27,8 @@
             <li>Added new command: !cmdsearch
                 <ul>
                     <li>Search for a command from the full list of commands available using fuzzy-searching to find the closest
-                        results.
-                        <pre><code>!cmdsearch &#39;command_name&#39; : Search for a command from the full list of commands available.</code></pre>
+                        results.<br>
+                        <code>!cmdsearch &#39;command_name&#39; : Search for a command from the full list of commands available.</code>
                     </li>
                 </ul>
             </li>
@@ -37,12 +37,12 @@
         <div class="container">
         <h3 id="sound-board-plugin">Sound Board Plugin</h3>
         <ul>
-            <li>!sbdownload command now supports an optional parameter providing a timestamp range to trim the downloaded clip.
-                <pre><code>!sbdownload &#39;youtube_link&#39; &#39;file_name&#39; &#39;H:M:S-H:M:S&#39;</code></pre>
-                <strong>Example:</strong>
-                <pre><code>!sbdownload https://youtu.be/bqDrftAxYpk test_file 0:1:10-0:2:15</code></pre></li>
-            <li>Added new alias: sbd - !sbdownload
-                <pre><code>!sbd &#39;youtube_link&#39; &#39;file_name&#39;</code></pre></li>
+            <li>!sbdownload command now supports an optional parameter providing a timestamp range to trim the downloaded clip.<br>
+                <code>!sbdownload &#39;youtube_link&#39; &#39;file_name&#39; &#39;H:M:S-H:M:S&#39;</code><br>
+                <strong>Example:</strong><br>
+                <code>!sbdownload https://youtu.be/bqDrftAxYpk test_file 0:1:10-0:2:15</code></li>
+            <li>Added new alias: sbd - !sbdownload<br>
+                <code>!sbd &#39;youtube_link&#39; &#39;file_name&#39;</code></li>
             <li>sound_board files played with !sb/!sbnow/!sbquiet/!sbquietnow can now loop tracks when loop mode is enabled.
                 <ul>
                     <li>sound_board files played with !sbrandom/!sbrandomnow don&#39;t loop.</li>
@@ -53,9 +53,9 @@
         <div class="container">
         <h3 id="images-plugin">Images Plugin</h3>
         <ul>
-            <li>Added new command: !imgsearch
-                Search for a command from the full list of images available using fuzzy-searching to find the closest results.
-                <pre><code>!imgsearch &#39;image_name&#39;: Searches through locally stored images and returns the closest results.</code></pre>
+            <li>Added new command: !imgsearch<br>
+                Search for a command from the full list of images available using fuzzy-searching to find the closest results.<br>
+                <code>!imgsearch &#39;image_name&#39;: Searches through locally stored images and returns the closest results.</code>
             </li>
             <li>Fixed !post command.</li>
             <li>The !post command now displays an error message when a common http error occurs.</li>
@@ -73,17 +73,17 @@
         <ul>
             <li><strong>Supports generic connection sound clips for all users, and per-user connection sound clips</strong>
                 <ul>
-                    <li>Added new command: !setdefaultconnectionsound
-                        <pre><code>!setdefaultconnectionsound &#39;audio_clip_name&#39;: Sets the generic audio clip that is played when a user joins the server.</code></pre></li>
-                    <li>Added new command: !clearuserconnectionsound
-                        <pre><code>!clearuserconnectionsound &#39;username&#39;: Clears the audio clip associated with the given
-                            username.</code></pre></li>
-                    <li>Added new command: !getuserconnectionsound
-                        <pre><code>!getuserconnectionsound &#39;username&#39;: Displays the audio clip set to play whenever the given
-                            username connects to the server.</code></pre></li>
-                    <li>Added new command: !setuserconnectionsound
-                        <pre><code>!setuserconnectionsound &#39;username&#39; &#39;audio_clip_name&#39;: Sets the audio clip that
-                            will play whenever the given user connects to the server.</code></pre></li>
+                    <li>Added new command: !setdefaultconnectionsound<br>
+                        <code>!setdefaultconnectionsound &#39;audio_clip_name&#39;:</code> Sets the generic audio clip that is played when a user joins the server.</li>
+                    <li>Added new command: !clearuserconnectionsound<br>
+                        <code>!clearuserconnectionsound &#39;username&#39;:</code> Clears the audio clip associated with the given
+                            username.</li>
+                    <li>Added new command: !getuserconnectionsound<br>
+                        <code>!getuserconnectionsound &#39;username&#39;:</code> Displays the audio clip set to play whenever the given
+                            username connects to the server.</li>
+                    <li>Added new command: !setuserconnectionsound<br>
+                        <code>!setuserconnectionsound &#39;username&#39; &#39;audio_clip_name&#39;:</code> Sets the audio clip that
+                            will play whenever the given user connects to the server.</li>
                 </ul>
             </li>
         </ul>
