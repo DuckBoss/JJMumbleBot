@@ -220,5 +220,3 @@ class Plugin(PluginBase):
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
-
-
