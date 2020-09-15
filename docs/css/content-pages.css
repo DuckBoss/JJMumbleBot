@@ -16,6 +16,10 @@
     list-style-position: inside;
     padding-left: 10px;
 }
+code {
+    overflow: hidden;
+    padding: 5px;
+}
 img {
     border-radius: 10px;
 }
