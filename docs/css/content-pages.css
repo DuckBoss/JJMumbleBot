@@ -15,3 +15,11 @@
     list-style-position: inside;
     padding-left: 10px;
 }
+img {
+    border-radius: 10px;
+}
+footer {
+    background-color: black;
+    position: fixed;
+    bottom: 0;
+}
