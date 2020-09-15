@@ -3,8 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - Event Logging</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
 </head>
 <body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="logging-events">Logging Events</h2>
+        <p>
+            If you want to add custom logging to existing plugins, or custom plugins then follow the instructions below.
+            <br>
+            Logging can make it easier to debug code, keep track of bot events in the server, etc.
+            <br>
+            <b>You can optionally disable logging in your config.ini file.</b>
+        </p>
+        <h3 id="logging-features">Logging Features</h3>
+        <ul>
+            <li>There are various logging levels (<b>INFO, WARNING, CRITICAL</b>) in which each level indicates the severity
+                of the event. In most cases the INFO level is used to log general bot events.
+            </li>
+            <li>The logging system also supports specifying the origin of the log event. The logging origin definitions are
+                as follows:
+                <ul>
+                    <li><code>L_GENERAL</code> = &quot;General&quot;<br></li>
+                    <li><code>L_USER_PRIV</code> = &quot;UserPrivileges&quot;<br></li>
+                    <li><code>L_DATABASE</code> = &quot;Database&quot;<br></li>
+                    <li><code>L_COMMAND</code> = &quot;Command&quot;<br></li>
+                    <li><code>L_STARTUP</code> = &quot;StartUp&quot;<br></li>
+                    <li><code>L_SHUTDOWN</code> = &quot;ShutDown&quot;<br></li>
+                    <li><code>L_ALIASES</code> = &quot;Aliases&quot;<br></li>
+                    <li><code>L_LOGGING</code> = &quot;Logging&quot;<br></li>
+                    <li><code>L_DEPENDENCIES</code> = &quot;Dependencies&quot;</li>
+                </ul>
+            </li>
+        </ul>
+        <h3 id="logging-steps">Logging Steps</h3>
+        <ol>
+            <li>Open the python script you wish to add logging to.</li>
+            <li>Add this line to the top of the file: <code>&#39;from JJMumbleBot.lib.utils.logging_utils import log&#39;</code><br>
+                Importing the logging_utils file will allow you to use the logger that is used for the entire bot.
+            </li>
+            <li>To log an event you can use: <code>&#39;log(log_level, log_message, origin=log_origin)&#39;</code><br>
+                <b>Example Usage:<br>
+                <pre>
+                log(INFO, &quot;I logged an info event!&quot;, origin=L_GENERAL)<br>
+                output:
+                [JJMumbleBot(3.0.4).General]: I logged an info event!
 
+                log(WARNING, &quot;I logged a warning event!&quot;, origin=L_LOGGING)<br>
+                output:
+                [JJMumbleBot(3.0.4).Logging]: I logged a warning event!
+
+                log(CRITICAL, &quot;I logged a critical issue!&quot;, origin=L_ALIASES)<br></b>
+                output:
+                [JJMumbleBot(3.0.4).Aliases]: I logged a critical event!
+                </pre>
+            </li>
+        </ol>
+
+        <p>
+            By default, logs are time rotated every day at midnight.<br>
+            The bot will store a maximum of 20 logs (20 days worth) before recycling the oldest logs.
+        </p>
+        <h4 id="example-saved-log">Example Saved Log:</h4>
+        <p>
+            <img src="https://user-images.githubusercontent.com/20238115/84191244-358c6180-aa66-11ea-9589-abb527ee4c80.png"
+                alt="image">
+        </p>
+    </div>
+    <footer></footer>
 </body>
 </html>
