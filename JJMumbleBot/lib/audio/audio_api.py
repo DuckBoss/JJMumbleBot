@@ -6,7 +6,7 @@ from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
-from JJMumbleBot.lib.vlc import audio_interface
+from JJMumbleBot.lib.audio import audio_interface
 from datetime import timedelta
 from enum import Enum
 from threading import Thread
@@ -62,17 +62,17 @@ class VLCInterface:
                     'queue': [],
                     'queue_length': 0,
                     'status': TrackStatus.STOPPED,
-                    'volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME]),
+                    'volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]),
                     'loop': False,
-                    'duck_audio': global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_DUCK, fallback=False),
-                    'ducking_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DUCK_VOLUME]),
-                    'ducking_threshold': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DUCK_THRESHOLD]),
-                    'ducking_delay': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DUCK_DELAY]),
+                    'duck_audio': global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO, fallback=False),
+                    'ducking_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME]),
+                    'ducking_threshold': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]),
+                    'ducking_delay': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY]),
                     # Internal Audio Ducking Settings
                     'is_ducking': False,
                     'duck_start': 0.0,
                     'duck_end': 0.0,
-                    'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME]),
+                    'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]),
                     'start_time': 0,
                     'pause_time': 0,
                     'progress_time': 0
@@ -188,74 +188,74 @@ class VLCInterface:
         def lerp_volume(self, cur_vol, targ_vol, lerp_time):
             cur_time = 0
             while cur_time < 1:
-                global_settings.vlc_interface.status.set_volume(cur_vol + cur_time * (targ_vol - cur_vol))
+                global_settings.aud_interface.status.set_volume(cur_vol + cur_time * (targ_vol - cur_vol))
                 cur_time += lerp_time
                 sleep(0.01)
-            global_settings.vlc_interface.status.set_volume(targ_vol)
+            global_settings.aud_interface.status.set_volume(targ_vol)
 
         def set_volume(self, volume: float, auto=False):
             if not auto:
-                global_settings.vlc_interface.status['last_volume'] = volume
+                global_settings.aud_interface.status['last_volume'] = volume
             lerp_thr = Thread(target=self.lerp_volume,
-                              args=(float(global_settings.vlc_interface.status.get_volume()), volume, 0.025),
+                              args=(float(global_settings.aud_interface.status.get_volume()), volume, 0.025),
                               daemon=True)
             lerp_thr.start()
 
         def set_volume_fast(self, volume: float, auto=False):
             if not auto:
-                global_settings.vlc_interface.status['last_volume'] = volume
-            global_settings.vlc_interface.status.set_volume(volume)
+                global_settings.aud_interface.status['last_volume'] = volume
+            global_settings.aud_interface.status.set_volume(volume)
 
         def set_last_volume(self, volume: float):
-            global_settings.vlc_interface.status['last_volume'] = volume
+            global_settings.aud_interface.status['last_volume'] = volume
 
         def duck_volume(self):
             if not self.is_ducking():
-                global_settings.vlc_interface.status['is_ducking'] = True
-                self.set_volume(global_settings.vlc_interface.status['ducking_volume'], auto=True)
+                global_settings.aud_interface.status['is_ducking'] = True
+                self.set_volume(global_settings.aud_interface.status['ducking_volume'], auto=True)
 
         def set_duck_volume(self, volume: float):
-            global_settings.vlc_interface.status['ducking_volume'] = volume
+            global_settings.aud_interface.status['ducking_volume'] = volume
 
         def get_ducking_volume(self):
-            return global_settings.vlc_interface.status['ducking_volume']
+            return global_settings.aud_interface.status['ducking_volume']
 
         def set_duck_threshold(self, threshold: float):
             if threshold < 0:
                 return
-            global_settings.vlc_interface.status['ducking_threshold'] = threshold
+            global_settings.aud_interface.status['ducking_threshold'] = threshold
 
         def set_ducking_delay(self, delay: float):
             if delay < 0 or delay > 5:
                 return
-            global_settings.vlc_interface.status['ducking_delay'] = delay
+            global_settings.aud_interface.status['ducking_delay'] = delay
 
         def get_ducking_threshold(self):
-            return global_settings.vlc_interface.status['ducking_threshold']
+            return global_settings.aud_interface.status['ducking_threshold']
 
         def get_ducking_delay(self):
-            return global_settings.vlc_interface.status['ducking_delay']
+            return global_settings.aud_interface.status['ducking_delay']
 
         def unduck_volume(self):
             if self.is_ducking():
-                self.set_volume(global_settings.vlc_interface.status['last_volume'], auto=True)
-                global_settings.vlc_interface.status['duck_start'] = 0.0
-                global_settings.vlc_interface.status['duck_end'] = 0.0
-                global_settings.vlc_interface.status['is_ducking'] = False
+                self.set_volume(global_settings.aud_interface.status['last_volume'], auto=True)
+                global_settings.aud_interface.status['duck_start'] = 0.0
+                global_settings.aud_interface.status['duck_end'] = 0.0
+                global_settings.aud_interface.status['is_ducking'] = False
 
         def is_ducking(self):
-            return global_settings.vlc_interface.status['is_ducking']
+            return global_settings.aud_interface.status['is_ducking']
 
         def can_duck(self):
-            return global_settings.vlc_interface.status['duck_audio']
+            return global_settings.aud_interface.status['duck_audio']
 
         def toggle_ducking(self):
-            global_settings.vlc_interface.status['duck_audio'] = not global_settings.vlc_interface.status['duck_audio']
+            global_settings.aud_interface.status['duck_audio'] = not global_settings.aud_interface.status['duck_audio']
 
     def __init__(self):
         self.status = VLCInterface.Status()
         self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
         self.audio_utilities = VLCInterface.AudioUtilites()
         self.exit_flag: bool = False
 
@@ -291,7 +291,7 @@ class VLCInterface:
                 box_align='left')
             return
         self.callback_check('on_play')
-        if global_settings.vlc_inst:
+        if global_settings.audio_inst:
             audio_interface.stop_vlc_instance()
         audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=self.status['progress_time'])
         self.status['start_time'] = int(time())
@@ -321,7 +321,7 @@ class VLCInterface:
 
     def pause(self):
         if self.status.is_playing():
-            if global_settings.vlc_inst:
+            if global_settings.audio_inst:
                 audio_interface.stop_vlc_instance()
             self.calculate_progress()
             self.status['pause_time'] = int(time())
@@ -351,7 +351,7 @@ class VLCInterface:
         self.status.update_queue(reversed_list)
 
         self.callback_check('on_skip')
-        if global_settings.vlc_inst:
+        if global_settings.audio_inst:
             audio_interface.stop_vlc_instance()
 
         if track_number == 0:
@@ -388,7 +388,7 @@ class VLCInterface:
 
     def seek(self, seconds: int):
         if self.status.is_playing():
-            if global_settings.vlc_inst:
+            if global_settings.audio_inst:
                 audio_interface.stop_vlc_instance()
             audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
 
@@ -402,11 +402,11 @@ class VLCInterface:
                 box_align='left')
 
     def stop(self):
-        if global_settings.vlc_inst:
+        if global_settings.audio_inst:
             audio_interface.stop_vlc_instance()
         self.callback_check('on_stop')
         self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
             'plugin_name': '',
@@ -440,7 +440,7 @@ class VLCInterface:
     def reset(self):
         self.callback_check('on_reset')
         self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
         self.status.update({
             'plugin_owner': '',
             'plugin_name': '',
@@ -473,7 +473,7 @@ class VLCInterface:
 
     def clear_queue(self):
         self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN]))
+            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
         self.status.update_queue(list(self.queue))
 
     def enqueue_track(self, track_obj, to_front=False, quiet=False):

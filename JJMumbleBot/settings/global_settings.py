@@ -21,10 +21,10 @@ safe_mode: bool = False
 quiet_mode: bool = False
 verbose_mode: bool = False
 # Audio Thread Instance
-vlc_inst = None
+audio_inst = None
 vlc_thread = None
 audio_dni = None
-vlc_interface = None
+aud_interface = None
 # Bot State
 exit_flag: bool = False
 # Command History

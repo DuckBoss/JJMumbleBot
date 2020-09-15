@@ -1,5 +1,6 @@
 alias,command
 sbl,(sblist)
+sbd,(sbdownload)
 sbn,(sbnow)
 sbr,(sbrandom)
 sbs,(sbsearch)

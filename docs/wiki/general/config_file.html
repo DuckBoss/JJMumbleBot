@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Config.ini File</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h3 id="page-title">Setting up your Config.ini File</h3>
+        <h4 id="manual-method">Manual Method</h4>
+        <ol>
+            <li>Copy the <code>config_template.ini</code> file from your <code>JJMumbleBot/cfg/templates/</code> directory to your <code>JJMumbleBot/cfg</code> folder.</li>
+            <li>Follow the instructions in the individual sections of the config below to setup your own <code>config.ini</code> file.</li>
+        <b>Note: Don&#39;t use quotations in any text elements in the <code>config.ini</code> file</b><br>
+        <b>Note: Use absolute paths for all directories/paths in the <code>config.ini</code> file</b>
+        </ol>
+
+        <h4 id="web-interface-method">Web Interface Method</h4>
+        <ol>
+            <li>Visit this link: <a href="https://duckboss.github.io/JJMumbleBot/wiki/qsu/qsu.html">Quick Setup Utility - Web Interface for Config.ini File Creation</a></li>
+            <li>Fill in all the required fields, and click the &quot;Download Config.ini File&quot; button to generate the <code>config.ini</code> file for the bot.</li>
+            <li>Place the <code>config.ini</code> file in your <code>JJMumbleBot/cfg</code> folder.</li>
+        </ol>
+        <hr>
+
+        <h4 id="connection-settings-required">[Connection Settings] (REQUIRED)</h4>
+        <ul>
+            <li><code>UserID</code>: Enter your bot username here, If the bot is registered with a certificate, the name must match the name in the certificate.</li>
+            <li><code>UserCertification</code>: Enter the file path to your certificate. If your server doesn&#39;t require a certificate, leave this blank.</li>
+            <li><code>AutoReconnect</code>: Enable/Disable Auto-Reconnect to the server if connection is lost.</li>
+            <li><code>DefaultChannel</code>: The default channel the bot joins when it connects to the server</li>
+            <li><code>DefaultSuperUser</code>: Enter the bot owner&#39;s display name here. The bot must have at least 1 super user to be able to control all bot commands.</li>
+            <li><code>SelfRegister</code>: Allows the bot to attempt to self-register to the server.</li>
+            <li><code>DefaultComment</code>: Custom bot comments that are shown when users view the bot&#39;s comment. This can be left blank.</li>
+        </ul>
+        <pre>
+            [Connection Settings]
+            UserID = USERNAME
+            UserCertification = CERT_FILE_PATH
+            AutoReconnect = False
+            DefaultChannel = DEFAULT_CHANNEL_NAME
+            DefaultSuperUser = DEFAULT_SUPER_USER_NAME
+            SelfRegister = True
+            DefaultComment = Hello! I am JJMumbleBot!
+        </pre>
+        <h4 id="web-interface-optional">[Web Interface] (OPTIONAL)</h4>
+        <ul>
+        <li><code>EnableWebInterface</code>: To enable the web interface for the bot, check the box. Uncheck it to disable.</li>
+        <li><code>WebServerIP</code>: This sets the web server IP.</li>
+        <li><code>WebPagePort</code>: This sets the port of the web server for the main web interface page.</li>
+        <li><code>WebSocketPort</code>: This sets the port of the web socket on the web interface providing live data.</li>
+        <li><code>WebTickRate</code>: This sets the tick rate of the loop that sends data to the web interface.</li>
+        </ul>
+        <pre>
+            [Web Interface]
+            EnableWebInterface = True
+            WebServerIP = 127.0.0.1
+            WebPagePort = 7000
+            WebSocketPort = 7001
+            WebTickRate = 1
+        </pre>
+        <h4 id="media-settings-required">[Media Settings] (REQUIRED)</h4>
+        <ul>
+        <li><code>FfmpegPath</code>: VLC location</li>
+        <li><code>UseStereoAudio</code>: Enable/Disable Stereo Audio</li>
+        <li><code>FfmpegRunQuiet</code>: Enable/Disable VLC Console Messages</li>
+        <li><code>DefaultVolume</code>: The default volume when the bot starts (default=0.3)</li>
+        <li><code>AudioDuck</code>: Enable Audio Ducking (off by default, use !duckaudio to toggle on and off)</li>
+        <li><code>DuckingVolume</code>: The default audio ducking volume (How low the volume will drop down when ducking) (default=0.05)</li>
+        <li><code>DuckingThreshold</code>: The default threshold before audio is ducked (default=2500.0)</li>
+        <li><code>DuckingDelay</code>: The default delay before the audio ducking reacts to user voices (default=1.0)</li>
+        <li><code>MaxQueueLength</code>: The default maximum queue length for the audio interface (default=50)</li>
+        <li><code>YoutubeDLProxyURL</code>: Optional Proxy URL - If you want to use a proxy server to use the youtube-dl library, fill this out</li>
+        <li><code>YoutubeDLCookieFile</code>: Optionally use a cookies.txt file for the youtube-dl library (useful to deal with rate limits).</li>
+        <li><code>TemporaryMediaDirectory</code>: Temporary images directory to store youtube thumbnails and other images content. This directory is cleared when the bot exits.</li>
+        <li><code>PermanentMediaDirectory</code>: Permanent media directory to store sound board clips, and other media that won&#39;t be deleted when the bot exits.</li>
+        </ul>
+        <pre>
+            [Media Settings]
+            FfmpegPath = vlc
+            UseStereoAudio = True
+            FfmpegRunQuiet = True
+            DefaultVolume = 0.3
+            AudioDuck = False
+            DuckingVolume = 0.05
+            DuckingThreshold = 2500.0
+            DuckingDelay = 1.0
+            MaxQueueLength = 50
+            YoutubeDLProxyURL =
+            YoutubeDLCookieFile =
+            TemporaryMediaDirectory = TEMP_MEDIA_DIR_PATH
+            PermanentMediaDirectory = PERM_MEDIA_DIR_PATH
+        </pre>
+        <h4 id="logging-required">[Logging] (REQUIRED)</h4>
+        <ul>
+        <li><code>EnableLogging</code>:  Enable Logging Flag</li>
+        <li><code>MaxLogs</code>: Maximum Log Limit</li>
+        <li><code>HideMessageLogging</code>: Enable/Disable channel message logging (Enabling it will hide message logs to: Message Received: [User -&gt; #####])</li>
+        <li><code>LogDirectory</code>: Path to the logs directory. All bot logs will be stored in this directory.</li>
+        </ul>
+        <pre>
+            [Logging]
+            EnableLogging = True
+            MaxLogs = 20
+            HideMessageLogging = True
+            LogDirectory = LOGS_DIR_PATH
+        </pre>
+        <h4 id="plugin-settings-optional">[Plugin Settings] (OPTIONAL)</h4>
+        <ul>
+        <li><code>DisabledPlugins</code>: Disables plugins that are included in this list for regular operation.</li>
+        <li><code>SafeModePlugins</code>: Plugins to use during safe mode operation.</li>
+        <li><code>AllowedRootChannelsForTempChannels</code>: Root channels in which the creation of temporary channels are allowed.</li>
+        </ul>
+        <pre>
+            [Plugin Settings]
+            DisabledPlugins = []
+            SafeModePlugins = ["core_commands", "bot_commands"]
+            AllowedRootChannelsForTempChannels = ["Root"]
+        </pre>
+        <h4 id="main-settings-optional">[Main Settings] (OPTIONAL)</h4>
+        <ul>
+        <li><code>EnableDatabaseBackup</code>: Enable or disable automatic internal database backups</li>
+        <li><code>CommandTickRate</code>: The execution tick rate of commands in the command queue [Must be an integer/float]</li>
+        <li><code>MultiCommandLimit</code>: Maximum commands in a multi-command input (this includes multi-commands in aliases) [Must be an integer]</li>
+        <li><code>CommandQueueLimit</code>: Maximum commands per queue (this includes commands in aliases) [Must be an integer]</li>
+        <li><code>CommandToken</code>: The command token to identify commands in the chat [Must be a single character]</li>
+        <li><code>CommandHistoryLimit</code>: The number of commands to store in the command history tracker [Must be an integer]</li>
+        </ul>
+        <pre>
+            [Main Settings]
+            EnableDatabaseBackup = True
+            CommandTickRate = 0.1
+            MultiCommandLimit = 100
+            CommandQueueLimit = 500
+            CommandToken = !
+            CommandHistoryLimit = 25
+        </pre>
+        <h4 id="pgui-settings-optional">[PGUI Settings] (OPTIONAL)</h4>
+        <p>Limitations: <a href="https://doc.qt.io/qt-5/richtext-html-subset.html">https://doc.qt.io/qt-5/richtext-html-subset.html</a></p>
+        <ul>
+        <li><code>CanvasBGColor</code>: Default Canvas BG Color (<a href="https://doc.qt.io/qt-5/qcolor.html#setNamedColor">https://doc.qt.io/qt-5/qcolor.html#setNamedColor</a>)</li>
+        <li><code>CanvasImageBGColor</code>: Default Canvas Image BG Color</li>
+        <li><code>CanvasAlignment</code>: Default Canvas Alignment</li>
+        <li><code>CanvasBorder</code>: Default Canvas Border</li>
+        <li><code>CanvasTextColor</code>: Default Canvas Text Color</li>
+        <li><code>DefaultFont</code>: Default font for all GUIs (Can use all fonts supported by Qt5)</li>
+        <li><code>HeaderTextColor</code>: Default Header Text Color</li>
+        <li><code>IndexTextColor</code>: Default Index Text Color</li>
+        <li><code>SubHeaderTextColor</code>: Default Sub-Header Text Color</li>
+        </ul>
+        <pre>
+            [PGUI Settings]
+            CanvasBGColor = black
+            CanvasImageBGColor = black
+            CanvasAlignment = center
+            CanvasBorder = 0
+            CanvasTextColor = white
+            DefaultFont = Calibri
+            HeaderTextColor = red
+            IndexTextColor = cyan
+            SubHeaderTextColor = yellow
+        </pre>
+    </div>
+    <footer></footer>
+</body>
+</html>

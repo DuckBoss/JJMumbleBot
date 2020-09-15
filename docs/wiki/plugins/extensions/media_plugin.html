@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Media Plugin</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Media Plugin</h2>
+        <p>
+            This is a built-in extension plugin that follows the plugin template system. <br>
+            This plugin allows users to search for youtube songs and play it in the channel. <br>
+            It has a built in queuing system so it can play multiple songs in order.
+        </p>
+
+        <div class="section">
+            <p>
+                <h3>Usage:</h3>
+                <code>!ytsearch 'search_term'</code>: Searches youtube for a song/video.<br>
+                <code>!ytplaylist 'playlist_url'</code>: Adds the given youtube playlist to the queue.<br>
+                <code>!ytplay 'item_number' 'item_count'(optional)</code>: Plays the selected song from youtube.<br>
+                <code>!link 'link_url'</code>: Adds the given youtube/soundcloud link to the queue.<br>
+                <code>!linkfront 'link_url'</code>: Priority inserts the given link to the front of the queue.
+            </p>
+        </div>
+
+        <hr>
+        <h3> Quick Start: </h3><br>
+        <div class="section">
+            <h4> Option 1: Search youtube and choose a video</h4>
+            <p>
+                <b> Use the <code>!ytsearch</code> command to search youtube for a video: </b> <br>
+                <code>!ytsearch video_name</code>: searches youtube for the video provided.<br>
+                <b> Choose one of the selections prompted with the <code>!p</code> command: </b> <br>
+                <code>!ytplay 5</code>: plays the 5th video in the selection prompt.<br>
+            </p>
+        </div>
+
+        <div class="section">
+            <h4> Option 2: Provide a direct youtube/soundcloud link </h4>
+            <p>
+                <b> Use the <code>!link</code> command to add a track to the queue: </b> <br>
+                <code>!link direct_link</code>: adds youtube or soundcloud tracks to the queue.<br>
+            </p>
+        </div>
+
+        <div class="section">
+            <h4> Option 3: Provide a youtube playlist </h4>
+            <b> Use the <code>!ytplaylist</code> command to add an entire playlist to the queue: </b> <br>
+            <code>!ytplaylist playlist_link</code>: adds youtube playlist to the queue.
+        </div>
+
+        <p><b>Note: Playlists must be unlisted or public. Private playlists are not allowed.</b></p>
+
+        <h3>Encountering errors?</h3>
+        <ul>
+            <li>First check the FAQ to see if you encounter any of the issues mentioned there:<br>
+            <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/F.A.Q.">https://github.com/DuckBoss/JJMumbleBot/wiki/F.A.Q.</a></li>
+            <li>If your issue isn't in the FAQ, post an issue report.</li>
+        </ul>
+    </div>
+    <footer></footer>
+</body>
+</html>

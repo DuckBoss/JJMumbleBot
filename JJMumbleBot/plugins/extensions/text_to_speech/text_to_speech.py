@@ -2,7 +2,7 @@ from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
-from JJMumbleBot.lib.vlc.vlc_api import TrackInfo, TrackType
+from JJMumbleBot.lib.audio.audio_api import TrackInfo, TrackType
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.resources.strings import *
@@ -28,16 +28,16 @@ class Plugin(PluginBase):
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        if gs.vlc_interface.check_dni_is_mine(self.plugin_name):
-            gs.vlc_interface.stop()
+        if gs.aud_interface.check_dni_is_mine(self.plugin_name):
+            gs.aud_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_ttsstop(self, data):
-        if gs.vlc_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.vlc_interface.stop()
+        if gs.aud_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
+            gs.aud_interface.stop()
             gs.gui_service.quick_gui("Stopped text-to-speech audio.", text_type='header',
                                      box_align='left')
 
@@ -97,8 +97,8 @@ class Plugin(PluginBase):
         return
 
     def cmd_ttsplay(self, data):
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         all_data = data.message.strip().split(' ', 1)
@@ -108,8 +108,8 @@ class Plugin(PluginBase):
                 f"The text-to-speech clip '{to_play}.oga' does not exist.",
                 text_type='header',
                 box_align='left')
-            if gs.vlc_interface.get_track().name == '':
-                gs.vlc_interface.clear_dni()
+            if gs.aud_interface.get_track().name == '':
+                gs.aud_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.oga',
@@ -119,15 +119,15 @@ class Plugin(PluginBase):
             track_type=TrackType.FILE,
             quiet=False
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=True)
+        gs.aud_interface.play(override=True)
 
     def cmd_ttsplayquiet(self, data):
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         all_data = data.message.strip().split(' ', 1)
@@ -137,8 +137,8 @@ class Plugin(PluginBase):
                 f"The text-to-speech clip '{to_play}.oga' does not exist.",
                 text_type='header',
                 box_align='left')
-            if gs.vlc_interface.get_track().name == '':
-                gs.vlc_interface.clear_dni()
+            if gs.aud_interface.get_track().name == '':
+                gs.aud_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{to_play}.oga',
@@ -148,16 +148,16 @@ class Plugin(PluginBase):
             track_type=TrackType.FILE,
             quiet=True
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
             quiet=True
         )
-        gs.vlc_interface.play(override=True)
+        gs.aud_interface.play(override=True)
 
     def cmd_tts(self, data):
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         data_actor = gs.mumble_inst.users[data.actor]
@@ -190,12 +190,12 @@ class Plugin(PluginBase):
                     track_type=TrackType.FILE,
                     quiet=True
                 )
-                gs.vlc_interface.enqueue_track(
+                gs.aud_interface.enqueue_track(
                     track_obj=track_obj,
                     to_front=False,
                     quiet=True
                 )
-                gs.vlc_interface.play(override=True)
+                gs.aud_interface.play(override=True)
         elif len(all_data) == 3:
             if len(all_data[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
                 gs.gui_service.quick_gui(
@@ -218,12 +218,12 @@ class Plugin(PluginBase):
                     track_type=TrackType.FILE,
                     quiet=True
                 )
-                gs.vlc_interface.enqueue_track(
+                gs.aud_interface.enqueue_track(
                     track_obj=track_obj,
                     to_front=False,
                     quiet=True
                 )
-                gs.vlc_interface.play(override=True)
+                gs.aud_interface.play(override=True)
         else:
             gs.gui_service.quick_gui(
                 f"Incorrect Format:<br>{get_command_token()}tts 'voice_name' 'message'<br>OR<br>{get_command_token()}tts 'message'",

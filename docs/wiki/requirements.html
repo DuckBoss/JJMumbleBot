@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Requirements</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Requirements</h2>
+        <hr>
+        <h4 id="base-requirements">Base Requirements</h4>
+        <ul>
+            <li><a href="https://www.python.org/downloads/">Python 3.7+</a></li>
+            <li><a href="https://ffmpeg.org/">FFmpeg</a> must be installed on your system.</li>
+            <li>You must have libopus installed and installation varies by operating system.</li>
+        </ul>
+        <h4 id="dependencies">Dependencies (Can be installed with pip)</h4>
+        <ul>
+            <li><a href="https://pypi.org/project/pymumble/">pymumble</a>
+                <ul>
+                    <li>Core python wrapper for mumble interaction.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/beautifulsoup4/">beautifulsoup4</a>
+                <ul>
+                    <li>Used to extract data from web pages and format urls.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/requests/">requests</a>
+                <ul>
+                    <li>Used for http requests to get information from web pages.</li>
+                </ul>
+            </li>
+            <li><a href="https://github.com/ytdl-org/youtube-dl#installation">youtube-dl</a> (This is updated often, so the
+                requirements.txt might be outdated)
+                <ul>
+                    <li>Used for playing audio from youtube, etc.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/Pillow/">pillow</a>
+                <ul>
+                    <li>Used for image processing to support displaying images.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/fuzzywuzzy/">fuzzywuzzy</a>
+                <ul>
+                    <li>Used to provide better searching by a method called &quot;fuzzy searching&quot;.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/python-Levenshtein/">python-Levenshtein</a>
+                <ul>
+                    <li>Speeds up fuzzy searching processing by a large amount.</li>
+                </ul>
+            </li>
+        </ul>
+        <h4 id="additional-dependencies">Additional Dependencies (Required if the
+            Web Interface is enabled)</h4>
+        <ul>
+            <li><a href="https://pypi.org/project/websockets/">websockets</a></li>
+                <ul>
+                    <li>Provides continuous data to the web interface.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/Flask/">Flask</a></li>
+                <ul>
+                    <li>Internal framework for the web interface.</li>
+                </ul>
+            </li>
+            <li><a href="https://pypi.org/project/gevent/">gevent</a></li>
+                <ul>
+                    <li>Production web server for the web interface.</li>
+                </ul>
+            </li>
+        </ul>
+        <p><b>Note: Some third-party plugins may require additional dependencies</b></p>
+        <h3 id="dependency-installation">Dependency Installation</h3>
+        <ul>
+            <li>Download and install python 3.7+
+                <ul>
+                    <li>Linux: Depends on the distribution.</li>
+                    <li>Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a></li>
+                    <li>Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a></li>
+                </ul>
+            </li>
+            <li>Install project dependencies
+                <ul>
+                    <li><code>pip install -r requirements.txt</code></li>
+                    <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
+                    <li><b>Note: v4.2+ requires FFmpeg. v4.1 and under uses vlc.</b></li>
+                </ul>
+            </li>
+            <li>Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)</li>
+            <li>Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki">Wiki</a> for setup procedures and more information.</li>
+            <li>JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.</li>
+        </ul>
+    </div>
+    <footer></footer>
+</body>
+</html>

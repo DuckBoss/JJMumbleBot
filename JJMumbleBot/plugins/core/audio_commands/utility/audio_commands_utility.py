@@ -1,11 +1,11 @@
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.vlc.vlc_api import TrackType
+from JJMumbleBot.lib.audio.audio_api import TrackType
 
 
 def get_queue_list():
     list_queue = []
-    queue_list = list(gs.vlc_interface.status.get_queue())
+    queue_list = list(gs.aud_interface.status.get_queue())
     for i, track_info in enumerate(queue_list):
         if i == 0:
             list_queue.append(

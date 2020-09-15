@@ -1,9 +1,11 @@
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
-from JJMumbleBot.lib.resources.strings import L_DEPENDENCIES
-from requests import get
-from subprocess import call
-import pkg_resources
 import sys
+from subprocess import call
+
+import pkg_resources
+from requests import get
+
+from JJMumbleBot.lib.resources.strings import L_DEPENDENCIES
+from JJMumbleBot.lib.utils.print_utils import dprint
 
 
 def check_pypi_version(package_name):

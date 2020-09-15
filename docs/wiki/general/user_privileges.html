@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - User Privileges</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">User Privileges System</h2>
+        <hr>
+        <p>
+            <b>Privileges are a way to limit a users usage/access of the bot.</b> <br>
+            Some commands in JJMumbleBot are restricted to only administrators of the bot so that regular users may not
+            abuse them.
+            These commands include blacklisting, whitelisting, quitting the bot, etc.
+            <br>
+        </p>
+        <hr>
+        <h3>Setting User Privileges</h3>
+        <p>
+            To modify the user privileges of a user in your mumble server, follow these steps:
+        <h4> Manual Method: </h4>
+        <ol>
+            <li>Access the <code>jjmumblebot.db</code> database file located under the cfg directory using a sqlite browsing
+                software.
+            </li>
+            <li>Add the names of mumble users that you want if they don&#39;t already exist to the <code>users</code> table. Set
+                their permission levels to whatever level number you wish in the <code>permissions</code> table. Make sure that
+                the permission level you choose is a valid permission level from the <code>permission_levels</code> table.
+                <br>The default available user privilege levels are:
+                <ul>
+                    <li><code>BLACKLIST - level 0</code></li>
+                    <li><code>DEFAULT - level 1</code></li>
+                    <li><code>ELEVATED - level 2</code></li>
+                    <li><code>MODERATOR - level 3</code></li>
+                    <li><code>ADMINISTRATOR - level 4</code></li>
+                    <li><code>SUPER USER- level 5</code></li>
+                </ul>
+            </li>
+            <li>Save the file and start the bot.</li>
+        </ol>
+        <h4> Normal/Command Method: </h4>
+        <ol>
+            <li>As an administrator or super user, if the user doesn&#39;t already exist in the database, <br>
+                use the command: <b>[<code>!addprivileges &#39;username&#39; &#39;level_number&#39;</code>]</b> to add the user to the
+                database with the given privilege level.
+            <li>As an administrator or super user, <br>
+                use the command: <b>[<code>!setprivileges &#39;username&#39; &#39;level_number&#39;</code>]</b> to set an individual user&#39;s
+                privilege level. By default, any new users detected by the bot are set to default privilege levels.
+        </ol>
+        <b>NOTE: Only super users can modify the user privileges of an administrator through the command method.
+            Administrators cannot modify another administrator&#39;s user privileges.<br>
+            Users may also not modify their own user privileges (so an admin can&#39;t change his user privilege level to
+            owner).</b>
+        <hr>
+        <h3>Checking User Privileges At Runtime</h3>
+        There is a command available for checking the user privileges of all the registered users in the database at
+        runtime.<br>
+        Use <b>[<code>!showprivileges</code>]</b> as an administrator or super user to view the entire list of users and their privilege
+        levels.<br>
+        This is particularly useful when you need to quickly check a user&#39;s privilege level after modifying it recently.
+        <hr>
+        </p>
+        <h3>Adding Users To The Blacklist</h3>
+        <p>
+            There are commands that are used in plugins which you may not want all users to be able to access.<br>For this
+            purpose, administrators and owners are able to use the <b>[<code>!blacklistuser &#39;username&#39; &#39;reason&#39;</code>]</b>
+            command to blacklist users from using certain commands.<br>
+            To add a user to the blacklist, follow these steps:
+        <h4>Manual Method:</h4>
+        <ol>
+            <li>Access the <code>jjmumblebot.db</code> database file located under the cfg directory using a sqlite browsing
+                software.
+            </li>
+            <li>Add the names of mumble users that you want if they don&#39;t already exist to the <i>users</i> table. Set
+                their permission levels to <code>0</code> in the <code>permissions</code> table.
+            <li>Save the file and start the bot.</li>
+        </ol>
+        <h4>Normal/Command Method:</h4>
+        <ol>
+            <li>Use the <b>[<code>!blacklistuser &#39;username&#39; &#39;reason&#39;</code>]</b> command to blacklist specific users from
+                using non-blacklist only commands.<br>You can optionally provide a reason to the blacklist so that the user can
+                know why he/she was blacklisted.
+            </li>
+            For example: <code>!blacklistuser baduser123</code><br>
+            This command is equivalent to <b>[<code>!setprivileges &#39;username&#39; 0</code>]</b><br>
+            For example, blacklisting with a reason: <code>!blacklistuser baduser123 because you are bad!</code><br>
+        </ol>
+        <h3> Removing Users From The Blacklist [A.K.A Whitelisting]</h3>
+        <p>
+        If for whatever reason you want to remove a user from the blacklist, either modify the <code>jjmumblebot.db</code>
+        database file manually and change their level to anything but 0. Or use the command <b>[<code>!whitelistuser &#39;username&#39;</code>]</b>.<br>
+        For example: <code>!whitelistuser notsobaduser123</code><br>
+        This command is equivalent to <b>[<code>!setprivileges &#39;username&#39; 1</code>]</b>
+        </p>
+    </div>
+    <footer></footer>
+</body>
+</html>
