@@ -2,9 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>JJMumbleBot - Audio Commands Plugin</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
 </head>
 <body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Audio Commands Plugin</h2>
+        <p>This is a built-in core plugin that handles bot audio functionality commands.</p>
 
+        <h3>Usage:</h3>
+        <code>!audiostatus</code>: Shows the audio interface status.<br>
+        <code>!queue</code>: Displays the current audio tracks in the audio queue.<br>
+        <code>!playing</code>: Displays the current audio track and the duration of the track.<br>
+        <code>!pause</code>: Pauses the currently playing audio track.<br>
+        <code>!resume</code>: Resumes the currently paused audio track.<br>
+        <code>!stop</code>: Stops the currently playing audio track and clears the queue.<br>
+        <code>!loop</code>: Toggles looping for the current audio track.<br>
+        <code>!remove 'track_number'</code>: Remove a track from the audio queue by the track number.<br>
+        <code>!clear</code>: Clears all the audio tracks in the audio queue.<br>
+        <code>!replay</code>: Replays the currently playing audio track.<br>
+        <code>!shuffle</code>: Randomly shuffles the order of audio tracks in the audio queue.<br>
+        <code>!skip 'track_number'</code>: Skips ahead in the audio queue to the given track number. It skips to the next track in the queue if a track number is not provided.<br>
+        <code>!seek 'seconds'</code>: Skips ahead in the current audio track by the given number of seconds.<br>
+        <code>!volume/!v '0..1'</code>: Sets the bot audio volume.<br>
+        <code>!duckaudio</code>: Toggles the bot audio ducking feature.<br>
+        <code>!duckvolume '0..1'</code>: Sets the bot ducking audio volume.<br>
+        <code>!duckthreshold '0..1'</code>: Sets the bot ducking audio threshold.<br>
+        <code>!duckdelay '0..1'</code>: Sets the bot ducking audio delay before changing the volume back to the regular level.
+    </div>
+    <footer></footer>
 </body>
 </html>

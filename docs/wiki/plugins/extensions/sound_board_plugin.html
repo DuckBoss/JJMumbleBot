@@ -3,8 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - Sound Board Plugin</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
 </head>
 <body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Sound Board Plugin</h2>
+        <p>
+            This is a built-in extension plugin that follows the plugin template system. <br>
+            This is a fun little plugin that plays 'wav' files in the channel. It's primary purpose is to play short sound clips, but it can also play entire songs.
+        </p>
 
+        <h3>Usage:</h3>
+        <code>!sb 'file_name'</code>: Plays a locally saved audio file.<br>
+        <code>!sbnow/!sbn 'file_name'</code>: Plays a locally save audio file and overrides queueing.<br>
+        <code>!sbquiet/!sbq 'file_name'</code>: Plays a locally saved audio file without displaying what is being played.<br>
+        <code>!sbquietnow/!sbqn 'file_name'</code>: Plays a locally saved audio file without displaying what is being played and overrides queueing.<br>
+        <code>!sbrandom/!sbr</code>: Plays a random sound clip from the list of available clips.<br>
+        <code>!sbrandomnow/!sbrn</code>: Plays a random sound clip from the list of available clips and overrides queueing.<br>
+        <code>!sbsearch 'file_name'</code>: Finds locally saved audio clips by best match and displays the results in a list.<br>
+        <code>!sblist/!sbl</code>: Displays the full exhaustive list of all the available sound board clips in a private message.<br>
+        <code>!sbdownload 'youtube_url' 'file_name'</code>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>
+        <code>!sbdelete 'file_name.extension'</code>: Deletes an audio clip from the sound board storage.
+    </div>
+    <footer></footer>
 </body>
 </html>
