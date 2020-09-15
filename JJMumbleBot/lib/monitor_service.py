@@ -7,8 +7,8 @@ from copy import deepcopy
 
 
 def get_audio_info():
-    global_settings.vlc_interface.calculate_progress()
-    copied_status = deepcopy(global_settings.vlc_interface.status)
+    global_settings.aud_interface.calculate_progress()
+    copied_status = deepcopy(global_settings.aud_interface.status)
     modified_audio_data = {
         "audio_data": copied_status
     }

@@ -6,6 +6,9 @@ from JJMumbleBot.lib import privileges
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
+from JJMumbleBot.lib.utils.database_utils import GetDB
+from fuzzywuzzy import process
 
 
 class Plugin(PluginBase):
@@ -96,7 +99,7 @@ class Plugin(PluginBase):
                                  box_align='left', ignore_whisper=True)
 
         gs.mumble_inst.channels[data_actor['channel_id']].move_in()
-        dprint( f"Joined user: {data_actor['name']}", origin=L_COMMAND)
+        dprint(f"Joined user: {data_actor['name']}", origin=L_COMMAND)
         log(INFO, f"Joined user: {data_actor['name']}", origin=L_COMMAND)
 
     def cmd_joinuser(self, data):
@@ -118,6 +121,41 @@ class Plugin(PluginBase):
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
 
+    def cmd_cmdsearch(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            return
+        search_query = all_data[1].strip()
+
+        all_cmds = GetDB.get_all_commands(db_cursor=get_memory_db().cursor())
+        if not all_cmds:
+            gs.gui_service.quick_gui(
+                "There was an error retrieving the commands from the database.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
+        cmd_list = [f"{cmd_item[0]}" for cmd_item in all_cmds]
+        file_ratios = process.extract(search_query, cmd_list)
+        match_list = []
+        for file_item in file_ratios:
+            if file_item[1] > 80 and len(match_list) < 10:
+                match_list.append(file_item[0])
+
+        match_str = f"Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
+        if len(match_list) > 0:
+            for i, clip in enumerate(match_list):
+                match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i + 1}]</font> - {clip}"
+        else:
+            match_str += "None"
+        gs.gui_service.quick_gui(
+            match_str,
+            text_type='header',
+            text_align='left',
+            box_align='left'
+        )
+
     def cmd_showprivileges(self, data):
         gs.gui_service.quick_gui(f"{privileges.get_all_privileges()}", text_type='header', box_align='left',
                                  text_align='left', user=gs.mumble_inst.users[data.actor]['name'],
@@ -137,10 +175,11 @@ class Plugin(PluginBase):
                 log(INFO, f"Modified user privileges for: {username}", origin=L_USER_PRIV)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}setprivileges 'username' 'level'")
-            gs.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}setprivileges 'username' 'level'",
-                                     text_type='header',
-                                     box_align='left', user=data_actor['name'],
-                                     ignore_whisper=True)
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}setprivileges 'username' 'level'",
+                text_type='header',
+                box_align='left', user=data_actor['name'],
+                ignore_whisper=True)
 
     def cmd_addprivileges(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
@@ -157,11 +196,12 @@ class Plugin(PluginBase):
                 log(INFO, f"Added a new user: {username} to the user privileges.", origin=L_USER_PRIV)
         except IndexError:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}addprivileges 'username' 'level'")
-            gs.gui_service.quick_gui(f"Incorrect format! Format: {rutils.get_command_token()}addprivileges 'username' 'level'",
-                                     text_type='header',
-                                     box_align='left',
-                                     user=data_actor['name'],
-                                     ignore_whisper=True)
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}addprivileges 'username' 'level'",
+                text_type='header',
+                box_align='left',
+                user=data_actor['name'],
+                ignore_whisper=True)
 
     def cmd_showblacklist(self, data):
         gs.gui_service.quick_gui(privileges.get_blacklist(), text_type='header',

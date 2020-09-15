@@ -24,9 +24,9 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_audiostatus(self, data):
-        gs.vlc_interface.calculate_progress()
+        gs.aud_interface.calculate_progress()
         gs.gui_service.quick_gui(
-            str(gs.vlc_interface.status),
+            str(gs.aud_interface.status),
             text_type='header',
             box_align='left',
             text_align='left',
@@ -35,24 +35,24 @@ class Plugin(PluginBase):
         )
 
     def cmd_stop(self, data):
-        if gs.vlc_interface.check_dni_active():
-            gs.vlc_interface.stop()
+        if gs.aud_interface.check_dni_active():
+            gs.aud_interface.stop()
             gs.gui_service.quick_gui("Stopped bot audio.", text_type='header',
                                      box_align='left')
 
     def cmd_clear(self, data):
-        if gs.vlc_interface.check_dni_active():
-            gs.vlc_interface.clear_queue()
+        if gs.aud_interface.check_dni_active():
+            gs.aud_interface.clear_queue()
             gs.gui_service.quick_gui("Cleared bot audio queue.", text_type='header',
                                      box_align='left')
 
     def cmd_playing(self, data):
-        if gs.vlc_interface.check_dni_active():
-            gs.vlc_interface.calculate_progress()
-            gs.vlc_interface.display_playing_gui()
+        if gs.aud_interface.check_dni_active():
+            gs.aud_interface.calculate_progress()
+            gs.aud_interface.display_playing_gui()
 
     def cmd_queue(self, data):
-        if gs.vlc_interface.check_dni_active():
+        if gs.aud_interface.check_dni_active():
             queue_list = ac_utility.get_queue_list()
             if len(queue_list) == 0:
                 gs.gui_service.quick_gui(
@@ -70,7 +70,7 @@ class Plugin(PluginBase):
                 box_align='left')
 
     def cmd_skip(self, data):
-        if gs.vlc_interface.check_dni_active():
+        if gs.aud_interface.check_dni_active():
             all_data = data.message.strip().split(' ', 1)
             try:
                 skip_to = int(all_data[1])
@@ -78,34 +78,34 @@ class Plugin(PluginBase):
                 return
             except IndexError:
                 skip_to = 0
-            gs.vlc_interface.skip(skip_to)
+            gs.aud_interface.skip(skip_to)
 
     def cmd_pause(self, data):
-        if gs.vlc_interface.check_dni_active():
-            gs.vlc_interface.pause()
+        if gs.aud_interface.check_dni_active():
+            gs.aud_interface.pause()
 
     def cmd_resume(self, data):
-        if gs.vlc_interface.check_dni_active():
-            if gs.vlc_interface.status.is_paused():
-                gs.vlc_interface.resume()
+        if gs.aud_interface.check_dni_active():
+            if gs.aud_interface.status.is_paused():
+                gs.aud_interface.resume()
 
     def cmd_shuffle(self, data):
-        if gs.vlc_interface.check_dni_active():
-            gs.vlc_interface.shuffle()
+        if gs.aud_interface.check_dni_active():
+            gs.aud_interface.shuffle()
 
     def cmd_replay(self, data):
-        if gs.vlc_interface.check_dni_active():
-            gs.vlc_interface.replay()
+        if gs.aud_interface.check_dni_active():
+            gs.aud_interface.replay()
 
     def cmd_loop(self, data):
-        gs.vlc_interface.loop_track()
+        gs.aud_interface.loop_track()
         gs.gui_service.quick_gui(
-            f"{'Enabled' if gs.vlc_interface.status.is_looping() else 'Disabled'} track looping.",
+            f"{'Enabled' if gs.aud_interface.status.is_looping() else 'Disabled'} track looping.",
             text_type='header',
             box_align='left')
 
     def cmd_remove(self, data):
-        if gs.vlc_interface.check_dni_active():
+        if gs.aud_interface.check_dni_active():
             all_data = data.message.strip().split(' ', 1)
             try:
                 to_remove = int(all_data[1])
@@ -113,13 +113,13 @@ class Plugin(PluginBase):
                 return
             except IndexError:
                 return
-            gs.vlc_interface.remove_track(track_index=to_remove)
+            gs.aud_interface.remove_track(track_index=to_remove)
 
     def cmd_seek(self, data):
         all_data = data.message.strip().split()
         if len(all_data) != 2:
             return
-        if gs.vlc_interface.check_dni_active():
+        if gs.aud_interface.check_dni_active():
             given_time = all_data[1]
             if ":" in given_time:
                 time_split = given_time.split(':')
@@ -127,20 +127,20 @@ class Plugin(PluginBase):
                     if len(time_split) == 1:
                         # No ':' separator means that it is in seconds, no minutes/hours
                         given_time = int(all_data[1])
-                        gs.vlc_interface.seek(given_time)
+                        gs.aud_interface.seek(given_time)
                     elif len(time_split) == 2:
                         # One ':' separators means that is in mins:secs, no hours
                         mins = int(time_split[0])
                         secs = int(time_split[1])
                         given_time = (mins * 60) + secs
-                        gs.vlc_interface.seek(given_time)
+                        gs.aud_interface.seek(given_time)
                     elif len(time_split) == 3:
                         # Two ':' separators means that it is in hrs:mins:secs
                         hours = int(time_split[0])
                         mins = int(time_split[1])
                         secs = int(time_split[2])
                         given_time = (hours * 3600) + (mins * 60) + secs
-                        gs.vlc_interface.seek(given_time)
+                        gs.aud_interface.seek(given_time)
                 except ValueError:
                     gs.gui_service.quick_gui(
                         f"Invalid Formatting! "
@@ -153,7 +153,7 @@ class Plugin(PluginBase):
                     return
             else:
                 try:
-                    gs.vlc_interface.seek(int(all_data[1]))
+                    gs.aud_interface.seek(int(all_data[1]))
                 except ValueError:
                     gs.gui_service.quick_gui(
                         f"Invalid Formatting! "
@@ -169,7 +169,7 @@ class Plugin(PluginBase):
             vol = float(data.message.strip().split(' ', 1)[1])
         except IndexError:
             gs.gui_service.quick_gui(
-                f"Current audio volume: {gs.vlc_interface.status.get_volume()}",
+                f"Current audio volume: {gs.aud_interface.status.get_volume()}",
                 text_type='header',
                 box_align='left')
             return
@@ -179,10 +179,10 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left')
             return
-        if gs.vlc_interface.audio_utilities.is_ducking():
-            gs.vlc_interface.audio_utilities.set_last_volume(vol)
+        if gs.aud_interface.audio_utilities.is_ducking():
+            gs.aud_interface.audio_utilities.set_last_volume(vol)
         else:
-            gs.vlc_interface.audio_utilities.set_volume(vol, auto=False)
+            gs.aud_interface.audio_utilities.set_volume(vol, auto=False)
         gs.gui_service.quick_gui(
             f"Set volume to {vol}",
             text_type='header',
@@ -190,19 +190,19 @@ class Plugin(PluginBase):
         log(INFO, f"The volume was changed to {vol}.", origin=L_COMMAND)
 
     def cmd_duckaudio(self, data):
-        gs.vlc_interface.audio_utilities.toggle_ducking()
+        gs.aud_interface.audio_utilities.toggle_ducking()
         gs.gui_service.quick_gui(
-            f"{'Enabled' if gs.vlc_interface.audio_utilities.can_duck() else 'Disabled'} audio volume ducking.",
+            f"{'Enabled' if gs.aud_interface.audio_utilities.can_duck() else 'Disabled'} audio volume ducking.",
             text_type='header',
             box_align='left')
-        log(INFO, f"Audio ducking was {'enabled' if gs.vlc_interface.audio_utilities.can_duck() else 'disabled'}.", origin=L_COMMAND)
+        log(INFO, f"Audio ducking was {'enabled' if gs.aud_interface.audio_utilities.can_duck() else 'disabled'}.", origin=L_COMMAND)
 
     def cmd_duckvolume(self, data):
         try:
             vol = float(data.message.strip().split(' ', 1)[1])
         except IndexError:
             gs.gui_service.quick_gui(
-                f"Current bot ducking volume: {gs.vlc_interface.audio_utilities.get_ducking_volume()}",
+                f"Current bot ducking volume: {gs.aud_interface.audio_utilities.get_ducking_volume()}",
                 text_type='header',
                 box_align='left')
             return
@@ -213,7 +213,7 @@ class Plugin(PluginBase):
                 box_align='left')
             return
 
-        gs.vlc_interface.audio_utilities.set_duck_volume(vol)
+        gs.aud_interface.audio_utilities.set_duck_volume(vol)
         gs.gui_service.quick_gui(
             f"Set volume to {vol}",
             text_type='header',
@@ -225,7 +225,7 @@ class Plugin(PluginBase):
             threshold = float(data.message.strip().split(' ', 1)[1])
         except IndexError:
             gs.gui_service.quick_gui(
-                f"Current bot ducking threshold: {gs.vlc_interface.audio_utilities.get_ducking_threshold()}",
+                f"Current bot ducking threshold: {gs.aud_interface.audio_utilities.get_ducking_threshold()}",
                 text_type='header',
                 box_align='left')
             return
@@ -236,7 +236,7 @@ class Plugin(PluginBase):
                 box_align='left')
             return
 
-        gs.vlc_interface.audio_utilities.set_duck_threshold(threshold)
+        gs.aud_interface.audio_utilities.set_duck_threshold(threshold)
         gs.gui_service.quick_gui(
             f"Set ducking threshold to {threshold}",
             text_type='header',
@@ -248,7 +248,7 @@ class Plugin(PluginBase):
             delay = float(data.message.strip().split(' ', 1)[1])
         except IndexError:
             gs.gui_service.quick_gui(
-                f"Current bot ducking delay: {gs.vlc_interface.audio_utilities.get_ducking_delay()}",
+                f"Current bot ducking delay: {gs.aud_interface.audio_utilities.get_ducking_delay()}",
                 text_type='header',
                 box_align='left')
             return
@@ -259,7 +259,7 @@ class Plugin(PluginBase):
                 box_align='left')
             return
 
-        gs.vlc_interface.audio_utilities.set_ducking_delay(delay)
+        gs.aud_interface.audio_utilities.set_ducking_delay(delay)
         gs.gui_service.quick_gui(
             f"Set ducking delay to {delay}",
             text_type='header',

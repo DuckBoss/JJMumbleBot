@@ -65,39 +65,39 @@ class Test_Cfg:
 
     # Media Settings Config Tests
     def test_vlc_location(self):
-        vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH]
-        assert vlc_location == "vlc"
+        vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH]
+        assert vlc_location == "ffmpeg"
 
     def test_stereo_audio(self):
-        stereo_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_STEREO)
+        stereo_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO)
         assert stereo_audio is True
 
     def test_vlc_quiet(self):
-        vlc_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_QUIET)
+        vlc_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_FFMPEG_QUIET)
         assert vlc_quiet is True
 
     def test_vlc_default_volume(self):
-        vlc_default_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DEFAULT_VOLUME]
+        vlc_default_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]
         assert vlc_default_volume == "0.3"
 
     def test_vlc_duck_audio(self):
-        vlc_duck_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_VLC_DUCK)
+        vlc_duck_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO)
         assert vlc_duck_audio is False
 
     def test_vlc_duck_volume(self):
-        vlc_duck_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DUCK_VOLUME]
+        vlc_duck_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME]
         assert vlc_duck_volume == "0.05"
 
     def test_vlc_duck_threshold(self):
-        vlc_duck_threshold = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DUCK_THRESHOLD]
+        vlc_duck_threshold = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]
         assert vlc_duck_threshold == "2500.0"
 
     def test_vlc_duck_delay(self):
-        vlc_duck_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_DUCK_DELAY]
+        vlc_duck_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY]
         assert vlc_duck_delay == "1.0"
 
     def test_vlc_max_queue_length(self):
-        vlc_max_queue_length = int(self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_QUEUE_LEN])
+        vlc_max_queue_length = int(self.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
         assert vlc_max_queue_length == 50
 
     def test_youtube_dl_proxy(self):

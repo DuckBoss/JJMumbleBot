@@ -59,7 +59,8 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a>
 - Install project dependencies
     - `pip install -r requirements.txt`
-    - <b>Note: You must have libopus installed and installation varies by operating system.</b>
+    - <b>Note: You must have libopus and ffmpeg installed, and installation varies by operating system.</b>
+    - <b>Note: v4.2+ requires FFmpeg. v4.1 and under uses vlc.</b>
 - Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)
 - Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki/">Wiki Pages</a> for setup procedures and more information.
 - JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.
