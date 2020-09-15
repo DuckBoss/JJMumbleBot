@@ -8,7 +8,7 @@
 
 A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for custom plugins.
 
-## Features  🚀 
+## Features  🚀
 - <b>Built-in Plugins</b> - Fast, responsive, plugin-based system for easy expandability.
   - <b>Media Plugin</b> - Streams Youtube/SoundCloud audio in the channel.
     - Youtube Playlist Support
@@ -59,21 +59,22 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a>
 - Install project dependencies
     - `pip install -r requirements.txt`
-    - <b>Note: You must have libopus installed and installation varies by operating system.</b>
+    - <b><a href="https://ffmpeg.org/">FFmpeg</a> must be installed on your system</b>
+    - <b>Note: You must have libopus and ffmpeg installed, and installation varies by operating system.</b>
 - Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)
 - Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
 - JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.
 
-## Documentation 📝 
+## Documentation 📝
 <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">JJMumbleBot Documentation WIKI</a></b> <br>
 <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Frequently-Asked-Questions">F.A.Q - Solve common issues easily</a></b> <br>
 <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Requirements">Requirements and Dependencies</a></b> <br>
 <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">Quick Start Guide</a></b> <br>
 <b><a href="https://duckboss.github.io/JJMumbleBot/pages/qsu.html">Quick Setup Utility - Web Interface For Config.ini File Creation</a></b> <br>
-<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">Legacy Versions</a></b> 
+<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">Legacy Versions</a></b>
 
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
 
-### Got any questions or concerns? Please post an issue report 👋 
+### Got any questions or concerns? Please post an issue report 👋
 #### Or email me @ <a href="mailto:duckboss@kakao.com">duckboss@kakao.com</a>
