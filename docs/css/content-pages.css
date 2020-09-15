@@ -3,7 +3,7 @@
     margin-left: 250px;
 }
 #table_of_contents {
-    height: 100%;
+    height: 90%;
     width: 250px;
     position: fixed;
     background-color: black;
@@ -22,4 +22,5 @@ footer {
     background-color: black;
     position: fixed;
     bottom: 0;
+    height: 10%;
 }
