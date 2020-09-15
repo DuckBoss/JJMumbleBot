@@ -61,16 +61,15 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - `pip install -r requirements.txt`
     - <b>Note: You must have libopus installed and installation varies by operating system.</b>
 - Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)
-- Please check the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Wiki Pages</a> for setup procedures and more information.
+- Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki/">Wiki Pages</a> for setup procedures and more information.
 - JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.
 
 ## Documentation 📝 
-<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">JJMumbleBot Documentation WIKI</a></b> <br>
-<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Frequently-Asked-Questions">F.A.Q - Solve common issues easily</a></b> <br>
-<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Requirements">Requirements and Dependencies</a></b> <br>
-<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Quick-Start">Quick Start Guide</a></b> <br>
-<b><a href="https://duckboss.github.io/JJMumbleBot/pages/qsu.html">Quick Setup Utility - Web Interface For Config.ini File Creation</a></b> <br>
-<b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/LegacyVersions">Legacy Versions</a></b> 
+<b><a href="https://duckboss.github.io/JJMumbleBot/wiki/">JJMumbleBot Documentation Wiki</a></b> <br>
+<b><a href="https://duckboss.github.io/JJMumbleBot/wiki/faq.html">F.A.Q - Solve common issues easily</a></b> <br>
+<b><a href="https://duckboss.github.io/JJMumbleBot/wiki/requirements.html">Requirements and Dependencies</a></b> <br>
+<b><a href="https://duckboss.github.io/JJMumbleBot/wiki/quick_start.html">Quick Start Guide</a></b> <br>
+<b><a href="https://duckboss.github.io/JJMumbleBot/wiki/qsu/qsu.html">Quick Setup Utility - Web Interface For Config.ini File Creation</a></b> <br>
 
 ## Extra Plugins:
 <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">https://github.com/DuckBoss/JJMumbleBot-PluginLibrary</a>
