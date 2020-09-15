@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - What's New</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <style>
+        body {
+            padding: 25px;
+        }
+    </style>
+</head>
+<body>
+    <h2 id="page-title">V4.2.0 Update</h2>
+    <hr>
+    <div class="container">
+        <h3 id="ffmpeg-library">Experimental FFMPEG Library Testing</h3>
+        <ul>
+            <li>Experimenting with using FFMPEG directly instead of VLC.</li>
+            <li>This change should theoretically not be noticeable to any users.</li>
+        </ul>
+    </div>
+    <div class="container">
+    <h3 id="bot-commands-plugin">Bot Commands Plugin</h3>
+    <ul>
+        <li>Added new command: !cmdsearch
+            <ul>
+                <li>Search for a command from the full list of commands available using fuzzy-searching to find the closest
+                    results.
+                    <pre><code>!cmdsearch &#39;command_name&#39; : Search for a command from the full list of commands available.</code></pre>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </div>
+    <div class="container">
+    <h3 id="sound-board-plugin">Sound Board Plugin</h3>
+    <ul>
+        <li>!sbdownload command now supports an optional parameter providing a timestamp range to trim the downloaded clip.
+            <pre><code>!sbdownload &#39;youtube_link&#39; &#39;file_name&#39; &#39;H:M:S-H:M:S&#39;</code></pre>
+            <strong>Example:</strong>
+            <pre><code>!sbdownload https://youtu.be/bqDrftAxYpk test_file 0:1:10-0:2:15</code></pre></li>
+        <li>Added new alias: sbd - !sbdownload
+            <pre><code>!sbd &#39;youtube_link&#39; &#39;file_name&#39;</code></pre></li>
+        <li>sound_board files played with !sb/!sbnow/!sbquiet/!sbquietnow can now loop tracks when loop mode is enabled.
+            <ul>
+                <li>sound_board files played with !sbrandom/!sbrandomnow don&#39;t loop.</li>
+            </ul>
+        </li>
+    </ul>
+    </div>
+    <div class="container">
+    <h3 id="images-plugin">Images Plugin</h3>
+    <ul>
+        <li>Added new command: !imgsearch
+            Search for a command from the full list of images available using fuzzy-searching to find the closest results.
+            <pre><code>!imgsearch &#39;image_name&#39;: Searches through locally stored images and returns the closest results.</code></pre>
+        </li>
+        <li>Fixed !post command.</li>
+        <li>The !post command now displays an error message when a common http error occurs.</li>
+    </ul>
+    </div>
+    <div class="container">
+    <h3 id="server-tools-plugin">Server Tools Plugin</h3>
+    <p>The server_tools plugin is an administrative plugin for high-permission users to set callback methods to mumble
+        server events.
+        For now, the plugin contains callback events to play an audio clip when users join the server. This is an optional
+        feature, configurable in the plugins&#39; metadata.ini file.
+        <strong>Note: Any audio clips from the sound_board permanent directory can be used.</strong>
+        <strong>Note: The user connection audio feature is disabled by default and can be turned on in the metadata.ini
+            file</strong></p>
+    <ul>
+        <li><strong>Supports generic connection sound clips for all users, and per-user connection sound clips</strong>
+            <ul>
+                <li>Added new command: !setdefaultconnectionsound
+                    <pre><code>!setdefaultconnectionsound &#39;audio_clip_name&#39;: Sets the generic audio clip that is played when a user joins the server.</code></pre></li>
+                <li>Added new command: !clearuserconnectionsound
+                    <pre><code>!clearuserconnectionsound &#39;username&#39;: Clears the audio clip associated with the given
+                        username.</code></pre></li>
+                <li>Added new command: !getuserconnectionsound
+                    <pre><code>!getuserconnectionsound &#39;username&#39;: Displays the audio clip set to play whenever the given
+                        username connects to the server.</code></pre></li>
+                <li>Added new command: !setuserconnectionsound
+                    <pre><code>!setuserconnectionsound &#39;username&#39; &#39;audio_clip_name&#39;: Sets the audio clip that
+                        will play whenever the given user connects to the server.</code></pre></li>
+            </ul>
+        </li>
+    </ul>
+    </div>
+    <div class="container">
+    <h3 id="other-updates">Other Updates</h3>
+    <ul>
+        <li>Updated versions to v4.2.0</li>
+        <li>Updated youtube_dl dependency version to 2020.9.14</li>
+    </ul>
+    </div>
+</body>
+</html>

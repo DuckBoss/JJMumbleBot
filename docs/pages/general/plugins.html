@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Plugins</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <style>
+        body {
+            padding: 25px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Plugin System</h2>
+    <hr>
+    <p>
+        <b>Plugins are a way to expand the functionality of JJMumbleBot.</b> <br>
+        JJMumbleBot comes built-in with the <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/BotCommandsPlugin"><b>BotCommandsPlugin</b></a>,
+        <a href="https://github.com/DuckBoss/JJMumbleBot/wiki/ImagesPlugin"><b>ImagesPlugin</b></a>, <a
+            href="https://github.com/DuckBoss/JJMumbleBot/wiki/MediaPlugin"><b>MediaPlugin</b></a> and more.
+        <br>
+
+    </p>
+    <h2>Creating Custom Plugins</h2>
+    <p>
+        <b>Plugins are easy to create with the provided 'plugin_template.py' file.</b> <br>
+        Every plugin must be named 'Plugin' and derive from the PluginBase class and implement its methods.<br> Using the
+        <i>plugin_template.py</i> file is highly recommended to quickly create functional plugins for JJMumbleBot.<br>
+        <b>All custom plugins must be placed in the plugins/extensions/ directory.</b><br>
+
+        <b> Basic Steps: </b><br>
+        <ol>
+            <li>Create a python file and create a class with the name 'Plugin' that derives from the PluginBase class.<br><i>Look
+                at the <i>plugin_template.py</i> file for more information.</i></li>
+            <li>Implement all the methods from the <b>PluginBase abstract class</b>.</li>
+            <li>Use the <b>__init__ constructor</b> to initialize the plugin.</li>
+            <li>Create a method per command in the format: <b>cmd_mycommand</b> to process commands from users</li>
+            <ul>
+                <li>Be sure to prefix every command method with <b>cmd_</b> before your command name</li>
+                <li>You're provided with the user's text in every plugin to use.</li>
+                <li>If you need to reference the mumble instance, use the instance from the global_access script.</li>
+            </ul>
+            <li>Use the <b>quit method</b> to stop any processes created by the plugin and clean-up other code before the bot
+                quits
+            </li>
+        </ol>
+
+        <b>Take a look at the built-in plugins to get a good idea of how the plugin-system works.</b> <br>
+    </p>
+
+    <h2> Advanced features: </h2>
+
+    <h3> Plugin callback system: Allows plugin callbacks for mumble server events. </h3>
+    Is it a system that all plugins can use to directly interface with mumble server events such as receiving audio,
+    messages, user connection/disconnection, etc.<br>
+    For example, if you want a plugin to execute some code in response to a user connecting to the server, that is now
+    possible!
+    <br>
+
+    <b>Simple Setup</b>
+    <ul>
+        <li>Create a method:<br>
+            <code>def my_plugin_method(self): ... </code>
+        </li>
+        <li>Import the global_settings script:<br>
+            <code>from JJMumbleBot.settings import global_settings</code>
+        </li>
+        <li>Register the plugin method to the core callbacks of the global_settings script:<br>
+            <code>global_settings.core_callbacks.append_to_callback(callback_type, my_plugin_method)</code>
+        </li>
+    </ul>
+
+    <h3> Extra plugin repository: </h3>
+    <a href="https://github.com/DuckBoss/JJMumbleBot-PluginLibrary">JJMumbleBot-PluginLibrary</a>
+</body>
+</html>

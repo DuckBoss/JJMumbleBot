@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - F.A.Q</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <style>
+        body {
+            padding: 25px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Frequently Asked Questions - F.A.Q.</h2>
+    <hr>
+    <h3>How do I run/start the bot?</h3>
+    <ul>
+        <li><a href="https://duckboss.github.io/JJMumbleBot/pages/quick_start.html">Quick Start Guide</a></li>
+    </ul>
+    <h3>How can I contribute to the project?</h3>
+    <ul>
+        <li>Feel free to post issue reports to the Github project if you encounter any issues or have suggestions.</li>
+        <li>Fork the project and make changes as necessary and send a pull request.</li>
+        <li>If you want to support me monetarily, I have a sponsor link available at the top of the repository.</li>
+    </ul>
+    <h3>How do I start the bot once I&#39;ve configured it?</h3>
+    <ul>
+        <li>Use the <code>-ip</code> launch parameter to specify the server ip.</li>
+        <li>Use the <code>-port</code> launch parameter to specify the server port.</li>
+        <li>Optionally, use the <code>-password</code> launch parameter to specify the server password (if it has one).</li>
+        <li><a href="https://duckboss.github.io/JJMumbleBot/pages/general/command_line_arguments.html">Full command line arguments
+            list</a><br>
+            <code>python JJMumbleBot/ -ip &lt;serverip&gt; -port &lt;serverport&gt;</code>
+        </li>
+    </ul>
+    <h3>There is a runtime error, what do I do?</h3>
+    <ul>
+        <li>Try downloading the latest release (even if you have the same version) because I update the bot frequently and
+            fix bugs regularly.
+        </li>
+        <li>Make sure the dependencies are up to date according to the requirements.txt file in the master branch.</li>
+        <li>Make sure you&#39;re running the latest python 3 version.</li>
+        <li>If the previous suggestions doesn&#39;t solve your problem, please post an issue here: <a
+                href="https://github.com/DuckBoss/JJMumbleBot/issues">Issue Reports</a></li>
+    </ul>
+    <h3>How do I check what commands are available?</h3>
+    <ul>
+        <li>Message the <code>!help</code> command to the bot for it to display a list of available plugins and commands for
+            individual plugins.
+        </li>
+        <li>Alternatively, Check the plugins in the wiki for an extensive list of commands.</li>
+    </ul>
+    <h3>The commands aren&#39;t working on the web interface, what&#39;s wrong?</h3>
+    <ul>
+        <li>The web interface (if enabled in your <code>config.ini</code> file) must have the bot itself as a
+            high-privileged user in the user privileges.
+        </li>
+        <li>To add the bot to the user privileges, use the !addprivileges command:<br>
+            <code>!addprivileges MyBotName 5</code> (This sets the bot at an equal privilege level as the owner)
+        </li>
+        <li>If the bot is already in the user privileges, use the !setprivileges command:<br>
+            <code>!setprivileges MyBotName5</code> (This sets the bot at an equal privilege level as the owner)
+        </li>
+    </ul>
+    <h3>I don&#39;t need all these plugins, can I pick and choose?</h3>
+    <ul>
+        <li>YES! Apart from the plugins in the core plugins folder, you can do whatever you like. All extension plugins are
+            completely optional and can be removed if needed.
+        </li>
+    </ul>
+    <h3>Can I disable plugins without removing them?</h3>
+    <ul>
+        <li>You can disable plugins by listing the plugin name within your config.ini file in the &quot;DisabledPlugins&quot;
+            field. This will tell the bot not to initialize them so they won&#39;t be used.
+        </li>
+    </ul>
+    <h3>My media directories are created but the files can&#39;t be accessed?</h3>
+    <ul>
+        <li>Please check that the media directories use only absolute paths in the <code>config.ini</code> file.<br>
+            (This should fix issues where plugins can download files but not play/access them)
+        </li>
+    </ul>
+    <h3>The youtube plugin keeps giving me errors about extracting information</h3>
+    <ul>
+        <li>Update the youtube_dl dependency to the newest available release.</li>
+        <li>Youtube frequently changes their meta information which means that youtube_dl has to update to account for these
+            changes. They usually update within a day or two.
+        </li>
+    </ul>
+    <h3>The youtube plugin stopped was working, but it has stopped working for some reason.</h3>
+    <ul>
+        <li>Youtube is constantly changing their infrastructures for video/metadata extraction and sometimes the thumbnails
+            stop working, or the video stops working. This can be resolved in 2 ways:
+            <ul>
+                <li>Update the youtube-dl python package (sometimes it may take 1-3 days for the package to be updated to
+                    fix youtube issues)
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h3>My bot can&#39;t make channels, what&#39;s wrong?</h3>
+    <ul>
+        <li>If the !make command isn&#39;t working, make sure that the bot has higher user privileges in your murmur server
+            by registering the bot.
+        </li>
+        <li>The bot can self-register if the option is enabled in the config.ini file.</li>
+    </ul>
+    <h3>My bot has a SSL: TLS Protocol error!</h3>
+    <ul>
+        <li>From past issues, it seems that this is caused by outdated .pem certificates.</li>
+        <li>Try to create and use a new .pem certificate generated with OpenSSL or by the mumble client certificate
+            wizard.
+        </li>
+    </ul>
+    <h3>The server doesn&#39;t require a password/certificate, what do I do?</h3>
+    <ul>
+        <li>Leave the server password/certificate field blank in the config.ini.</li>
+    </ul>
+    <h3>I want to rename the bot to customize it for my server, how do I do that?</h3>
+    <ul>
+        <li>In the config.ini, change the name of your UserID field but make sure the certificate you use is registered with
+            the name or it won&#39;t be able to authenticate (if the bot is registered already).
+        </li>
+    </ul>
+    <h3>The bot can&#39;t authenticate during start up.</h3>
+    <ul>
+        <li>This can be caused by an outdated certificate.</li>
+        <li>This can be caused by a bot name that doesn&#39;t match the certificate&#39;s registered name.</li>
+        <li>If the bot is already registered to the server, the name cannot be changed unless a new certificate is
+            generated.
+        </li>
+    </ul>
+    <h3>How do I generate a certificate?</h3>
+    <ul>
+        <li>Luckily, this is a generic mumble certificate. You can find instruction on how to do that here: <br>
+            <a href="https://www.mumble.com/support/mumble-creating-a-certificate.php">Mumble Certification Creation
+                Tutorial</a></li>
+        <li>The quick start guide has a short segment to help with generating an OpenSSL certificate as well: <br>
+            <a href="https://duckboss.github.io/JJMumbleBot/pages/quick_start.html">Quick Start Guide</a></li>
+    </ul>
+    <h3>What is this bot&#39;s compatibility?</h3>
+    <ul>
+        <li>This bot is compatible with Linux and Windows (and possibly Mac OS, but it is untested.)</li>
+        <li>Please note that windows compatibility is based on if you&#39;re able to get the opus library installed and
+            working.
+        </li>
+    </ul>
+    <h3>I&#39;m encountering weird alias/privilege errors after updating recently, what&#39;s wrong?</h3>
+    <ul>
+        <li>There might be a mismatch between the current version of JJMumbleBot and an older version which may require you
+            to regenerate your internal database. This can be done easily by deleting the <code>jjmumblebot.db</code> file
+            in your <code>JJMumbleBot/cfg</code> directory and letting the bot automatically regenerate the database on
+            startup.
+        </li>
+    </ul>
+    <h3>How do I backup the internal database?</h3>
+    <ul>
+        <li>The internal database is backed up automatically to the JJMumbleBot/cfg/backups folder everytime the bot is
+            launched. The file name is created with a date-stamp.(This feature can be enabled/disabled in your <code>config.ini</code>
+            file)
+        </li>
+        <li>Alternatively, you can manually back up your internal database however you like.</li>
+    </ul>
+    <h3>I&#39;m receiving logging errors in the console, but the bot is still functional?</h3>
+    <ul>
+        <li>I&#39;ve noticed that sometimes the logging module in python tends to corrupt during runtime. This is almost
+            always fixed by simply restarting the bot.
+        </li>
+    </ul>
+</body>
+</html>

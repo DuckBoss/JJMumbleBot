@@ -1,0 +1,17 @@
+.main-content {
+    padding: 25px;
+    margin-left: 250px;
+}
+#table_of_contents {
+    height: 100%;
+    width: 250px;
+    position: fixed;
+    background-color: black;
+    padding-left: 10px;
+    padding-top: 10px;
+    overflow: auto;
+}
+#table_of_contents ul {
+    list-style-position: inside;
+    padding-left: 10px;
+}
