@@ -1,15 +1,18 @@
-from JJMumbleBot.lib.plugin_template import PluginBase
-from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
-from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
-from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.settings import global_settings as gs
-from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.plugins.extensions.images.resources.strings import *
-from JJMumbleBot.lib.helpers import image_helper as IH
 import os
+
 from bs4 import BeautifulSoup
-import time
+from fuzzywuzzy import process
+from requests import exceptions
+
+from JJMumbleBot.lib.helpers import image_helper as IH
+from JJMumbleBot.lib.plugin_template import PluginBase
+from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.utils import dir_utils
+from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
+from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.plugins.extensions.images.resources.strings import *
+from JJMumbleBot.settings import global_settings as gs
 
 
 class Plugin(PluginBase):
@@ -28,23 +31,71 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_post(self, data):
-        all_data = data.message.strip().split()
+        all_data = data.message.strip().split(' ', 1)
         img_url = all_data[1]
         # Download image
-        img_url = ''.join(BeautifulSoup(img_url, 'html.parser').findAll(text=True))
-        IH.download_image_stream(img_url)
-        # Format image
-        time.sleep(1)
+        img_url = BeautifulSoup(img_url, 'html.parser').get_text()
+        try:
+            IH.download_image_stream(img_url)
+        except exceptions.HTTPError:
+            gs.gui_service.quick_gui(
+                "Encountered an HTTP Error while trying to retrieve the image.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
+        except exceptions.InvalidSchema:
+            gs.gui_service.quick_gui(
+                "Encountered an Invalid Schema Error while trying to retrieve the image.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
+        except exceptions.RequestException:
+            gs.gui_service.quick_gui(
+                "Encountered a Request Error while trying to retrieve the image.",
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
         img_ext = img_url.rsplit('.', 1)[1]
-        formatted_string = IH.format_image("_image", img_ext, f'{dir_utils.get_temp_med_dir()}/images')
+        formatted_string = IH.format_image("_image", img_ext, f'{dir_utils.get_temp_med_dir()}/internal/images')
         rprint("Posting an image to the mumble channel chat.")
         # Display image with PGUI system
-        gs.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/images", formatted_string,
+        gs.gui_service.quick_gui_img(f"{dir_utils.get_temp_med_dir()}/internal/images", formatted_string,
                                      bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                      cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                      format_img=False)
         log(INFO, f"Posted an image to the mumble channel chat from: {img_url}.")
-        dir_utils.remove_file("_image.jpg", f'{dir_utils.get_temp_med_dir()}/images')
+
+    def cmd_imgsearch(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            return
+        search_query = all_data[1].strip()
+
+        img_list = [file_item for file_item in os.listdir(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/")]
+        file_ratios = process.extract(search_query, img_list)
+        match_list = []
+        for file_item in file_ratios:
+            if file_item[1] > 80 and len(match_list) < 10:
+                match_list.append(file_item[0])
+
+        match_str = f"Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
+        if len(match_list) > 0:
+            for i, clip in enumerate(match_list):
+                match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i + 1}]</font> - {clip}"
+        else:
+            match_str += "None"
+        gs.gui_service.quick_gui(
+            match_str,
+            text_type='header',
+            text_align='left',
+            box_align='left'
+        )
 
     def cmd_img(self, data):
         all_data = data.message.strip().split()

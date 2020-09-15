@@ -1,7 +1,5 @@
-import os
 import sys
 from JJMumbleBot.lib.utils import dir_utils
-
 
 py_template = """
 from JJMumbleBot.lib.plugin_template import PluginBase

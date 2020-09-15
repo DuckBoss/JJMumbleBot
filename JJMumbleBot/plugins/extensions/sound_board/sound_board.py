@@ -9,8 +9,7 @@ from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utili
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
-from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
+from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
 from os import path
 import random
 from datetime import datetime
@@ -28,50 +27,16 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         sbu_settings.sound_board_metadata = self.metadata
         sbu_settings.plugin_name = self.plugin_name
-        self.register_callbacks()
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
 
     def quit(self):
-        if gs.vlc_interface.check_dni_is_mine(self.plugin_name):
-            gs.vlc_interface.stop()
+        if gs.aud_interface.check_dni_is_mine(self.plugin_name):
+            gs.aud_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-
-    def register_callbacks(self):
-        from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED
-        if self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
-            gs.core_callbacks.append_to_callback(PYMUMBLE_CLBK_USERCREATED, self.on_new_user_connected)
-
-    def on_new_user_connected(self, user):
-        if gs.vlc_interface.check_dni(self.plugin_name, quiet=True):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
-        else:
-            return
-
-        to_play = self.metadata[C_PLUGIN_SET][P_AUDIO_CLIP_TO_PLAY_ON_USER_JOIN]
-        if not to_play:
-            return
-        audio_clip = sbu.find_file(to_play)
-        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}"):
-            gs.vlc_interface.clear_dni()
-            return
-        track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
-            name=to_play,
-            sender=get_bot_name(),
-            duration=None,
-            track_type=TrackType.FILE,
-            quiet=True
-        )
-        gs.vlc_interface.enqueue_track(
-            track_obj=track_obj,
-            to_front=False,
-            quiet=True
-        )
-        gs.vlc_interface.play(override=True)
 
     def cmd_sblist(self, data):
         internal_list = []
@@ -102,18 +67,42 @@ class Plugin(PluginBase):
         data_stripped = BeautifulSoup(data.message.strip(), features='html.parser').get_text()
         all_data = data_stripped.split()
 
-        if len(all_data) == 3:
+        if len(all_data) >= 3:
             if "youtube.com" in data_stripped or "youtu.be" in data_stripped:
-                if sbu.find_file(all_data[2].strip):
+                if sbu.find_file(all_data[2].strip()):
                     gs.gui_service.quick_gui(
                         f"A sound clip with the name {all_data[2].strip()} already exists!",
                         text_type='header',
                         box_align='left')
                     return
-                sbu.download_clip(all_data[1], all_data[2].strip(), proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
-                gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
-                                         text_type='header',
-                                         box_align='left')
+                if len(all_data) == 4:
+                    time_range = all_data[3].strip().split('-')
+                    if time_range:
+                        sbu.download_clip(all_data[1], all_data[2].strip(),
+                                          time_range=time_range,
+                                          ffmpeg_path=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH],
+                                          proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
+                        gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}[{time_range[0]}-{time_range[1]}]",
+                                                 text_type='header',
+                                                 box_align='left')
+                    else:
+                        gs.gui_service.quick_gui(
+                            f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name' 'XXh:XXm:XXs-XXh:XXm:XXs",
+                            text_type='header',
+                            box_align='left')
+                else:
+                    if "youtube.com" in data_stripped or "youtu.be" in all_data[1]:
+                        sbu.download_clip(all_data[1], all_data[2].strip(),
+                                          ffmpeg_path=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH],
+                                          proxy=gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL])
+                        gs.gui_service.quick_gui(f"Downloaded sound clip as : {all_data[2].strip()}",
+                                                 text_type='header',
+                                                 box_align='left')
+                    else:
+                        gs.gui_service.quick_gui(
+                            f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name' 'XXh:XXm:XXs-XXh:XXm:XXs",
+                            text_type='header',
+                            box_align='left')
             else:
                 gs.gui_service.quick_gui(
                     f"The given link was not identified as a youtube link!",
@@ -121,12 +110,12 @@ class Plugin(PluginBase):
                     box_align='left')
         else:
             gs.gui_service.quick_gui(
-                f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name'",
+                f"Incorrect Formatting! Format: {get_command_token()}sbdownload 'youtube_link' 'file_name' 'XXh:XXm:XXs-XXh:XXm:XXs'(optional)",
                 text_type='header',
                 box_align='left')
 
     def cmd_sbdelete(self, data):
-        all_data = data.message().strip().split()
+        all_data = data.message.strip().split()
         if len(all_data) == 2:
             audio_clip = sbu.find_file(all_data[1].strip())
             if audio_clip:
@@ -135,8 +124,8 @@ class Plugin(PluginBase):
                                          box_align='left')
 
     def cmd_sbrandom(self, data):
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         sender = gs.mumble_inst.users[data.actor]['name']
@@ -151,15 +140,15 @@ class Plugin(PluginBase):
             track_type=TrackType.FILE,
             quiet=False
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False
         )
-        gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+        gs.aud_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbrandomnow(self, data):
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
         sender = gs.mumble_inst.users[data.actor]['name']
@@ -174,12 +163,12 @@ class Plugin(PluginBase):
             track_type=TrackType.FILE,
             quiet=False
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
             quiet=True
         )
-        gs.vlc_interface.play(override=True)
+        gs.aud_interface.play(override=True)
 
     def cmd_sbsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
@@ -205,8 +194,8 @@ class Plugin(PluginBase):
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -219,30 +208,31 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left'
             )
-            gs.vlc_interface.clear_dni()
+            gs.aud_interface.clear_dni()
             return
-        print(f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}')
+        # print(f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}')
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=False
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
         )
-        gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+        gs.aud_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbnow(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.plugin_name):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -255,30 +245,31 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left'
             )
-            gs.vlc_interface.clear_dni()
+            gs.aud_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=False
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
             quiet=True
         )
-        gs.vlc_interface.play(override=True)
+        gs.aud_interface.play(override=True)
 
     def cmd_sbquiet(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.plugin_name, quiet=True):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name, quiet=True):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -291,30 +282,31 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left'
             )
-            gs.vlc_interface.clear_dni()
+            gs.aud_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=True
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
             quiet=True
         )
-        gs.vlc_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+        gs.aud_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbquietnow(self, data):
         all_data = data.message.strip().split()
         if len(all_data) < 2:
             return
 
-        if gs.vlc_interface.check_dni(self.plugin_name, quiet=True):
-            gs.vlc_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        if gs.aud_interface.check_dni(self.plugin_name, quiet=True):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:
             return
 
@@ -327,19 +319,20 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left'
             )
-            gs.vlc_interface.clear_dni()
+            gs.aud_interface.clear_dni()
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=sender,
             duration=None,
             track_type=TrackType.FILE,
             quiet=True
         )
-        gs.vlc_interface.enqueue_track(
+        gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
             quiet=True
         )
-        gs.vlc_interface.play(override=True)
+        gs.aud_interface.play(override=True)

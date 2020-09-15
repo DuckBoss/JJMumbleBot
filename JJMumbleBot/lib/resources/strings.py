@@ -30,15 +30,15 @@ P_WEB_PAGE_PORT = 'WebPagePort'
 P_WEB_SOCK_PORT = 'WebSocketPort'
 P_WEB_TICK_RATE = 'WebTickRate'
 # Media Settings
-P_MEDIA_VLC_PATH = 'VLCPath'
-P_MEDIA_VLC_STEREO = 'VLCStereoAudio'
-P_MEDIA_VLC_QUIET = 'VLCRunQuiet'
-P_MEDIA_VLC_DEFAULT_VOLUME = 'VLCDefaultVolume'
-P_MEDIA_VLC_DUCK = 'VLCAudioDuck'
-P_MEDIA_VLC_DUCK_VOLUME = 'VLCDuckingVolume'
-P_MEDIA_VLC_DUCK_THRESHOLD = 'VLCDuckingThreshold'
-P_MEDIA_VLC_DUCK_DELAY = 'VLCDuckingDelay'
-P_MEDIA_VLC_QUEUE_LEN = 'VLCMaxQueueLength'
+P_MEDIA_FFMPEG_PATH = 'FfmpegPath'
+P_MEDIA_USE_STEREO = 'UseStereoAudio'
+P_MEDIA_FFMPEG_QUIET = 'FfmpegRunQuiet'
+P_MEDIA_DEFAULT_VOLUME = 'DefaultVolume'
+P_MEDIA_DUCK_AUDIO = 'UseAudioDuck'
+P_MEDIA_DUCK_VOLUME = 'DuckingVolume'
+P_MEDIA_DUCK_THRESHOLD = 'DuckingThreshold'
+P_MEDIA_DUCK_DELAY = 'DuckingDelay'
+P_MEDIA_QUEUE_LEN = 'MaxQueueLength'
 P_MEDIA_PROXY_URL = 'YoutubeDLProxyURL'
 P_MEDIA_COOKIE_FILE = 'YoutubeDLCookieFile'
 P_PERM_MEDIA_DIR = 'PermanentMediaDirectory'
@@ -104,5 +104,5 @@ P_THREAD_SINGLE = 'UseSingleThread'
 ###########################################################################
 # BOT META INFORMATION STRINGS
 META_NAME = "JJMumbleBot"
-META_VERSION = "4.1.0"
+META_VERSION = "4.2.0"
 ###########################################################################
