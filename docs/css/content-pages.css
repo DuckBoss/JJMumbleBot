@@ -1,10 +1,10 @@
 .main-content {
     padding: 25px;
     margin-left: 250px;
-    margin-bottom: 35px;
+    margin-bottom: 45px;
 }
 #table_of_contents {
-    height: calc(100% - 35px);
+    height: calc(100% - 45px);
     width: 250px;
     position: fixed;
     background-color: black;
@@ -23,7 +23,7 @@ footer {
     background-color: black;
     position: fixed;
     bottom: 0;
-    height: 35px;
+    height: 45px;
     width: 100%;
     text-align: center;
 }
