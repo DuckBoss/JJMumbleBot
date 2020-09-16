@@ -292,8 +292,8 @@ class VLCInterface:
             return
         self.callback_check('on_play')
         if global_settings.audio_inst:
-            audio_interface.stop_vlc_instance()
-        audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=self.status['progress_time'])
+            audio_interface.stop_audio_instance()
+        audio_interface.create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'])
         self.status['start_time'] = int(time())
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
@@ -322,7 +322,7 @@ class VLCInterface:
     def pause(self):
         if self.status.is_playing():
             if global_settings.audio_inst:
-                audio_interface.stop_vlc_instance()
+                audio_interface.stop_audio_instance()
             self.calculate_progress()
             self.status['pause_time'] = int(time())
 
@@ -352,7 +352,7 @@ class VLCInterface:
 
         self.callback_check('on_skip')
         if global_settings.audio_inst:
-            audio_interface.stop_vlc_instance()
+            audio_interface.stop_audio_instance()
 
         if track_number == 0:
             global_settings.gui_service.quick_gui(
@@ -389,8 +389,8 @@ class VLCInterface:
     def seek(self, seconds: int):
         if self.status.is_playing():
             if global_settings.audio_inst:
-                audio_interface.stop_vlc_instance()
-            audio_interface.create_vlc_instance(self.status.get_track().uri, skipto=seconds)
+                audio_interface.stop_audio_instance()
+            audio_interface.create_audio_instance(self.status.get_track().uri, skipto=seconds)
 
             self.status['start_time'] = int(time())
             self.status['pause_time'] = int(time())
@@ -403,7 +403,7 @@ class VLCInterface:
 
     def stop(self):
         if global_settings.audio_inst:
-            audio_interface.stop_vlc_instance()
+            audio_interface.stop_audio_instance()
         self.callback_check('on_stop')
         self.queue = queue_handler.QueueHandler([], maxlen=int(
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
