@@ -215,7 +215,7 @@ class Plugin(PluginBase):
                 f'Plugin Version: {plugin_metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]}<br>', text_color='cyan')
             GS.gui_service.append_row(content)
             for x, help_item in enumerate(all_help_lines):
-                item_parts = help_item.split(':', 1)
+                item_parts = help_item.rsplit(':', 1)
                 if len(item_parts) > 1:
                     content = GS.gui_service.make_content(
                         f'<font color="yellow">{item_parts[0]}</font>:{item_parts[1]}',
