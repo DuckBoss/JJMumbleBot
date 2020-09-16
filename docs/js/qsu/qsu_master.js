@@ -20,23 +20,23 @@ function get_media_directories() {
   return `
 [Media Directories]
 ; VLC location
-VLCPath = ${document.getElementById('media-vlc-path').value}
+FfmpegPath = ${document.getElementById('media-ffmpeg-path').value}
 ; Use Stereo Audio
-VLCStereoAudio = ${document.getElementById('media-stereo-enable').value}
+UseStereoAudio = ${document.getElementById('media-stereo-enable').value}
 ; Enable/Disable VLC Console Messages
-VLCRunQuiet = ${document.getElementById('media-quiet-enable').value}
+FfmpegRunQuiet = ${document.getElementById('media-quiet-enable').value}
 ; The default volume when the bot starts (default=0.3)
-VLCDefaultVolume = ${document.getElementById('media-default-volume').value}
+DefaultVolume = ${document.getElementById('media-default-volume').value}
 ; Enable Audio Ducking (off by default, use !duckaudio to toggle on and off)
-VLCAudioDuck = ${document.getElementById('media-duck-audio-enable').value}
+AudioDuck = ${document.getElementById('media-duck-audio-enable').value}
 ; The default audio ducking volume (How low the volume will drop down when ducking) (default=0.05)
-VLCDuckingVolume: ${document.getElementById('media-ducking-volume').value}
+DuckingVolume: ${document.getElementById('media-ducking-volume').value}
 ; The default threshold before audio is ducked (default=2500.0)
-VLCDuckingThreshold: ${document.getElementById('media-ducking-threshold').value}
+DuckingThreshold: ${document.getElementById('media-ducking-threshold').value}
 ; The default delay before the audio ducking reacts to user voices (default=1.0)
-VLCDuckingDelay: ${document.getElementById('media-ducking-delay').value}
+DuckingDelay: ${document.getElementById('media-ducking-delay').value}
 ; The default maximum queue length for the audio interface (default=50)
-VLCMaxQueueLength = ${document.getElementById('media-max-queue-length').value}
+MaxQueueLength = ${document.getElementById('media-max-queue-length').value}
 ; Optional Proxy URL - If you want to use a proxy server to use the youtube-dl library, fill this out.
 YoutubeDLProxyURL = ${document.getElementById('media-proxy-url').value}
 ; Optionally use a cookies.txt file for the youtube-dl library (useful to deal with rate limits).

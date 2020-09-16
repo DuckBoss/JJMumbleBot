@@ -1,13 +1,14 @@
-from JJMumbleBot.lib.utils.database_utils import CreateDB, InsertDB
-from JJMumbleBot.lib.utils.database_management_utils import save_memory_db
-from JJMumbleBot.lib.utils.print_utils import dprint, rprint
-from JJMumbleBot.settings import global_settings
-from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.privileges import Privileges
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.privileges import Privileges
+from JJMumbleBot.lib.utils.database_management_utils import save_memory_db
+from JJMumbleBot.lib.utils.database_utils import CreateDB, InsertDB
+from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.utils.print_utils import dprint
+from JJMumbleBot.settings import global_settings
 import sqlite3
 from os import path
+
 
 user_priv_path = "cfg/jjmumblebot.db"
 

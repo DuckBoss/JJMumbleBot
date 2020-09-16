@@ -4,7 +4,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.media.resources.strings import *
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.vlc.vlc_api import TrackType, TrackInfo
+from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
 from JJMumbleBot.lib.utils import print_utils
 from JJMumbleBot.plugins.extensions.media.utility import settings
 from JJMumbleBot.plugins.extensions.media.utility.youtube_search import YoutubeSearch
@@ -14,12 +14,12 @@ from datetime import timedelta
 
 
 def on_next_track():
-    if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
+    if gs.aud_interface.status.get_track().track_type == TrackType.STREAM:
         # If the track is looping, there is no need to download the next track image.
-        if gs.vlc_interface.status.is_looping():
+        if gs.aud_interface.status.is_looping():
             # Get new set of metadata for the current track if it is looping
             # because the link may expire and cause an issue.
-            cur_track = gs.vlc_interface.get_track()
+            cur_track = gs.aud_interface.get_track()
             song_data = get_video_info(cur_track.alt_uri)
             if song_data is None:
                 return
@@ -35,39 +35,39 @@ def on_next_track():
                 image_uri=cur_track.image_uri,
                 quiet=False
             )
-            gs.vlc_interface.status.set_track(track_obj)
+            gs.aud_interface.status.set_track(track_obj)
             return
         # If the queue is empty, there is no track image to download.
-        if gs.vlc_interface.status.get_queue_length() == 0:
+        if gs.aud_interface.status.get_queue_length() == 0:
             return
 
-        download_thumbnail(gs.vlc_interface.status.get_queue()[0])
+        download_thumbnail(gs.aud_interface.status.get_queue()[0])
         # Get the video metadata and fill in the information if the current track is missing metadata information.
-        if gs.vlc_interface.status.get_queue()[0].uri == '':
-            if gs.vlc_interface.status.get_queue()[0].alt_uri == '':
+        if gs.aud_interface.status.get_queue()[0].uri == '':
+            if gs.aud_interface.status.get_queue()[0].alt_uri == '':
                 return
-            song_data = get_video_info(gs.vlc_interface.status.get_queue()[0].alt_uri)
+            song_data = get_video_info(gs.aud_interface.status.get_queue()[0].alt_uri)
             if song_data is None:
                 return
             track_obj = TrackInfo(
                 uri=song_data['main_url'],
-                name=gs.vlc_interface.status.get_queue()[0].name,
-                sender=gs.vlc_interface.status.get_queue()[0].sender,
+                name=gs.aud_interface.status.get_queue()[0].name,
+                sender=gs.aud_interface.status.get_queue()[0].sender,
                 duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
                 track_type=TrackType.STREAM,
-                track_id=gs.vlc_interface.status.get_queue()[0].track_id,
-                alt_uri=gs.vlc_interface.status.get_queue()[0].alt_uri,
-                image_uri=gs.vlc_interface.status.get_queue()[0].image_uri,
+                track_id=gs.aud_interface.status.get_queue()[0].track_id,
+                alt_uri=gs.aud_interface.status.get_queue()[0].alt_uri,
+                image_uri=gs.aud_interface.status.get_queue()[0].image_uri,
                 quiet=False
             )
-            gs.vlc_interface.status.set_track(track_obj)
+            gs.aud_interface.status.set_track(track_obj)
             cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
-            gs.vlc_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
+            gs.aud_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def song_integrity_check():
     # Get the video metadata and fill in the information if the current track is missing metadata information.
-    cur_track = gs.vlc_interface.status.get_track()
+    cur_track = gs.aud_interface.status.get_track()
     if cur_track.uri == '':
         if cur_track.alt_uri == '':
             return
@@ -85,14 +85,14 @@ def song_integrity_check():
             image_uri=cur_track.image_uri,
             quiet=False
         )
-        gs.vlc_interface.status.set_track(track_obj)
+        gs.aud_interface.status.set_track(track_obj)
         cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
-        gs.vlc_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
+        gs.aud_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def on_play():
-    if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
-        cur_track = gs.vlc_interface.get_track()
+    if gs.aud_interface.status.get_track().track_type == TrackType.STREAM:
+        cur_track = gs.aud_interface.get_track()
         download_thumbnail(cur_track)
 
         # Get the video metadata and fill in the information if the current track is missing metadata information.
@@ -113,13 +113,13 @@ def on_play():
                 image_uri=cur_track.image_uri,
                 quiet=False
             )
-            gs.vlc_interface.status.set_track(track_obj)
+            gs.aud_interface.status.set_track(track_obj)
             cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
-            gs.vlc_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
+            gs.aud_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def on_skip():
-    if gs.vlc_interface.status.get_track().track_type == TrackType.STREAM:
+    if gs.aud_interface.status.get_track().track_type == TrackType.STREAM:
         # Clear the thumbnails since the queue order has shifted.
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
 
