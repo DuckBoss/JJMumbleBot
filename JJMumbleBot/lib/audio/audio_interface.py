@@ -50,17 +50,33 @@ def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool
         global_settings.audio_inst = None
 
     if stereo:
-        global_settings.audio_inst = sp.Popen(
-            [ffmpeg_path, "-loglevel", f'{"quiet" if quiet else "panic"}', "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
-             "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
-            stdout=sp.PIPE, bufsize=1024
-        )
+        if quiet:
+            global_settings.audio_inst = sp.Popen(
+                [ffmpeg_path, "-loglevel", "quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+                 "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
+                stdout=sp.PIPE, bufsize=1024
+            )
+        else:
+            global_settings.audio_inst = sp.Popen(
+                [ffmpeg_path, "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f",
+                 "s16le",
+                 "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
+                stdout=sp.PIPE, bufsize=1024
+            )
     else:
-        global_settings.audio_inst = sp.Popen(
-            [ffmpeg_path, "-loglevel", f'{"quiet" if quiet else "panic"}', "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
-             "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
-            stdout=sp.PIPE, bufsize=1024
-        )
+        if quiet:
+            global_settings.audio_inst = sp.Popen(
+                [ffmpeg_path, "-loglevel quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+                 "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
+                stdout=sp.PIPE, bufsize=1024
+            )
+        else:
+            global_settings.audio_inst = sp.Popen(
+                [ffmpeg_path, "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f",
+                 "s16le",
+                 "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
+                stdout=sp.PIPE, bufsize=1024
+            )
     rutils.unmute()
 
     while not global_settings.aud_interface.exit_flag and global_settings.audio_inst:
