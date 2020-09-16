@@ -1,0 +1,33 @@
+.main-content {
+    padding: 25px;
+    margin-left: 250px;
+    margin-bottom: 45px;
+}
+#table_of_contents {
+    height: calc(100% - 45px);
+    width: 250px;
+    position: fixed;
+    background-color: black;
+    padding-left: 10px;
+    padding-top: 10px;
+    overflow: auto;
+}
+#table_of_contents ul {
+    list-style-position: inside;
+    padding-left: 10px;
+}
+code {
+    overflow: hidden;
+    padding: 5px;
+}
+img {
+    border-radius: 10px;
+}
+footer {
+    background-color: black;
+    position: fixed;
+    bottom: 0;
+    height: 45px;
+    width: 100%;
+    text-align: center;
+}

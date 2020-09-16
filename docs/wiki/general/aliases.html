@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Aliases</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Aliases</h2>
+        <hr>
+        <p>
+            <b>
+                With the introduction of multi-command inputs, I implemented an alias system that can shorten the command call
+                of a long series of commands.
+            </b>
+        </p>
+        <h3 id="simple-example">Simple Example</h3>
+        <p><b><code>!setalias botinfo (version) | (about)</code></b> --&gt; This command will register the alias as botinfo.
+            <br>
+            <b><code>!botinfo</code></b> --&gt; Now you can call this registered alias as a command, hence shortening the
+            command call! <br>
+            <br></p>
+        <h3 id="alias-commands">Alias Commands</h3>
+        <ul>
+            <li><code>!setalias &#39;alias_name&#39; &#39;commands&#39;</code> --&gt; Registers a new alias for a series of
+                commands delimited by the &#39;|&#39; symbol. Make sure that command names are within brackets.<br>
+                <strong>For example:</strong><br>
+                <ul>
+                <li><code>!alias example (version) | (about) | (echo) test</code> --&gt; The commands are separated by the &#39;|&#39;
+                character, with each command in brackets.</li>
+                <li><code>!example</code> --&gt; You can then call the registered alias and it will execute all the
+                commands.</li>
+                </ul>
+            </li>
+            <li><code>!aliases</code> --&gt; Echoes a list of all registered aliases in the channel chat.<br></li>
+            <li><code>!removealias &#39;alias_name&#39;</code> --&gt; Removes the registered alias.<br></li>
+            <li><code>!clearaliases</code> --&gt; Removes all registered aliases.<br></li>
+        </ul>
+        <p><b>General aliases are stored in the global_aliases.csv file in the cfg folder.</b><br>
+            <b>Plugin specific aliases are stored in the aliases.csv file in that plugin folder.</b><br>
+            <b>NOTE: Commands used in aliases will still require the appropriate user privileges!</b><br></p>
+    </div>
+    <footer></footer>
+</body>
+</html>

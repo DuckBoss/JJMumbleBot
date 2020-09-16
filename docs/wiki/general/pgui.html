@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Pseudo-GUI System [PGUI]</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="pgui-system">PGUI System</h2>
+        <p>The PGUI System is a pseudo-graphical user interface created with html tags.
+            It is used to wrap output data from the bot such as messages, images, etc and neatly present it to the server in
+            the form of an html table with clean formatting.</p>
+        <hr>
+
+        <h4 id="simple-pre-configured-pgui">Simple Pre-Configured PGUI</h4>
+        <p>Use one of the two commands below:
+            <ol>
+                <li>
+                    Simple PGUI with only text content:<br>
+                    <code>quick_gui(...)</code>
+                </li>
+                <li>
+                    Simple PGUI with only text content and 1 image (with an optional caption):<br>
+                    <code>quick_gui_img(...)</code>
+                </li>
+            </ol>
+            <b>Need a more custom PGUI to fit your needs? Make one from scratch as shown below with my 5-step guide.</b>
+        </p>
+
+        <h4 id="custom-pgui-5-step-guide">Custom PGUI - 5 Step Guide</h4>
+        <p>
+            <ol>
+                <li>
+                    Open the PGUI Container:<br>
+                    <code>open_box(...)</code>
+                </li>
+                <li>
+                    Prepare PGUI Content:<br>
+                    <code>make_content(...)</code>
+                </li>
+                <li>
+                    Fill the PGUI Container with PGUI Content:<br>
+                    <code>append_row(...)</code>
+                </li>
+                <li>
+                    Close the PGUI Container:<br>
+                    <code>close_box(...)</code>
+                </li>
+                <li>
+                    Display the PGUI:<br>
+                    <code>display_box(...)</code>
+                </li>
+            </ol>
+        </p>
+
+        <hr>
+
+        <h3 id="pgui-api-quick-start-for-custom-plugins-">PGUI API Quick Start For Custom Plugins:</h3>
+        <p><b> Most plugins will probably only need the <code>quick_gui</code> and <code>quick_img_gui</code> methods to get pgui
+            integration.</b><br>
+            To send output data wrapped in a PGUI, you have the following methods available:<br></p>
+        <ul>
+            <li><code>quick_gui(...)</code> - This method creates a quick pgui using the default pgui properties set in the
+                config.ini file.
+                It wraps text content in a pgui and sends it to the server to display.
+                Refer to any built-in plugin that displays data to see how this method is used.
+                <ul>
+                    <li><b>Overrides</b>:
+                        <ul>
+                            <li><code>channel</code>: None or &quot;channel name&quot;. Sends the pgui message to the specified
+                                channel.
+                                &#39;None&#39; echoes it to the current channel the bot is in. (default=None)
+                            </li>
+                            <li><code>user</code>: None or &quot;user name&quot;. Sends the pgui message to a specified user.
+                                (default=None)
+                            </li>
+                            <li><code>ignore_whisper</code>: Decide if the echo message should ignore whisper targets.
+                                (default=False)
+                            </li>
+                            <li><code>text_type</code>: &quot;data&quot; for normal text, &quot;header&quot; for header text.
+                                (default=&quot;data&quot;)
+                            </li>
+                            <li><code>text_color</code>: &quot;red&quot;, &quot;white&quot;, &quot;blue&quot; and any other Qt
+                                supported color strings which overrides the text color
+                                of the pgui. (default=&quot;white&quot;)
+                            </li>
+                            <li><code>text_font</code>: None, &quot;Calibri&quot;, &quot;Impact&quot;, &quot;Comic Sans&quot; and
+                                any other Qt supported font. (default=set in config.ini)
+                            </li>
+                            <li><code>text_align</code>: &quot;center&quot;, &quot;left&quot;, or &quot;right&quot; for text
+                                alignment formatting in html. (default=&quot;center&quot;)
+                            </li>
+                            <li><code>bg_color</code>: &quot;red&quot;, &quot;white&quot;, &quot;blue&quot; and any other Qt
+                                supported color strings which overrides the background
+                                canvas color of the pgui. (default=&quot;black&quot;)
+                            </li>
+                            <li><code>border</code>: None or float/int value. Works the same as table borders in html.
+                                (default=None)
+                            </li>
+                            <li><code>row_align</code>: &quot;center&quot;, &quot;left&quot;, or &quot;right&quot; for table row
+                                alignment formatting in html. (default=&quot;center&quot;)
+                            </li>
+                            <li><code>cellpadding</code>: &quot;1, 2, 3, etc&quot;. Works the same as table cell padding in html.
+                                (default=&quot;5&quot;)
+                            </li>
+                            <li><code>cellspacing</code>: &quot;1, 2, 3, etc&quot;. Works the same as table cell spacing in html.
+                                (default=&quot;5&quot;)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>quick_gui_img(...)</code> - This method creates a quick pgui with image support using the default pgui
+                properties set in
+                the config.ini file. It wraps image content in a pgui and sends it to the server to display.
+                Refer to the youtube plugin to see how this method is used for youtube thumbnails.
+                <ul>
+                    <li><code>Overrides</code>:
+                        <ul>
+                            <li><code>format</code>: True/False, use True if the image needs to be formatted for mumble or False
+                                if it is already
+                                pre-processed. (default=False)
+                            </li>
+                            <li><code>caption</code>: None or &quot;caption_text&quot;. Appends a text caption to the image.
+                                (default=None)
+                            </li>
+                            <li><code>caption_font</code>: None or &quot;Calibri&quot;, &quot;Impact&quot;, &quot;Comic Sans&quot;
+                                and any other Qt supported font. (default=set in
+                                config.ini)
+                            </li>
+                            <li><code>caption_align</code>: &quot;center&quot;, &quot;left&quot;, or &quot;right&quot; for text
+                                alignment formatting in html.
+                            </li>
+                            <li><code>bg_color</code>: &quot;red&quot;, &quot;white&quot;, &quot;blue&quot; and any other Qt
+                                supported color strings which overrides the background
+                                canvas color of the pgui. (default=&quot;black&quot;)
+                            </li>
+                            <li><code>channel</code>: None or &quot;channel name&quot;. Sends the pgui message to the specified
+                                channel.
+                                &#39;None&#39; echoes it to the current channel the bot is in. (default=None)
+                            </li>
+                            <li><code>user</code>: None or &quot;user name&quot;. Sends the pgui message to a specified user.
+                                (default=None)
+                            </li>
+                            <li><code>ignore_whisper</code>: Decide if the echo message should ignore whisper targets.
+                                (default=False)
+                            </li>
+                            <li><code>img_size</code>: Set the finalized image size goal after processing. (default=65536 (65Kb))
+                            </li>
+                            <li><code>cellspacing</code>: &quot;1, 2, 3, etc&quot;. Works the same as table cell spacing in html.
+                                (default=&quot;5&quot;)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>open_box(...)</code> - This method opens a container for pgui allowing full customization of what the pgui
+                contains.
+                Refer to the help plugin to see how this method is used.
+                <ul>
+                    <li><b>Overrides</b>:
+                        <ul>
+                            <li><code>bg_color</code>: &quot;red&quot;, &quot;white&quot;, &quot;blue&quot; and any other Qt
+                                supported color strings which overrides the background
+                                canvas color of the pgui. (default=&quot;black&quot;)
+                            </li>
+                            <li><code>border</code>: None or float/int value. Works the same as table borders in html.
+                                (default=None)
+                            </li>
+                            <li><code>align</code>: None, &quot;center&quot;, &quot;left&quot;, &quot;right&quot;. Works the same
+                                as table alignment in html. (default=None)
+                            </li>
+                            <li><code>cellpadding</code>: &quot;1, 2, 3, etc&quot;. Works the same as table cell padding in html.
+                                (default=&quot;5&quot;)
+                            </li>
+                            <li><code>cellspacing</code>: &quot;1, 2, 3, etc&quot;. Works the same as table cell spacing in html.
+                                (default=&quot;5&quot;)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>make_content(...)</code> - This method takes in text-content and prepares it so that it is ready to use for
+                the PGUI. This is used when a custom gui is being made after the open_box() method.
+                <ul>
+                    <li><b>Overrides</b>:
+                        <ul>
+                            <li><code>text</code>: Any string text-content.</li>
+                            <li><code>text_type</code>: &quot;data&quot; or &quot;header&quot;. &quot;data&quot; content is
+                                formatted like regular text and &quot;header&quot; content is bold.
+                            </li>
+                            <li><code>text_color</code>: &quot;red&quot;, &quot;white&quot;, &quot;blue&quot; and any other Qt
+                                supported color strings which overrides the text color
+                                of the pgui. (default=&quot;white&quot;)
+                            </li>
+                            <li><code>text_font</code>: None, &quot;Calibri&quot;, &quot;Impact&quot;, &quot;Comic Sans&quot; and
+                                any other Qt supported font. (default=set in config.ini)
+                            </li>
+                            <li><code>text_align</code>: None, &quot;center&quot;, &quot;left&quot;, &quot;right&quot;. Works the
+                                same as text alignment in html. (default=&quot;center&quot;)
+                            </li>
+                            <li><code>image</code>: True/False. Sets the image flag so that the PGUI can format the image into a
+                                usable format.
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>append_row(...)</code> - This method takes in prepared PGUI content and appends it to the PGUI with
+                appropriate table formatting. This is used when a custom gui is being made after the open_box() method.
+                <ul>
+                    <li><b>Overrides</b>:
+                        <ul>
+                            <li><code>content</code>: Any string text-content.</li>
+                            <li><code>align</code>: None, &quot;center&quot;, &quot;left&quot;, &quot;right&quot;. Works the same
+                                as table row alignment in html. (default=&quot;center&quot;)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>append_content(...)</code> - This method takes in non-prepared text-content and appends it directly to the
+                PGUI content without any formatting. For most cases, I recommend using the append_row() method as it creates
+                a cleaner gui.
+                <ul>
+                    <li><b>Overrides</b>
+                        <ul>
+                            <li><code>content</code>: Any string text-content.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>close_box()</code> - This method closes a pgui container to prepare it for displaying.</li>
+            <li><code>display_box(...)</code> - This method displays uses a closed pgui container and sends it to the server to
+                display.
+                <ul>
+                    <li><b>Overrides</b>:
+                        <ul>
+                            <li><code>user</code>: None or &quot;user name&quot;. Sends the pgui message to a specified user.
+                                (default=None)
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+            <li><code>get_box_content()</code>: Returns the contents of the currently open PGUI container.</li>
+            <li><code>clear_display()</code>: Clears the contents of the currently open PGUI container.</li>
+        </ul>
+        <h3> For the full comprehensive list of methods and pgui functionality, please check the pgui.py script in the lib
+            directory.</h3>
+    </div>
+    <footer></footer>
+</body>
+</html>
