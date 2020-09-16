@@ -9,9 +9,9 @@ from threading import Thread
 import subprocess as sp
 
 
-def create_vlc_instance(uri: str, skipto: int = 0):
-    global_settings.vlc_thread = Thread(
-        target=create_vlc_thread,
+def create_audio_instance(uri: str, skipto: int = 0):
+    global_settings.audio_thread = Thread(
+        target=create_audio_thread,
         args=(
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH],
             uri,
@@ -21,20 +21,20 @@ def create_vlc_instance(uri: str, skipto: int = 0):
         ),
         daemon=True
     )
-    global_settings.vlc_thread.start()
+    global_settings.audio_thread.start()
 
 
-def stop_vlc_instance():
+def stop_audio_instance():
     if global_settings.audio_inst:
         global_settings.audio_inst.terminate()
         global_settings.audio_inst.kill()
         global_settings.audio_inst = None
-    if global_settings.vlc_thread:
-        global_settings.vlc_thread.join()
-        global_settings.vlc_thread = None
+    if global_settings.audio_thread:
+        global_settings.audio_thread.join()
+        global_settings.audio_thread = None
 
 
-def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True):
+def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True):
     if uri == '':
         return
 
@@ -72,7 +72,7 @@ def create_vlc_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool =
                 global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, global_settings.aud_interface.status.get_volume()))
             else:
                 if global_settings.aud_interface.next_track():
-                    create_vlc_thread(ffmpeg_path=ffmpeg_path, uri=global_settings.aud_interface.status.get_track().uri, skipto=0, quiet=quiet, stereo=stereo)
+                    create_audio_thread(ffmpeg_path=ffmpeg_path, uri=global_settings.aud_interface.status.get_track().uri, skipto=0, quiet=quiet, stereo=stereo)
                 else:
                     global_settings.aud_interface.reset()
                 return
