@@ -52,14 +52,17 @@ def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool
     if stereo:
         if quiet:
             global_settings.audio_inst = sp.Popen(
-                [ffmpeg_path, "-loglevel", "quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+                [ffmpeg_path, "-loglevel", "quiet",
+                 "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2",
+                 "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
                  "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
                 stdout=sp.PIPE, bufsize=1024
             )
         else:
             global_settings.audio_inst = sp.Popen(
-                [ffmpeg_path, "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f",
-                 "s16le",
+                [ffmpeg_path,
+                 "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2",
+                 "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
                  "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
                 stdout=sp.PIPE, bufsize=1024
             )
