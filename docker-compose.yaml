@@ -1,0 +1,10 @@
+version: '3'
+services:
+  bot:
+    build: .
+    # Expose all ports to localhost
+    network_mode: "host"
+    # Mounts container cfg directory to local 
+    volumes:
+      - ./JJMumbleBot/cfg:/app/JJMumbleBot/cfg/
+    command: python /app -ip 127.0.0.1 -port 64738
