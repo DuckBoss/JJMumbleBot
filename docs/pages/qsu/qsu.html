@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>
-      JJMumbleBot Quick Setup Utility - Web Interface (RELEASE)
+      JJMumbleBot Quick Setup Utility - Web Interface (v4.2.2)
     </title>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -28,7 +28,7 @@
   </head>
   <body>
     <div class="container">
-      <h2 id=title-id>JJMumbleBot Quick Setup Utility - Master Branch</h2>
+      <h2 id=title-id>JJMumbleBot Quick Setup Utility - v4.2.2</h2>
     </div>
     <hr>
     <div class='container'>
@@ -124,8 +124,15 @@
       <div class='container bg-dark text-white rounded'>
         <p>The file path to FFmpeg.</p>
         <b>[Example: path/to/ffmpeg]</b><br>
-        <label for='media-vlc-path-input'>FFmpeg Path:</label><br>
+        <label for='media-ffmpeg-path-input'>FFmpeg Path:</label><br>
         <input type="text" id="media-ffmpeg-path" name='media-ffmpeg-path-input' class='required form-control border border-danger' size='100' value="ffmpeg" required>
+      </div>
+      <br>
+      <div class='container bg-dark text-white rounded'>
+        <p>The file path to FFmpeg.</p>
+        <b>[Example: path/to/vlc]</b><br>
+        <label for='media-vlc-path-input'>FFmpeg Path:</label><br>
+        <input type="text" id="media-vlc-path" name='media-vlc-path-input' class='required form-control border border-danger' size='100' value="vlc" required>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
@@ -135,9 +142,9 @@
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>
-        <p>To enable ffmpeg quiet mode, check the box.</p>
+        <p>To enable audio library quiet mode, check the box. This will suppress console messages from audio libraries.</p>
         <input type="checkbox" id="media-quiet-enable" name='media-quiet-enable-input' class='required' checked required>
-        <label for='media-quiet-enable-input'>Enable FFmpeg Quiet Mode</label>
+        <label for='media-quiet-enable-input'>Enable Audio Library Quiet Mode</label>
       </div>
       <br>
       <div class='container bg-dark text-white rounded'>

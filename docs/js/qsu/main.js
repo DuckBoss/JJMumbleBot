@@ -19,12 +19,14 @@ DefaultComment = ${document.getElementById('server-comment').value}
 function get_media_directories() {
   return `
 [Media Directories]
-; VLC location
+; FFmpeg location
 FfmpegPath = ${document.getElementById('media-ffmpeg-path').value}
+; VLC location
+VlcPath = ${document.getElementById('media-vlc-path').value}
 ; Use Stereo Audio
 UseStereoAudio = ${document.getElementById('media-stereo-enable').value}
-; Enable/Disable VLC Console Messages
-FfmpegRunQuiet = ${document.getElementById('media-quiet-enable').value}
+; Enable/Disable Audio Library Console Messages
+AudioLibraryRunQuiet = ${document.getElementById('media-quiet-enable').value}
 ; The default volume when the bot starts (default=0.3)
 DefaultVolume = ${document.getElementById('media-default-volume').value}
 ; Enable Audio Ducking (off by default, use !duckaudio to toggle on and off)

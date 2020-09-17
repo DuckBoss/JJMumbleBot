@@ -66,9 +66,10 @@
         </pre>
         <h4 id="media-settings-required">[Media Settings] (REQUIRED)</h4>
         <ul>
-        <li><code>FfmpegPath</code>: VLC location</li>
+        <li><code>FfmpegPath</code>: FFmpeg location</li>
+        <li><code>VlcPath</code>: VLC location</li>
         <li><code>UseStereoAudio</code>: Enable/Disable Stereo Audio</li>
-        <li><code>FfmpegRunQuiet</code>: Enable/Disable VLC Console Messages</li>
+        <li><code>AudioLibraryRunQuiet</code>: Enable/Disable Audio Library Console Messages</li>
         <li><code>DefaultVolume</code>: The default volume when the bot starts (default=0.3)</li>
         <li><code>AudioDuck</code>: Enable Audio Ducking (off by default, use !duckaudio to toggle on and off)</li>
         <li><code>DuckingVolume</code>: The default audio ducking volume (How low the volume will drop down when ducking) (default=0.05)</li>
@@ -82,9 +83,10 @@
         </ul>
         <pre>
             [Media Settings]
-            FfmpegPath = vlc
+            FfmpegPath = ffmpeg
+            VlcPath = vlc
             UseStereoAudio = True
-            FfmpegRunQuiet = True
+            AudioLibraryRunQuiet = True
             DefaultVolume = 0.3
             AudioDuck = False
             DuckingVolume = 0.05
