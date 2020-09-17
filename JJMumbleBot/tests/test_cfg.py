@@ -73,7 +73,7 @@ class Test_Cfg:
         assert stereo_audio is True
 
     def test_vlc_quiet(self):
-        vlc_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_FFMPEG_QUIET)
+        vlc_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_AUDIO_LIB_QUIET)
         assert vlc_quiet is True
 
     def test_vlc_default_volume(self):

@@ -104,7 +104,7 @@ class Plugin(PluginBase):
                     "The playlist was generated and added to the audio queue.",
                     text_type='header',
                     box_align='left')
-                gs.aud_interface.play(auto_reconnect=True)
+                gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
             else:
                 gs.aud_interface.clear_dni()
                 gs.gui_service.quick_gui(
@@ -174,7 +174,7 @@ class Plugin(PluginBase):
                 track_obj=track_obj,
                 to_front=False
             )
-            gs.aud_interface.play(auto_reconnect=True)
+            gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
 
     def cmd_linkfront(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -233,7 +233,7 @@ class Plugin(PluginBase):
                 track_obj=track_obj,
                 to_front=True
             )
-            gs.aud_interface.play(auto_reconnect=True)
+            gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
 
     def cmd_ytsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
@@ -289,7 +289,7 @@ class Plugin(PluginBase):
                     to_front=False
                 )
                 md_settings.search_results = None
-                gs.aud_interface.play(auto_reconnect=True)
+                gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
             elif len(all_data) == 2:
                 if int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]) >= int(all_data[1]) >= 0:
                     song_data = md_utility.get_video_info(f"https://www.youtube.com{md_settings.search_results[int(all_data[1])]['href']}")
@@ -329,7 +329,7 @@ class Plugin(PluginBase):
                     to_front=False
                 )
                 md_settings.search_results = None
-                gs.aud_interface.play(auto_reconnect=True)
+                gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
             else:
                 md_settings.can_play = False
                 md_settings.search_results = None
