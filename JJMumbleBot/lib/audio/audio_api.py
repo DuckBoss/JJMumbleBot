@@ -266,7 +266,7 @@ class VLCInterface:
             if split_clbk[0] == self.status['plugin_name'] and split_clbk[1] == method_name:
                 global_settings.plugin_callbacks[clbk]()
 
-    def play(self, override=False):
+    def play(self, override=False, auto_reconnect=False):
         if not override:
             if self.status.get_status() == TrackStatus.PLAYING:
                 return
@@ -293,7 +293,7 @@ class VLCInterface:
         self.callback_check('on_play')
         if global_settings.audio_inst:
             audio_interface.stop_audio_instance()
-        audio_interface.create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'])
+        audio_interface.create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'], use_reconnect=auto_reconnect)
         self.status['start_time'] = int(time())
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
@@ -386,11 +386,11 @@ class VLCInterface:
             text_type='header',
             box_align='left')
 
-    def seek(self, seconds: int):
+    def seek(self, seconds: int, auto_reconnect=False):
         if self.status.is_playing():
             if global_settings.audio_inst:
                 audio_interface.stop_audio_instance()
-            audio_interface.create_audio_instance(self.status.get_track().uri, skipto=seconds)
+            audio_interface.create_audio_instance(self.status.get_track().uri, skipto=seconds, use_reconnect=auto_reconnect)
 
             self.status['start_time'] = int(time())
             self.status['pause_time'] = int(time())

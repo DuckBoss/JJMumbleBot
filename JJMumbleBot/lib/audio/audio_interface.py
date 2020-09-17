@@ -9,7 +9,7 @@ from threading import Thread
 import subprocess as sp
 
 
-def create_audio_instance(uri: str, skipto: int = 0):
+def create_audio_instance(uri: str, skipto: int = 0, use_reconnect=False):
     global_settings.audio_thread = Thread(
         target=create_audio_thread,
         args=(
@@ -18,6 +18,7 @@ def create_audio_instance(uri: str, skipto: int = 0):
             skipto,
             global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_FFMPEG_QUIET, fallback=True),
             global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO, fallback=True),
+            use_reconnect,
         ),
         daemon=True
     )
@@ -34,7 +35,8 @@ def stop_audio_instance():
         global_settings.audio_thread = None
 
 
-def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True):
+def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True,
+                        use_reconnect=False):
     if uri == '':
         return
 
@@ -49,37 +51,20 @@ def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool
             dprint(e)
         global_settings.audio_inst = None
 
+    params = [ffmpeg_path]
+    if quiet:
+        params.extend(["-loglevel", "quiet"])
+    if use_reconnect:
+        params.extend(["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2"])
+    params.extend(["-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+                   "-ab", "192k", "-ac", "2"])
     if stereo:
-        if quiet:
-            global_settings.audio_inst = sp.Popen(
-                [ffmpeg_path, "-loglevel", "quiet",
-                 "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2",
-                 "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
-                 "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
-                stdout=sp.PIPE, bufsize=1024
-            )
-        else:
-            global_settings.audio_inst = sp.Popen(
-                [ffmpeg_path,
-                 "-reconnect", "1", "-reconnect_at_eof", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2",
-                 "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
-                 "-ab", "192k", "-ac", "2", "-ar", "48000", "-threads", "8", "-"],
-                stdout=sp.PIPE, bufsize=1024
-            )
+        params.extend(["-ar", "48000", "-threads", "8", "-"])
     else:
-        if quiet:
-            global_settings.audio_inst = sp.Popen(
-                [ffmpeg_path, "-loglevel quiet", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
-                 "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
-                stdout=sp.PIPE, bufsize=1024
-            )
-        else:
-            global_settings.audio_inst = sp.Popen(
-                [ffmpeg_path, "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f",
-                 "s16le",
-                 "-ab", "192k", "-ac", "2", "-ar", "24000", "-threads", "8", "-"],
-                stdout=sp.PIPE, bufsize=1024
-            )
+        params.extend(["-ar", "24000", "-threads", "8", "-"])
+
+    global_settings.audio_inst = sp.Popen( params, stdout=sp.PIPE, bufsize=1024)
+
     rutils.unmute()
 
     while not global_settings.aud_interface.exit_flag and global_settings.audio_inst:
@@ -88,10 +73,13 @@ def create_audio_thread(ffmpeg_path: str, uri: str, skipto: int = 0, quiet: bool
         if global_settings.audio_inst:
             raw_music = global_settings.audio_inst.stdout.read(1024)
             if raw_music and global_settings.aud_interface.status.is_playing():
-                global_settings.mumble_inst.sound_output.add_sound(audioop.mul(raw_music, 2, global_settings.aud_interface.status.get_volume()))
+                global_settings.mumble_inst.sound_output.add_sound(
+                    audioop.mul(raw_music, 2, global_settings.aud_interface.status.get_volume()))
             else:
                 if global_settings.aud_interface.next_track():
-                    create_audio_thread(ffmpeg_path=ffmpeg_path, uri=global_settings.aud_interface.status.get_track().uri, skipto=0, quiet=quiet, stereo=stereo)
+                    create_audio_thread(ffmpeg_path=ffmpeg_path,
+                                        uri=global_settings.aud_interface.status.get_track().uri, skipto=0, quiet=quiet,
+                                        stereo=stereo)
                 else:
                     global_settings.aud_interface.reset()
                 return

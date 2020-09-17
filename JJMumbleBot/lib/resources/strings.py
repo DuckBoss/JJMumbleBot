@@ -104,5 +104,5 @@ P_THREAD_SINGLE = 'UseSingleThread'
 ###########################################################################
 # BOT META INFORMATION STRINGS
 META_NAME = "JJMumbleBot"
-META_VERSION = "4.2.1"
+META_VERSION = "4.2.2"
 ###########################################################################
