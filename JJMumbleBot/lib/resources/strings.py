@@ -12,7 +12,7 @@ C_LOGGING = 'Logging'
 P_USER_ID = 'UserID'
 P_USER_CERT = 'UserCertification'
 P_SERVER_RECONNECT = 'AutoReconnect'
-P_CHANNEL_DEF = 'DefaultChannel'
+P_DEFAULT_CHANNEL = 'DefaultChannel'
 P_DEFAULT_SU = 'DefaultSuperUser'
 P_SELF_REGISTER = "SelfRegister"
 P_USER_COMMENT = "DefaultComment"
@@ -61,6 +61,7 @@ P_PLUG_ALLOWED_CHANNELS = 'AllowedRootChannelsForTempChannels'
 # Logging
 P_LOG_ENABLE = 'EnableLogging'
 P_LOG_MAX = 'MaxLogs'
+P_LOG_SIZE_MAX = 'MaxLogSize'
 P_LOG_MESSAGES = 'HideMessageLogging'
 P_LOG_DIR = 'LogDirectory'
 ###########################################################################
@@ -105,5 +106,5 @@ P_THREAD_SINGLE = 'UseSingleThread'
 ###########################################################################
 # BOT META INFORMATION STRINGS
 META_NAME = "JJMumbleBot"
-META_VERSION = "4.2.2"
+META_VERSION = "4.3.0"
 ###########################################################################

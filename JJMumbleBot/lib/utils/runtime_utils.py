@@ -160,7 +160,7 @@ def get_channel(channel_name):
 
 
 def get_default_channel():
-    return global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]
+    return global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]
 
 
 def get_my_channel():
@@ -211,7 +211,7 @@ def make_channel(root_channel, channel_name):
 
 
 def leave_channel():
-    default_channel = get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF])
+    default_channel = get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL])
     default_channel.move_in()
 
 

@@ -19,7 +19,7 @@ from JJMumbleBot.lib.utils.print_utils import rprint
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
-from JJMumbleBot.lib.audio.audio_api import VLCInterface
+from JJMumbleBot.lib.audio.audio_api import AudioLibraryInterface
 from time import sleep, time
 import audioop
 from datetime import datetime
@@ -59,7 +59,21 @@ class BotService:
         log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)
         rprint("######### Initialized Internal Database #########", origin=L_DATABASE)
         # Initialize major directories.
-        dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
+        if global_settings.cfg.get(C_MEDIA_SETTINGS, P_TEMP_MED_DIR, fallback=None):
+            dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
+        else:
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory')
+            global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR] = f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory'
+        if global_settings.cfg.get(C_MEDIA_SETTINGS, P_PERM_MEDIA_DIR, fallback=None):
+            dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR])
+        else:
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/PermanentMediaDirectory')
+            global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/PermanentMediaDirectory'
+        if global_settings.cfg.get(C_MEDIA_SETTINGS, P_LOG_DIR, fallback=None):
+            dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_LOG_DIR])
+        else:
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/Logs')
+            global_settings.cfg[C_MEDIA_SETTINGS][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/Logs'
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
         log(INFO, "######### Initialized Temporary Directories #########", origin=L_STARTUP)
@@ -69,7 +83,7 @@ class BotService:
         log(INFO, "######### Initialized PGUI #########", origin=L_STARTUP)
         rprint("######### Initialized PGUI #########", origin=L_STARTUP)
         # Initialize VLC interface.
-        global_settings.aud_interface = VLCInterface()
+        global_settings.aud_interface = AudioLibraryInterface()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
@@ -143,7 +157,7 @@ class BotService:
         global_settings.mumble_inst.users.myself.comment(
             f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
         runtime_utils.mute()
-        runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]).move_in()
+        runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]).move_in()
 
     def message_received(self, message):
         text = message[0]

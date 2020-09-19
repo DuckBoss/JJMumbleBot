@@ -25,7 +25,7 @@ class Test_Cfg:
         assert user_cert == "CERT_FILE_PATH"
 
     def test_def_channel(self):
-        default_channel = self.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]
+        default_channel = self.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]
         assert default_channel == "DEFAULT_CHANNEL_NAME"
 
     def test_super_user(self):

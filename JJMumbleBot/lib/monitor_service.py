@@ -60,7 +60,6 @@ def get_all_online():
         for user in all_users_in_channel:
             users_in_channels[channel_id][user["name"]] = {
                 f'name': f'{user["name"]}',
-                f'user_id': f'{user["user_id"]}',
                 f'channel_id': f'{user["channel_id"]}'
             }
 

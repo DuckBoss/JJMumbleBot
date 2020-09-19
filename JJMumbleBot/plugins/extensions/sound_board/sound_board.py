@@ -9,7 +9,7 @@ from JJMumbleBot.plugins.extensions.sound_board.utility import sound_board_utili
 from JJMumbleBot.plugins.extensions.sound_board.utility import settings as sbu_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
+from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo, AudioLibrary
 from os import path
 import random
 from datetime import datetime
@@ -144,7 +144,8 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.aud_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
+                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbrandomnow(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -168,7 +169,7 @@ class Plugin(PluginBase):
             to_front=False,
             quiet=True
         )
-        gs.aud_interface.play(override=True)
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
 
     def cmd_sbsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
@@ -224,7 +225,8 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False,
         )
-        gs.aud_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
+                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbnow(self, data):
         all_data = data.message.strip().split()
@@ -261,7 +263,7 @@ class Plugin(PluginBase):
             to_front=False,
             quiet=True
         )
-        gs.aud_interface.play(override=True)
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
 
     def cmd_sbquiet(self, data):
         all_data = data.message.strip().split()
@@ -298,7 +300,8 @@ class Plugin(PluginBase):
             to_front=False,
             quiet=True
         )
-        gs.aud_interface.play(override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
+                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbquietnow(self, data):
         all_data = data.message.strip().split()
@@ -335,4 +338,4 @@ class Plugin(PluginBase):
             to_front=False,
             quiet=True
         )
-        gs.aud_interface.play(override=True)
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)

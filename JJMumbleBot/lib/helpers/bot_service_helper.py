@@ -26,9 +26,6 @@ class BotServiceHelper:
 
     @staticmethod
     def initialize_settings():
-        import configparser
-        global_settings.cfg = configparser.ConfigParser()
-        global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
         global_settings.mtd_callbacks = Callbacks()
         global_settings.cmd_callbacks = CommandCallbacks()
         global_settings.plugin_callbacks = Callbacks()
@@ -38,7 +35,8 @@ class BotServiceHelper:
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
         runtime_settings.cmd_token = global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]
         runtime_settings.use_logging = global_settings.cfg.getboolean(C_LOGGING, P_LOG_ENABLE, fallback=False)
-        runtime_settings.max_logs = global_settings.cfg[C_LOGGING][P_LOG_MAX]
+        runtime_settings.max_logs = int(global_settings.cfg[C_LOGGING][P_LOG_MAX])
+        runtime_settings.max_log_size = int(global_settings.cfg[C_LOGGING][P_LOG_SIZE_MAX])
         runtime_settings.cmd_queue_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_QUEUE_LIM])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_HIST_LIM])
         runtime_settings.can_duck = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO, fallback=False)

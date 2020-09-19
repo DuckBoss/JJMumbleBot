@@ -27,13 +27,30 @@ class Plugin(PluginBase):
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
 
     def cmd_echo(self, data):
-        to_echo = data.message.strip().split(' ', 1)[1]
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            rprint(f"Incorrect format! Format: {rutils.get_command_token()}echo 'message'")
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}echo 'message'",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        to_echo = split_data[1]
         gs.gui_service.quick_gui(to_echo, text_type='header', box_align='left', ignore_whisper=True)
         dprint(f"Echo:[{to_echo}]", origin=L_COMMAND)
         log(INFO, f"Echo:[{to_echo}]", origin=L_COMMAND)
 
     def cmd_msg(self, data):
         split_data = data.message.strip().split(' ', 2)
+        if len(split_data) != 3:
+            rprint(f"Incorrect format! Format: {rutils.get_command_token()}msg 'username' 'message'")
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}msg 'username' 'message'",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
         send_to = split_data[1]
         message_to_send = split_data[2]
 
@@ -44,7 +61,16 @@ class Plugin(PluginBase):
         log(INFO, f"Msg:[{send_to}]->[{message_to_send}]", origin=L_COMMAND)
 
     def cmd_log(self, data):
-        to_log = data.message.strip().split(' ', 1)[1]
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            rprint(f"Incorrect format! Format: {rutils.get_command_token()}log 'message'")
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}log 'message'",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        to_log = split_data[1]
         dprint(f"Manually Logged: [{to_log}]", origin=L_LOGGING)
         log(INFO, f'Manually Logged: [{to_log}]', origin=L_LOGGING)
 
@@ -63,7 +89,16 @@ class Plugin(PluginBase):
 
     def cmd_move(self, data):
         data_actor = gs.mumble_inst.users[data.actor]['name']
-        channel_name = data.message.strip().split(' ', 1)[1]
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            rprint(f"Incorrect format! Format: {rutils.get_command_token()}move 'channel_name'")
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}move 'channel_name'",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        channel_name = split_data[1]
         if channel_name == "default" or channel_name == "Default":
             channel_name = rutils.get_default_channel()
         channel_search = rutils.get_channel(channel_name)
@@ -78,7 +113,16 @@ class Plugin(PluginBase):
 
     def cmd_makechannel(self, data):
         data_actor = gs.mumble_inst.users[data.actor]['name']
-        channel_name = data.message.strip().split(' ', 1)[1]
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            rprint(f"Incorrect format! Format: {rutils.get_command_token()}makechannel 'channel_name'")
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}makechannel 'channel_name'",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        channel_name = split_data[1]
         rutils.make_channel(rutils.get_my_channel(), channel_name)
         dprint(f"Made a channel: {channel_name} by {data_actor}", origin=L_COMMAND)
         log(INFO, f"Made a channel: {channel_name} by {data_actor}", origin=L_COMMAND)
@@ -103,27 +147,34 @@ class Plugin(PluginBase):
         log(INFO, f"Joined user: {data_actor['name']}", origin=L_COMMAND)
 
     def cmd_joinuser(self, data):
-        try:
-            to_join = data.message.strip().split(' ', 1)[1]
-            all_users = rutils.get_all_users()
-            for user_id in rutils.get_all_users():
-                if all_users[user_id]['name'] == to_join:
-                    gs.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
-                                             box_align='left', ignore_whisper=True)
-                    gs.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
-                    dprint(f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
-                    log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
-        except IndexError:
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
             rprint(f"Incorrect format! Format: {rutils.get_command_token()}joinuser 'username'")
             gs.gui_service.quick_gui(
                 f"Incorrect format! Format: {rutils.get_command_token()}joinuser 'username'",
                 text_type='header',
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
+            return
+        to_join = split_data[1]
+        all_users = rutils.get_all_users()
+        for user_id in rutils.get_all_users():
+            if all_users[user_id]['name'] == to_join:
+                gs.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
+                                         box_align='left', ignore_whisper=True)
+                gs.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
+                dprint(f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
+                log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND)
 
     def cmd_cmdsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
+            rprint(f"Incorrect format! Format: {rutils.get_command_token()}cmdsearch 'command'")
+            gs.gui_service.quick_gui(
+                f"Incorrect format! Format: {rutils.get_command_token()}cmdsearch 'command'",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
             return
         search_query = all_data[1].strip()
 

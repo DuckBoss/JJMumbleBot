@@ -6,6 +6,7 @@ from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
 from JJMumbleBot.lib.utils import print_utils
+from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.plugins.extensions.media.utility import settings
 from JJMumbleBot.plugins.extensions.media.utility.youtube_search import YoutubeSearch
 import os
@@ -132,12 +133,13 @@ def download_thumbnail(cur_track):
     try:
         ydl_opts = {
             'quiet': True,
-            'logger': gs.log_service,
             'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg',
             'skip_download': True,
             'writethumbnail': True,
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         }
+        if runtime_settings.use_logging:
+            ydl_opts['logger'] = gs.log_service
         if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
             ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
@@ -177,10 +179,11 @@ def get_video_info(video_url):
             'quiet': True,
             'format': 'bestaudio/best',
             'noplaylist': True,
-            'logger': gs.log_service,
             'skip_download': True,
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
         }
+        if runtime_settings.use_logging:
+            ydl_opts['logger'] = gs.log_service
         if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
             ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
 
@@ -207,12 +210,13 @@ def get_playlist_info(playlist_url):
         'format': 'bestaudio/best',
         'noplaylist': False,
         'extract_flat': True,
-        'logger': gs.log_service,
         'skip_download': True,
         'writethumbnail': False,
         'ignoreerrors': True,
         'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
     }
+    if runtime_settings.use_logging:
+        ydl_opts['logger'] = gs.log_service
     if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
         ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
     if settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
@@ -221,13 +225,14 @@ def get_playlist_info(playlist_url):
             'format': 'bestaudio/best',
             'noplaylist': False,
             'extract_flat': True,
-            'logger': gs.log_service,
             'skip_download': True,
             'writethumbnail': False,
             'ignoreerrors': True,
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
             'playlistend': int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN])
         }
+        if runtime_settings.use_logging:
+            ydl_opts['logger'] = gs.log_service
         if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
             ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:

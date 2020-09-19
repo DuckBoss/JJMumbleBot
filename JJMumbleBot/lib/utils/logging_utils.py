@@ -13,7 +13,7 @@ def initialize_logging():
     global_settings.log_service = logging.getLogger("RuntimeLogging")
     global_settings.log_service.setLevel(logging.DEBUG)
 
-    handler = RotatingFileHandler(log_file_name, maxBytes=150000, backupCount=int(runtime_settings.max_logs))
+    handler = RotatingFileHandler(log_file_name, maxBytes=int(runtime_settings.max_log_size), backupCount=int(runtime_settings.max_logs))
     handler.setLevel(logging.INFO)
     log_formatter = logging.Formatter('[%(asctime)s]-[%(levelname)s]-%(message)s')
     handler.setFormatter(log_formatter)
