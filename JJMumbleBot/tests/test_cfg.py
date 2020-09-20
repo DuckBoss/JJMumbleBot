@@ -18,27 +18,23 @@ class Test_Cfg:
     # Connection Config Tests
     def test_user_id(self):
         user_id = self.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
-        assert user_id == "JJMumbleBot"
+        assert user_id == "USERNAME"
 
     def test_user_cert(self):
-        user_cert = self.cfg.get(C_CONNECTION_SETTINGS, P_USER_CERT, fallback=None)
-        assert user_cert is None
+        user_cert = self.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
+        assert user_cert == "CERT_FILE_PATH"
 
     def test_def_channel(self):
         default_channel = self.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]
-        assert default_channel == "Root"
+        assert default_channel == "DEFAULT_CHANNEL_NAME"
 
     def test_super_user(self):
-        super_user = self.cfg.get(C_CONNECTION_SETTINGS, P_DEFAULT_SU)
-        assert super_user is None
+        super_user = self.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_SU]
+        assert super_user == "DEFAULT_SUPER_USER_NAME"
 
     def test_self_register(self):
         self_register = self.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER)
-        assert self_register is False
-
-    def test_auto_reconnect(self):
-        auto_reconnect = self.cfg.getboolean(C_CONNECTION_SETTINGS, P_SERVER_RECONNECT)
-        assert auto_reconnect is False
+        assert self_register is True
 
     def test_def_comment(self):
         default_comment = self.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT]
@@ -68,13 +64,9 @@ class Test_Cfg:
     #################################
 
     # Media Settings Config Tests
-    def test_ffmpeg_location(self):
+    def test_vlc_location(self):
         vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH]
         assert vlc_location == "ffmpeg"
-
-    def test_vlc_location(self):
-        vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH]
-        assert vlc_location == "vlc"
 
     def test_stereo_audio(self):
         stereo_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO)
