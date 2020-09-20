@@ -174,7 +174,7 @@ if __name__ == "__main__":
             copy('/app/JJMumbleBot/cfg/templates/aliases_template.csv', '/app/JJMumbleBot/cfg/global_aliases.csv')
     '''
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
-        copy(f'{dir_utils.get_main_dir()}/cfg/templates/config_docker_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
+        copy(f'{dir_utils.get_main_dir()}/cfg/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
         copy(f'{dir_utils.get_main_dir()}/cfg/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
 
