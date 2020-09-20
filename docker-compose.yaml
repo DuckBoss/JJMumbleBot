@@ -4,4 +4,6 @@ services:
     build: .
     # Expose all ports to localhost
     network_mode: "host"
-    command: python /app -ip 127.0.0.1 -port 64738
+    entrypoint: python /app 
+    # This parameters can be overrided in docker-compose run command
+    command: -ip 127.0.0.1 -port 64738
