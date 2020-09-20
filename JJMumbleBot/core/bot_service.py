@@ -33,6 +33,14 @@ class BotService:
         global_settings.clbk_service = CallbackService()
         # Initialize user settings.
         BotServiceHelper.initialize_settings()
+
+        # Initialize logging directory if unavailable.
+        if global_settings.cfg.get(C_LOGGING, P_LOG_DIR, fallback=None):
+            dir_utils.make_directory(global_settings.cfg[C_LOGGING][P_LOG_DIR])
+        else:
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/Logs')
+            global_settings.cfg[C_LOGGING][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/Logs'
+
         # Initialize logging services.
         initialize_logging()
 
@@ -63,17 +71,14 @@ class BotService:
             dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
         else:
             dir_utils.make_directory(f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory')
-            global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR] = f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory'
+            global_settings.cfg[C_MEDIA_SETTINGS][
+                P_TEMP_MED_DIR] = f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory'
         if global_settings.cfg.get(C_MEDIA_SETTINGS, P_PERM_MEDIA_DIR, fallback=None):
             dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR])
         else:
             dir_utils.make_directory(f'{dir_utils.get_main_dir()}/PermanentMediaDirectory')
-            global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/PermanentMediaDirectory'
-        if global_settings.cfg.get(C_MEDIA_SETTINGS, P_LOG_DIR, fallback=None):
-            dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_LOG_DIR])
-        else:
-            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/Logs')
-            global_settings.cfg[C_MEDIA_SETTINGS][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/Logs'
+            global_settings.cfg[C_MEDIA_SETTINGS][
+                P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/PermanentMediaDirectory'
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
         log(INFO, "######### Initialized Temporary Directories #########", origin=L_STARTUP)
@@ -103,6 +108,14 @@ class BotService:
         if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE) and global_settings.safe_mode is False:
             log(INFO, "######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
             rprint("######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
+            from JJMumbleBot.lib.database import InsertDB
+            from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
+            from JJMumbleBot.lib.privileges import Privileges
+            if InsertDB.insert_new_user(db_conn=get_memory_db(),
+                                        username=global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]):
+                InsertDB.insert_new_permission(db_conn=get_memory_db(),
+                                               username=global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID],
+                                               permission_level=int(Privileges.SUPERUSER.value))
             from JJMumbleBot.web import web_helper
             web_helper.initialize_web()
             log(INFO, "######### Initialized Web Interface #########", origin=L_WEB_INTERFACE)
@@ -111,8 +124,9 @@ class BotService:
         BotService.loop()
 
     def initialize_mumble(self, md: MumbleData):
-        global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id, reconnect=md.auto_reconnect,
-                                                  password=md.password, certfile=md.certificate, stereo=md.stereo)
+        global_settings.mumble_inst = pymumble.Mumble(md.ip_address, port=md.port, user=md.user_id,
+                                                      reconnect=md.auto_reconnect,
+                                                      password=md.password, certfile=md.certificate, stereo=md.stereo)
         # Callback - message_received
         global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED,
                                                            global_settings.clbk_service.message_received)
@@ -239,22 +253,27 @@ class BotService:
     def sound_received(self, audio_data):
         user = audio_data[0]
         audio_chunk = audio_data[1]
-        if audioop.rms(audio_chunk.pcm, 2) > global_settings.aud_interface.status['ducking_threshold'] and global_settings.aud_interface.status['duck_audio']:
+        if audioop.rms(audio_chunk.pcm, 2) > global_settings.aud_interface.status['ducking_threshold'] and \
+                global_settings.aud_interface.status['duck_audio']:
             global_settings.aud_interface.audio_utilities.duck_volume()
             global_settings.aud_interface.status['duck_start'] = time()
-            global_settings.aud_interface.status['duck_end'] = time() + global_settings.aud_interface.audio_utilities.get_ducking_delay()
+            global_settings.aud_interface.status[
+                'duck_end'] = time() + global_settings.aud_interface.audio_utilities.get_ducking_delay()
 
     @staticmethod
     def loop():
         try:
             while not global_settings.exit_flag:
-                if time() > global_settings.aud_interface.status['duck_end'] and global_settings.aud_interface.audio_utilities.is_ducking():
+                if time() > global_settings.aud_interface.status[
+                    'duck_end'] and global_settings.aud_interface.audio_utilities.is_ducking():
                     global_settings.aud_interface.audio_utilities.unduck_volume()
                 sleep(runtime_settings.tick_rate)
             BotService.stop()
         except KeyboardInterrupt:
-            rprint(f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).", origin=L_SHUTDOWN)
-            log(INFO, f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).", origin=L_SHUTDOWN)
+            rprint(f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).",
+                   origin=L_SHUTDOWN)
+            log(INFO, f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).",
+                origin=L_SHUTDOWN)
             runtime_utils.exit_bot()
             BotService.stop()
 
