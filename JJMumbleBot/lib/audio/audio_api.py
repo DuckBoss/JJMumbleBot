@@ -399,10 +399,6 @@ class AudioLibraryInterface:
         if self.status.is_playing():
             if global_settings.audio_inst:
                 stop_audio_instance()
-
-            auto_reconnect = False
-            if self.status['audio_library'] == AudioLibrary.VLC:
-                auto_reconnect = True
             create_audio_instance(self.status.get_track().uri, skipto=seconds,
                                                   audio_lib=self.status['audio_library'])
 
