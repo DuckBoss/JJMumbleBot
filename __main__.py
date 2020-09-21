@@ -193,7 +193,7 @@ if __name__ == "__main__":
               '-newkey', 'rsa:2048', '-keyout', '/app/JJMumbleBot/cfg/jjmumblebot.pem',
               '-out', '/app/JJMumbleBot/cfg/jjmumblebot.pem', '-subj',
               f'/CN={global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]}'])
-            global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT] = '/app/JJMumbleBot/cfg/jjmumblebot.pem'
+            global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT] = f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.pem'
     if args.server_cert:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT] = args.server_cert
     if args.auto_reconnect:
