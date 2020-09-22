@@ -178,7 +178,6 @@ if __name__ == "__main__":
 
     if args.generate_cert:
         from subprocess import call
-        from os import path
         if not path.exists('/app/JJMumbleBot/cfg/jjmumblebot.pem'):
             call(['openssl', 'req', '-x509', '-nodes', '-days', '3650',
               '-newkey', 'rsa:2048', '-keyout', '/app/JJMumbleBot/cfg/jjmumblebot.pem',
