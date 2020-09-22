@@ -162,21 +162,10 @@ if __name__ == "__main__":
         raise SysArgError("It looks like both verbose mode and quiet mode are enabled.\n"
                           "Only one or the other can be used!")
 
-    '''
-    # Setup docker config if docker mode is enabled.
-    if args.docker_mode:
-        # Copy over the docker template config file and aliases file if they are not preconfigured.
-        from shutil import copy
-        from os import path
-        if not path.exists('/app/JJMumbleBot/cfg/config.ini'):
-            copy('/app/JJMumbleBot/cfg/templates/config_docker_template.ini', '/app/JJMumbleBot/cfg/config.ini')
-        if not path.exists('/app/JJMumbleBot/cfg/global_aliases.csv'):
-            copy('/app/JJMumbleBot/cfg/templates/aliases_template.csv', '/app/JJMumbleBot/cfg/global_aliases.csv')
-    '''
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
-        copy(f'{dir_utils.get_main_dir()}/cfg/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
+        copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
-        copy(f'{dir_utils.get_main_dir()}/cfg/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+        copy(f'{dir_utils.get_main_dir()}/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
 
     global_settings.cfg = configparser.ConfigParser()
     global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
