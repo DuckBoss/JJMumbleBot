@@ -9,7 +9,7 @@ class Test_Cfg:
     def setup_method(self):
         # Initialize configs.
         self.cfg = configparser.ConfigParser()
-        self.cfg.read(f"{get_main_dir()}/cfg/templates/config_template.ini")
+        self.cfg.read(f"{get_main_dir()}/templates/config_template.ini")
 
     def test_version(self):
         bot_version = get_version()
