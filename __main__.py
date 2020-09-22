@@ -166,9 +166,11 @@ if __name__ == "__main__":
         copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
         copy(f'{dir_utils.get_main_dir()}/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/plugins/'):
+        dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/plugins/')
 
     global_settings.cfg = configparser.ConfigParser()
-    global_settings.cfg.read(f"{dir_utils.get_main_dir()}/cfg/config.ini")
+    global_settings.cfg.read(f'{dir_utils.get_main_dir()}/cfg/config.ini')
 
     # Overwrite connection settings if the launch parameter is provided.
     if args.server_username:
