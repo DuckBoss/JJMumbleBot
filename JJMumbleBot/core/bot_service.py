@@ -38,8 +38,8 @@ class BotService:
         if global_settings.cfg.get(C_LOGGING, P_LOG_DIR, fallback=None):
             dir_utils.make_directory(global_settings.cfg[C_LOGGING][P_LOG_DIR])
         else:
-            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/Logs')
-            global_settings.cfg[C_LOGGING][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/Logs'
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/logs')
+            global_settings.cfg[C_LOGGING][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/cfg/logs'
 
         # Initialize logging services.
         initialize_logging()
@@ -70,15 +70,15 @@ class BotService:
         if global_settings.cfg.get(C_MEDIA_SETTINGS, P_TEMP_MED_DIR, fallback=None):
             dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
         else:
-            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory')
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/temporary_media_directory')
             global_settings.cfg[C_MEDIA_SETTINGS][
-                P_TEMP_MED_DIR] = f'{dir_utils.get_main_dir()}/TemporaryMediaDirectory'
+                P_TEMP_MED_DIR] = f'{dir_utils.get_main_dir()}/cfg/temporary_media_directory'
         if global_settings.cfg.get(C_MEDIA_SETTINGS, P_PERM_MEDIA_DIR, fallback=None):
             dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR])
         else:
-            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/PermanentMediaDirectory')
+            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/permanent_media_directory')
             global_settings.cfg[C_MEDIA_SETTINGS][
-                P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/PermanentMediaDirectory'
+                P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/cfg/permanent_media_directory'
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
         log(INFO, "######### Initialized Temporary Directories #########", origin=L_STARTUP)

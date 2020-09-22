@@ -15,7 +15,7 @@ def get_audio_info():
 
     modified_audio_data["audio_data"]["track"] = copied_status.get_track().to_dict()
     modified_audio_data["audio_data"]["status"] = copied_status.get_status().value
-    modified_audio_data["audio_data"]["audio_library"] = copied_status['audio_library']
+    modified_audio_data["audio_data"]["audio_library"] = ""
 
     if len(modified_audio_data["audio_data"]["img_uri_hashed"]) > 1:
         img_hashed_uri = modified_audio_data["audio_data"]["img_uri_hashed"]
