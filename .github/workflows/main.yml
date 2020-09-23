@@ -1,0 +1,2 @@
+- name: Build and publish Docker Image to GitHub Packages Registry
+  uses: VaultVulp/gp-docker-action@1.1.7
