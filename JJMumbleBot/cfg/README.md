@@ -1,0 +1,1 @@
+## This directory should contain your config.ini, global_aliases.csv, jjmumblebot.db, and mumble certificate if needed.
