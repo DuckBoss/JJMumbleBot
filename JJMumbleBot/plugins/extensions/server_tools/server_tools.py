@@ -11,7 +11,7 @@ from JJMumbleBot.plugins.extensions.sound_board.utility.sound_board_utility impo
 from JJMumbleBot.plugins.extensions.sound_board.utility.settings import plugin_name as sb_plugin_name
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token, get_users_in_my_channel
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
+from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo, AudioLibrary
 from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 from os import path
 
@@ -27,6 +27,8 @@ class Plugin(PluginBase):
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         st_settings.server_tools_metadata = self.metadata
         st_settings.plugin_name = self.plugin_name
+        if not st_utility.create_empty_user_connections():
+            self.quit()
         self.register_callbacks()
         rprint(
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
@@ -96,7 +98,27 @@ class Plugin(PluginBase):
             to_front=False,
             quiet=True
         )
-        gs.aud_interface.play(override=True)
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
+
+    def cmd_toggleuserconnectionsound(self, data):
+        data_actor = gs.mumble_inst.users[data.actor]
+        current_status = not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False)
+        self.metadata[C_PLUGIN_SET][P_PLAY_AUDIO_CLIP_ON_USER_JOIN] = f"{'True' if current_status else 'False'}"
+        try:
+            with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
+                self.metadata.write(metadata_file)
+            self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+            gs.gui_service.quick_gui(f"{'Enabled' if current_status else 'Disabled'} user connection sounds in "
+                                     f"the server_tools metadata.ini file.",
+                                     text_type='header',
+                                     box_align='left',
+                                     user=data_actor['name'])
+        except IOError:
+            gs.gui_service.quick_gui(f"There was an error saving the {self.plugin_name} metadata to the metadata.ini file.",
+                                     text_type='header',
+                                     box_align='left',
+                                     user=data_actor['name'])
+            return
 
     def cmd_clearuserconnectionsound(self, data):
         all_data = data.message.strip().split(' ', 1)
@@ -137,7 +159,7 @@ class Plugin(PluginBase):
             return
         self.metadata[C_PLUGIN_SET][P_GENERIC_CLIP_TO_PLAY_ON_USER_JOIN] = audio_clip_name
         try:
-            with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'wb') as metadata_file:
+            with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
                 self.metadata.write(metadata_file)
             self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
             gs.gui_service.quick_gui(
@@ -193,6 +215,7 @@ class Plugin(PluginBase):
             return
 
         username = all_data[1]
+        st_utility.read_user_connections()
         if username not in st_settings.user_connections:
             gs.gui_service.quick_gui(f"The provided username was not found in the user connections dictionary."
                                      f"<br>You can add a new username to the dictionary with '{get_command_token()}setuserconnectionsound'",

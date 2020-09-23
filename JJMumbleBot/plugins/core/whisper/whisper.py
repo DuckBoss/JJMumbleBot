@@ -60,7 +60,7 @@ class Plugin(PluginBase):
         try:
             parameter = all_data[1]
             if parameter == GS.cfg[C_CONNECTION_SETTINGS][P_USER_ID]:
-                GS.log_service.info("I can't set the whisper target to myself!")
+                log(INFO, "I can't set the whisper target to myself!")
                 GS.gui_service.quick_gui("I can't set the whisper target to myself!", text_type='header',
                                          box_align='left', user=data_actor['name'],
                                          ignore_whisper=True)
@@ -197,7 +197,7 @@ class Plugin(PluginBase):
             GS.gui_service.quick_gui(f"Added whisper to multiple users!", text_type='header',
                                      box_align='left', user=data_actor['name'],
                                      ignore_whisper=True)
-            GS.log_service.info(f"Added whisper to multiple users!")
+            log(INFO, f"Added whisper to multiple users!")
         except IndexError:
             GS.gui_service.quick_gui(
                 f"Invalid whisper command!<br>Command format: {rutils.get_command_token()}setwhisperusers username0,username1,...",

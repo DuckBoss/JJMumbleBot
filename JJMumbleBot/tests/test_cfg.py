@@ -9,7 +9,7 @@ class Test_Cfg:
     def setup_method(self):
         # Initialize configs.
         self.cfg = configparser.ConfigParser()
-        self.cfg.read(f"{get_main_dir()}/cfg/templates/config_template.ini")
+        self.cfg.read(f"{get_main_dir()}/templates/config_template.ini")
 
     def test_version(self):
         bot_version = get_version()
@@ -18,23 +18,27 @@ class Test_Cfg:
     # Connection Config Tests
     def test_user_id(self):
         user_id = self.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
-        assert user_id == "USERNAME"
+        assert user_id == "JJMumbleBot"
 
     def test_user_cert(self):
         user_cert = self.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
-        assert user_cert == "CERT_FILE_PATH"
+        assert user_cert == ""
 
     def test_def_channel(self):
-        default_channel = self.cfg[C_CONNECTION_SETTINGS][P_CHANNEL_DEF]
-        assert default_channel == "DEFAULT_CHANNEL_NAME"
+        default_channel = self.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]
+        assert default_channel == "Root"
 
     def test_super_user(self):
         super_user = self.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_SU]
-        assert super_user == "DEFAULT_SUPER_USER_NAME"
+        assert super_user == ""
 
     def test_self_register(self):
         self_register = self.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER)
-        assert self_register is True
+        assert self_register is False
+
+    def test_auto_reconnect(self):
+        auto_reconnect = self.cfg.getboolean(C_CONNECTION_SETTINGS, P_SERVER_RECONNECT)
+        assert auto_reconnect is False
 
     def test_def_comment(self):
         default_comment = self.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT]
@@ -64,9 +68,13 @@ class Test_Cfg:
     #################################
 
     # Media Settings Config Tests
-    def test_vlc_location(self):
+    def test_ffmpeg_location(self):
         vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH]
         assert vlc_location == "ffmpeg"
+
+    def test_vlc_location(self):
+        vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH]
+        assert vlc_location == "vlc"
 
     def test_stereo_audio(self):
         stereo_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO)
@@ -110,11 +118,11 @@ class Test_Cfg:
 
     def test_temp_media_directory(self):
         temp_media_directory = self.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]
-        assert temp_media_directory == "TEMP_MEDIA_DIR_PATH"
+        assert temp_media_directory == ""
 
     def test_perm_media_directory(self):
         perm_media_directory = self.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]
-        assert perm_media_directory == "PERM_MEDIA_DIR_PATH"
+        assert perm_media_directory == ""
     #################################
 
     # Logging Config Tests
@@ -126,13 +134,17 @@ class Test_Cfg:
         max_log_limit = int(self.cfg[C_LOGGING][P_LOG_MAX])
         assert max_log_limit == 20
 
+    def test_max_log_size(self):
+        max_log_size = int(self.cfg[C_LOGGING][P_LOG_SIZE_MAX])
+        assert max_log_size == 150000
+
     def test_hide_message_logging(self):
         hide_message_logging = self.cfg.getboolean(C_LOGGING, P_LOG_MESSAGES)
         assert hide_message_logging is True
 
     def test_log_directory(self):
         log_directory = self.cfg[C_LOGGING][P_LOG_DIR]
-        assert log_directory == "LOGS_DIR_PATH"
+        assert log_directory == ""
     #################################
 
     # Plugin Config Tests
@@ -152,7 +164,7 @@ class Test_Cfg:
     # Main Settings Config Tests
     def test_enable_database_backup(self):
         enable_database_backup = self.cfg.getboolean(C_MAIN_SETTINGS, P_DB_BACKUP)
-        assert enable_database_backup is True
+        assert enable_database_backup is False
 
     def test_command_tick_rate(self):
         command_tick_rate = self.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE]
@@ -160,11 +172,11 @@ class Test_Cfg:
 
     def test_command_multi_lim(self):
         command_multi_lim = int(self.cfg[C_MAIN_SETTINGS][P_CMD_MULTI_LIM])
-        assert command_multi_lim == 100
+        assert command_multi_lim == 200
 
     def test_command_queue_lim(self):
         command_queue_lim = int(self.cfg[C_MAIN_SETTINGS][P_CMD_QUEUE_LIM])
-        assert command_queue_lim == 500
+        assert command_queue_lim == 600
 
     def test_command_token(self):
         command_tick_rate = self.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]
@@ -194,11 +206,11 @@ class Test_Cfg:
 
     def test_canvas_text_color(self):
         canvas_text_color = self.cfg[C_PGUI_SETTINGS][P_CANVAS_TXT_COL]
-        assert canvas_text_color == "white"
+        assert canvas_text_color == "Snow"
 
     def test_text_def_font(self):
         canvas_def_font = self.cfg[C_PGUI_SETTINGS][P_TXT_DEFAULT_FONT]
-        assert canvas_def_font == "Calibri"
+        assert canvas_def_font == "Georgia"
 
     def test_text_header_color(self):
         text_header_color = self.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]

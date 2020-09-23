@@ -3,7 +3,7 @@ from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.lib.audio.audio_api import TrackInfo, TrackType
+from JJMumbleBot.lib.audio.audio_api import TrackInfo, TrackType, AudioLibrary
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.media.resources.strings import *
@@ -104,7 +104,7 @@ class Plugin(PluginBase):
                     "The playlist was generated and added to the audio queue.",
                     text_type='header',
                     box_align='left')
-                gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
+                gs.aud_interface.play(audio_lib=AudioLibrary.VLC)
             else:
                 gs.aud_interface.clear_dni()
                 gs.gui_service.quick_gui(
@@ -174,7 +174,7 @@ class Plugin(PluginBase):
                 track_obj=track_obj,
                 to_front=False
             )
-            gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
+            gs.aud_interface.play(audio_lib=AudioLibrary.VLC)
 
     def cmd_linkfront(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -233,7 +233,7 @@ class Plugin(PluginBase):
                 track_obj=track_obj,
                 to_front=True
             )
-            gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
+            gs.aud_interface.play(audio_lib=AudioLibrary.VLC)
 
     def cmd_ytsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
@@ -289,7 +289,7 @@ class Plugin(PluginBase):
                     to_front=False
                 )
                 md_settings.search_results = None
-                gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
+                gs.aud_interface.play(audio_lib=AudioLibrary.VLC)
             elif len(all_data) == 2:
                 if int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]) >= int(all_data[1]) >= 0:
                     song_data = md_utility.get_video_info(f"https://www.youtube.com{md_settings.search_results[int(all_data[1])]['href']}")
@@ -329,7 +329,7 @@ class Plugin(PluginBase):
                     to_front=False
                 )
                 md_settings.search_results = None
-                gs.aud_interface.play(audio_lib='vlc', auto_reconnect=True)
+                gs.aud_interface.play(audio_lib=AudioLibrary.VLC)
             else:
                 md_settings.can_play = False
                 md_settings.search_results = None

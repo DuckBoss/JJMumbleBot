@@ -9,6 +9,7 @@ class ExitCodes(enum.Enum):
     PLUGIN_ERROR = 4
     SAFE_MODE_ERROR = 5
     CONFIG_ERROR = 6
+    AUDIO_ERROR = 7
 
 
 class UnknownError(Exception):
@@ -32,4 +33,8 @@ class PluginError(Exception):
 
 
 class SafeModeError(Exception):
+    pass
+
+
+class AudioError(Exception):
     pass

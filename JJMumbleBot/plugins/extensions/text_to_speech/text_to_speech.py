@@ -2,7 +2,7 @@ from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint
-from JJMumbleBot.lib.audio.audio_api import TrackInfo, TrackType
+from JJMumbleBot.lib.audio.audio_api import TrackInfo, TrackType, AudioLibrary
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 from JJMumbleBot.lib.resources.strings import *
@@ -53,7 +53,7 @@ class Plugin(PluginBase):
             cur_text += "<br>There are no local text to speech files available."
             gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left',
                                      user=data_actor['name'])
-            gs.log_service.info("Displayed a list of all local text to speech files.")
+            log(INFO, "Displayed a list of all local text to speech files.", origin=L_COMMAND)
             return
         for i, item in enumerate(internal_list):
             cur_text += item
@@ -123,7 +123,7 @@ class Plugin(PluginBase):
             track_obj=track_obj,
             to_front=False
         )
-        gs.aud_interface.play(override=True)
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
 
     def cmd_ttsplayquiet(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -153,7 +153,7 @@ class Plugin(PluginBase):
             to_front=False,
             quiet=True
         )
-        gs.aud_interface.play(override=True)
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
 
     def cmd_tts(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -195,7 +195,7 @@ class Plugin(PluginBase):
                     to_front=False,
                     quiet=True
                 )
-                gs.aud_interface.play(override=True)
+                gs.aud_interface.play(audio_lib=AudioLibrary.VLC, override=True)
         elif len(all_data) == 3:
             if len(all_data[1]) > int(self.metadata[C_PLUGIN_SETTINGS][P_TTS_MSG_CHR_LIM]):
                 gs.gui_service.quick_gui(
@@ -223,7 +223,7 @@ class Plugin(PluginBase):
                     to_front=False,
                     quiet=True
                 )
-                gs.aud_interface.play(override=True)
+                gs.aud_interface.play(audio_lib=AudioLibrary.VLC, override=True)
         else:
             gs.gui_service.quick_gui(
                 f"Incorrect Format:<br>{get_command_token()}tts 'voice_name' 'message'<br>OR<br>{get_command_token()}tts 'message'",

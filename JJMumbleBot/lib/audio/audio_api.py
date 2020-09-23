@@ -6,7 +6,7 @@ from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
-from JJMumbleBot.lib.audio import audio_interface
+from JJMumbleBot.lib.audio.audio_interface import create_audio_instance, stop_audio_instance
 from datetime import timedelta
 from enum import Enum
 from threading import Thread
@@ -21,6 +21,11 @@ class TrackStatus(Enum):
 class TrackType(Enum):
     FILE = 'File'
     STREAM = 'Stream'
+
+
+class AudioLibrary(Enum):
+    FFMPEG = 'ffmpeg'
+    VLC = 'vlc'
 
 
 class TrackInfo:
@@ -45,7 +50,7 @@ class TrackInfo:
                 'image_uri': self.image_uri, 'quiet': self.quiet}
 
 
-class VLCInterface:
+class AudioLibraryInterface:
     class Status(dict):
         def __init__(self):
             super().__init__(
@@ -75,7 +80,8 @@ class VLCInterface:
                     'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]),
                     'start_time': 0,
                     'pause_time': 0,
-                    'progress_time': 0
+                    'progress_time': 0,
+                    'audio_library': ''
                 }
             )
 
@@ -104,7 +110,8 @@ class VLCInterface:
                         f"duck_audio: {self['duck_audio']}<br>" \
                         f"ducking_volume: {self['ducking_volume']}<br>" \
                         f"ducking_threshold: {self['ducking_threshold']}<br>" \
-                        f"ducking_delay: {self['ducking_delay']}"
+                        f"ducking_delay: {self['ducking_delay']}<br>" \
+                        f"audio_library; {self['audio_library']}"
             return dict_str
 
         # Plugin owner
@@ -253,10 +260,10 @@ class VLCInterface:
             global_settings.aud_interface.status['duck_audio'] = not global_settings.aud_interface.status['duck_audio']
 
     def __init__(self):
-        self.status = VLCInterface.Status()
+        self.status = AudioLibraryInterface.Status()
         self.queue = queue_handler.QueueHandler([], maxlen=int(
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
-        self.audio_utilities = VLCInterface.AudioUtilites()
+        self.audio_utilities = AudioLibraryInterface.AudioUtilites()
         self.exit_flag: bool = False
 
     def callback_check(self, method_name):
@@ -266,7 +273,7 @@ class VLCInterface:
             if split_clbk[0] == self.status['plugin_name'] and split_clbk[1] == method_name:
                 global_settings.plugin_callbacks[clbk]()
 
-    def play(self, override=False, audio_lib='ffmpeg', auto_reconnect=False):
+    def play(self, audio_lib, override=False):
         if not override:
             if self.status.get_status() == TrackStatus.PLAYING:
                 return
@@ -292,8 +299,10 @@ class VLCInterface:
             return
         self.callback_check('on_play')
         if global_settings.audio_inst:
-            audio_interface.stop_audio_instance()
-        audio_interface.create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'], audio_lib=audio_lib ,use_reconnect=auto_reconnect)
+            stop_audio_instance()
+        self.status['audio_library'] = audio_lib
+        create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'],
+                                              audio_lib=audio_lib)
         self.status['start_time'] = int(time())
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
@@ -322,7 +331,7 @@ class VLCInterface:
     def pause(self):
         if self.status.is_playing():
             if global_settings.audio_inst:
-                audio_interface.stop_audio_instance()
+                stop_audio_instance()
             self.calculate_progress()
             self.status['pause_time'] = int(time())
 
@@ -336,7 +345,7 @@ class VLCInterface:
         if self.status.is_paused():
             self.status['start_time'] = int(time())
             self.status['pause_time'] = int(time())
-            self.play()
+            self.play(self.status['audio_library'])
 
     def skip(self, track_number):
         if self.queue.is_empty():
@@ -352,7 +361,7 @@ class VLCInterface:
 
         self.callback_check('on_skip')
         if global_settings.audio_inst:
-            audio_interface.stop_audio_instance()
+            stop_audio_instance()
 
         if track_number == 0:
             global_settings.gui_service.quick_gui(
@@ -369,7 +378,7 @@ class VLCInterface:
         self.status['pause_time'] = 0
         self.status['progress_time'] = 0
 
-        self.play(override=True)
+        self.play(audio_lib=self.status['audio_library'], override=True)
 
     def replay(self):
         self.seek(0)
@@ -386,11 +395,12 @@ class VLCInterface:
             text_type='header',
             box_align='left')
 
-    def seek(self, seconds: int, audio_lib='ffmpeg', auto_reconnect=False):
+    def seek(self, seconds: int):
         if self.status.is_playing():
             if global_settings.audio_inst:
-                audio_interface.stop_audio_instance()
-            audio_interface.create_audio_instance(self.status.get_track().uri, skipto=seconds, audio_lib=audio_lib, use_reconnect=auto_reconnect)
+                stop_audio_instance()
+            create_audio_instance(self.status.get_track().uri, skipto=seconds,
+                                                  audio_lib=self.status['audio_library'])
 
             self.status['start_time'] = int(time())
             self.status['pause_time'] = int(time())
@@ -403,7 +413,7 @@ class VLCInterface:
 
     def stop(self):
         if global_settings.audio_inst:
-            audio_interface.stop_audio_instance()
+            stop_audio_instance()
         self.callback_check('on_stop')
         self.queue = queue_handler.QueueHandler([], maxlen=int(
             global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
@@ -433,7 +443,8 @@ class VLCInterface:
             'is_ducking': False,
             'duck_start': 0.0,
             'duck_end': 0.0,
-            'last_volume': self.status['last_volume']
+            'last_volume': self.status['last_volume'],
+            'audio_library': ''
         })
         self.clear_dni()
 
@@ -467,7 +478,8 @@ class VLCInterface:
             'is_ducking': False,
             'duck_start': 0.0,
             'duck_end': 0.0,
-            'last_volume': self.status['last_volume']
+            'last_volume': self.status['last_volume'],
+            'audio_library': ''
         })
         self.clear_dni()
 

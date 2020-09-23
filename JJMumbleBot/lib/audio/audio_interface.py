@@ -5,21 +5,34 @@ from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils as rutils
+from JJMumbleBot.lib.errors import AudioError
 from threading import Thread
 import subprocess as sp
+from enum import Enum
 
 
-def create_audio_instance(uri: str, skipto: int = 0, audio_lib='ffmpeg', use_reconnect=False):
+class AudioLibrary(Enum):
+    FFMPEG = 'ffmpeg'
+    VLC = 'vlc'
+
+
+def create_audio_instance(uri: str, audio_lib, skipto: int = 0):
+    if audio_lib.value == AudioLibrary.VLC.value:
+        audio_lib_path = global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH]
+    elif audio_lib.value == AudioLibrary.FFMPEG.value:
+        audio_lib_path = global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH]
+    else:
+        raise AudioError("Error: The audio library set for this audio instance is not a valid type!")
     global_settings.audio_thread = Thread(
         target=create_audio_thread,
         args=(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH] if audio_lib == 'ffmpeg' else global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_VLC_PATH],
+            audio_lib_path,
+            audio_lib,
             uri,
             skipto,
             global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_AUDIO_LIB_QUIET, fallback=True),
             global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO, fallback=True),
-            audio_lib,
-            use_reconnect if audio_lib == 'ffmpeg' else False
+            True if audio_lib == AudioLibrary.VLC else False
         ),
         daemon=True
     )
@@ -36,8 +49,8 @@ def stop_audio_instance():
         global_settings.audio_thread = None
 
 
-def create_audio_thread(audio_lib_path: str, uri: str, skipto: int = 0, quiet: bool = True, stereo: bool = True,
-                        audio_lib_type='ffmpeg', use_reconnect=False):
+def create_audio_thread(audio_lib_path: str, audio_lib_type, uri: str, skipto: int = 0, quiet: bool = True,
+                        stereo: bool = True, use_reconnect=False):
     if uri == '':
         return
 
@@ -52,7 +65,7 @@ def create_audio_thread(audio_lib_path: str, uri: str, skipto: int = 0, quiet: b
             dprint(e)
         global_settings.audio_inst = None
 
-    if audio_lib_type == 'ffmpeg':
+    if audio_lib_type.value == AudioLibrary.FFMPEG.value:
         params = [audio_lib_path]
         if quiet:
             params.extend(["-loglevel", "quiet"])
@@ -64,7 +77,7 @@ def create_audio_thread(audio_lib_path: str, uri: str, skipto: int = 0, quiet: b
             params.extend(["-ar", "48000", "-threads", "8", "-"])
         else:
             params.extend(["-ar", "24000", "-threads", "8", "-"])
-    elif audio_lib_type == 'vlc':
+    elif audio_lib_type.value == AudioLibrary.VLC.value:
         params = [audio_lib_path, uri, '-I', 'dummy']
         if quiet:
             params.extend(["--quiet"])
@@ -93,9 +106,8 @@ def create_audio_thread(audio_lib_path: str, uri: str, skipto: int = 0, quiet: b
                     audioop.mul(raw_music, 2, global_settings.aud_interface.status.get_volume()))
             else:
                 if global_settings.aud_interface.next_track():
-                    create_audio_thread(audio_lib_path=audio_lib_path,
+                    create_audio_thread(audio_lib_path=audio_lib_path, audio_lib_type=audio_lib_type,
                                         uri=global_settings.aud_interface.status.get_track().uri, skipto=0, quiet=quiet,
-                                        audio_lib_type=audio_lib_type,
                                         stereo=stereo)
                 else:
                     global_settings.aud_interface.reset()

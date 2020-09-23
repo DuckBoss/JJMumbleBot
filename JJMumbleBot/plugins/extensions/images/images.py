@@ -141,7 +141,7 @@ class Plugin(PluginBase):
             cur_text += "<br>There are no local image files available."
             gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left',
                                      user=data_actor['name'])
-            gs.log_service.info("Displayed a list of all local image files.")
+            log(INFO, "Displayed a list of all local image files.")
             return
 
         for i, item in enumerate(internal_list):
