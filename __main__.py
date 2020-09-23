@@ -162,6 +162,8 @@ if __name__ == "__main__":
         raise SysArgError("It looks like both verbose mode and quiet mode are enabled.\n"
                           "Only one or the other can be used!")
 
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/'):
+        dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
         copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
