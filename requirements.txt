@@ -5,6 +5,6 @@ Flask==1.1.2
 gevent==20.9.0
 beautifulsoup4==4.9.1
 requests==2.24.0
-Pillow==7.2.0
+Pillow==8.0.0
 youtube-dl==2020.9.20
 pymumble==1.3.1
