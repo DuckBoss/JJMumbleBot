@@ -15,6 +15,8 @@ On the bright side, JJMumbleBot does a LOT more than just streaming youtube cont
 As a result, this issue will only affect the media plugin, and specific youtube-related commands in the sound board plugin.
 Everything else should continue working as expected.
 
+<hr>
+
 # JJMumbleBot
 [![GitHub release](https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
