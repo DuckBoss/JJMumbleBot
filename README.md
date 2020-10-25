@@ -9,7 +9,11 @@ I will continue working on this project, but please be aware that youtube-relate
 I will work on solutions to these problems, this notice is to just update everyone on the situation.
 ### Notice to New Users:
 Unfortunately, since youtube-dl is no longer available through it's main distribution channel, in order for this bot to work you will need to have an existing version installed on your computer. 
-This means that installing it through the `pip` command will not work.
+This means that using the `pip` python command to download the package might not work.
+
+Currently, the youtube-dl download page still works (as of 10/24/2020):
+https://youtube-dl.org/
+
 ### The Good News:
 On the bright side, JJMumbleBot does a LOT more than just streaming youtube content.
 As a result, this issue will only affect the media plugin, and specific youtube-related commands in the sound board plugin.
