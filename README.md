@@ -1,26 +1,3 @@
-## Important Notice To Everyone
-One of the main dependencies of this project, and very reputable and widely used package 'youtube-dl' has been removed from Github due to a DMCA takedown.
-For more information please refer to the official notice from Github: [Youtube-dl DMCA Notice](https://github.com/github/dmca/blob/master/2020/10/2020-10-23-RIAA.md)
-### How does this impact JJMumbleBot?
-JJMumbleBot, as well as every other media bot, uses youtube-dl to interface with youtube and provide downloading/streaming services.
-As a result of this DMCA on youtube-dl, youtube-related functions of this bot may stop working in the near future.<br/>
-
-I will continue working on this project, but please be aware that youtube-related commands such as `!link` or `!sbdownload` may stop working.
-I will work on solutions to these problems, this notice is to just update everyone on the situation.
-### Notice to New Users:
-Unfortunately, since youtube-dl is no longer available through it's main distribution channel, in order for this bot to work you will need to have an existing version installed on your computer. 
-This means that using the `pip` python command to download the package might not work.
-
-Currently, the youtube-dl download page still works (as of 10/24/2020):
-https://youtube-dl.org/
-
-### The Good News:
-On the bright side, JJMumbleBot does a LOT more than just streaming youtube content.
-As a result, this issue will only affect the media plugin, and specific youtube-related commands in the sound board plugin.
-Everything else should continue working as expected.
-
-<hr>
-
 # JJMumbleBot
 [![GitHub release](https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
