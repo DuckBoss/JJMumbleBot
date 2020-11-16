@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Plugins</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Docker Support</h2>
+        <hr>
+        <div>
+            <h3>The Advantages of Docker</h3>
+            <p>
+                <b>Docker is a simple way for users to deploy JJMumbleBot in isolated containers on a variety of devices without worrying about complicated setup procedures and requirements.</b> <br>
+                Learn more about Docker here: <a href="https://www.docker.com/get-started">Getting Started with Docker</a>
+            </p>
+            <p>
+                Visit JJMumbleBot on Docker Hub here: <a href="https://hub.docker.com/r/jasonjerome/jjmumblebot">JJMumbleBot Docker Hub Page</a>
+            </p>
+            <ul>
+                <li>Setup JJMumbleBot without worrying about the computer environment.</li>
+                <li>No need to manually install required packages.</li>
+                <li>Support for cloud-hosting JJMumbleBot on cloud hosting services such as <a href="https://aws.amazon.com/getting-started/hands-on/deploy-docker-containers/">Amazon ECS</a></li>
+                <li>Easy distribution and sharing across all docker-supported devices.</li>
+            </ul>
+
+            <h4>Requirements</h4>
+            <p>
+                For information on how to setup Docker for your system, please refer to this page: <a href="https://docs.docker.com/compose/install/">Docker Installation</a>
+            </p>
+        </div>
+        <div>
+            <h3>Simple Setup</h3>
+            <ol>
+                <li>Make sure the docker service is started, for more information check here: <a href="https://docs.docker.com/config/daemon/systemd/">How To Start Docker Service</a></li>
+                <li> You can pull the docker container from either Github or DockerHub.<br>
+                    - Pulling the docker container from Github:<br>
+                    <code>docker pull docker.pkg.github.com/duckboss/jjmumblebot/jjmumblebot:head</code><br>
+                    - Pulling the docker container from DockerHub:<br>
+                    <code>docker pull jasonjerome/jjmumblebot</code>
+                </li>
+                <li>Navigate to the JJMumbleBot directory and make sure read/write permissions are provided.</li>
+                <li>
+                    <b>Minimal run command using docker-compose:</b><br/>
+                    <code>sudo docker-compose run bot -ip 'server_ip' -port 'server_port' -password 'server_password' -username 'bot_username' -superuser 'superuser_username' </code><br>
+                    <b>Required launch parameters:</b><br>
+                    <ul>
+                        <li><code>-ip</code>: Sets the server ip.</li>
+                        <li><code>-port</code>: Sets the server port.</li>
+                        <li><code>-password</code>: Sets the password required to connect to the server. This is not required if your server is unprotected.</li>
+                        <li><code>-username</code>: The username for the bot that will be displayed to other users in the server.</li>
+                        <li><code>-superuser</code>: The username of the admin/superuser who has full control over bot functionality.<br>For more information about user privileges, check this page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/user_privileges.html">User Privileges</a></a></li>
+                        <li>For a full list of launch parameters, check this page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/command_line_arguments.html">Launch Parameters</a></li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        <div>
+            <h4>Using Pre-Existing Files - Configs, Aliases, Databases, Certificates</h4>
+            <p>
+                if you have already used JJMumbleBot before, and you want to use pre-existing database files, or configs,<br>
+                then you can navigate to the <code>JJMumbleBot/cfg/</code> directory and drop your config.ini files, alias files, database files, and certificate here.
+            </p>
+        </div>
+    </div>
+    <footer></footer>
+</body>
+</html>
