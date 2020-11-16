@@ -84,7 +84,7 @@ if __name__ == "__main__":
     optional_args.add_argument('-ydlproxy', dest='ydl_proxy', default=None,
                                help='Enter a proxy url used for the youtube-dl library with this launch parameter.')
     optional_args.add_argument('-ydlcookie', dest='ydl_cookie', default=None,
-                               help='Enter a cookies.txt directory path used for the youtube-dl library with this launch parameter.\b'
+                               help='Enter a cookies.txt directory path used for the youtube-dl library with this launch parameter.\n'
                                     'This is useful to deal with rate limits on the bot.')
     optional_args.add_argument('-tempmediadirectory', dest='temp_media_directory', default=None,
                                help='Enter the temporary media directory path to be used by media plugins.')
