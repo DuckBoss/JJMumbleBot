@@ -14,19 +14,87 @@
         <h2 id="page-title">Launch Parameters</h2>
         <hr>
         <p>
-            JJMumbleBot comes with a couple command line arguments that is helpful for debugging, or running in server environments.<br>
-            Use the <code>-h</code> launch parameter to get a full list of the available arguments.
+            JJMumbleBot comes with a launch parameters for every option available in the config.ini file.<br>
+            This is especially helpful for minimal setup docker containers, or users that don't want to mess with config files.<br>
+            <b>Use the <code>-h</code> launch parameter to get a full list of the available arguments.</b>
         </p>
-        <h4 id="required-launch-parameters-">Required launch parameters:</h4>
-        <p>
-            <code>-ip</code> - Enter the server IP for this launch parameter.<br>
-            <code>-port</code> - Enter the server Port for this launch parameter.<br>
-        </p>
-        <h4 id="all-launch-parameters-">All launch parameters:</h4>
-        <code>python JJMumbleBot/ -h</code>
-        <p>
-            <img src="https://user-images.githubusercontent.com/20238115/88742054-272a0000-d10f-11ea-944b-4e6aa4290cca.png" alt="command-line-parameters image">
-        </p>
+        <div>
+            <h4 id="required-launch-parameters">Required launch parameters for regular startup:</h4>
+            <ul>
+                <li><code>-ip</code> - Enter the server IP for this launch parameter.</li>
+                <li><code>-port</code> - Enter the server Port for this launch parameter.</li>
+                <li><code>-password</code> - Enter the password required to connect to the server. This is not required if your server is unprotected.</li>
+            </ul>
+        </div>
+        <div>
+            <h4 id="all-launch-parameters">All launch parameters:</h4>
+            <ul>
+                <b>Safe/Verbose/Quiet Mode Launch Parameters:</b><br>
+                <li><code>-safe</code> - Enables safe mode for the bot service which initializes the bot with safe-mode only plugins.</li>
+                <li><code>-verbose</code> - Enables verbose mode which displays extensive output statements from the bot service.<br>This is useful for debugging purposes.</li>
+                <li><code>-quiet</code> - Enables quiet mode which suppresses output statements from the bot service.<br>This is useful for running the bot in a headless environment.</li>
+                <b>Connection Launch Parameters:</b><br>
+                <li><code>-username</code> - Enter the username of the bot using this parameter.<br>If the bot is registered with a certificate, the username must<br>match the username registered in the certificate.</li>
+                <li><code>-cert</code> - Enter the bot client certificate path using this parameter if you are not generating a certificate at runtime.</li>
+                <li><code>-generatecert</code> - Automatically generates a certificate for the bot and updates the config.ini file to include the new certificate path.</li>
+                <li><code>-superuser</code> - Enter the default super user for the bot client using this parameter.</li>
+                <li><code>-defaultchannel</code> - Enter the default channel the bot should join after connecting to the server.</li>
+                <li><code>-autoreconnect</code> - Enables auto-reconnecting if the bot disconnects from the mumble server.</li>
+                <li><code>-selfregister</code> - Enables self-registration to the connected mumble server.</li>
+                <li><code>-comment</code> - Enter the comments that are shown when users view the bot comment in a server.</li>
+                <b>Web Interface Launch Parameters:</b><br>
+                <li><code>-webinterface</code> - Enable the bot web interface with this launch parameter.</li>
+                <li><code>-webip</code> - Enter the IP to use for the web server (if enabled).</li>
+                <li><code>-webpageport</code> - Enter the main web interface page port for the web server (if enabled).</li>
+                <li><code>-websocketport</code> - Enter the web socket port for the web server (if enabled).</li>
+                <li><code>-webtickrate</code> - Enter the tick rate of the processing loop that sends data to the web interface (if enabled).</li>
+                <b>Main Settings Launch Parameters:</b><br>
+                <li><code>-usedatabasebackups</code> - Enable automatic database backups for the bot service.</li>
+                <li><code>-cmdtickrate</code> - Enter a custom tick rate for commands to be processed.</li>
+                <li><code>-multicmdlimit</code> - Enter the maximum number of commands per multi-command input.</li>
+                <li><code>-cmdqueuelimit</code> - Enter the maximum number of commands allowed to be processed in the queue.</li>
+                <li><code>-cmdtoken</code> - Enter a custom command token character to identify commands in the chat (must be single character).</li>
+                <li><code>-cmdhistlimit</code> - Enter the maximum number of commands to store in the command history.</li>
+                <b>Media Settings Launch Parameters:</b><br>
+                <li><code>-ffmpegpath</code> - Enter the path to ffmpeg to be used by media plugins.</li>
+                <li><code>-vlcpath</code> - Enter the path to vlc to be used by media plugins.</li>
+                <li><code>-stereoaudio</code> - Enable stereo audio playback for the bot audio system.</li>
+                <li><code>-quietaudiolib</code> - Suppress audio library console messages with this launch parameter.</li>
+                <li><code>-volume</code> - Enter the default volume to be used by the bot audio system.</li>
+                <li><code>-audioduck</code> - Enable audio ducking for the bot audio system.</li>
+                <li><code>-audioduckvolume</code> - Enter the volume to duck to when audio ducking (If audio ducking enabled).</li>
+                <li><code>-audioduckthreshold</code> - Enter the threshold before ducking audio (If audio ducking enabled).</li>
+                <li><code>-audioduckdelay</code> - Enter the delay before ducking audio (If audio ducking enabled).</li>
+                <li><code>-maxqueuelength</code> - Enter the maximum queue length allowed for the bot audio system.</li>
+                <li><code>-ydlproxy</code> - Enter a proxy url used for the youtube-dl library with this launch parameter.</li>
+                <li><code>-ydlcookie</code> - Enter a cookies.txt directory path used for the youtube-dl library with this launch parameter.<br>This is useful to deal with rate limits on the bot.</li>
+                <li><code>-tempmediadirectory</code> - Enter the temporary media directory path to be used by media plugins.</li>
+                <li><code>-permmediadirectory</code> - Enter the permanent media directory path to be used by media plugins.</li>
+                <b>PGUI Settings Launch Parameters:</b><br>
+                <li><code>-canvasbgcolor</code> - Enter a default background color for the PGUI system.</li>
+                <li><code>-canvasimgbgcolor</code> - Enter a default background color for images in the PGUI system.</li>
+                <li><code>-canvasalign</code> - Enter a default canvas alignment for the PGUI system.</li>
+                <li><code>-canvasborder</code> - Enter a default canvas border size for the PGUI system.</li>
+                <li><code>-canvastextcolor</code> - Enter a default text color for the PGUI system.</li>
+                <li><code>-canvasfont</code> - Enter a default font for the PGUI system.</li>
+                <li><code>-canvasheadtextcolor</code> - Enter a default header text color for the PGUI system.</li>
+                <li><code>-canvasindextextcolor</code> - Enter a default index text color for the PGUI system.</li>
+                <li><code>-canvassubheadtextcolor</code> - Enter a default sub-header text color for the PGUI system.</li>
+                <b>Logging Launch Parameters:</b><br>
+                <li><code>-uselogging</code> - Enable event logging for the bot service.</li>
+                <li><code>-maxlogs</code> - Enter the maximum number of logs to be stored by the logging system.</li>
+                <li><code>-maxlogsize</code> - Enter the maximum size of each log generated by the logging system.</li>
+                <li><code>-hidelogmessages</code> - Hide potentially sensitive information in logs such as usernames/messages.</li>
+                <li><code>-logdirectory</code> - Enter the log directory path to be used by the bot to store logs.</li>
+            </ul>
+        </div>
+        <div>
+            <h4 id="example-launch-parameters">Example launch parameters:</h4>
+            Entering <code>python JJMumbleBot/ -h</code> in your command line, results in an output similar to the image below.
+            <p>
+                <img src="https://user-images.githubusercontent.com/20238115/88742054-272a0000-d10f-11ea-944b-4e6aa4290cca.png" alt="command-line-parameters image">
+            </p>
+        </div>
     </div>
     <footer></footer>
 </body>
