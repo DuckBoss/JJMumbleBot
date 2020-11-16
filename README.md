@@ -29,6 +29,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
   - <b>Whisper Plugin</b> - Mumble Whisper support for audio data.
   - <b>Bot Commands Plugin</b> - Enhanced interactivity and management commands.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
+- <b>Docker Support</b> - Deploy JJMumbleBot on the cloud or on any docker-supported device.
 - <b>Web Interface</b> - Control and manage the bot with an optional web interface.
 - <b>Auto-Updater</b> - A System to update dependencies through bot commands.
 - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
