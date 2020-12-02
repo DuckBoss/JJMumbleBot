@@ -242,13 +242,13 @@ if __name__ == "__main__":
     if args.use_logging:
         global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.use_logging
     if args.max_logs:
-        global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.max_logs
+        global_settings.cfg[C_LOGGING][P_LOG_MAX] = args.max_logs
     if args.max_log_size:
-        global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.max_log_size
+        global_settings.cfg[C_LOGGING][P_LOG_SIZE_MAX] = args.max_log_size
     if args.hide_log_messages:
-        global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.hide_log_messages
+        global_settings.cfg[C_LOGGING][P_LOG_MESSAGES] = args.hide_log_messages
     if args.log_directory:
-        global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.log_directory
+        global_settings.cfg[C_LOGGING][P_LOG_DIR] = args.log_directory
     # Overwrite main settings if the launch parameter is provided.
     if args.use_database_backups:
         global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.use_database_backups
