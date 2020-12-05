@@ -128,7 +128,7 @@ class Test_Cfg:
     # Logging Config Tests
     def test_enable_logging(self):
         enable_logging = self.cfg.getboolean(C_LOGGING, P_LOG_ENABLE)
-        assert enable_logging is True
+        assert enable_logging is False
 
     def test_max_log_limit(self):
         max_log_limit = int(self.cfg[C_LOGGING][P_LOG_MAX])
