@@ -11,75 +11,23 @@
 <body>
     <nav id="table_of_contents"></nav>
     <div class="main-content">
-        <h2 id="page-title">v4.3.0 Update</h2>
-        <h4>Docker Support, Launch Parameters Update, Many Bug Fixes, etc.</h4>
+        <h2 id="page-title">v4.3.1 Update</h2>
+        <h4>Logging Fixes and Updates</h4>
         <strong><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v4.3.0">Github Download Link</a></strong>
         <hr>
         <div>
-            <h3>Launch Parameters Update -  47 New Launch Parameters!</h3>
-            <p>
-                With the release of  v4.3.0, I've added ALL the options available in the config.ini file to the launch parameters list.<br/>
-                This means that any config option can be overridden on launch!
-            </p>
+            <h3>Bug Fixes and Updates</h3>
             <ul>
-                <li><code>-generatecert</code>: Automatically generates a certificate for the bot and updates the config.ini file to include the new certificate path.</li>
-                <li>All the options in the config.ini file are not available as launch parameters (47 new launch parameters!)</li>
-                <li>For the full list of launch parameters, check the wiki page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/command_line_arguments.html">Launch Parameters List</a></li>
+                <li>Fixed launch parameters for logging functionality.</li>
+                <li>Disabled logging by default for new users, this can be enabled in the <code>config.ini</code> file or with the <code>-uselogging</code> launch parameter.</li>
             </ul>
         </div>
         <div>
-            <h3>Docker Builds Support</h3>
-            <p>
-                I've worked closely with <a href="https://github.com/kaminascripts">@kaminascripts</a> to prepare the JJMumbleBot project for Docker container support.<br/>
-                There's a lot to cover about this, but the most important part is that <b>the bot is now easily configurable to run in a docker container.</b><br/>
-                For more information and a guide on setting up the bot with Docker, please check the wiki page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/docker.html">Docker</a>
-            </p>
-        </div>
-        <div>
-            <h3>Server Tools Plugin</h3>
+            <h3>Misc</h3>
             <ul>
-                <li><code>!toggleuserconnectionsound</code> command to enable/disable the user connection sound feature without need to manually edit the config.</li>
-                <li>Fixed issue where changes to the server_tools metadata file were not being saved.</li>
-            </ul>
-        </div>
-        <div>
-            <h3>General Bug Fixes</h3>
-            <ul>
-                <li>Fixed audio library bugs with the media/sound_board  plugins.</li>
-                <li>Fixed error with web interface trying to parse audio library metadata.</li>
-                <li>Fixed logging issue with whisper plugin where it would try to log items when logging was disabled.</li>
-                <li>Fixed errors that occurred when commands weren't formatted properly in the bot_commands plugin.</li>
-                <li>Fixed audio library issue that prevented user connection sound playback in the server_tools plugin.</li>
-                <li>Fixed issue in server_tools plugin where updating user connection sounds wouldn't properly update.</li>
-            </ul>
-        </div>
-        <div>
-            <h3>Other Updates</h3>
-            <ul>
-                <li>A minimally setup config file is now generated if the config.ini file is missing.</li>
-                <li>A minimally setup global_aliases file is now generated if the global_aliases.csv file is missing.</li>
-                <li>Directories such as the media/logging directories are now generated if missing.</li>
-                <li>Directories that are not configured in the config.ini file are now generated automatically instead of causing errors.</li>
-                <li>The bot now automatically adds itself to the user privileges if the web interface is enabled (previously it had to be manually added).</li>
-                <li>The default values in the config_template.ini have been changed to reflect a minimal config setup  and make it easier for configuration.</li>
-                <li>Self-registration in servers is now disabled by default, and can be enabled in the config.ini file (previously it was enabled).</li>
-                <li>Logging is now enabled by default, and can be disabled in the config.ini file (previously it was disabled).</li>
-                <li>Database backups are disabled by default, and can be enabled in the config.ini fie (previously it was enabled).</li>
-                <li>Server_tools plugin's user_connections.csv file generates and is saved in the /cfg/plugins/ folder to improve usability.</li>
-                <li>The default multi-command limit set in the config file has been increased to 200.</li>
-                <li>The default command queue limit  set in the config file has been increased to 600.</li>
-                <li>The default GUI font has been changed to 'Georgia' (previously set to 'Calibri').</li>
-                <li>The default GUI text color has been changed to 'Snow' instead  of 'White'.</li>
-                <li>Removed redundant unit tests and associated files.</li>
-                <li>Changed auto-generated media directories to generate in /cfg/ folder instead of root bot directory to keep media downloads persistent if the user is using docker. This won't make any difference to regular users.</li>
-                <li>Moved templates folder out of the cfg folder -> JJMumbleBot/cfg/templates/ folder to JJMumbleBot/templates/</li>
-            </ul>
-        </div>
-        <div>
-            <h3>Wiki Updates</h3>
-            <ul>
-                <li>Updated the wiki to include documentation and guides for Docker setups.</li>
-                <li>Updated the wiki documentation to reflect changes in v4.3.0</li>
+                <li>Updated youtube-dl dependency version.</li>
+                <li>Updated and fixed unit tests.</li>
+                <li>Updated documentation/wiki to reflect changes made in v4.3.1</li>
             </ul>
         </div>
     </div>
