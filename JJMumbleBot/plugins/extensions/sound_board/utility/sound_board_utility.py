@@ -9,12 +9,15 @@ import subprocess
 from fuzzywuzzy import process
 
 
-def prepare_sb_list():
+def prepare_sb_list(include_file_extensions=False):
     file_counter = 0
     gather_list = []
     for file_item in os.listdir(f"{dir_utils.get_perm_med_dir()}/{settings.plugin_name}/"):
-        file_name = file_item.rsplit(".", 1)[0]
-        gather_list.append(f"{file_name}")
+        if include_file_extensions:
+            gather_list.append(file_item)
+        else:
+            file_name = file_item.rsplit(".", 1)[0]
+            gather_list.append(file_name)
         file_counter += 1
     gather_list.sort(key=str.lower)
     return gather_list

@@ -129,7 +129,7 @@ class Plugin(PluginBase):
         else:
             return
         sender = gs.mumble_inst.users[data.actor]['name']
-        gather_list = sbu.prepare_sb_list()
+        gather_list = sbu.prepare_sb_list(include_file_extensions=True)
         random.seed(datetime.now())
         random_sfx = random.choice(gather_list)
         track_obj = TrackInfo(
@@ -153,7 +153,7 @@ class Plugin(PluginBase):
         else:
             return
         sender = gs.mumble_inst.users[data.actor]['name']
-        gather_list = sbu.prepare_sb_list()
+        gather_list = sbu.prepare_sb_list(include_file_extensions=True)
         random.seed(datetime.now())
         random_sfx = random.choice(gather_list)
         track_obj = TrackInfo(
