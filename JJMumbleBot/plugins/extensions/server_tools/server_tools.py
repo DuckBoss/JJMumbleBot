@@ -52,6 +52,10 @@ class Plugin(PluginBase):
         if not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
             return
 
+        # Return if the user that connected is the bot (self-detection).
+        if user[0]['name'] == self.metadata[C_CONNECTION_SETTINGS][P_USER_ID]:
+            return
+
         if gs.aud_interface.check_dni(self.plugin_name, quiet=True):
             gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
         else:

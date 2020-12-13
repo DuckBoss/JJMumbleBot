@@ -140,6 +140,27 @@ def get_system_info():
     return json.dumps(monitor_service.get_system_info())
 
 
+@web_app.route("/soundboardclips", methods=['GET'])
+def get_soundboard_data():
+    if "sound_board" in list(global_settings.bot_plugins):
+        import JJMumbleBot.plugins.extensions.sound_board.utility.sound_board_utility as sbu
+        clips_list = sbu.prepare_sb_list()
+        return json.dumps({"soundboard_clips": clips_list})
+    return ''
+
+
+@web_app.route("/soundboard-play", methods=['POST'])
+def play_soundboard_clip():
+    content = request.json['data']
+    if len(content) > 0:
+        text = RemoteTextMessage(channel_id=global_settings.mumble_inst.users.myself['channel_id'],
+                                     session=global_settings.mumble_inst.users.myself['session'],
+                                     message=f"{global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]}sbquietnow {content}",
+                                     actor=global_settings.mumble_inst.users.myself['session'])
+        global_settings.core_callbacks.callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, text, True)
+    return content
+
+
 @web_app.route("/", methods=['GET', 'POST'])
 def main():
     return render_template(

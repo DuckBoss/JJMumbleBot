@@ -20,6 +20,7 @@
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Main</a>
             <a class="nav-link" id="audio-tab" data-toggle="tab" href="#audio" role="tab" aria-controls="audio" aria-selected="false">Audio Interface</a>
+            <a class="nav-link" id="soundboard-tab" data-toggle="tab" href="#soundboard" role="tab" aria-controls="soundboard" aria-selected="false">Sound Board</a>
         </div>
     </nav>
     <br>
@@ -86,6 +87,18 @@
                 </div>
             </div>
         </div>
+
+        {% if "sound_board" in plugins %}
+        <div class="tab-pane fade" id="soundboard" role="tabpanel" aria-labelledby="soundboard-tab">
+            <div class="container border border-dark rounded">
+                <button class="refresh_form btn btn-outline-secondary btn-sm" id="soundboard-refresh">Refresh</button>
+                <button type="submit" class="stop_form btn btn-outline-danger btn-sm" id="soundboard-control-stop">Stop</button>
+            </div>
+            <div class="container border border-dark rounded" id="soundboard-buttons">
+
+            </div>
+        </div>
+        {% endif %}
 
         <div class="tab-pane fade" id="audio" role="tabpanel" aria-labelledby="audio-tab">
             <div class="container border border-dark rounded">
@@ -159,6 +172,45 @@
 
           setAudioQueueInformation();
           setChannelInformation();
+        }
+
+        function setSoundBoardInformation() {
+            if (!("soundboard_clips" in data_storage)) return;
+            var soundboard_buttons = document.getElementById("soundboard-buttons");
+            soundboard_buttons.innerHTML = "";
+
+            var clip_count = 0;
+
+            var lastClipSection = 'Misc';
+            var sectionSeparator = document.createElement("h3");
+            sectionSeparator.innerHTML = lastClipSection;
+            soundboard_buttons.appendChild(sectionSeparator);
+
+            for (var clip of Object.keys(data_storage["soundboard_clips"])) {
+                var clip_name = data_storage["soundboard_clips"][clip];
+                if (clip_name.charAt(0).toLowerCase() != clip_name.charAt(0).toUpperCase()) {
+                    if (clip_name.toLowerCase().charAt(0) !== lastClipSection.toLowerCase().charAt(0)) {
+                        lastClipSection = String.fromCharCode(clip_name.charCodeAt(0)).charAt(0);
+                        sectionSeparator = document.createElement("h3");
+                        sectionSeparator.innerHTML = lastClipSection.toUpperCase();
+                        soundboard_buttons.appendChild(sectionSeparator);
+                    }
+                }
+
+                var clip_item = document.createElement("button");
+                clip_item.setAttribute("id", `${clip_count}-${clip_name}`);
+                clip_item.setAttribute("onclick", `playclip_command(\"${clip_name}\")`);
+                clip_item.innerHTML = clip_name;
+                clip_item.style.padding = "20px";
+                clip_item.classList.add("soundboard_clip_btn");
+                clip_item.classList.add("btn");
+                clip_item.classList.add("btn-outline");
+                clip_item.classList.add("btn-outline-info");
+                clip_item.classList.add("btn-sm");
+                clip_item.classList.add("no-transition");
+                soundboard_buttons.appendChild(clip_item);
+                clip_count++;
+            }
         }
 
         function setAudioQueueInformation() {
@@ -240,6 +292,13 @@
             fetch('http://{{ server_ip }}:{{ server_port }}/system')
                 .then(response => response.json())
                 .then(json => $.extend(data_storage, json));
+            fetch('http://{{ server_ip }}:{{ server_port }}/soundboardclips')
+                .then(response => response.json())
+                .then(json => {
+                    $.extend(data_storage, json);
+                    setSoundBoardInformation();
+                 });
+
 
             $('form').on('submit', function(event) {
                 $.ajax({
@@ -338,6 +397,7 @@
 
             $('.refresh_form').click(function(event) {
             setAudioQueueInformation();
+            setSoundBoardInformation();
             });
         });
     </script>
