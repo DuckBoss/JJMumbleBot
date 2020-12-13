@@ -179,14 +179,28 @@
             soundboard_buttons.innerHTML = "";
 
             var clip_count = 0;
+
+            var lastClipSection = 'Misc';
+            var sectionSeparator = document.createElement("h3");
+            sectionSeparator.innerHTML = lastClipSection;
+            soundboard_buttons.appendChild(sectionSeparator);
+
             for (var clip of Object.keys(data_storage["soundboard_clips"])) {
                 var clip_name = data_storage["soundboard_clips"][clip];
+                if (clip_name.charAt(0).toLowerCase() != clip_name.charAt(0).toUpperCase()) {
+                    if (clip_name.toLowerCase().charAt(0) !== lastClipSection.toLowerCase().charAt(0)) {
+                        lastClipSection = String.fromCharCode(clip_name.charCodeAt(0)).charAt(0);
+                        sectionSeparator = document.createElement("h3");
+                        sectionSeparator.innerHTML = lastClipSection.toUpperCase();
+                        soundboard_buttons.appendChild(sectionSeparator);
+                    }
+                }
+
                 var clip_item = document.createElement("button");
                 clip_item.setAttribute("id", `${clip_count}-${clip_name}`);
                 clip_item.setAttribute("onclick", `playclip_command(\"${clip_name}\")`);
-                clip_item.setAttribute("style", "padding: 5px");
                 clip_item.innerHTML = clip_name;
-                clip_item.style.padding = "5px";
+                clip_item.style.padding = "20px";
                 clip_item.classList.add("soundboard_clip_btn");
                 clip_item.classList.add("btn");
                 clip_item.classList.add("btn-outline");
