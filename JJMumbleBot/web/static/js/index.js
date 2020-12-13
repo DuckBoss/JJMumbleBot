@@ -45,7 +45,7 @@ function download_report() {
     download(JSON.stringify(data_storage), 'bot_report.json', 'text/plain')
 }
 
-function skipto_command (button_id) {
+function skipto_command(button_id) {
     $.ajax({
         type: 'POST',
         url: '/skipto',
@@ -54,7 +54,7 @@ function skipto_command (button_id) {
     })
     setAudioQueueInformation();
 }
-function removetrack_command (button_id) {
+function removetrack_command(button_id) {
     $.ajax({
         type: 'POST',
         url: '/removetrack',
@@ -64,3 +64,11 @@ function removetrack_command (button_id) {
     setAudioQueueInformation();
 }
 
+function playclip_command(clipname) {
+    $.ajax({
+        type: 'POST',
+        url: '/soundboard-play',
+        contentType: "application/json",
+        data: JSON.stringify({'data': clipname})
+    })
+}
