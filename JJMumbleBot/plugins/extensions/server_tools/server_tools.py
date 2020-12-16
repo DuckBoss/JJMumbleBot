@@ -53,7 +53,7 @@ class Plugin(PluginBase):
             return
 
         # Return if the user that connected is the bot (self-detection).
-        if user[0]['name'] == self.metadata[C_CONNECTION_SETTINGS][P_USER_ID]:
+        if len(get_users_in_my_channel()) == 1:
             return
 
         if gs.aud_interface.check_dni(self.plugin_name, quiet=True):
@@ -91,6 +91,7 @@ class Plugin(PluginBase):
             return
         track_obj = TrackInfo(
             uri=f'{dir_utils.get_perm_med_dir()}/{sb_plugin_name}/{audio_clip}',
+            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
             name=to_play,
             sender=get_bot_name(),
             duration=None,
