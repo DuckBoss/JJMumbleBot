@@ -2,7 +2,7 @@ from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.resources.strings import INFO, ERROR, WARNING, L_GENERAL, WARN_INVALID_IMG_FORMAT,\
     WARN_FIXED_IMG_FORMAT, GEN_PROCESS_ERR
-from JJMumbleBot.lib.resources.error_strings import INFO_IMG_DOWNLOADED, INFO_IMG_HTML_FORMATTED, \
+from JJMumbleBot.lib.resources.log_strings import INFO_IMG_DOWNLOADED, INFO_IMG_HTML_FORMATTED, \
     WARN_IMG_INCORRECT_FORMAT, WARN_IMG_CONVERTED, INFO_IMG_RAW_FORMATTED
 from urllib.parse import quote
 from PIL import Image
