@@ -7,6 +7,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
 from JJMumbleBot.lib.audio.audio_interface import create_audio_instance, stop_audio_instance
+from JJMumbleBot.lib.utils.callback_utils import get_callback
 from datetime import timedelta
 from enum import Enum
 from threading import Thread
@@ -268,10 +269,7 @@ class AudioLibraryInterface:
 
     def callback_check(self, method_name):
         # Execute any callbacks subscribed to next_track
-        for clbk in global_settings.plugin_callbacks:
-            split_clbk = clbk.split('|')
-            if split_clbk[0] == self.status['plugin_name'] and split_clbk[1] == method_name:
-                global_settings.plugin_callbacks[clbk]()
+        get_callback(plugin_name=self.status['plugin_name'], method_name=method_name)()
 
     def play(self, audio_lib, override=False):
         if not override:
