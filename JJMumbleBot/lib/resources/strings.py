@@ -1,5 +1,5 @@
 ###########################################################################
-# PROGRAM CONFIG CATEGORY STRINGS
+# PROGRAM CONFIG CATEGORY STRINGS - DO NOT MODIFY
 C_CONNECTION_SETTINGS = 'Connection Settings'
 C_MAIN_SETTINGS = 'Main Settings'
 C_WEB_SETTINGS = 'Web Interface'
@@ -78,6 +78,10 @@ T_TEMP_IMG_NAME = '_image'
 # ERROR STRINGS - DO NOT MODIFY
 CMD_INVALID_ERR = 'InvalidCommandFormat'
 CMD_PROCESS_ERR = 'CommandProcessingError'
+GEN_PROCESS_ERR = 'GeneralProcessingError'
+# WARNING STRINGS - DO NOT MODIFY
+WARN_INVALID_IMG_FORMAT = 'InvalidImageFormat'
+WARN_FIXED_IMG_FORMAT = 'FixedImageFormat'
 ###########################################################################
 # LOGGING PREFIX STRINGS
 L_GENERAL = "General"
