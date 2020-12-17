@@ -101,6 +101,8 @@ if __name__ == "__main__":
                                help='Hide potentially sensitive information in logs such as usernames/messages.')
     optional_args.add_argument('-logdirectory', dest='log_directory', default=None,
                                help='Enter the log directory path to be used by the bot to store logs.')
+    optional_args.add_argument('-logtrace', dest='log_trace', action='store_true', default=False,
+                               help='Enable stack trace logging for all logged events.')
 
     # Plugin launch parameters are currently unsupported.
     # If you wish to modify these properties you can edit your config.ini file.
@@ -249,6 +251,8 @@ if __name__ == "__main__":
         global_settings.cfg[C_LOGGING][P_LOG_MESSAGES] = args.hide_log_messages
     if args.log_directory:
         global_settings.cfg[C_LOGGING][P_LOG_DIR] = args.log_directory
+    if args.log_trace:
+        global_settings.cfg[C_LOGGING][P_LOG_TRACE] = args.log_trace
     # Overwrite main settings if the launch parameter is provided.
     if args.use_database_backups:
         global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.use_database_backups
