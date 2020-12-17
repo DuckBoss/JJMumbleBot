@@ -69,7 +69,15 @@ P_LOG_DIR = 'LogDirectory'
 INFO = 'info'
 DEBUG = 'debug'
 WARNING = 'warning'
+ERROR = 'error'
 CRITICAL = 'critical'
+
+# TEMPORARY DATA STRINGS - DO NOT MODIFY
+T_TEMP_IMG_NAME = '_image'
+
+# ERROR STRINGS - DO NOT MODIFY
+CMD_INVALID_ERR = 'InvalidCommandFormat'
+CMD_PROCESS_ERR = 'CommandProcessingError'
 ###########################################################################
 # LOGGING PREFIX STRINGS
 L_GENERAL = "General"
