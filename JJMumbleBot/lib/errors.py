@@ -12,10 +12,6 @@ class ExitCodes(enum.Enum):
     AUDIO_ERROR = 7
 
 
-class UnknownError(Exception):
-    pass
-
-
 class SetupError(Exception):
     pass
 
@@ -28,6 +24,14 @@ class ConfigError(Exception):
     pass
 
 
+class CommandError(Exception):
+    pass
+
+
+class InvalidCommandFormatError(CommandError):
+    pass
+
+
 class PluginError(Exception):
     pass
 
@@ -37,4 +41,8 @@ class SafeModeError(Exception):
 
 
 class AudioError(Exception):
+    pass
+
+
+class LogError(Exception):
     pass
