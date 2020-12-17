@@ -40,7 +40,7 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_POST, origin=L_COMMAND,
-                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
 
         # Download image from the provided URL.
@@ -51,15 +51,15 @@ class Plugin(PluginBase):
             IH.download_image_stream(img_url)
         except exceptions.HTTPError:
             log(ERROR, GEN_HTTP_ERROR, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
         except exceptions.InvalidSchema:
             log(ERROR, GEN_INVALID_SCHEMA_ERROR, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
         except exceptions.RequestException:
             log(ERROR, GEN_REQUESTS_ERROR, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
 
         # Format the retrieved image into the b64 variant for mumble usage.
@@ -70,13 +70,13 @@ class Plugin(PluginBase):
                                      bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                      cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                      format_img=False)
-        log(INFO, INFO_POSTED_IMAGE, origin=L_COMMAND, print_mode=PrintMode.DEBUG_PRINT.value)
+        log(INFO, INFO_POSTED_IMAGE, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_imgsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_POST, origin=L_COMMAND,
-                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
         search_query = all_data[1].strip()
 
@@ -95,7 +95,7 @@ class Plugin(PluginBase):
                 match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i + 1}]</font> - {clip}"
         else:
             match_str += "None"
-        log(INFO, INFO_SEARCH_RESULTS, origin=L_COMMAND, print_mode=PrintMode.DEBUG_PRINT.value)
+        log(INFO, INFO_SEARCH_RESULTS, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
         gs.gui_service.quick_gui(
             match_str,
             text_type='header',
@@ -107,14 +107,14 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_POST, origin=L_COMMAND,
-                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
         parameters = all_data[1].rsplit(".", 1)
 
         # Check if the image exists in the permanent media directory.
         if not path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameters[0]}.{parameters[1]}"):
             log(ERROR, CMD_IMAGE_DNE, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.DEBUG_PRINT.value)
+                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
 
         # Format the image and display it with the PGUI system.
@@ -124,7 +124,7 @@ class Plugin(PluginBase):
                                      bgcolor=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_COL],
                                      cellspacing=self.metadata[C_PLUGIN_SETTINGS][P_FRAME_SIZE],
                                      format_img=False)
-        log(INFO, INFO_POSTED_IMAGE, origin=L_COMMAND, print_mode=PrintMode.DEBUG_PRINT.value)
+        log(INFO, INFO_POSTED_IMAGE, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_imglist(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
@@ -165,4 +165,4 @@ class Plugin(PluginBase):
         if cur_text != "":
             gs.gui_service.quick_gui(cur_text, text_type='header', box_align='left', text_align='left',
                                      user=data_actor['name'])
-        log(INFO, INFO_DISPLAYED_ALL, origin=L_COMMAND, print_mode=PrintMode.DEBUG_PRINT.value)
+        log(INFO, INFO_DISPLAYED_ALL, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
