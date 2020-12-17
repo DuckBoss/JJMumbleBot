@@ -54,7 +54,7 @@ def log(level: str, message: str, origin: str = None, error_type: str = None, gu
     # Additionally, print out the log message if required.
     if print_mode == PrintMode.REG_PRINT.value:
         rprint(message, origin=origin, error_type=error_type)
-    elif print_mode == PrintMode.DEBUG_PRINT.value:
+    elif print_mode == PrintMode.VERBOSE_PRINT.value:
         dprint(message, origin=origin, error_type=error_type)
     # Display the error in the mumble channel chat if required.
     if error_type is not None and gui_service is not None:

@@ -6,7 +6,7 @@ from enum import Enum
 class PrintMode(Enum):
     NO_PRINT = -1,
     REG_PRINT = 0,
-    DEBUG_PRINT = 1
+    VERBOSE_PRINT = 1
 
 
 def dprint(msg, origin=None, error_type=None):
