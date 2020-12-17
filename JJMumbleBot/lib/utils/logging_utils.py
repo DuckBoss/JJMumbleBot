@@ -1,6 +1,6 @@
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
-from JJMumbleBot.lib.resources.strings import INFO, DEBUG, WARNING, CRITICAL, META_NAME, META_VERSION, L_GENERAL, C_LOGGING, P_LOG_DIR
+from JJMumbleBot.lib.resources.strings import INFO, DEBUG, WARNING, ERROR, CRITICAL, META_NAME, META_VERSION, L_GENERAL, C_LOGGING, P_LOG_DIR
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint, PrintMode
 import logging
 
@@ -47,6 +47,9 @@ def log(level: str, message: str, origin: str = None, error_type: str = None, gu
                                           f'{"<"+error_type+">:" if error_type is not None else ""}{message}')
     elif level == WARNING:
         global_settings.log_service.warning(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
+                                            f'{"<"+error_type+">:" if error_type is not None else ""}{message}')
+    elif level == ERROR:
+        global_settings.log_service.error(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
                                             f'{"<"+error_type+">:" if error_type is not None else ""}{message}')
     elif level == CRITICAL:
         global_settings.log_service.critical(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
