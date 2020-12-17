@@ -269,7 +269,10 @@ class AudioLibraryInterface:
 
     def callback_check(self, method_name):
         # Execute any callbacks subscribed to next_track
-        get_callback(plugin_name=self.status['plugin_name'], method_name=method_name)()
+        for clbk in global_settings.plugin_callbacks:
+            split_clbk = clbk.split('|')
+            if split_clbk[0] == self.status['plugin_name'] and split_clbk[1] == method_name:
+                global_settings.plugin_callbacks[clbk]()
 
     def play(self, audio_lib, override=False):
         if not override:
