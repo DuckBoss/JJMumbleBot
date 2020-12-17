@@ -37,6 +37,7 @@ class BotServiceHelper:
         runtime_settings.use_logging = global_settings.cfg.getboolean(C_LOGGING, P_LOG_ENABLE, fallback=False)
         runtime_settings.max_logs = int(global_settings.cfg[C_LOGGING][P_LOG_MAX])
         runtime_settings.max_log_size = int(global_settings.cfg[C_LOGGING][P_LOG_SIZE_MAX])
+        runtime_settings.log_trace = global_settings.cfg.getboolean(C_LOGGING, P_LOG_TRACE, fallback=False)
         runtime_settings.cmd_queue_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_QUEUE_LIM])
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_HIST_LIM])
         runtime_settings.can_duck = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO, fallback=False)

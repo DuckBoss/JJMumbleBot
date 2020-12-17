@@ -9,6 +9,7 @@
 use_logging: bool = False
 max_logs: int = 15
 max_log_size: int = 150000
+log_trace: bool = False
 
 # COMMAND SETTINGS
 # Command Tick Rate

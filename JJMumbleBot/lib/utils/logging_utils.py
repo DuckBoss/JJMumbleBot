@@ -4,6 +4,7 @@ from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.resources.strings import INFO, DEBUG, WARNING, ERROR, CRITICAL, META_NAME, META_VERSION, L_GENERAL, C_LOGGING, P_LOG_DIR
 from JJMumbleBot.lib.utils.print_utils import rprint, dprint, PrintMode
 import logging
+import traceback
 
 
 def initialize_logging():
@@ -42,30 +43,31 @@ def log(level: str, message: Union[List[str], str], origin: str = None, error_ty
     # If the provided message is not a list, convert it to a list.
     if not isinstance(message, list):
         message = [message]
-    # Log the message based on the event level.
+    # Format the log messages for outputting.
     log_msg = "\n".join(message) if len(message) > 1 else message[0]
+    log_out = f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]: ' \
+              f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}'
+    # If log stack tracing is enabled, include the stack trace in the log message.
+    if runtime_settings.log_trace:
+        log_out += f"\n{''.join(traceback.format_stack())}\n"
+    # Log the formatted message based on the logging level.
     if level == INFO:
-        global_settings.log_service.info(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
-                                         f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}')
+        global_settings.log_service.info(log_out)
     elif level == DEBUG:
-        global_settings.log_service.debug(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
-                                          f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}')
+        global_settings.log_service.debug(log_out)
     elif level == WARNING:
-        global_settings.log_service.warning(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
-                                            f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}')
+        global_settings.log_service.warning(log_out)
     elif level == ERROR:
-        global_settings.log_service.error(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
-                                            f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}')
+        global_settings.log_service.error(log_out)
     elif level == CRITICAL:
-        global_settings.log_service.critical(f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]:'
-                                             f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}')
+        global_settings.log_service.critical(log_out)
     # Additionally, print out the log message if required.
     if print_mode == PrintMode.REG_PRINT.value:
         rprint(log_msg, origin=origin, error_type=error_type)
     elif print_mode == PrintMode.VERBOSE_PRINT.value:
         dprint(log_msg, origin=origin, error_type=error_type)
-    # Display the error in the mumble channel chat if required.
-    if error_type is not None and gui_service is not None:
+    # Display the message in the mumble channel chat if required.
+    if gui_service is not None:
         print_msg = "<br>".join(message) if len(message) > 1 else message[0]
         display_error(gui_service, print_msg)
 

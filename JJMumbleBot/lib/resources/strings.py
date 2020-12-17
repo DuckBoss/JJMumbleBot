@@ -64,6 +64,7 @@ P_LOG_MAX = 'MaxLogs'
 P_LOG_SIZE_MAX = 'MaxLogSize'
 P_LOG_MESSAGES = 'HideMessageLogging'
 P_LOG_DIR = 'LogDirectory'
+P_LOG_TRACE = 'LogStackTrace'
 ###########################################################################
 # LOGGING STRINGS - DO NOT MODIFY
 INFO = 'info'
@@ -79,8 +80,10 @@ T_TEMP_IMG_NAME = '_image'
 CMD_INVALID_ERR = 'InvalidCommandFormat'
 CMD_PROCESS_ERR = 'CommandProcessingError'
 GEN_PROCESS_ERR = 'GeneralProcessingError'
+DEP_PROCESS_ERR = 'DependencyProcessingError'
 # WARNING STRINGS - DO NOT MODIFY
 GEN_PROCESS_WARN = 'GeneralProcessingWarning'
+DEP_PROCESS_WARN = 'DependencyProcessingWarning'
 WARN_INVALID_IMG_FORMAT = 'InvalidImageFormat'
 WARN_FIXED_IMG_FORMAT = 'FixedImageFormat'
 ###########################################################################
