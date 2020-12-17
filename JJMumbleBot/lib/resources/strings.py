@@ -80,6 +80,7 @@ CMD_INVALID_ERR = 'InvalidCommandFormat'
 CMD_PROCESS_ERR = 'CommandProcessingError'
 GEN_PROCESS_ERR = 'GeneralProcessingError'
 # WARNING STRINGS - DO NOT MODIFY
+GEN_PROCESS_WARN = 'GeneralProcessingWarning'
 WARN_INVALID_IMG_FORMAT = 'InvalidImageFormat'
 WARN_FIXED_IMG_FORMAT = 'FixedImageFormat'
 ###########################################################################
