@@ -3,10 +3,12 @@ from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib.utils import runtime_utils as rutils
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import runtime_settings as RS
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
 from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.resources.log_strings import *
+from JJMumbleBot.plugins.core.core_commands.resources.strings import *
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib import aliases
 from time import sleep
 from bs4 import BeautifulSoup
@@ -20,16 +22,25 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        rprint(
-            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+        log(
+            INFO,
+            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def quit(self):
-        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+        log(
+            INFO,
+            f"Exiting {self.plugin_name} plugin...",
+            origin=L_SHUTDOWN,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def cmd_sleep(self, data):
         sleep_time = float(data.message.strip().split(' ', 1)[1])
         RS.tick_rate = sleep_time
+        log(INFO, f"Sleeping thread for {sleep_time}...", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
         sleep(sleep_time)
         RS.tick_rate = float(GS.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE])
 
@@ -57,26 +68,27 @@ class Plugin(PluginBase):
         )
 
     def cmd_exit(self, data):
-        dprint("Stopping all threads...")
+        log(WARNING, "Stopping all threads...", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
         rutils.exit_bot()
-        log(INFO, "JJMumbleBot is being shut down.")
-        log(INFO, "######################################")
+        log(INFO, f"{rutils.get_bot_name()} is being shut down.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, "######################################", origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_restart(self, data):
         from os import execv
         from sys import argv, executable
         rutils.exit_bot()
-        log(INFO, "JJMumbleBot is being restarted.", origin=L_STARTUP)
+        log(INFO, f"{rutils.get_bot_name()} is being restarted.", origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         execv(executable, ['python3'] + argv)
 
     def cmd_saferestart(self, data):
         from os import execv
         from sys import argv, executable
         rutils.exit_bot()
-        log(INFO, "JJ Mumble Bot is being rebooted in safe mode.", origin=L_STARTUP)
-        execv(executable, ['python3'] + argv + ['-safe'])  # nosec
+        log(INFO, f"{rutils.get_bot_name()} is being rebooted in safe mode.", origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
+        execv(executable, ['python3'] + argv + ['-safe'])
 
     def cmd_restartplugins(self, data):
+        log(INFO, "Restarting Plugins", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
         rutils.refresh_plugins()
 
     def cmd_setcomment(self, data):
@@ -84,6 +96,14 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         new_comment = all_data[1]
         if len(all_data) < 2:
+            log(ERROR, CMD_INVALID_SET_COMMENT,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_COMMENT,
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
             return
         # Set the new comment.
         GS.mumble_inst.users.myself.comment(
@@ -99,8 +119,7 @@ class Plugin(PluginBase):
             box_align='left',
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name'])
-        dprint(f"Changed the bot\'s user comment to {new_comment}.")
-        log(INFO, f"Changed the bot\'s user comment to {new_comment}.", origin=L_COMMAND)
+        log(INFO, f"Changed the bot's user comment to {new_comment}.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_resetcomment(self, data):
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
@@ -118,8 +137,7 @@ class Plugin(PluginBase):
             box_align='left',
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name'])
-        dprint(f"Reset the bot\'s user comment.")
-        log(INFO, f"Reset the bot\'s user comment.", origin=L_COMMAND)
+        log(INFO, f"Reset the bot's user comment.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_pguistresstest(self, data):
         all_data = data.message.strip().split(' ', 1)
@@ -146,8 +164,7 @@ class Plugin(PluginBase):
 
         GS.gui_service.close_box()
         GS.gui_service.display_box(channel=rutils.get_my_channel())
-        dprint(f"Conducted PGUI stress test in the channel.", origin=L_COMMAND)
-        log(INFO, f"Conducted PGUI stress test in the channel.", origin=L_COMMAND)
+        log(INFO, f"Conducted PGUI stress test in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_help(self, data):
         all_data = data.message.strip().split()
@@ -195,8 +212,7 @@ class Plugin(PluginBase):
 
             GS.gui_service.close_box()
             GS.gui_service.display_box(channel=rutils.get_my_channel())
-            dprint(f"Displayed general help screen in the channel.")
-            log(INFO, f"Displayed general help screen in the channel.", origin=L_COMMAND)
+            log(INFO, f"Displayed general help screen in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
 
         plugin_name = all_data[1]
@@ -229,12 +245,13 @@ class Plugin(PluginBase):
                 GS.gui_service.append_row(content)
             GS.gui_service.close_box()
             GS.gui_service.display_box(channel=rutils.get_my_channel())
-            dprint(f"Displayed help screen for {plugin_name} in the channel.")
-            log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND)
+            log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_setalias(self, data):
         all_data = data.message.strip().split(' ', 2)
         if len(all_data) < 3:
+            log(ERROR, CMD_INVALID_SET_ALIAS,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             GS.gui_service.quick_gui(
                 f"Incorrect Formatting!<br>"
                 f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Single Command Alias Example:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters<br>"
@@ -251,12 +268,9 @@ class Plugin(PluginBase):
         for com in all_coms:
             com_parse = com.split()[0]
             if com_parse[0] != '(' and com_parse[-1] != ')':
-                dprint(
-                    f'Could not register [{alias_name}] due to incorrect formatting.',
-                    origin=L_ALIASES)
                 log(INFO,
                     f'Could not register [{alias_name}] due to incorrect formatting.',
-                    origin=L_ALIASES)
+                    origin=L_ALIASES, print_mode=PrintMode.VERBOSE_PRINT.value)
                 GS.gui_service.quick_gui(
                     f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}>Could not register</font> [{alias_name}] <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}>due to incorrect formatting.</font><br>"
                     f"<font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>Single Command Alias Example:</font> <font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>(command)</font> parameters<br>"
@@ -309,10 +323,20 @@ class Plugin(PluginBase):
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name']
         )
+        log(INFO, "Displayed all registered aliases.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_removealias(self, data):
         all_data = data.message.strip().split(' ', 2)
-        if len(all_data) < 2:
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_REMOVE_ALIAS,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_REMOVE_ALIAS,
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name']
+            )
             return
         alias_name = all_data[1]
         if aliases.remove_from_aliases(alias_name):
@@ -360,6 +384,7 @@ class Plugin(PluginBase):
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name']
         )
+        log(INFO, "Cleared command history.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_history(self, data):
         cur_hist_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Command History:</font>"
@@ -383,3 +408,4 @@ class Plugin(PluginBase):
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name']
         )
+        log(INFO, "Displayed command history.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
