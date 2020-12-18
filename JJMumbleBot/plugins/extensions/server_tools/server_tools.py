@@ -1,7 +1,7 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.server_tools.resources.strings import *
@@ -30,22 +30,31 @@ class Plugin(PluginBase):
         if not st_utility.create_empty_user_connections():
             self.quit()
         self.register_callbacks()
-        rprint(
-            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+        log(
+            INFO,
+            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def quit(self):
         if gs.aud_interface.check_dni_is_mine(self.plugin_name):
             gs.aud_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
-        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+        log(
+            INFO,
+            f"Exiting {self.plugin_name} plugin...",
+            origin=L_SHUTDOWN,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def register_callbacks(self):
         from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED
         st_utility.read_user_connections()
         if self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
             gs.core_callbacks.append_to_callback(PYMUMBLE_CLBK_USERCREATED, self.clbk_user_connected)
+            log(INFO, "Registered server_tools plugin callbacks", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def clbk_user_connected(self, user):
         # Return if playing audio clips on user join is disabled.
@@ -85,6 +94,8 @@ class Plugin(PluginBase):
         audio_clip = find_file(to_play)
         if not path.exists(f"{dir_utils.get_perm_med_dir()}/{sb_plugin_name}/{audio_clip}"):
             gs.aud_interface.clear_dni()
+            log(ERROR, f"The audio clip: {to_play} for the user connection sound could not be found.", origin=L_COMMAND,
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"The audio clip: {to_play} could not be found.",
                                      text_type='header',
                                      box_align='left')
@@ -113,12 +124,16 @@ class Plugin(PluginBase):
             with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
                 self.metadata.write(metadata_file)
             self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+            log(INFO, f"{'Enabled' if current_status else 'Disabled'} user connection sounds in the server_tools metadata.ini file.",
+                origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"{'Enabled' if current_status else 'Disabled'} user connection sounds in "
                                      f"the server_tools metadata.ini file.",
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
         except IOError:
+            log(ERROR, f"There was an error saving the {self.plugin_name} metadata to the metadata.ini file.", origin=L_COMMAND,
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"There was an error saving the {self.plugin_name} metadata to the metadata.ini file.",
                                      text_type='header',
                                      box_align='left',
@@ -129,8 +144,9 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 2:
-            gs.gui_service.quick_gui(f"Incorrect Formatting!"
-                                     f"<br>Format: {get_command_token()}clearuserconnectionsound 'username'",
+            log(ERROR, CMD_INVALID_CLEAR_USER_CONNECTION, origin=L_COMMAND,
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(CMD_INVALID_CLEAR_USER_CONNECTION,
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
@@ -139,6 +155,8 @@ class Plugin(PluginBase):
         if st_settings.user_connections.get(username):
             del st_settings.user_connections[username]
             st_utility.save_user_connections()
+            log(INFO, f"Removed {username} from the user_connections.csv file.",
+                origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"Removed {username} from the user_connections.csv file.",
                                      text_type='header',
                                      box_align='left',
@@ -148,14 +166,17 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 2:
-            gs.gui_service.quick_gui(f"Incorrect Formatting!"
-                                     f"<br>Format: {get_command_token()}setdefaultconnectionsound 'audio_clip_name'",
+            log(ERROR, CMD_INVALID_SET_USER_DEFAULT_CONNECTION, origin=L_COMMAND,
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(CMD_INVALID_SET_USER_DEFAULT_CONNECTION,
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
             return
         audio_clip_name = all_data[1]
         if not find_file(audio_clip_name):
+            log(ERROR, f"{audio_clip_name} is not one of the available files in the sound board permanent directory.",
+                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
                 f"{audio_clip_name} is not one of the available files in the sound board permanent directory.",
                 text_type='header',
@@ -167,12 +188,16 @@ class Plugin(PluginBase):
             with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
                 self.metadata.write(metadata_file)
             self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+            log(INFO, f"Updated the default user connection sound and saved the {self.plugin_name} metadata to the metadata.ini file.",
+                origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
                 f"Updated the default user connection sound and saved the {self.plugin_name} metadata to the metadata.ini file.",
                 text_type='header',
                 box_align='left',
                 user=data_actor['name'])
         except IOError:
+            log(ERROR, f"There was an error saving the {self.plugin_name} metadata to the metadata.ini file.",
+                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"There was an error saving the {self.plugin_name} metadata to the metadata.ini file.",
                                      text_type='header',
                                      box_align='left',
@@ -183,8 +208,9 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 2)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 3:
-            gs.gui_service.quick_gui(f"Incorrect Formatting!"
-                                     f"<br>Format: {get_command_token()}setuserconnectionsound 'username' 'audio_clip_name'",
+            log(ERROR, CMD_INVALID_SET_USER_CONNECTION,
+                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(CMD_INVALID_SET_USER_CONNECTION,
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
@@ -206,14 +232,16 @@ class Plugin(PluginBase):
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
-        log(INFO, f"Set {track} to play whenever {username} connects to the server.")
+        log(INFO, f"Set user connection sound: {track} to play whenever {username} connects to the server.",
+            origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_getuserconnectionsound(self, data):
         all_data = data.message.strip().split(' ', 1)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 2:
-            gs.gui_service.quick_gui(f"Incorrect Formatting!"
-                                     f"<br>Format: {get_command_token()}setuserconnectionsound 'username'",
+            log(ERROR, CMD_INVALID_GET_USER_CONNECTION,
+                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(CMD_INVALID_GET_USER_CONNECTION,
                                      text_type='header',
                                      box_align='left',
                                      user=data_actor['name'])
@@ -222,6 +250,8 @@ class Plugin(PluginBase):
         username = all_data[1]
         st_utility.read_user_connections()
         if username not in st_settings.user_connections:
+            log(ERROR, f"The provided username: {username} was not found in the user connections dictionary.",
+                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"The provided username was not found in the user connections dictionary."
                                      f"<br>You can add a new username to the dictionary with '{get_command_token()}setuserconnectionsound'",
                                      text_type='header',
@@ -229,6 +259,8 @@ class Plugin(PluginBase):
                                      user=data_actor['name'])
             return
         if not st_settings.user_connections[username]:
+            log(ERROR, f"The provided username: {username} was found but an audio track was not assigned to the user connection.",
+                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"The username was found but a sound clip was not assigned."
                                      f"<br>You can set a sound clip to the username with '{get_command_token()}setuserconnectionsound'"
                                      f"<br>For a list of available sound clips, use '{get_command_token()}sblist'",
