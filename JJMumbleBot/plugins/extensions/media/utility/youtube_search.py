@@ -29,6 +29,9 @@ SOFTWARE.
 import requests
 import urllib.parse
 import json
+from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.resources.strings import INFO, L_GENERAL
 
 
 class YoutubeSearch:
@@ -47,6 +50,8 @@ class YoutubeSearch:
         results = self.parse_html(response)
         if self.max_results is not None and len(results) > self.max_results:
             return results[: self.max_results]
+        log(INFO, "Youtube search results have been successfully retrieved.",
+            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
         return results
 
     def parse_html(self, response):

@@ -1,11 +1,12 @@
 import youtube_dl
 from PIL import Image
 from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.plugins.extensions.media.resources.strings import *
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
-from JJMumbleBot.lib.utils import print_utils
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.plugins.extensions.media.utility import settings
 from JJMumbleBot.plugins.extensions.media.utility.youtube_search import YoutubeSearch
@@ -123,12 +124,14 @@ def on_skip():
     if gs.aud_interface.status.get_track().track_type == TrackType.STREAM:
         # Clear the thumbnails since the queue order has shifted.
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
+        log(INFO, "Cleared the temporary media folder when skipping tracks.", origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
 def download_thumbnail(cur_track):
     cur_track_hashed_img_uri = hex(crc32(str.encode(cur_track.track_id)) & 0xffffffff)
     if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg"):
-        print_utils.dprint(f"Thumbnail exists for '{cur_track.name}'...skipping")
+        log(WARNING, f"Thumbnail exists for '{cur_track.name}'...skipping",
+            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
         return
     try:
         ydl_opts = {
@@ -146,7 +149,8 @@ def download_thumbnail(cur_track):
             ydl.cache.remove()
             ydl.extract_info(cur_track.alt_uri, download=True)
     except youtube_dl.utils.DownloadError as e:
-        print_utils.dprint(e)
+        log(ERROR, f"Encountered a youtube_dl download error while retrieving the thumbnail for {cur_track.name}.\n{e}",
+            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
     # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
     if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp"):
         im = Image.open(
@@ -155,12 +159,15 @@ def download_thumbnail(cur_track):
         im.save(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg",
                 "jpeg")
         os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp")
-        print_utils.dprint(f"Fixed thumbnail for {cur_track.name}")
+        log(WARNING, f"The retrieved thumbnail was in an invalid format and has been fixed for {cur_track.name}.",
+            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
 def on_stop():
     # Clear the thumbnails since the queue is cleared.
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
+    log(INFO, "Cleared the thumbnails in the temporary media folder when stopping audio interface.", origin=L_GENERAL,
+        print_mode=PrintMode.VERBOSE_PRINT.value)
     settings.can_play = False
     settings.search_results = None
 
@@ -168,6 +175,8 @@ def on_stop():
 def on_reset():
     # Clear the thumbnails since the queue is cleared.
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
+    log(INFO, "Cleared the thumbnails in the temporary media folder when resetting audio interface.", origin=L_GENERAL,
+        print_mode=PrintMode.VERBOSE_PRINT.value)
     settings.can_play = False
     settings.search_results = None
 
@@ -200,7 +209,8 @@ def get_video_info(video_url):
             }
             return prep_struct
     except youtube_dl.utils.DownloadError as e:
-        print_utils.dprint(e)
+        log(ERROR, f"Encountered a youtube_dl download error while retrieving the video information for {video_url}.\n{e}",
+            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
         return None
 
 
@@ -238,22 +248,34 @@ def get_playlist_info(playlist_url):
     with youtube_dl.YoutubeDL(ydl_opts) as ydl:
         playlist_dict_check = ydl.extract_info(playlist_url, download=False, process=False)
         if playlist_dict_check is None:
+            log(ERROR,
+                f"The provided playlist cannot be played as it is either private or protected.",
+                origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
                 f"This playlist is private or protected. Only unlisted/public playlists can be played.",
                 text_type='header',
                 box_align='left')
             return None
-        count = 0
-        for i, entry in enumerate(playlist_dict_check['entries']):
-            count += 1
+        count = len(playlist_dict_check['entries'])
         if count > int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]):
             if not settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
+                log(ERROR,
+                    [
+                        "The provided playlist is longer than the limit set in the config.",
+                        f"The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}."
+                    ],
+                    origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
                 gs.gui_service.quick_gui(
-                    f"This playlist is longer than the limit set in the config.<br>The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}.",
+                    [
+                        "This playlist is longer than the limit set in the config.",
+                        f"The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}."
+                    ],
                     text_type='header',
                     box_align='left')
                 return None
-
+        log(INFO,
+            f"Generating playlist from the given url: {playlist_url}",
+            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
         gs.gui_service.quick_gui(
             "The playlist is being generated...this might take a while.",
             text_type='header',
@@ -261,6 +283,9 @@ def get_playlist_info(playlist_url):
         playlist_dict = ydl.extract_info(playlist_url, download=False, process=False)
         all_videos = []
         if not playlist_dict['entries']:
+            log(ERROR,
+                f"Unable to retrieve playlist information from the given url: {playlist_url}",
+                origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
                 "Unable to get playlist information.",
                 text_type='header',
@@ -268,7 +293,12 @@ def get_playlist_info(playlist_url):
             return None
         for video in playlist_dict['entries']:
             if not video:
-                print_utils.dprint("Unable to get video information...skipping.")
+                log(ERROR,
+                    [
+                        f"Unable to retrieve video information in the playlist from the given url: {playlist_url}",
+                        "Skipping to the next video in the queue..."
+                    ],
+                    origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
                 continue
             prep_struct = {
                 'std_url': f"https://www.youtube.com/watch?v={video['url']}",
