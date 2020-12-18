@@ -40,7 +40,12 @@ class Plugin(PluginBase):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_POST, origin=L_COMMAND,
-                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_POST,
+                text_type='header',
+                box_align='left'
+            )
             return
 
         # Download image from the provided URL.
@@ -51,15 +56,30 @@ class Plugin(PluginBase):
             IH.download_image_stream(img_url)
         except exceptions.HTTPError:
             log(ERROR, GEN_HTTP_ERROR, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                GEN_HTTP_ERROR,
+                text_type='header',
+                box_align='left'
+            )
             return
         except exceptions.InvalidSchema:
             log(ERROR, GEN_INVALID_SCHEMA_ERROR, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                GEN_INVALID_SCHEMA_ERROR,
+                text_type='header',
+                box_align='left'
+            )
             return
         except exceptions.RequestException:
             log(ERROR, GEN_REQUESTS_ERROR, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                GEN_REQUESTS_ERROR,
+                text_type='header',
+                box_align='left'
+            )
             return
 
         # Format the retrieved image into the b64 variant for mumble usage.
@@ -75,8 +95,13 @@ class Plugin(PluginBase):
     def cmd_imgsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
-            log(ERROR, CMD_INVALID_POST, origin=L_COMMAND,
-                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(ERROR, CMD_INVALID_IMGSEARCH, origin=L_COMMAND,
+                error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_IMGSEARCH,
+                text_type='header',
+                box_align='left'
+            )
             return
         search_query = all_data[1].strip()
 
@@ -106,15 +131,25 @@ class Plugin(PluginBase):
     def cmd_img(self, data):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
-            log(ERROR, CMD_INVALID_POST, origin=L_COMMAND,
-                error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(ERROR, CMD_INVALID_IMG, origin=L_COMMAND,
+                error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_IMG,
+                text_type='header',
+                box_align='left'
+            )
             return
         parameters = all_data[1].rsplit(".", 1)
 
         # Check if the image exists in the permanent media directory.
         if not path.isfile(f"{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{parameters[0]}.{parameters[1]}"):
             log(ERROR, CMD_IMAGE_DNE, origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_IMAGE_DNE,
+                text_type='header',
+                box_align='left'
+            )
             return
 
         # Format the image and display it with the PGUI system.
