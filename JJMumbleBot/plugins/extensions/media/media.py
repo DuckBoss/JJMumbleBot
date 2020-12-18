@@ -1,7 +1,7 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.audio.audio_api import TrackInfo, TrackType, AudioLibrary
 from JJMumbleBot.settings import global_settings as gs
@@ -30,16 +30,24 @@ class Plugin(PluginBase):
         md_settings.youtube_metadata = self.metadata
         md_settings.plugin_name = self.plugin_name
         self.register_callbacks()
-        rprint(
-            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+        log(
+            INFO,
+            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def quit(self):
         if gs.aud_interface.check_dni_is_mine(self.plugin_name):
             gs.aud_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
-        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+        log(
+            INFO,
+            f"Exiting {self.plugin_name} plugin...",
+            origin=L_SHUTDOWN,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def register_callbacks(self):
         for method_name in dir(md_utility):
@@ -52,7 +60,8 @@ class Plugin(PluginBase):
                     f'{self.plugin_name}|{method_name}|clbk',
                     getattr(md_utility, method_name)
                 )
-                dprint(f"Registered audio interface callback {self.plugin_name}|{method_name}|clbk")
+                log(INFO, f"Registered audio interface callback {self.plugin_name}|{method_name}|clbk",
+                    origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_ytplaylist(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -126,8 +135,10 @@ class Plugin(PluginBase):
 
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_LINK, origin=L_COMMAND,
+                error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}link 'link_url'",
+                CMD_INVALID_LINK,
                 text_type='header',
                 box_align='left')
             gs.aud_interface.clear_dni()
@@ -184,8 +195,10 @@ class Plugin(PluginBase):
 
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_LINK_FRONT, origin=L_COMMAND,
+                error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}link 'link_url'",
+                CMD_INVALID_LINK_FRONT,
                 text_type='header',
                 box_align='left')
             gs.aud_interface.clear_dni()
@@ -240,8 +253,10 @@ class Plugin(PluginBase):
         try:
             search_term = all_data[1]
         except IndexError:
+            log(ERROR, CMD_INVALID_YTSEARCH, origin=L_COMMAND,
+                error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
-                f"Invalid formatting! Format: {get_command_token()}ytsearch 'search_term'",
+                CMD_INVALID_YTSEARCH,
                 text_type='header',
                 box_align='left')
             return
@@ -333,7 +348,9 @@ class Plugin(PluginBase):
             else:
                 md_settings.can_play = False
                 md_settings.search_results = None
+                log(ERROR, CMD_INVALID_YTPLAY, origin=L_COMMAND,
+                    error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
                 gs.gui_service.quick_gui(
-                    f"Invalid formatting! Format: {get_command_token()}ytplay 'track_number'",
+                    CMD_INVALID_YTPLAY,
                     text_type='header',
                     box_align='left')
