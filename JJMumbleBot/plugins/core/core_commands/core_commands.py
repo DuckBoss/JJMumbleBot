@@ -6,7 +6,6 @@ from JJMumbleBot.settings import runtime_settings as RS
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.resources.log_strings import *
 from JJMumbleBot.plugins.core.core_commands.resources.strings import *
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib import aliases
@@ -119,7 +118,7 @@ class Plugin(PluginBase):
             box_align='left',
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name'])
-        log(INFO, f"Changed the bot's user comment to {new_comment}.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"Changed the bot's user comment to: {new_comment}.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_resetcomment(self, data):
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
