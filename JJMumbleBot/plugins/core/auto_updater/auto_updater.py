@@ -36,7 +36,11 @@ class Plugin(PluginBase):
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_UPDATE,
                 origin=L_COMMAND, error_type=CMD_INVALID_ERR,
-                gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(CMD_INVALID_UPDATE,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
         res = update_utils.update_available(all_data[1])
         if res is True:
@@ -47,41 +51,57 @@ class Plugin(PluginBase):
                     INFO,
                     f"Dependency: [{all_data[1]}] has been updated to v{updated_version}",
                     origin=L_DEPENDENCIES,
-                    gui_service=gs.gui_service,
                     print_mode=PrintMode.VERBOSE_PRINT.value
                 )
+                gs.gui_service.quick_gui(f"Dependency: [{all_data[1]}] has been updated to v{updated_version}",
+                                         text_type='header',
+                                         box_align='left',
+                                         text_align='left')
                 return
             log(
                 WARNING,
                 f"Dependency: [{all_data[1]}] could not be updated.",
                 origin=L_DEPENDENCIES,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(f"Dependency: [{all_data[1]}] could not be updated.",
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
         elif res is None:
             log(
                 WARNING,
                 f"The package: [{all_data[1]}] is not a dependency of this software.",
                 origin=L_DEPENDENCIES,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(f"The package: [{all_data[1]}] is not a dependency of this software.",
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
         else:
             log(
                 INFO,
                 f"There is no update available for: [{all_data[1]}].",
                 origin=L_DEPENDENCIES,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(f"There is no update available for: [{all_data[1]}].",
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
 
     def cmd_checkforupdates(self, data):
         all_data = data.message.strip().split()
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_CHECK,
                 origin=L_COMMAND, error_type=CMD_INVALID_ERR,
-                gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(CMD_INVALID_CHECK,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
         res = update_utils.update_available(all_data[1])
         if res is True:
@@ -92,14 +112,20 @@ class Plugin(PluginBase):
                 WARNING,
                 f"The package: [{all_data[1]}] is not a dependency of this software.",
                 origin=L_DEPENDENCIES,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(f"The package: [{all_data[1]}] is not a dependency of this software.",
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
         else:
             log(
                 INFO,
                 f"There is no update available for: [{all_data[1]}].",
                 origin=L_DEPENDENCIES,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(f"There is no update available for: [{all_data[1]}].",
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')

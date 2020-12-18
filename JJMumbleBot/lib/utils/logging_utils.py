@@ -23,15 +23,6 @@ def initialize_logging():
     global_settings.log_service.addHandler(handler)
 
 
-def display_error(gui_service, message: str):
-    gui_service.quick_gui(
-        message,
-        text_type='header',
-        text_align='left',
-        box_align='left'
-    )
-
-
 def log(level: str, message: Union[List[str], str], origin: str = None, error_type: str = None, gui_service=None, print_mode: int = -1):
     # Don't attempt to log anything if the use_logging flag is false.
     if not runtime_settings.use_logging:
@@ -66,9 +57,3 @@ def log(level: str, message: Union[List[str], str], origin: str = None, error_ty
         rprint(log_msg, origin=origin, error_type=error_type)
     elif print_mode == PrintMode.VERBOSE_PRINT.value:
         dprint(log_msg, origin=origin, error_type=error_type)
-    # Display the message in the mumble channel chat if required.
-    if gui_service is not None:
-        print_msg = "<br>".join(message) if len(message) > 1 else message[0]
-        display_error(gui_service, print_msg)
-
-

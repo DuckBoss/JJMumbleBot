@@ -47,14 +47,20 @@ class Plugin(PluginBase):
     def cmd_stop(self, data):
         if gs.aud_interface.check_dni_active():
             gs.aud_interface.stop()
-            log(INFO, INFO_AUDIO_STOPPED, origin=L_COMMAND,
-                gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(INFO, INFO_AUDIO_STOPPED, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(INFO_AUDIO_STOPPED,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
 
     def cmd_clear(self, data):
         if gs.aud_interface.check_dni_active():
             gs.aud_interface.clear_queue()
-            log(INFO, INFO_AUDIO_CLEARED_QUEUE, origin=L_COMMAND,
-                gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(INFO, INFO_AUDIO_CLEARED_QUEUE, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(INFO_AUDIO_CLEARED_QUEUE,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
 
     def cmd_playing(self, data):
         if gs.aud_interface.check_dni_active():
@@ -88,7 +94,11 @@ class Plugin(PluginBase):
                 skip_to = int(all_data[1])
             except ValueError:
                 log(ERROR, CMD_INVALID_TRACK_NUMBER, origin=L_COMMAND,
-                    error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                    error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(CMD_INVALID_TRACK_NUMBER,
+                                         text_type='header',
+                                         box_align='left',
+                                         text_align='left')
                 return
             except IndexError:
                 log(WARNING, WARN_INVALID_TRACK_INDEX, origin=L_COMMAND,
@@ -124,9 +134,12 @@ class Plugin(PluginBase):
             INFO,
             f"{'Enabled' if gs.aud_interface.status.is_looping() else 'Disabled'} track looping.",
             origin=L_COMMAND,
-            gui_service=gs.gui_service,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
+        gs.gui_service.quick_gui(f"{'Enabled' if gs.aud_interface.status.is_looping() else 'Disabled'} track looping.",
+                                 text_type='header',
+                                 box_align='left',
+                                 text_align='left')
 
     def cmd_remove(self, data):
         if gs.aud_interface.check_dni_active():
@@ -135,7 +148,11 @@ class Plugin(PluginBase):
                 to_remove = int(all_data[1])
             except ValueError:
                 log(ERROR, CMD_INVALID_TRACK_NUMBER, origin=L_COMMAND,
-                    error_type=CMD_INVALID_ERR, gui_service=gs.gui_service, print_mode=PrintMode.VERBOSE_PRINT.value)
+                    error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(CMD_INVALID_TRACK_NUMBER,
+                                         text_type='header',
+                                         box_align='left',
+                                         text_align='left')
                 return
             except IndexError:
                 log(ERROR, CMD_INVALID_REMOVE, origin=L_COMMAND,
@@ -152,7 +169,8 @@ class Plugin(PluginBase):
             gs.gui_service.quick_gui(
                 CMD_INVALID_SEEK,
                 text_type='header',
-                box_align='left'
+                box_align='left',
+                text_align='left'
             )
             return
         if gs.aud_interface.check_dni_active():
@@ -184,7 +202,8 @@ class Plugin(PluginBase):
                     gs.gui_service.quick_gui(
                         CMD_INVALID_SEEK,
                         text_type='header',
-                        box_align='left'
+                        box_align='left',
+                        text_align='left'
                     )
                     return
             else:
@@ -197,7 +216,8 @@ class Plugin(PluginBase):
                     gs.gui_service.quick_gui(
                         CMD_INVALID_SEEK,
                         text_type='header',
-                        box_align='left'
+                        box_align='left',
+                        text_align='left'
                     )
 
     def cmd_volume(self, data):
@@ -221,9 +241,12 @@ class Plugin(PluginBase):
                 CMD_INVALID_VOLUME,
                 origin=L_COMMAND,
                 error_type=CMD_PROCESS_ERR,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(CMD_INVALID_VOLUME,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
         if gs.aud_interface.audio_utilities.is_ducking():
             gs.aud_interface.audio_utilities.set_last_volume(vol)
@@ -233,9 +256,12 @@ class Plugin(PluginBase):
             INFO,
             f"Set volume to {vol}",
             origin=L_COMMAND,
-            gui_service=gs.gui_service,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
+        gs.gui_service.quick_gui(f"Set volume to {vol}",
+                                 text_type='header',
+                                 box_align='left',
+                                 text_align='left')
 
     def cmd_duckaudio(self, data):
         gs.aud_interface.audio_utilities.toggle_ducking()
@@ -243,9 +269,12 @@ class Plugin(PluginBase):
             INFO,
             f"{'Enabled' if gs.aud_interface.audio_utilities.can_duck() else 'Disabled'} audio volume ducking.",
             origin=L_COMMAND,
-            gui_service=gs.gui_service,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
+        gs.gui_service.quick_gui(f"{'Enabled' if gs.aud_interface.audio_utilities.can_duck() else 'Disabled'} audio volume ducking.",
+                                 text_type='header',
+                                 box_align='left',
+                                 text_align='left')
 
     def cmd_duckvolume(self, data):
         try:
@@ -260,7 +289,9 @@ class Plugin(PluginBase):
             gs.gui_service.quick_gui(
                 f"Current bot ducking volume: {gs.aud_interface.audio_utilities.get_ducking_volume()}",
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                text_align='left'
+            )
             return
         if vol > 1 or vol < 0:
             log(
@@ -268,9 +299,12 @@ class Plugin(PluginBase):
                 CMD_INVALID_VOLUME,
                 origin=L_COMMAND,
                 error_type=CMD_PROCESS_ERR,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(CMD_INVALID_VOLUME,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
 
         gs.aud_interface.audio_utilities.set_duck_volume(vol)
@@ -278,9 +312,12 @@ class Plugin(PluginBase):
             INFO,
             f"Set audio ducking volume to {vol}",
             origin=L_COMMAND,
-            gui_service=gs.gui_service,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
+        gs.gui_service.quick_gui(f"Set audio ducking volume to {vol}",
+                                 text_type='header',
+                                 box_align='left',
+                                 text_align='left')
 
     def cmd_duckthreshold(self, data):
         try:
@@ -291,9 +328,12 @@ class Plugin(PluginBase):
                 CMD_INVALID_DUCKING_THRESHOLD,
                 origin=L_COMMAND,
                 error_type=CMD_PROCESS_ERR,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(CMD_INVALID_DUCKING_THRESHOLD,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
         except IndexError:
             log(
@@ -305,7 +345,9 @@ class Plugin(PluginBase):
             gs.gui_service.quick_gui(
                 f"Current bot ducking threshold: {gs.aud_interface.audio_utilities.get_ducking_threshold()}",
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                text_align='left'
+            )
             return
         if threshold < 0:
             log(
@@ -313,9 +355,12 @@ class Plugin(PluginBase):
                 CMD_INVALID_DUCKING_THRESHOLD,
                 origin=L_COMMAND,
                 error_type=CMD_PROCESS_ERR,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(CMD_INVALID_DUCKING_THRESHOLD,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
 
         gs.aud_interface.audio_utilities.set_duck_threshold(threshold)
@@ -323,9 +368,12 @@ class Plugin(PluginBase):
             INFO,
             f"Set audio ducking threshold to {threshold}",
             origin=L_COMMAND,
-            gui_service=gs.gui_service,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
+        gs.gui_service.quick_gui(f"Set audio ducking threshold to {threshold}",
+                                 text_type='header',
+                                 box_align='left',
+                                 text_align='left')
 
     def cmd_duckdelay(self, data):
         try:
@@ -340,7 +388,9 @@ class Plugin(PluginBase):
             gs.gui_service.quick_gui(
                 f"Current bot audio ducking delay: {gs.aud_interface.audio_utilities.get_ducking_delay()}",
                 text_type='header',
-                box_align='left')
+                box_align='left',
+                text_align='left'
+            )
             return
         if delay < 0 or delay > 5:
             log(
@@ -348,9 +398,12 @@ class Plugin(PluginBase):
                 CMD_INVALID_DUCKING_DELAY,
                 origin=L_COMMAND,
                 error_type=CMD_PROCESS_ERR,
-                gui_service=gs.gui_service,
                 print_mode=PrintMode.VERBOSE_PRINT.value
             )
+            gs.gui_service.quick_gui(CMD_INVALID_DUCKING_DELAY,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
             return
 
         gs.aud_interface.audio_utilities.set_ducking_delay(delay)
@@ -358,6 +411,9 @@ class Plugin(PluginBase):
             INFO,
             f"Set audio ducking delay to {delay}",
             origin=L_COMMAND,
-            gui_service=gs.gui_service,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
+        gs.gui_service.quick_gui(f"Set audio ducking delay to {delay}",
+                                 text_type='header',
+                                 box_align='left',
+                                 text_align='left')
