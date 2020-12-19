@@ -49,51 +49,51 @@ def post_message():
                                      actor=global_settings.mumble_inst.users.myself['session'])
             global_settings.core_callbacks.callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, text, True)
             # print(text.message)
-    return content
+    return {}
 
 
 @web_app.route("/pause", methods=["POST"])
 def pause_audio():
     if global_settings.aud_interface.status.is_playing():
         global_settings.aud_interface.pause()
-    return ''
+    return {}
 
 
 @web_app.route("/resume", methods=["POST"])
 def resume_audio():
     if global_settings.aud_interface.status.is_paused():
         global_settings.aud_interface.resume()
-    return ''
+    return {}
 
 
 @web_app.route("/nexttrack", methods=["POST"])
 def next_audio():
     global_settings.aud_interface.skip(0)
-    return ''
+    return {}
 
 
 @web_app.route("/shuffle", methods=["POST"])
 def shuffle_audio():
     global_settings.aud_interface.shuffle()
-    return ''
+    return {}
 
 
 @web_app.route("/decreasevolume", methods=["POST"])
 def decrease_volume_audio():
     global_settings.aud_interface.audio_utilities.set_volume_fast(global_settings.aud_interface.status.get_volume() - 0.1, auto=False)
-    return ''
+    return {}
 
 
 @web_app.route("/increasevolume", methods=["POST"])
 def increase_volume_audio():
     global_settings.aud_interface.audio_utilities.set_volume_fast(global_settings.aud_interface.status.get_volume() + 0.1, auto=False)
-    return ''
+    return {}
 
 
 @web_app.route("/loop", methods=["POST"])
 def loop_audio():
     global_settings.aud_interface.loop_track()
-    return ''
+    return {}
 
 
 @web_app.route("/skipto", methods=["POST"])
@@ -120,7 +120,7 @@ def stop_audio():
             f"Stopped audio interface.",
             text_type='header',
             box_align='left')
-    return ''
+    return {}
 
 
 @web_app.route("/plugins", methods=['GET'])
@@ -146,7 +146,7 @@ def get_soundboard_data():
         import JJMumbleBot.plugins.extensions.sound_board.utility.sound_board_utility as sbu
         clips_list = sbu.prepare_sb_list()
         return json.dumps({"soundboard_clips": clips_list})
-    return ''
+    return {}
 
 
 @web_app.route("/soundboard-play", methods=['POST'])
@@ -158,7 +158,7 @@ def play_soundboard_clip():
                                      message=f"{global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]}sbquietnow {content}",
                                      actor=global_settings.mumble_inst.users.myself['session'])
         global_settings.core_callbacks.callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, text, True)
-    return content
+    return {}
 
 
 @web_app.route("/", methods=['GET', 'POST'])
