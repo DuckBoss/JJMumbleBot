@@ -7,7 +7,6 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
 from JJMumbleBot.lib.audio.audio_interface import create_audio_instance, stop_audio_instance
-from JJMumbleBot.lib.utils.callback_utils import get_callback
 from datetime import timedelta
 from enum import Enum
 from threading import Thread
