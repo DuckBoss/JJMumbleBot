@@ -143,6 +143,7 @@ class BotService:
         # Callback - disconnected
         global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_DISCONNECTED,
                                                            global_settings.clbk_service.disconnected)
+        global_settings.core_callbacks.append_to_callback(PYMUMBLE_CLBK_DISCONNECTED, self.on_disconnected)
         # Callback - user_created
         global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_USERCREATED,
                                                            global_settings.clbk_service.user_created)
@@ -246,6 +247,9 @@ class BotService:
 
     def on_connected(self):
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+
+    def on_disconnected(self):
+        log(INFO, f"{runtime_utils.get_bot_name()} has disconnected.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     def sound_received(self, audio_data):
         user = audio_data[0]
