@@ -49,8 +49,10 @@ if __name__ == "__main__":
                                help='Enter the comments that are shown when users view the bot comment in a server.')
 
     # Web Interface Launch Parameters
-    optional_args.add_argument('-webinterface', dest='web_interface', action='store_true', default=False,
+    optional_args.add_argument('-useweb', dest='web_interface', action='store_true', default=False,
                                help='Enable the bot web interface with this launch parameter.')
+    optional_args.add_argument('-noweb', dest='no_web_interface', action='store_true', default=False,
+                               help='Disable the bot web interface with this launch parameter if it is enabled in the config.')
     optional_args.add_argument('-webip', dest='web_ip', default=None,
                                help='Enter the IP to use for the web server (if enabled).')
     optional_args.add_argument('-webpageport', dest='web_page_port', default=None,
@@ -202,7 +204,9 @@ if __name__ == "__main__":
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT] = args.default_comment
     # Overwrite web settings if the launch parameter is provided.
     if args.web_interface:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_ENABLE] = args.web_interface
+        global_settings.cfg[C_WEB_SETTINGS][P_WEB_ENABLE] = "True"
+    if args.no_web_interface:
+        global_settings.cfg[C_WEB_SETTINGS][P_WEB_ENABLE] = "False"
     if args.web_ip:
         global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP] = args.web_ip
     if args.web_page_port:
