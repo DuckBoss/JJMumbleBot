@@ -98,6 +98,7 @@ L_ALIASES = "Aliases"
 L_LOGGING = "Logging"
 L_DEPENDENCIES = "Dependencies"
 L_WEB_INTERFACE = "WebInterface"
+L_PLUGIN = "Plugin"
 ###########################################################################
 # PLUGIN CONFIG CATEGORY STRINGS
 C_PLUGIN_INFO = 'Plugin Information'
