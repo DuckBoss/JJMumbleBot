@@ -23,7 +23,7 @@ def initialize_logging():
     global_settings.log_service.addHandler(handler)
 
 
-def log(level: str, message: Union[List[str], str], origin: str = None, error_type: str = None, gui_service=None, print_mode: int = -1):
+def log(level: str, message: Union[List[str], str], origin: str = None, error_type: str = None, print_mode: int = -1):
     # Don't attempt to log anything if the use_logging flag is false.
     if not runtime_settings.use_logging:
         return
