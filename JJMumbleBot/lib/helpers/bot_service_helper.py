@@ -2,7 +2,7 @@ from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.mumble_data import MumbleData
 from JJMumbleBot.lib.utils.database_management_utils import get_memory_db, save_memory_db_to_file
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.utils.database_utils import InsertDB, UtilityDB, DeleteDB
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
@@ -42,7 +42,8 @@ class BotServiceHelper:
         runtime_settings.cmd_hist_lim = int(global_settings.cfg[C_MAIN_SETTINGS][P_CMD_HIST_LIM])
         runtime_settings.can_duck = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO, fallback=False)
         if len(runtime_settings.cmd_token) != 1:
-            rprint("ERROR: The command token must be a single character! Reverting to the default: '!' token.")
+            log(ERROR, "The command token must be a single character! Reverting to the default: '!' token.",
+                origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
             runtime_settings.cmd_token = '!'
 
     # Initializes only safe-mode applicable plugins.
@@ -65,7 +66,8 @@ class BotServiceHelper:
         global_settings.bot_plugins = {}
         safe_mode_plugins = loads(global_settings.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_SAFE))
         # Load Core Plugins
-        rprint("######### Initializing Core Plugins - Safe Mode #########")
+        log(INFO, "######### Initializing Core Plugins - Safe Mode #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
                        path.isdir(
@@ -73,8 +75,8 @@ class BotServiceHelper:
         for p_file in all_imports:
             if p_file in safe_mode_plugins:
                 if not path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
-                    rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...",
+                        origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
                     continue
                 # Import the core plugin class.
                 global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
@@ -93,8 +95,9 @@ class BotServiceHelper:
                             None
                         )
                     )
-                    dprint(f"Registered plugin command: "
-                           f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+                    log(INFO,
+                        f"Registered plugin command: {plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}",
+                        origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
                 # Initialize the core plugin class instance.
                 global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
                 # Import core plugin into the database.
@@ -111,9 +114,11 @@ class BotServiceHelper:
         # help_plugin = __import__('help.help')
         # self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
-        rprint("######### Core Plugins Initialized - Safe Mode #########")
+        log(INFO, "######### Core Plugins Initialized - Safe Mode #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         # Load Extension Plugins
-        rprint("######### Initializing Extension Plugins - Safe Mode #########")
+        log(INFO, "######### Initializing Extension Plugins - Safe Mode #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/extensions')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
                        path.isdir(
@@ -123,8 +128,8 @@ class BotServiceHelper:
             if p_file in safe_mode_plugins:
                 if not path.exists(path.join(f'{dir_utils.get_main_dir()}/plugins/extensions',
                                              p_file)):
-                    rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                    log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...",
+                        origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
                     continue
                 # Import the core plugin class.
                 global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
@@ -143,8 +148,9 @@ class BotServiceHelper:
                             None
                         )
                     )
-                    dprint(f"Registered plugin command: "
-                           f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+                    log(INFO,
+                        f"Registered plugin command: {plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}",
+                        origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
                 # Initialize the core plugin class instance.
                 global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
                 # Import core plugin into the database.
@@ -160,7 +166,8 @@ class BotServiceHelper:
                                             html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
         save_memory_db_to_file()
         sys.path.pop(0)
-        rprint("######### Extension Plugins Initialized - Safe Mode #########")
+        log(INFO, "######### Extension Plugins Initialized - Safe Mode #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     # Initializes all available plugins.
     @staticmethod
@@ -180,15 +187,16 @@ class BotServiceHelper:
 
         global_settings.bot_plugins = {}
         # Load Core Plugins
-        rprint("######### Initializing Core Plugins #########")
+        log(INFO, "######### Initializing Core Plugins #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
                        path.isdir(path.join(f'{dir_utils.get_main_dir()}/plugins/core',
                                             name)) and name != "__pycache__"]
         for p_file in all_imports:
             if not path.exists(f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/metadata.ini'):
-                rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...",
+                    origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
                 continue
             # Import the core plugin class.
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
@@ -207,8 +215,9 @@ class BotServiceHelper:
                         None
                     )
                 )
-                dprint(f"Registered plugin command: "
-                       f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+                log(INFO, f"Registered plugin command: "
+                       f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}",
+                    origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
             # Initialize the core plugin class instance.
             global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
 
@@ -224,9 +233,11 @@ class BotServiceHelper:
             UtilityDB.import_help_to_db(db_conn=get_memory_db(),
                                         html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
         sys.path.pop(0)
-        rprint("######### Core Plugins Initialized #########")
+        log(INFO, "######### Core Plugins Initialized #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         # Load Extension Plugins
-        rprint("######### Initializing Extension Plugins #########")
+        log(INFO, "######### Initializing Extension Plugins #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/extensions')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
                        path.isdir(
@@ -234,8 +245,8 @@ class BotServiceHelper:
                                      name)) and name != "__pycache__"]
         for p_file in all_imports:
             if not path.exists(f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/metadata.ini'):
-                rprint(f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
-                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...")
+                log(WARNING, f"{p_file} plugin does not contain a metadata.ini file. Skipping initialization...",
+                    origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
                 continue
             # Import the core plugin class.
             global_settings.bot_plugins[p_file] = __import__(f'{p_file}.{p_file}', fromlist=['*']).Plugin
@@ -254,8 +265,9 @@ class BotServiceHelper:
                         None
                     )
                 )
-                dprint(f"Registered plugin command: "
-                       f"{plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}")
+                log(INFO,
+                    f"Registered plugin command: {plugin_command}:{global_settings.cmd_callbacks.get_command(plugin_command)[1]}:cmd_{plugin_command}",
+                    origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
             # Initialize the core plugin class instance.
             global_settings.bot_plugins[p_file] = global_settings.bot_plugins[p_file]()
             # Import core plugin into the database.
@@ -271,7 +283,8 @@ class BotServiceHelper:
                                         html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
         save_memory_db_to_file()
         sys.path.pop(0)
-        rprint("######### Extension Plugins Initialized #########")
+        log(INFO, "######### Extension Plugins Initialized #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     @staticmethod
     def backup_database():
