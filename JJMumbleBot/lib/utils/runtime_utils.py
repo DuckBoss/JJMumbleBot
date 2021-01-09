@@ -2,7 +2,7 @@ from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.errors import ExitCodes
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.resources.strings import *
 from pymumble_py3 import errors
 import datetime
@@ -13,8 +13,7 @@ def parse_message(text):
     user = global_settings.mumble_inst.users[text.actor]
 
     if message[0] == runtime_settings.cmd_token:
-        rprint(f"Commands Received: [{user['name']} -> {message}]", origin=L_COMMAND)
-        log(INFO, f"Commands Received: [{user['name']} -> {message}]", origin=L_COMMAND)
+        log(INFO, f"Commands Received: [{user['name']} -> {message}]", origin=L_COMMAND, print_mode=PrintMode.REG_PRINT.value)
         # example input: !version ; !about ; !yt twice ; !p ; !status
         all_commands = [msg.strip() for msg in message.split(';')]
         # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
@@ -22,27 +21,22 @@ def parse_message(text):
         # add to command history
         [global_settings.cmd_history.insert(cmd) for cmd in all_commands]
         if len(all_commands) > runtime_settings.multi_cmd_limit:
-            rprint(
-                f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.")
             log(WARNING,
                 f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.",
-                origin=L_COMMAND)
+                origin=L_COMMAND,
+                print_mode=PrintMode.REG_PRINT.value)
             return
         return all_commands
 
     if "<img" in message:
-        rprint(f"Message Received: [{user['name']} -> Image Data]")
-        log(INFO, f"Message Received: [{user['name']} -> Image Data]")
+        log(INFO, f"Message Received: [{user['name']} -> Image Data]", print_mode=PrintMode.REG_PRINT.value)
     elif "<a href=" in message:
-        rprint(f"Message Received: [{user['name']} -> Hyperlink Data]")
-        log(INFO, f"Message Received: [{user['name']} -> Hyperlink Data]")
+        log(INFO, f"Message Received: [{user['name']} -> Hyperlink Data]", print_mode=PrintMode.REG_PRINT.value)
     else:
         if global_settings.cfg.getboolean(C_LOGGING, P_LOG_MESSAGES, fallback=True):
-            rprint(f"Message Received: [{user['name']} -> #####]")
-            log(INFO, f"Message Received: [{user['name']} -> #####]")
+            log(INFO, f"Message Received: [{user['name']} -> #####]", print_mode=PrintMode.REG_PRINT.value)
         else:
-            rprint(f"Message Received: [{user['name']} -> {message}]")
-            log(INFO, f"Message Received: [{user['name']} -> {message}]")
+            log(INFO, f"Message Received: [{user['name']} -> {message}]", print_mode=PrintMode.REG_PRINT.value)
     return None
 
 
@@ -143,6 +137,14 @@ def msg_id(receiver_id, message):
             global_settings.mumble_inst.users[user].send_text_message(message)
 
 
+def get_command_history():
+    return global_settings.cmd_history.queue_storage
+
+
+def clear_command_history():
+    global_settings.cmd_history.queue_storage.clear()
+
+
 def get_command_token():
     return runtime_settings.cmd_token
 
@@ -228,8 +230,7 @@ def check_up_time():
 def refresh_plugins():
     from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
     from JJMumbleBot.lib import database
-    dprint("Refreshing all plugins...")
-    log(INFO, f"{META_NAME} is refreshing all plugins....")
+    log(INFO, f"{META_NAME} is refreshing all plugins....", print_mode=PrintMode.REG_PRINT.value)
     global_settings.gui_service.quick_gui(
         f"{get_bot_name()} is refreshing all plugins.",
         text_type='header',
@@ -243,13 +244,12 @@ def refresh_plugins():
     else:
         BotServiceHelper.initialize_plugins()
     database.init_database()
-    dprint("All plugins refreshed.")
     global_settings.gui_service.quick_gui(
         f"{get_bot_name()} has refreshed all plugins.",
         text_type='header',
         box_align='left',
         ignore_whisper=True)
-    log(INFO, f"{META_NAME} has refreshed all plugins.")
+    log(INFO, f"{META_NAME} has refreshed all plugins.", print_mode=PrintMode.REG_PRINT.value)
 
 
 def exit_bot():
@@ -263,20 +263,19 @@ def exit_bot():
         )
     for plugin in global_settings.bot_plugins.values():
         plugin.quit()
-    if global_settings.flask_server:
-        global_settings.flask_server.stop()
-        dprint("Terminated flask server instance.", origin=L_SHUTDOWN)
+    if global_settings.rest_server:
+        global_settings.rest_server.stop()
+        log(INFO, "Terminated flask server instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
     if global_settings.socket_server:
         global_settings.socket_server = None
-        dprint("Terminated web socket server instance.", origin=L_SHUTDOWN)
+        log(INFO, "Terminated web socket server instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
     if global_settings.audio_inst:
         global_settings.audio_inst.kill()
         global_settings.audio_inst = None
         global_settings.aud_interface.exit_flag = True
-        dprint("Terminated audio web interface instance.", origin=L_SHUTDOWN)
+        log(INFO, "Terminated audio web interface instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
-    dprint("Cleared temporary directories on shutdown.")
-    log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN)
+    log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
     global_settings.exit_flag = True
 
 
@@ -296,6 +295,5 @@ def exit_bot_error(error_code: ExitCodes):
     except AttributeError:
         pass
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
-    dprint("Cleared temporary directories on shutdown.")
-    log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN)
+    log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
     global_settings.exit_flag = True
