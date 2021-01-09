@@ -15,7 +15,7 @@ from JJMumbleBot.lib.helpers.queue_handler import QueueHandler
 from JJMumbleBot.lib.cmd_history import CMDQueue
 from JJMumbleBot.lib.database import init_database
 from JJMumbleBot.lib.utils import dir_utils, runtime_utils
-from JJMumbleBot.lib.utils.print_utils import rprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.command import Command
 from JJMumbleBot.lib import aliases
 from JJMumbleBot.lib import execute_cmd
@@ -44,8 +44,8 @@ class BotService:
         # Initialize logging services.
         initialize_logging()
 
-        log(INFO, "######### Initializing JJMumbleBot #########", origin=L_STARTUP)
-        rprint("######### Initializing JJMumbleBot #########", origin=L_STARTUP)
+        log(INFO, "######### Initializing JJMumbleBot #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         # Initialize up-time tracking.
         runtime_settings.start_time = datetime.now()
         # Set maximum multi-command limit.
@@ -54,18 +54,18 @@ class BotService:
         global_settings.cmd_queue = QueueHandler([], maxlen=runtime_settings.cmd_queue_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
-        log(INFO, "######### Initializing Internal Database #########", origin=L_DATABASE)
-        rprint("######### Initializing Internal Database #########", origin=L_DATABASE)
+        log(INFO, "######### Initializing Internal Database #########",
+            origin=L_DATABASE, print_mode=PrintMode.REG_PRINT.value)
         # Back up internal database.
         if global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_DB_BACKUP, fallback=False):
             db_backup = BotServiceHelper.backup_database()
             if db_backup:
-                log(INFO, f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
-                rprint(f"Created internal database backup @ {db_backup}", origin=L_DATABASE)
+                log(INFO, f"Created internal database backup @ {db_backup}",
+                    origin=L_DATABASE, print_mode=PrintMode.REG_PRINT.value)
         # Initialize internal database.
         global_settings.mumble_db = init_database()
-        log(INFO, "######### Initialized Internal Database #########", origin=L_DATABASE)
-        rprint("######### Initialized Internal Database #########", origin=L_DATABASE)
+        log(INFO, "######### Initialized Internal Database #########",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize major directories.
         if global_settings.cfg.get(C_MEDIA_SETTINGS, P_TEMP_MED_DIR, fallback=None):
             dir_utils.make_directory(global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR])
@@ -81,33 +81,34 @@ class BotService:
                 P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/cfg/permanent_media_directory'
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
-        log(INFO, "######### Initialized Temporary Directories #########", origin=L_STARTUP)
-        rprint("######### Initialized Temporary Directories #########", origin=L_STARTUP)
+        log(INFO, "######### Initialized Temporary Directories #########",
+            origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
-        log(INFO, "######### Initialized PGUI #########", origin=L_STARTUP)
-        rprint("######### Initialized PGUI #########", origin=L_STARTUP)
+        log(INFO, "######### Initialized PGUI #########",
+            origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize VLC interface.
         global_settings.aud_interface = AudioLibraryInterface()
         # Initialize plugins.
         if global_settings.safe_mode:
             BotServiceHelper.initialize_plugins_safe()
             runtime_settings.tick_rate = 0.2
-            log(INFO, "Initialized plugins with safe mode.", origin=L_STARTUP)
-            rprint("Initialized plugins with safe mode.", origin=L_STARTUP)
+            log(INFO, "Initialized plugins with safe mode.",
+                origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         else:
             BotServiceHelper.initialize_plugins()
-        log(INFO, "######### Initializing Mumble Client #########", origin=L_STARTUP)
-        rprint("######### Initializing Mumble Client #########", origin=L_STARTUP)
+        log(INFO, "######### Initializing Mumble Client #########",
+            origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data(serv_ip, serv_port, serv_pass)
         self.initialize_mumble(mumble_login_data)
-        log(INFO, "######### Initialized Mumble Client #########", origin=L_STARTUP)
-        rprint("######### Initialized Mumble Client #########", origin=L_STARTUP)
+        log(INFO, "######### Initialized Mumble Client #########",
+            origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize web interface
-        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE, fallback=False) and global_settings.safe_mode is False:
-            log(INFO, "######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
-            rprint("######### Initializing Web Interface #########", origin=L_WEB_INTERFACE)
+        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE,
+                                          fallback=False) and global_settings.safe_mode is False:
+            log(INFO, "######### Initializing Web Interface #########",
+                origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
             from JJMumbleBot.lib.database import InsertDB
             from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
             from JJMumbleBot.lib.privileges import Privileges
@@ -118,8 +119,8 @@ class BotService:
                                                permission_level=int(Privileges.SUPERUSER.value))
             from JJMumbleBot.web import web_helper
             web_helper.initialize_web()
-            log(INFO, "######### Initialized Web Interface #########", origin=L_WEB_INTERFACE)
-            rprint("######### Initialized Web Interface #########", origin=L_WEB_INTERFACE)
+            log(INFO, "######### Initialized Web Interface #########",
+                origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Start runtime loop.
         BotService.loop()
 
@@ -201,14 +202,10 @@ class BotService:
                     alias_item_index = all_alias_names.index(new_command.command)
                     alias_commands = [msg.strip() for msg in all_aliases[alias_item_index][1].split('|')]
                     if len(alias_commands) > runtime_settings.multi_cmd_limit:
-                        rprint(
-                            f"The multi-command limit was reached! "
-                            f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
-                            f"commands per line.", origin=L_COMMAND)
                         log(WARNING,
                             f"The multi-command limit was reached! "
                             f"The multi-command limit is {runtime_settings.multi_cmd_limit} "
-                            f"commands per line.", origin=L_COMMAND)
+                            f"commands per line.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
                         return
                     for x, sub_item in enumerate(alias_commands):
                         if not remote_cmd:
@@ -248,7 +245,7 @@ class BotService:
         execute_cmd.execute_command(com)
 
     def on_connected(self):
-        log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP)
+        log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     def sound_received(self, audio_data):
         user = audio_data[0]
@@ -264,16 +261,14 @@ class BotService:
     def loop():
         try:
             while not global_settings.exit_flag:
-                if time() > global_settings.aud_interface.status[
-                    'duck_end'] and global_settings.aud_interface.audio_utilities.is_ducking():
+                if time() > global_settings.aud_interface.status['duck_end'] and \
+                        global_settings.aud_interface.audio_utilities.is_ducking():
                     global_settings.aud_interface.audio_utilities.unduck_volume()
                 sleep(runtime_settings.tick_rate)
             BotService.stop()
         except KeyboardInterrupt:
-            rprint(f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).",
-                   origin=L_SHUTDOWN)
             log(INFO, f"{runtime_utils.get_bot_name()} was booted offline by a keyboard interrupt (ctrl-c).",
-                origin=L_SHUTDOWN)
+                origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
             runtime_utils.exit_bot()
             BotService.stop()
 
