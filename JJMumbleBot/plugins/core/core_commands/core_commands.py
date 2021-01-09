@@ -374,7 +374,7 @@ class Plugin(PluginBase):
             )
 
     def cmd_clearhistory(self, data):
-        GS.cmd_history.queue_storage.clear()
+        rutils.clear_command_history()
         GS.gui_service.quick_gui(
             f'<font color="{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}">Cleared command history.</font>',
             text_type='header',
@@ -387,7 +387,7 @@ class Plugin(PluginBase):
 
     def cmd_history(self, data):
         cur_hist_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Command History:</font>"
-        for i, item in enumerate(GS.cmd_history.queue_storage):
+        for i, item in enumerate(rutils.get_command_history()):
             cur_hist_text += f"<br><font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i}]</font> - {item}"
             if i % 50 == 0 and i != 0:
                 GS.gui_service.quick_gui(
