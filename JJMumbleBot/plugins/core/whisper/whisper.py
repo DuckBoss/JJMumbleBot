@@ -17,6 +17,7 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.is_running = True
         log(
             INFO,
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
@@ -25,12 +26,21 @@ class Plugin(PluginBase):
         )
 
     def quit(self):
+        self.is_running = False
         log(
             INFO,
             f"Exiting {self.plugin_name} plugin...",
             origin=L_SHUTDOWN,
             print_mode=PrintMode.REG_PRINT.value
         )
+
+    def stop(self):
+        if self.is_running:
+            self.quit()
+
+    def start(self):
+        if not self.is_running:
+            self.__init__()
 
     def cmd_getwhisper(self, data):
         data_actor = gs.mumble_inst.users[data.actor]

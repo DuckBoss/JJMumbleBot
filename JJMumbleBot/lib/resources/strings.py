@@ -113,6 +113,7 @@ P_PLUGIN_DESC = 'PluginDescription'
 P_PLUGIN_CMDS = 'PluginCommands'
 P_PLUGIN_LANG = 'PluginLanguage'
 # Plugin Type
+P_CTR_PLUGIN = 'ControllablePlugin'
 P_AUD_PLUGIN = 'AudioPlugin'
 P_IMG_PLUGIN = 'ImagePlugin'
 P_CORE_PLUGIN = 'CorePlugin'

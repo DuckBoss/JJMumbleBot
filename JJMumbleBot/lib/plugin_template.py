@@ -7,4 +7,12 @@ class PluginBase(ABC):
 
     @abstractmethod
     def quit(self):
-        pass
+        raise NotImplementedError
+
+    @abstractmethod
+    def stop(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def start(self):
+        raise NotImplementedError

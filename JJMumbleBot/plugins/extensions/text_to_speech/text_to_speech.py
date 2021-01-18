@@ -20,6 +20,7 @@ class Plugin(PluginBase):
         self.plugin_name = os.path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.is_running = True
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         tts_settings.plugin_name = self.plugin_name
@@ -31,9 +32,18 @@ class Plugin(PluginBase):
         if gs.aud_interface.check_dni_is_mine(self.plugin_name):
             gs.aud_interface.stop()
             gs.audio_dni = None
+        self.is_running = False
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/text_to_speech')
         dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
         log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+
+    def stop(self):
+        if self.is_running:
+            self.quit()
+
+    def start(self):
+        if not self.is_running:
+            self.__init__()
 
     def cmd_ttsstop(self, data):
         if gs.aud_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):

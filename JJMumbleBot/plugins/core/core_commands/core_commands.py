@@ -7,6 +7,7 @@ from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.core.core_commands.resources.strings import *
+from JJMumbleBot.plugins.core.core_commands.utility import core_commands_utility as cutils
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib import aliases
 from time import sleep
@@ -21,6 +22,7 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.is_running = True
         log(
             INFO,
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
@@ -29,12 +31,102 @@ class Plugin(PluginBase):
         )
 
     def quit(self):
+        self.is_running = False
         log(
             INFO,
             f"Exiting {self.plugin_name} plugin...",
             origin=L_SHUTDOWN,
             print_mode=PrintMode.REG_PRINT.value
         )
+
+    def stop(self):
+        if self.is_running:
+            self.quit()
+
+    def start(self):
+        if not self.is_running:
+            self.__init__()
+
+    def cmd_stopplugin(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_STOP_PLUGIN,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_STOP_PLUGIN,
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if cutils.turn_off_plugin(all_data[1]):
+            GS.gui_service.quick_gui(
+                f"Successfully stopped plugin: {all_data[1]}",
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        GS.gui_service.quick_gui(
+            f"The plugin: {all_data[1]} could not be stopped.",
+            text_type='header',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_restartplugin(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_RESTART_PLUGIN,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_RESTART_PLUGIN,
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if cutils.restart_plugin(all_data[1]):
+            GS.gui_service.quick_gui(
+                f"Successfully restarted plugin: {all_data[1]}",
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        GS.gui_service.quick_gui(
+            f"The plugin: {all_data[1]} could not be restarted.",
+            text_type='header',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_startplugin(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_START_PLUGIN,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_START_PLUGIN,
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if cutils.turn_on_plugin(all_data[1]):
+            GS.gui_service.quick_gui(
+                f"Successfully started plugin: {all_data[1]}",
+                text_type='header',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        GS.gui_service.quick_gui(
+            f"The plugin: {all_data[1]} could not be started.",
+            text_type='header',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
 
     def cmd_sleep(self, data):
         sleep_time = float(data.message.strip().split(' ', 1)[1])
@@ -93,8 +185,7 @@ class Plugin(PluginBase):
     def cmd_setcomment(self, data):
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
         all_data = data.message.strip().split(' ', 1)
-        new_comment = all_data[1]
-        if len(all_data) < 2:
+        if len(all_data) != 2:
             log(ERROR, CMD_INVALID_SET_COMMENT,
                 origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             GS.gui_service.quick_gui(
@@ -104,6 +195,7 @@ class Plugin(PluginBase):
                 ignore_whisper=True,
                 user=GS.mumble_inst.users[data.actor]['name'])
             return
+        new_comment = all_data[1]
         # Set the new comment.
         GS.mumble_inst.users.myself.comment(
             f'{new_comment}<br><br>[{META_NAME}({META_VERSION})] - {rutils.get_bot_name()}<br>{rutils.get_about()}')

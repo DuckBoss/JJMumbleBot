@@ -22,6 +22,7 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.is_running = True
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         st_settings.server_tools_metadata = self.metadata
@@ -41,12 +42,21 @@ class Plugin(PluginBase):
             gs.aud_interface.stop()
             gs.audio_dni = None
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
+        self.is_running = False
         log(
             INFO,
             f"Exiting {self.plugin_name} plugin...",
             origin=L_SHUTDOWN,
             print_mode=PrintMode.REG_PRINT.value
         )
+
+    def stop(self):
+        if self.is_running:
+            self.quit()
+
+    def start(self):
+        if not self.is_running:
+            self.__init__()
 
     def register_callbacks(self):
         from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED
