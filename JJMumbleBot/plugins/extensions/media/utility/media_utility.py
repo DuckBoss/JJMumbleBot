@@ -9,7 +9,6 @@ from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.plugins.extensions.media.utility import settings
-from JJMumbleBot.plugins.extensions.media.utility.youtube_search import YoutubeSearch
 import os
 from zlib import crc32
 
@@ -311,17 +310,21 @@ def get_playlist_info(playlist_url):
 
 
 def get_search_results(search_term, results_length):
+    ydl_opts = {
+        'quiet': True,
+        'format': 'bestaudio/best',
+        'noplaylist': True
+    }
     search_results_list = []
-    search_results = YoutubeSearch(search_term, max_results=results_length).to_dict()
-    settings.search_results = search_results
-    for i in range(results_length):
-        search_results_list.append(search_results[i])
-
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        search_results_list = list(ydl.extract_info(f"ytsearch{results_length}:{search_term}", download=False)["entries"])
+    print(len(search_results_list))
     if len(search_results_list) == 0:
         list_urls = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>No youtube search results found for: [{search_term}].</font><br>"
         return list_urls
-    list_urls = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Search Results:</font><br>"
-    for i, item in enumerate(search_results_list):
-        completed_url = f"https://youtube.com{item['href']}"
-        list_urls += f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{completed_url}'>[{item['title']}]</a><br>"
-    return list_urls
+    search_results = [{"title": item["title"], "href": item["url"], "webpage_url": item["webpage_url"], "formatted_title": ""} for item in
+                      search_results_list]
+    for i, item in enumerate(search_results):
+        item["formatted_title"] = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{item['webpage_url']}'>[{item['title']}]</a><br>"
+    settings.search_results = search_results
+    return search_results

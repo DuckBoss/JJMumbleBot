@@ -260,10 +260,17 @@ class Plugin(PluginBase):
                 text_type='header',
                 box_align='left')
             return
+        gs.gui_service.quick_gui(
+            f"Searching for '{search_term}'... please wait a moment.",
+            text_type='header',
+            box_align='left')
         search_results = md_utility.get_search_results(search_term, int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]))
         log(INFO, "Displayed youtube search results.", origin=L_COMMAND)
+        results_text = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Search Results:</font><br>"
+        for i, item in enumerate(search_results):
+            results_text += item["formatted_title"]
         gs.gui_service.quick_gui(
-            search_results,
+            results_text,
             text_type='header',
             text_align='left',
             box_align='left')
@@ -274,7 +281,7 @@ class Plugin(PluginBase):
             all_data = data.message.strip().split()
             sender = gs.mumble_inst.users[data.actor]['name']
             if len(all_data) == 1:
-                song_data = md_utility.get_video_info(f"https://www.youtube.com{md_settings.search_results[0]['href']}")
+                song_data = md_utility.get_video_info(md_settings.search_results[0]['webpage_url'])
                 if song_data is None:
                     gs.gui_service.quick_gui(
                         f"There was an error with the chosen video.",
@@ -294,7 +301,7 @@ class Plugin(PluginBase):
                     duration=int(song_data['duration']),
                     track_type=TrackType.STREAM,
                     track_id=song_data['main_id'],
-                    alt_uri=f"https://www.youtube.com{md_settings.search_results[0]['href']}",
+                    alt_uri=md_settings.search_results[0]['webpage_url'],
                     image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
                     quiet=False
                 )
@@ -306,7 +313,7 @@ class Plugin(PluginBase):
                 gs.aud_interface.play(audio_lib=AudioLibrary.VLC)
             elif len(all_data) == 2:
                 if int(self.metadata[C_PLUGIN_SETTINGS][P_YT_MAX_SEARCH_LEN]) >= int(all_data[1]) >= 0:
-                    song_data = md_utility.get_video_info(f"https://www.youtube.com{md_settings.search_results[int(all_data[1])]['href']}")
+                    song_data = md_utility.get_video_info(md_settings.search_results[int(all_data[1])]['webpage_url'])
                     if song_data is None:
                         gs.gui_service.quick_gui(
                             f"There was an error with the chosen video.",
@@ -333,7 +340,7 @@ class Plugin(PluginBase):
                     duration=int(song_data['duration']),
                     track_type=TrackType.STREAM,
                     track_id=song_data['main_id'],
-                    alt_uri=f"https://www.youtube.com{md_settings.search_results[int(all_data[1])]['href']}",
+                    alt_uri=md_settings.search_results[int(all_data[1])]['webpage_url'],
                     image_uri=f"{dir_utils.get_temp_med_dir()}/{self.plugin_name}/{song_data['main_id']}",
                     quiet=False
                 )
