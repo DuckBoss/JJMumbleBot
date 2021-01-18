@@ -17,7 +17,7 @@ def mid(text, begin, length):
     return text[begin:begin + length]
 
 
-def format_image_html(img_ext, byte_arr, quiet=False):
+def format_image_html(img_ext, byte_arr, quiet=False, src_only=False):
     if img_ext == "jpg":
         img_ext = "JPEG"
     elif img_ext == "jpeg":
@@ -42,10 +42,13 @@ def format_image_html(img_ext, byte_arr, quiet=False):
         i += 1
     if not quiet:
         log(INFO, INFO_IMG_HTML_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
-    return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
+    if src_only:
+        return f"data:image/{img_ext};base64,{''.join(encoded)}"
+    else:
+        return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
 
 
-def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270, quiet=False):
+def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270, quiet=False, src_only=False):
     # Convert to JPG if it's PNG
     img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     if img_ext.upper() == 'PNG':
@@ -92,7 +95,7 @@ def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw
             log(INFO, INFO_IMG_RAW_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
         return img_byte_arr
     # return formatted html img string
-    return format_image_html(img_ext=img_ext, byte_arr=img_byte_arr, quiet=quiet)
+    return format_image_html(img_ext=img_ext, byte_arr=img_byte_arr, quiet=quiet, src_only=src_only)
 
 
 def encode_b64(byte_arr):

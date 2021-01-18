@@ -39,7 +39,7 @@ def get_audio_info():
         image_uri_split = modified_audio_data["audio_data"]["track"]["image_uri"].rsplit('/', 1)
         image_dir = image_uri_split[0]
 
-        modified_audio_data["audio_data"]["img_uri_formatted"] = format_image(f"{img_hashed_uri}", "jpg", image_dir, size_goal=32768, quiet=True)
+        modified_audio_data["audio_data"]["img_uri_formatted"] = format_image(f"{img_hashed_uri}", "jpg", image_dir, size_goal=32768, quiet=True, src_only=True)
     else:
         modified_audio_data["audio_data"]["img_uri_formatted"] = ''
     modified_audio_data["audio_data"]["track"]["track_type"] = copied_status.get_track()["track_type"].value
