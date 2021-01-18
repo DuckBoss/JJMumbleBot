@@ -11,9 +11,14 @@ RUN apt-get update --no-install-recommends \
 # Enable VLC to be executed as root
 RUN sed -i 's/geteuid/getppid/' /usr/bin/vlc
 
+# Expose primary web interface port
+EXPOSE 7000
+
 WORKDIR /app
-ADD ./requirements.txt /app
+# Add all the requirements.txt files from the requirements folder and install them.
+ADD ./requirements/ /app
 RUN pip install -r requirements.txt --no-warn-script-location
+RUN pip install -r web_server.txt --no-warn-script-location
 COPY . /app
 
 # Cleanup database files
