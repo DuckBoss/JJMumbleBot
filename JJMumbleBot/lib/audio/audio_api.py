@@ -503,7 +503,7 @@ class AudioLibraryInterface:
                     frames = wfile.getnframes()
                     rate = wfile.getframerate()
                     raw_length = frames / float(rate)
-                    track_length = str(timedelta(seconds=round(raw_length))) if raw_length > 0 else -1
+                    track_length = round(raw_length) if raw_length > 0 else -1
             except wave.Error:
                 track_length = -1
             except EOFError:
