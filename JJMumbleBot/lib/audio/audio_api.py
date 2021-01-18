@@ -403,7 +403,7 @@ class AudioLibraryInterface:
                                                   audio_lib=self.status['audio_library'])
 
             self.status['start_time'] = int(time())
-            self.status['pause_time'] = int(time())
+            self.status['pause_time'] = 0
             self.status['progress_time'] = int(seconds)
 
             global_settings.gui_service.quick_gui(
@@ -585,7 +585,7 @@ class AudioLibraryInterface:
             cur_track = self.status.get_track()
             global_settings.gui_service.quick_gui(
                 f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
-                f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{cur_track.duration})]: "
+                f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
                 f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
                 text_type='header',
                 box_align='left')
@@ -601,7 +601,7 @@ class AudioLibraryInterface:
                     image_dir,
                     image_file,
                     caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
-                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{cur_track.duration})]: "
+                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
                             f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
                     caption_align='left',
                     format_img=True,
@@ -613,7 +613,7 @@ class AudioLibraryInterface:
                     f'{get_main_dir()}/lib/images',
                     f'img_unavailable',
                     caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
-                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{cur_track.duration})]: "
+                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
                             f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
                     caption_align='left',
                     format_img=True,

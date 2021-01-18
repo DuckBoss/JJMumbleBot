@@ -12,7 +12,6 @@ from JJMumbleBot.plugins.extensions.media.utility import settings
 from JJMumbleBot.plugins.extensions.media.utility.youtube_search import YoutubeSearch
 import os
 from zlib import crc32
-from datetime import timedelta
 
 
 def on_next_track():
@@ -29,8 +28,7 @@ def on_next_track():
                 uri=song_data['main_url'],
                 name=cur_track.name,
                 sender=cur_track.sender,
-                duration=str(timedelta(seconds=int(song_data['duration']))) if int(
-                    song_data['duration']) > 0 else -1,
+                duration=int(song_data['duration']),
                 track_type=TrackType.STREAM,
                 track_id=cur_track.track_id,
                 alt_uri=cur_track.alt_uri,
@@ -55,7 +53,7 @@ def on_next_track():
                 uri=song_data['main_url'],
                 name=gs.aud_interface.status.get_queue()[0].name,
                 sender=gs.aud_interface.status.get_queue()[0].sender,
-                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+                duration=int(song_data["duration"]),
                 track_type=TrackType.STREAM,
                 track_id=gs.aud_interface.status.get_queue()[0].track_id,
                 alt_uri=gs.aud_interface.status.get_queue()[0].alt_uri,
@@ -80,7 +78,7 @@ def song_integrity_check():
             uri=song_data['main_url'],
             name=cur_track.name,
             sender=cur_track.sender,
-            duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+            duration=int(song_data['duration']),
             track_type=TrackType.STREAM,
             track_id=cur_track.track_id,
             alt_uri=cur_track.alt_uri,
@@ -108,7 +106,7 @@ def on_play():
                 uri=song_data['main_url'],
                 name=cur_track.name,
                 sender=cur_track.sender,
-                duration=str(timedelta(seconds=int(song_data['duration']))) if int(song_data['duration']) > 0 else -1,
+                duration=int(song_data['duration']),
                 track_type=TrackType.STREAM,
                 track_id=cur_track.track_id,
                 alt_uri=cur_track.alt_uri,
@@ -136,7 +134,7 @@ def download_thumbnail(cur_track):
     try:
         ydl_opts = {
             'quiet': True,
-            'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg',
+            'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.%(ext)s',
             'skip_download': True,
             'writethumbnail': True,
             'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
@@ -256,6 +254,7 @@ def get_playlist_info(playlist_url):
                 text_type='header',
                 box_align='left')
             return None
+        playlist_dict_check['entries'] = list(playlist_dict_check['entries'])
         count = len(playlist_dict_check['entries'])
         if count > int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]):
             if not settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
@@ -291,7 +290,7 @@ def get_playlist_info(playlist_url):
                 text_type='header',
                 box_align='left')
             return None
-        for video in playlist_dict['entries']:
+        for video in list(playlist_dict['entries']):
             if not video:
                 log(ERROR,
                     [

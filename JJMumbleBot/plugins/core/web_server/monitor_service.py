@@ -39,7 +39,7 @@ def get_audio_info():
         image_uri_split = modified_audio_data["audio_data"]["track"]["image_uri"].rsplit('/', 1)
         image_dir = image_uri_split[0]
 
-        modified_audio_data["audio_data"]["img_uri_formatted"] = format_image(f"{img_hashed_uri}", "jpg", image_dir, size_goal=32768)
+        modified_audio_data["audio_data"]["img_uri_formatted"] = format_image(f"{img_hashed_uri}", "jpg", image_dir, size_goal=32768, quiet=True)
     else:
         modified_audio_data["audio_data"]["img_uri_formatted"] = ''
     modified_audio_data["audio_data"]["track"]["track_type"] = copied_status.get_track()["track_type"].value
@@ -47,7 +47,8 @@ def get_audio_info():
     if int(modified_audio_data["audio_data"]["progress_time"]) > 0:
         modified_audio_data["audio_data"]["progress_string"] = str(
             timedelta(seconds=int(modified_audio_data["audio_data"]["progress_time"])))
-        modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
+        modified_audio_data["audio_data"]["duration_time"] = modified_audio_data["audio_data"]["track"]["duration"]
+        modified_audio_data["audio_data"]["duration_string"] = str(timedelta(seconds=int(modified_audio_data["audio_data"]["track"]['duration']))) if int(modified_audio_data["audio_data"]["track"]['duration']) > 0 else "-1"
     else:
         modified_audio_data["audio_data"]["progress_string"] = 0
         modified_audio_data["audio_data"]["duration_string"] = modified_audio_data["audio_data"]["track"]["duration"]
