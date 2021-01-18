@@ -8,8 +8,7 @@ bot_service = None
 gui_service = None
 log_service = None
 # Web Interface
-flask_server = None
-socket_server = None
+data_server = None
 # Config Instance
 cfg = None
 # Mumble Instance

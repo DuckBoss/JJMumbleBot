@@ -14,9 +14,9 @@ def parse_message(text):
 
     if message[0] == runtime_settings.cmd_token:
         log(INFO, f"Commands Received: [{user['name']} -> {message}]", origin=L_COMMAND, print_mode=PrintMode.REG_PRINT.value)
-        # example input: !version ; !about ; !yt twice ; !p ; !status
+        # example all_commands input: !version ; !about ; !yt twice ; !p ; !status
         all_commands = [msg.strip() for msg in message.split(';')]
-        # example output: ["!version", "!about", "!yt twice", "!p", "!status"]
+        # example all_commands output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
         # add to command history
         [global_settings.cmd_history.insert(cmd) for cmd in all_commands]
@@ -142,7 +142,7 @@ def get_command_history():
 
 
 def clear_command_history():
-    global_settings.cmd_history.queue_storage.clear()
+    global_settings.cmd_history.clear()
 
 
 def get_command_token():
@@ -263,17 +263,11 @@ def exit_bot():
         )
     for plugin in global_settings.bot_plugins.values():
         plugin.quit()
-    if global_settings.rest_server:
-        global_settings.rest_server.stop()
-        log(INFO, "Terminated flask server instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
-    if global_settings.socket_server:
-        global_settings.socket_server = None
-        log(INFO, "Terminated web socket server instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
     if global_settings.audio_inst:
         global_settings.audio_inst.kill()
         global_settings.audio_inst = None
         global_settings.aud_interface.exit_flag = True
-        log(INFO, "Terminated audio web interface instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
+        log(INFO, "Terminated audio interface instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
     log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
     global_settings.exit_flag = True

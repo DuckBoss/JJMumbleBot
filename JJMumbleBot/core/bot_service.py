@@ -3,7 +3,7 @@ from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED, PYMUMBLE_CLBK_CONN
     PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, PYMUMBLE_CLBK_DISCONNECTED, PYMUMBLE_CLBK_CHANNELUPDATED, \
     PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED
 from JJMumbleBot.core.callback_service import CallbackService
-from JJMumbleBot.lib.utils.web_utils import RemoteTextMessage
+from JJMumbleBot.lib.utils.remote_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
@@ -17,8 +17,7 @@ from JJMumbleBot.lib.database import init_database
 from JJMumbleBot.lib.utils import dir_utils, runtime_utils
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.command import Command
-from JJMumbleBot.lib import aliases
-from JJMumbleBot.lib import execute_cmd
+from JJMumbleBot.lib import aliases, execute_cmd
 from JJMumbleBot.lib.audio.audio_api import AudioLibraryInterface
 from time import sleep, time
 import audioop
@@ -107,7 +106,7 @@ class BotService:
         # Initialize web interface
         if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE,
                                           fallback=False) and global_settings.safe_mode is False:
-            log(INFO, "######### Initializing Web Interface #########",
+            log(INFO, "######### Configuring Web Interface #########",
                 origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
             from JJMumbleBot.lib.database import InsertDB
             from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
@@ -117,9 +116,7 @@ class BotService:
                 InsertDB.insert_new_permission(db_conn=get_memory_db(),
                                                username=global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID],
                                                permission_level=int(Privileges.SUPERUSER.value))
-            from JJMumbleBot.web import web_helper
-            web_helper.initialize_web()
-            log(INFO, "######### Initialized Web Interface #########",
+            log(INFO, "######### Configured Web Interface #########",
                 origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Start runtime loop.
         BotService.loop()
