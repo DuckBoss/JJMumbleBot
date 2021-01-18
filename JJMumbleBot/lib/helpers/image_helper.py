@@ -17,7 +17,7 @@ def mid(text, begin, length):
     return text[begin:begin + length]
 
 
-def format_image_html(img_ext, byte_arr):
+def format_image_html(img_ext, byte_arr, quiet=False):
     if img_ext == "jpg":
         img_ext = "JPEG"
     elif img_ext == "jpeg":
@@ -40,18 +40,20 @@ def format_image_html(img_ext, byte_arr):
         mid_raw_base = mid(raw_base, begin, 72)
         encoded.append(quote(mid_raw_base, safe=''))
         i += 1
-    log(INFO, INFO_IMG_HTML_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+    if not quiet:
+        log(INFO, INFO_IMG_HTML_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
     return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
 
 
-def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270):
+def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270, quiet=False):
     # Convert to JPG if it's PNG
     img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     if img_ext.upper() == 'PNG':
         img.convert('RGB').save(f'{img_dir}/{img_name}.jpg', 'JPEG')
         img_ext = 'jpg'
-        log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
-            error_type=WARN_INVALID_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
+        if not quiet:
+            log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
+                error_type=WARN_INVALID_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
     # Open images
     img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     img.load()
@@ -82,13 +84,15 @@ def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw
     # delete jpg if generated from png
     if os.path.isfile(f"{img_dir}/{img_name}.png"):
         os.unlink(f"{img_dir}/{img_name}.jpg")
-        log(WARNING, WARN_IMG_CONVERTED, origin=L_GENERAL,
-            error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
+        if not quiet:
+            log(WARNING, WARN_IMG_CONVERTED, origin=L_GENERAL,
+                error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
     if raw:
-        log(INFO, INFO_IMG_RAW_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+        if not quiet:
+            log(INFO, INFO_IMG_RAW_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
         return img_byte_arr
     # return formatted html img string
-    return format_image_html(img_ext=img_ext, byte_arr=img_byte_arr)
+    return format_image_html(img_ext=img_ext, byte_arr=img_byte_arr, quiet=quiet)
 
 
 def encode_b64(byte_arr):
