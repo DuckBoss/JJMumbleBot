@@ -4,9 +4,8 @@ from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.plugins.extensions.server_tools.resources.strings import *
-from JJMumbleBot.plugins.extensions.server_tools.utility import server_tools_utility as st_utility
-from JJMumbleBot.plugins.extensions.server_tools.utility import settings as st_settings
+from JJMumbleBot.plugins.core.server_tools.resources.strings import *
+from JJMumbleBot.plugins.core.server_tools.utility import settings as st_settings, server_tools_utility as st_utility
 from JJMumbleBot.plugins.extensions.sound_board.utility.sound_board_utility import find_file
 from JJMumbleBot.plugins.extensions.sound_board.utility.settings import plugin_name as sb_plugin_name
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token, get_users_in_my_channel
@@ -21,7 +20,7 @@ class Plugin(PluginBase):
         super().__init__()
         from json import loads
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+        self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')

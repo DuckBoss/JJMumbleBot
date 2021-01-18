@@ -1,7 +1,7 @@
 from JJMumbleBot.lib.utils import dir_utils
-from JJMumbleBot.plugins.extensions.server_tools.utility import settings
+from JJMumbleBot.plugins.core.server_tools.utility import settings
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.resources.strings import INFO, ERROR, L_COMMAND, GEN_PROCESS_ERR
+from JJMumbleBot.lib.resources.strings import ERROR, L_COMMAND, GEN_PROCESS_ERR
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from os import path
 import csv
