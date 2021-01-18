@@ -111,8 +111,6 @@ class BotServiceHelper:
                 # Import plugin help into the database.
                 UtilityDB.import_help_to_db(db_conn=get_memory_db(),
                                             html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
-        # help_plugin = __import__('help.help')
-        # self.bot_plugins['help'] = help_plugin.help.Plugin(self.bot_plugins)
         sys.path.pop(0)
         log(INFO, "######### Core Plugins Initialized - Safe Mode #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
