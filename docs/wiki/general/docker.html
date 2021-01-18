@@ -38,17 +38,13 @@
             <h3>Simple Setup</h3>
             <ol>
                 <li>Make sure the docker service is started, for more information check here: <a href="https://docs.docker.com/config/daemon/systemd/">How To Start Docker Service</a></li>
-                <li> You can pull the docker container from either Github or DockerHub.<br>
-                    - Pulling the docker container from Github:<br>
-                    <code>docker pull docker.pkg.github.com/duckboss/jjmumblebot/jjmumblebot:head</code><br>
-                    - Pulling the docker container from DockerHub:<br>
+                <li> You can pull the docker container from DockerHub.<br>
                     <code>docker pull jasonjerome/jjmumblebot</code>
                 </li>
-                <li>Navigate to the JJMumbleBot directory and make sure read/write permissions are provided.</li>
                 <li>
                     <b>Minimal run command using docker-compose:</b><br/>
                     <code>sudo docker-compose run bot -ip 'server_ip' -port 'server_port' -password 'server_password' -username 'bot_username' -superuser 'superuser_username' </code><br>
-                    <b>Required launch parameters:</b><br>
+                    <b>Required bot launch parameters:</b><br>
                     <ul>
                         <li><code>-ip</code>: Sets the server ip.</li>
                         <li><code>-port</code>: Sets the server port.</li>
@@ -56,6 +52,10 @@
                         <li><code>-username</code>: The username for the bot that will be displayed to other users in the server.</li>
                         <li><code>-superuser</code>: The username of the admin/superuser who has full control over bot functionality.<br>For more information about user privileges, check this page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/user_privileges.html">User Privileges</a></a></li>
                         <li>For a full list of launch parameters, check this page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/command_line_arguments.html">Launch Parameters</a></li>
+                    </ul>
+                    <b>Required docker launch parameters if a custom web interface port is used:</b><br>
+                    <ul>
+                        <li><code>--expose &#60;custom_port&#62;</code>: Exposes the required custom port for the web interface</li>
                     </ul>
                 </li>
             </ol>
