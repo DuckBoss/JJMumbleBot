@@ -245,8 +245,8 @@ class BotService:
     def on_connected(self):
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
-    def on_disconnected(self):
-        log(INFO, f"{runtime_utils.get_bot_name()} has disconnected.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+    def on_disconnected(self, data):
+        log(INFO, f"{runtime_utils.get_bot_name()} has disconnected.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
 
     def sound_received(self, audio_data):
         user = audio_data[0]
