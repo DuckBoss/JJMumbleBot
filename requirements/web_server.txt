@@ -3,4 +3,4 @@ uvicorn
 fastapi
 pydantic
 websockets
-
+aiofiles
