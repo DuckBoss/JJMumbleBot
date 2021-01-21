@@ -16,8 +16,7 @@ def get_all_socket_data():
     socket_data.update(get_server_hierarchy())
 
     encoded_dict = json.dumps(dict(socket_data), sort_keys=True)
-    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
-    socket_data.update({"hash": hash})
+    socket_data.update({"hash": hex(crc32(str.encode(encoded_dict)) & 0xffffffff)})
     return dict(socket_data)
 
 
@@ -55,8 +54,7 @@ def get_audio_info():
         modified_audio_data["audio_data"]["queue"][i]["track_type"] = modified_audio_data["audio_data"]["queue"][i]["track_type"].value
 
     encoded_dict = json.dumps(modified_audio_data, sort_keys=True)
-    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
-    modified_audio_data["audio_data"]["hash"] = hash
+    modified_audio_data["audio_data"]["hash"] = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
     return modified_audio_data
 
 
@@ -97,8 +95,7 @@ def get_all_online():
     online_user_info["users"] = users_in_channels
 
     encoded_dict = json.dumps(online_user_info, sort_keys=True)
-    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
-    online_user_info["hash"] = hash
+    online_user_info["hash"] = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
     return {"server_info": online_user_info}
 
 
@@ -140,12 +137,10 @@ def get_server_hierarchy():
     set_channel_data(server, channels_list[1:])
 
     encoded_dict = json.dumps(server, sort_keys=True)
-    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
-    return {"server_hierarchy": {"hierarchy": server, "hash": hash}}
+    return {"server_hierarchy": {"hierarchy": server, "hash": hex(crc32(str.encode(encoded_dict)) & 0xffffffff)}}
 
 
 def set_channel_data(prev_tier_list, channels_list):
-    # print(prev_tier_list)
     # Iterate through every channel in this tier...
     to_remove = []
     for channel in prev_tier_list:
