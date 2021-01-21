@@ -1,6 +1,5 @@
 import asyncio
 import threading
-import hashlib
 from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 import uvicorn
 from websockets.exceptions import ConnectionClosedOK
@@ -19,7 +18,6 @@ from JJMumbleBot.plugins.core.web_server.utility.web_utils import ResponseModel
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.plugins.core.web_server.routing.api import routing
 
-hasher = hashlib.md5()
 web_app = FastAPI()
 web_app.add_middleware(
     CORSMiddleware,
