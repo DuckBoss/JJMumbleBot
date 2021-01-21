@@ -1,6 +1,6 @@
 {
-  "short_name": "JJMumbleBot Web Server",
-  "name": "JJMumbleBot Web Server",
+  "short_name": "JJMumbleBot Web interface",
+  "name": "JJMumbleBot Web Interface",
   "icons": [
     {
       "src": "favicon.ico",
