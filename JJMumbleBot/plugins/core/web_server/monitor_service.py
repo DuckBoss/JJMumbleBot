@@ -1,6 +1,6 @@
 from datetime import timedelta
 import platform
-import hashlib
+from zlib import crc32
 import json
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.utils.runtime_utils import get_all_channels
@@ -9,21 +9,19 @@ from copy import deepcopy
 
 
 def get_all_socket_data():
-    hasher = hashlib.md5()
     socket_data = {}
     socket_data.update(get_last_command_output())
     socket_data.update(get_all_online())
     socket_data.update(get_audio_info())
     socket_data.update(get_server_hierarchy())
 
-    encoded_dict = json.dumps(dict(socket_data), sort_keys=True).encode()
-    hasher.update(encoded_dict)
-    socket_data.update({"hash": hasher.hexdigest()})
+    encoded_dict = json.dumps(dict(socket_data), sort_keys=True)
+    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
+    socket_data.update({"hash": hash})
     return dict(socket_data)
 
 
 def get_audio_info():
-    hasher = hashlib.md5()
     global_settings.aud_interface.calculate_progress()
     copied_status = deepcopy(global_settings.aud_interface.status)
     modified_audio_data = {
@@ -56,9 +54,9 @@ def get_audio_info():
         modified_audio_data["audio_data"]["queue"][i] = track_item.to_dict()
         modified_audio_data["audio_data"]["queue"][i]["track_type"] = modified_audio_data["audio_data"]["queue"][i]["track_type"].value
 
-    encoded_dict = json.dumps(modified_audio_data, sort_keys=True).encode()
-    hasher.update(encoded_dict)
-    modified_audio_data["audio_data"]["hash"] = hasher.hexdigest()
+    encoded_dict = json.dumps(modified_audio_data, sort_keys=True)
+    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
+    modified_audio_data["audio_data"]["hash"] = hash
     return modified_audio_data
 
 
@@ -70,7 +68,6 @@ def get_all_users():
 
 
 def get_all_online():
-    hasher = hashlib.md5()
     online_user_info = {
         "channels": {},
         "users": {}
@@ -99,14 +96,13 @@ def get_all_online():
     online_user_info["channels"] = all_channels_dict
     online_user_info["users"] = users_in_channels
 
-    encoded_dict = json.dumps(online_user_info, sort_keys=True).encode()
-    hasher.update(encoded_dict)
-    online_user_info["hash"] = hasher.hexdigest()
+    encoded_dict = json.dumps(online_user_info, sort_keys=True)
+    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
+    online_user_info["hash"] = hash
     return {"server_info": online_user_info}
 
 
 def get_server_hierarchy():
-    hasher = hashlib.md5()
     server = []
 
     # Get all the channel dictionaries: format => {channel_id: 0, name: "Channel Name", position:-1, max_users:-1}
@@ -143,9 +139,9 @@ def get_server_hierarchy():
     # The rest of the channels are either root, or have a parent.
     set_channel_data(server, channels_list[1:])
 
-    encoded_dict = json.dumps(server, sort_keys=True).encode()
-    hasher.update(encoded_dict)
-    return {"server_hierarchy": {"hierarchy": server, "hash": hasher.hexdigest()}}
+    encoded_dict = json.dumps(server, sort_keys=True)
+    hash = hex(crc32(str.encode(encoded_dict)) & 0xffffffff)
+    return {"server_hierarchy": {"hierarchy": server, "hash": hash}}
 
 
 def set_channel_data(prev_tier_list, channels_list):
