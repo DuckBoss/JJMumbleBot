@@ -10,7 +10,7 @@ before_install:
   - sudo apt-get install -y mumble-server
   - sudo service mumble-server restart
 install:
-  - pip install -r /requirements/requirements.txt
-  - pip install -r /requirements/web_server.txt
+  - pip install -r ./requirements/requirements.txt
+  - pip install -r ./requirements/web_server.txt
 script:
   - pytest
