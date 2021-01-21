@@ -44,8 +44,7 @@ def format_image_html(img_ext, byte_arr, quiet=False, src_only=False):
         log(INFO, INFO_IMG_HTML_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
     if src_only:
         return f"data:image/{img_ext};base64,{''.join(encoded)}"
-    else:
-        return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
+    return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
 
 
 def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270, quiet=False, src_only=False):
