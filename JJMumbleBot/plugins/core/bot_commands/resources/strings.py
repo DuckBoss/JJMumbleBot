@@ -12,6 +12,7 @@ INFO_DISPLAYED_BLACKLIST = "Displayed all blacklisted user."
 
 # ERROR STRINGS
 ERR_DATABASE_CMD = "There was an error retrieving the commands from the database."
+ERR_DATABASE_ALIAS = "There was an error retrieving the aliases from the database."
 
 # COMMAND ERROR STRINGS
 CMD_INVALID_ECHO = [
@@ -37,6 +38,10 @@ CMD_INVALID_MAKE = [
 CMD_INVALID_JOIN_USER = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}joinuser 'username'"
+]
+CMD_INVALID_ALIAS_SEARCH = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}aliassearch 'alias'"
 ]
 CMD_INVALID_CMD_SEARCH = [
     "ERROR: Incorrect command formatting!",

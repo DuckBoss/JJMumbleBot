@@ -181,6 +181,47 @@ class Plugin(PluginBase):
                 gs.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
                 log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
+    def cmd_aliassearch(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_CMD_SEARCH,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_CMD_SEARCH,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        search_query = all_data[1].strip()
+        all_aliases = GetDB.get_all_aliases(db_cursor=get_memory_db().cursor())
+        if not all_aliases:
+            gs.gui_service.quick_gui(
+                ERR_DATABASE_ALIAS,
+                text_type='header',
+                text_align='left',
+                box_align='left'
+            )
+            return
+        alias_list = [f"{alias_item[0]}" for alias_item in all_aliases]
+        alias_ratios = process.extract(search_query, alias_list)
+        match_list = []
+        for alias_item in alias_ratios:
+            if alias_item[1] > 80 and len(match_list) < 10:
+                match_list.append(alias_item[0])
+        match_str = f"Alias Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
+        if len(match_list) > 0:
+            for i, clip in enumerate(match_list):
+                match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i + 1}]</font> - {clip}"
+        else:
+            match_str += "None"
+        gs.gui_service.quick_gui(
+            match_str,
+            text_type='header',
+            text_align='left',
+            box_align='left'
+        )
+        log(INFO, INFO_DISPLAYED_CMD_SEARCH, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+
     def cmd_cmdsearch(self, data):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
@@ -193,7 +234,6 @@ class Plugin(PluginBase):
                 ignore_whisper=True)
             return
         search_query = all_data[1].strip()
-
         all_cmds = GetDB.get_all_commands(db_cursor=get_memory_db().cursor())
         if not all_cmds:
             gs.gui_service.quick_gui(
@@ -204,13 +244,13 @@ class Plugin(PluginBase):
             )
             return
         cmd_list = [f"{cmd_item[0]}" for cmd_item in all_cmds]
-        file_ratios = process.extract(search_query, cmd_list)
+        cmd_ratios = process.extract(search_query, cmd_list)
         match_list = []
-        for file_item in file_ratios:
-            if file_item[1] > 80 and len(match_list) < 10:
-                match_list.append(file_item[0])
+        for cmd_item in cmd_ratios:
+            if cmd_item[1] > 80 and len(match_list) < 10:
+                match_list.append(cmd_item[0])
 
-        match_str = f"Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
+        match_str = f"Command Search Results for <font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{search_query}</font>: "
         if len(match_list) > 0:
             for i, clip in enumerate(match_list):
                 match_str += f"<br><font color={gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{i + 1}]</font> - {clip}"
