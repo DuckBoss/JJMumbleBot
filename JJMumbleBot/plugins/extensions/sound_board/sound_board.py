@@ -157,6 +157,31 @@ class Plugin(PluginBase):
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
                               override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
+    def cmd_sbrandomquiet(self, data):
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        sender = gs.mumble_inst.users[data.actor]['name']
+        gather_list = sbu.prepare_sb_list(include_file_extensions=True)
+        random.seed(datetime.now())
+        random_sfx = random.choice(gather_list)
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}',
+            name=random_sfx,
+            sender=sender,
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
+        )
+        gs.aud_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
+                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+
     def cmd_sbrandomnow(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
             gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
@@ -176,7 +201,31 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False,
+            to_front=True,
+            quiet=True
+        )
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
+
+    def cmd_sbrandomquietnow(self, data):
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        sender = gs.mumble_inst.users[data.actor]['name']
+        gather_list = sbu.prepare_sb_list(include_file_extensions=True)
+        random.seed(datetime.now())
+        random_sfx = random.choice(gather_list)
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}',
+            name=random_sfx,
+            sender=sender,
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
+        )
+        gs.aud_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=True,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
@@ -270,7 +319,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False,
+            to_front=True,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
@@ -345,7 +394,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=False,
+            to_front=True,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)

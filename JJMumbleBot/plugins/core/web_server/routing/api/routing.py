@@ -139,6 +139,17 @@ async def get_soundboard_data():
     return ResponseModel(500, "error", {"error_message": "Encountered an error retrieving sound_board clips."}).toDict()
 
 
+@router.post("/api/soundboard-random")
+async def play_random_soundboard():
+    if "sound_board" in list(global_settings.bot_plugins):
+        text = RemoteTextMessage(channel_id=global_settings.mumble_inst.users.myself['channel_id'],
+                                 session=global_settings.mumble_inst.users.myself['session'],
+                                 message=f"{global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]}sbrandomquietnow",
+                                 actor=global_settings.mumble_inst.users.myself['session'])
+        global_settings.core_callbacks.callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, text, True)
+        return ResponseModel(200, "success").toDict()
+    return ResponseModel(400, "error", {"error_message": "Encountered an error while trying to play a random sound clip!"}).toDict()
+
 @router.post("/api/soundboard-play")
 async def play_soundboard_clip(request: StdModel):
     if len(request.text) > 0:
