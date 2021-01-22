@@ -201,7 +201,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=True,
+            to_front=False,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
@@ -225,7 +225,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=True,
+            to_front=False,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
@@ -319,7 +319,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=True,
+            to_front=False,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
@@ -394,7 +394,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
-            to_front=True,
+            to_front=False,
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
