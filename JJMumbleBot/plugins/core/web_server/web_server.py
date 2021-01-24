@@ -5,7 +5,6 @@ from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.core.web_server.web_helper import initialize_web
-from JJMumbleBot.plugins.core.web_server.monitor_service import get_server_hierarchy
 from JJMumbleBot.plugins.core.web_server.utility import settings as ws_settings
 from JJMumbleBot.plugins.core.web_server.resources.strings import *
 
@@ -55,7 +54,7 @@ class Plugin(PluginBase):
 
     def start_server(self):
         if not gs.data_server:
-            initialize_web()
+            initialize_web(self.metadata[C_PLUGIN_SET][P_WEB_IP], self.metadata[C_PLUGIN_SET][P_WEB_PORT])
             log(INFO, f"Initializing new web server instance", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
             gs.gui_service.quick_gui(
                 f"Initializing new web server instance",
@@ -92,6 +91,3 @@ class Plugin(PluginBase):
 
     def cmd_startwebserver(self, data):
         self.start_server()
-
-    def cmd_testserver(self, data):
-        get_server_hierarchy()
