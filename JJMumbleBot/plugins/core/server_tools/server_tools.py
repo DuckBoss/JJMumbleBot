@@ -7,7 +7,6 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.core.server_tools.resources.strings import *
 from JJMumbleBot.plugins.core.server_tools.utility import settings as st_settings, server_tools_utility as st_utility
 from JJMumbleBot.plugins.extensions.sound_board.utility.sound_board_utility import find_file
-from JJMumbleBot.plugins.extensions.sound_board.utility.settings import plugin_name as sb_plugin_name
 from JJMumbleBot.lib.utils.runtime_utils import get_command_token, get_users_in_my_channel
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo, AudioLibrary
@@ -22,9 +21,9 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.is_running = True
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
+        self.is_running = True
         st_settings.server_tools_metadata = self.metadata
         st_settings.plugin_name = self.plugin_name
         if not st_utility.create_empty_user_connections():
@@ -66,12 +65,20 @@ class Plugin(PluginBase):
             log(INFO, "Registered server_tools plugin callbacks", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def clbk_user_connected(self, user):
-        # Return if playing audio clips on user join is disabled.
-        if not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
-            return
-
         # Return if the user that connected is the bot (self-detection).
         if len(get_users_in_my_channel()) == 1:
+            return
+
+        # Display the welcome message to the user if any.
+        if self.metadata.getboolean(C_PLUGIN_SET, P_USE_WELCOME_MSG, fallback=False):
+            if len(self.metadata[C_PLUGIN_SET][P_WELCOME_MSG]) > 0:
+                gs.gui_service.quick_gui(f"{self.metadata[C_PLUGIN_SET][P_WELCOME_MSG]}",
+                                         text_type='header',
+                                         box_align='left',
+                                         user=user[0]['name'])
+
+        # Return if playing audio clips on user join is disabled.
+        if not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
             return
 
         if gs.aud_interface.check_dni(self.plugin_name, quiet=True):
@@ -88,7 +95,7 @@ class Plugin(PluginBase):
             to_play = st_settings.user_connections.get(user[0]['name'])
 
         # If to_play doesn't exist, that means the user is not on the user_connections.csv file.
-        # use the generic clip when the user isn't on the list.
+        # use the built-in clip when the user isn't on the list.
         if not to_play:
             to_play = self.metadata[C_PLUGIN_SET][P_GENERIC_CLIP_TO_PLAY_ON_USER_JOIN]
 
@@ -101,23 +108,48 @@ class Plugin(PluginBase):
 
         # Find and load the clip, then play it.
         audio_clip = find_file(to_play)
-        if not path.exists(f"{dir_utils.get_perm_med_dir()}/{sb_plugin_name}/{audio_clip}"):
-            gs.aud_interface.clear_dni()
-            log(ERROR, f"The audio clip: {to_play} for the user connection sound could not be found.", origin=L_COMMAND,
-                error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
-            gs.gui_service.quick_gui(f"The audio clip: {to_play} could not be found.",
-                                     text_type='header',
-                                     box_align='left')
-            return
-        track_obj = TrackInfo(
-            uri=f'{dir_utils.get_perm_med_dir()}/{sb_plugin_name}/{audio_clip}',
-            alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
-            name=to_play,
-            sender=get_bot_name(),
-            duration=None,
-            track_type=TrackType.FILE,
-            quiet=True
-        )
+        if not audio_clip:
+            if not self.metadata.getboolean(C_PLUGIN_SET, P_USE_BUILT_IN_CLIP, fallback=True):
+                gs.aud_interface.clear_dni()
+                log(ERROR, f"The audio clip: {to_play} for the user connection sound could not be found.", origin=L_COMMAND,
+                    error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(f"The audio clip: {to_play} for the user connection sound could not be found.",
+                                         text_type='header',
+                                         box_align='left')
+                return
+            else:
+                track_obj = TrackInfo(
+                    uri=f'{dir_utils.get_core_plugin_dir()}/server_tools/resources/default_user_sound.wav',
+                    alt_uri=f'{dir_utils.get_core_plugin_dir()}/server_tools/resources/default_user_sound.wav',
+                    name='default_user_sound.wav',
+                    sender=get_bot_name(),
+                    duration=None,
+                    track_type=TrackType.FILE,
+                    quiet=True
+                )
+        else:
+            # If the plugin is set to use sound board clips, retrieve the clip from the sound board media directory.
+            if self.metadata.getboolean(C_PLUGIN_SET, P_USE_SOUNDBOARD_CLIPS, fallback=True):
+                track_obj = TrackInfo(
+                    uri=f'{dir_utils.get_perm_med_dir()}/sound_board/{audio_clip}',
+                    alt_uri=f'{dir_utils.get_perm_med_dir()}/sound_board/{audio_clip}',
+                    name=to_play,
+                    sender=get_bot_name(),
+                    duration=None,
+                    track_type=TrackType.FILE,
+                    quiet=True
+                )
+            # Otherwise, retrieve the clip from the server tools plugin media directory.
+            else:
+                track_obj = TrackInfo(
+                    uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+                    alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+                    name=to_play,
+                    sender=get_bot_name(),
+                    duration=None,
+                    track_type=TrackType.FILE,
+                    quiet=True
+                )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
@@ -130,9 +162,9 @@ class Plugin(PluginBase):
         current_status = not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False)
         self.metadata[C_PLUGIN_SET][P_PLAY_AUDIO_CLIP_ON_USER_JOIN] = f"{'True' if current_status else 'False'}"
         try:
-            with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
+            with open(f'{dir_utils.get_core_plugin_dir()}/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
                 self.metadata.write(metadata_file)
-            self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+            self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
             log(INFO, f"{'Enabled' if current_status else 'Disabled'} user connection sounds in the server_tools metadata.ini file.",
                 origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(f"{'Enabled' if current_status else 'Disabled'} user connection sounds in "
@@ -194,9 +226,9 @@ class Plugin(PluginBase):
             return
         self.metadata[C_PLUGIN_SET][P_GENERIC_CLIP_TO_PLAY_ON_USER_JOIN] = audio_clip_name
         try:
-            with open(f'{dir_utils.get_main_dir()}/plugins/extensions/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
+            with open(f'{dir_utils.get_core_plugin_dir()}/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
                 self.metadata.write(metadata_file)
-            self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
+            self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
             log(INFO, f"Updated the default user connection sound and saved the {self.plugin_name} metadata to the metadata.ini file.",
                 origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
