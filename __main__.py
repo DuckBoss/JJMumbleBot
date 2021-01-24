@@ -55,10 +55,8 @@ if __name__ == "__main__":
                                help='Disable the bot web interface with this launch parameter if it is enabled in the config.')
     optional_args.add_argument('-webip', dest='web_ip', default=None,
                                help='Enter the IP to use for the web server (if enabled).')
-    optional_args.add_argument('-webpageport', dest='web_page_port', default=None,
-                               help='Enter the main web interface page port for the web server (if enabled).')
-    optional_args.add_argument('-websocketport', dest='web_sock_port', default=None,
-                               help='Enter the web socket port for the web server (if enabled).')
+    optional_args.add_argument('-webport', dest='web_port', default=None,
+                               help='Enter the port to use for the web server (if enabled).')
     optional_args.add_argument('-webtickrate', dest='web_tick_rate', default=None,
                                help='Enter the tick rate of the processing loop that sends data to the web interface (if enabled).')
 
@@ -177,6 +175,9 @@ if __name__ == "__main__":
 
     global_settings.cfg = configparser.ConfigParser()
     global_settings.cfg.read(f'{dir_utils.get_main_dir()}/cfg/config.ini')
+    global_settings.web_cfg = configparser.ConfigParser()
+    if path.exists(f'{dir_utils.get_core_plugin_dir()}/web_server/metadata.ini'):
+        global_settings.web_cfg.read(f'{dir_utils.get_core_plugin_dir()}/web_server/metadata.ini')
 
     # Overwrite connection settings if the launch parameter is provided.
     if args.server_username:
@@ -204,17 +205,25 @@ if __name__ == "__main__":
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT] = args.default_comment
     # Overwrite web settings if the launch parameter is provided.
     if args.web_interface:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_ENABLE] = "True"
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_ENABLE
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = "True"
     if args.no_web_interface:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_ENABLE] = "False"
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_ENABLE
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = "False"
     if args.web_ip:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP] = args.web_ip
-    if args.web_page_port:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT] = args.web_page_port
-    if args.web_sock_port:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT] = args.web_sock_port
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_IP
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_IP] = args.web_ip
+    if args.web_port:
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_PORT
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_PORT] = args.web_port
     if args.web_tick_rate:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_TICK_RATE] = args.web_tick_rate
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_TICK_RATE
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_TICK_RATE] = args.web_tick_rate
     # Overwrite media settings if the launch parameter is provided.
     if args.ffmpeg_path:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH] = args.ffmpeg_path

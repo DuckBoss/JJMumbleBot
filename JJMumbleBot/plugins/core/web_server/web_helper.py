@@ -15,7 +15,6 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.plugins.core.web_server.utility.web_utils import ResponseModel
-from JJMumbleBot.plugins.core.web_server.utility import settings
 from JJMumbleBot.plugins.core.web_server.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.plugins.core.web_server.routing.api import routing
@@ -51,7 +50,7 @@ async def serve_favicon(request: Request):
 @web_app.websocket("/ws")
 async def socket_connection(websocket: WebSocket):
     await websocket.accept()
-    web_tick_rate = float(settings.web_server_metadata[C_PLUGIN_SET][P_WEB_TICK_RATE])
+    web_tick_rate = float(global_settings.web_cfg[C_PLUGIN_SET][P_WEB_TICK_RATE])
     try:
         while True:
             await websocket.send_json(monitor_service.get_all_socket_data())
@@ -90,7 +89,7 @@ class ServerThreadWorker(threading.Thread):
     def stop(self):
         self.server.should_exit = True
         log(INFO,
-            f"Stopping Web Application Server on: {settings.web_server_metadata[C_PLUGIN_SET][P_WEB_IP]}:{settings.web_server_metadata[C_PLUGIN_SET][P_WEB_PORT]}/",
+            f"Stopping Web Application Server on: {global_settings.web_cfg[C_PLUGIN_SET][P_WEB_IP]}:{global_settings.web_cfg[C_PLUGIN_SET][P_WEB_PORT]}/",
             origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
 
 

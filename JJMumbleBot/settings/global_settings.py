@@ -11,6 +11,7 @@ log_service = None
 data_server = None
 # Config Instance
 cfg = None
+web_cfg = None
 # Mumble Instance
 mumble_inst = None
 # Bot Database Instance String (In Memory)

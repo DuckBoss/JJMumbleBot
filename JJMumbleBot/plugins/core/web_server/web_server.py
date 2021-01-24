@@ -20,9 +20,8 @@ class Plugin(PluginBase):
         from os import path
         from json import loads
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
-        self.metadata = PluginUtilityService.process_metadata(f'plugins/core/{self.plugin_name}')
+        self.metadata = gs.web_cfg
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        ws_settings.web_server_metadata = self.metadata
         ws_settings.plugin_name = self.plugin_name
         self.is_running = True
         log(INFO, "######### Configuring Web Interface #########",
