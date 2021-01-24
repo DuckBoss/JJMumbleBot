@@ -111,6 +111,8 @@ class BotServiceHelper:
                 # Import plugin help into the database.
                 UtilityDB.import_help_to_db(db_conn=get_memory_db(),
                                             html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
+                # Create directory for user modifiable plugin-specific data and configs.
+                dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         sys.path.pop(0)
         log(INFO, "######### Core Plugins Initialized - Safe Mode #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
@@ -162,6 +164,8 @@ class BotServiceHelper:
                 # Import plugin help into the database.
                 UtilityDB.import_help_to_db(db_conn=get_memory_db(),
                                             html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
+                # Create directory for user modifiable plugin-specific data and configs.
+                dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         save_memory_db_to_file()
         sys.path.pop(0)
         log(INFO, "######### Extension Plugins Initialized - Safe Mode #########",
@@ -230,6 +234,8 @@ class BotServiceHelper:
             # Import plugin help into the database.
             UtilityDB.import_help_to_db(db_conn=get_memory_db(),
                                         html_path=f'{dir_utils.get_main_dir()}/plugins/core/{p_file}/help.html')
+            # Create directory for user modifiable plugin-specific data and configs.
+            dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         sys.path.pop(0)
         log(INFO, "######### Core Plugins Initialized #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
@@ -279,6 +285,8 @@ class BotServiceHelper:
             # Import plugin help into the database.
             UtilityDB.import_help_to_db(db_conn=get_memory_db(),
                                         html_path=f'{dir_utils.get_main_dir()}/plugins/extensions/{p_file}/help.html')
+            # Create directory for user modifiable plugin-specific data and configs.
+            dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         save_memory_db_to_file()
         sys.path.pop(0)
         log(INFO, "######### Extension Plugins Initialized #########",
