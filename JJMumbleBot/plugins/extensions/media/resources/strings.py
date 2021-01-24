@@ -24,4 +24,3 @@ CMD_INVALID_YTPLAY = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}ytplay 'track_number'"
 ]
-
