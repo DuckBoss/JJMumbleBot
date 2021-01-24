@@ -1,11 +1,13 @@
-import os
+from os import listdir, path, unlink, makedirs
 from pathlib import Path
 from JJMumbleBot.settings import global_settings
+from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.resources.strings import *
 
 
 def get_main_dir():
-    return Path(os.path.dirname(__file__)).parent.parent
+    return Path(path.dirname(__file__)).parent.parent
 
 
 def get_temp_med_dir():
@@ -16,27 +18,41 @@ def get_perm_med_dir():
     return global_settings.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]
 
 
+def get_plugin_data_dir():
+    return f'{get_main_dir()}/cfg/plugins'
+
+
+def get_core_plugin_dir():
+    return f'{get_main_dir()}/plugins/core'
+
+
+def get_extension_plugin_dir():
+    return f'{get_main_dir()}/plugins/extensions'
+
+
 def clear_directory(d):
-    for the_file in os.listdir(d):
-        file_path = os.path.join(d, the_file)
+    for the_file in listdir(d):
+        file_path = path.join(d, the_file)
         try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
+            if path.isfile(file_path):
+                unlink(file_path)
         except Exception as e:
-            print(e)
+            log(ERROR, f"Encountered an error trying to clear a directory: {e}",
+                origin=L_COMMAND, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.REG_PRINT.value)
 
 
 def remove_file(f, d):
-    for the_file in os.listdir(d):
+    for the_file in listdir(d):
         try:
-            file_path = os.path.join(d, the_file)
-            if os.path.isfile(file_path):
+            file_path = path.join(d, the_file)
+            if path.isfile(file_path):
                 if the_file == f:
-                    os.unlink(file_path)
+                    unlink(file_path)
         except Exception as e:
-            print(e)
+            log(ERROR, f"Encountered an error trying to remove a file: {e}",
+                origin=L_COMMAND, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.REG_PRINT.value)
 
 
 def make_directory(d):
-    if not os.path.exists(d):
-        os.makedirs(d)
+    if not path.exists(d):
+        makedirs(d)
