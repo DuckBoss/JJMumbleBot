@@ -1,6 +1,6 @@
 import asyncio
 import threading
-from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+from JJMumbleBot.lib.utils.dir_utils import get_core_plugin_dir
 import uvicorn
 from websockets.exceptions import ConnectionClosedOK
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, Request
@@ -15,6 +15,8 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.plugins.core.web_server.utility.web_utils import ResponseModel
+from JJMumbleBot.plugins.core.web_server.utility import settings
+from JJMumbleBot.plugins.core.web_server.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.plugins.core.web_server.routing.api import routing
 
@@ -25,7 +27,7 @@ web_app.add_middleware(
     allow_methods=["GET", "POST"],
     allow_headers=["*"]
 )
-web_app.mount("/static", StaticFiles(directory=f"{get_main_dir()}/plugins/core/web_server/static"), name="static")
+web_app.mount("/static", StaticFiles(directory=f"{get_core_plugin_dir()}/web_server/static"), name="static")
 web_app.include_router(routing.router)
 
 
@@ -37,19 +39,19 @@ async def http_exception(request, exc):
 
 @web_app.get("/")
 async def serve_app(request: Request):
-    return Jinja2Templates(directory=f"{get_main_dir()}/plugins/core/web_server/templates").TemplateResponse("index.html", {"request": request})
+    return Jinja2Templates(directory=f"{get_core_plugin_dir()}/web_server/templates").TemplateResponse("index.html", {"request": request})
 
 
 @web_app.get("/favicon.ico")
 async def serve_favicon(request: Request):
-    favicon = open(f"{get_main_dir()}/plugins/core/web_server/static/favicon.ico", mode="rb")
+    favicon = open(f"{get_core_plugin_dir()}/web_server/static/favicon.ico", mode="rb")
     return StreamingResponse(favicon, media_type="image/x-icon")
 
 
 @web_app.websocket("/ws")
 async def socket_connection(websocket: WebSocket):
     await websocket.accept()
-    web_tick_rate = float(global_settings.cfg[C_WEB_SETTINGS][P_WEB_TICK_RATE])
+    web_tick_rate = float(settings.web_server_metadata[C_PLUGIN_SET][P_WEB_TICK_RATE])
     try:
         while True:
             await websocket.send_json(monitor_service.get_all_socket_data())
@@ -72,8 +74,8 @@ class ServerThreadWorker(threading.Thread):
         self.server = UvicornServer(
             config=uvicorn.Config(
                 web_app,
-                host=global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP],
-                port=int(global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]),
+                host=kwargs["kwargs"]["ip"],
+                port=int(kwargs["kwargs"]["port"]),
                 reload=False,
                 log_level="info" if global_settings.verbose_mode else "critical",
                 loop="asyncio",
@@ -88,14 +90,14 @@ class ServerThreadWorker(threading.Thread):
     def stop(self):
         self.server.should_exit = True
         log(INFO,
-            f"Stopping Web Application Server on: {global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP]}:{global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]}/",
+            f"Stopping Web Application Server on: {settings.web_server_metadata[C_PLUGIN_SET][P_WEB_IP]}:{settings.web_server_metadata[C_PLUGIN_SET][P_WEB_PORT]}/",
             origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
 
 
-def initialize_web():
-    global_settings.data_server = ServerThreadWorker(args=(web_app), daemon=True)
+def initialize_web(ip, port):
+    global_settings.data_server = ServerThreadWorker(kwargs={"ip": ip, "port": port}, daemon=True)
     global_settings.data_server.start()
     # start_rest_server()
-    log(INFO, f"Initialized API Server on: {global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP]}:{global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]}/api/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
-    log(INFO, f"Server API documentation can be found on: {global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP]}:{global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]}/docs/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
-    log(INFO, f"Initialized Web Application on: {global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP]}:{global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT]}/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
+    log(INFO, f"Initialized API Server on: {ip}:{port}/api/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
+    log(INFO, f"Server API documentation can be found on: {ip}:{port}/docs/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
+    log(INFO, f"Initialized Web Application on: {ip}:{port}/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)

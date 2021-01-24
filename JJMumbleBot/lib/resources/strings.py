@@ -2,7 +2,6 @@
 # PROGRAM CONFIG CATEGORY STRINGS - DO NOT MODIFY
 C_CONNECTION_SETTINGS = 'Connection Settings'
 C_MAIN_SETTINGS = 'Main Settings'
-C_WEB_SETTINGS = 'Web Interface'
 C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
 C_MEDIA_SETTINGS = 'Media Settings'
@@ -23,12 +22,6 @@ P_CMD_MULTI_LIM = 'MultiCommandLimit'
 P_CMD_TOKEN = 'CommandToken'
 P_CMD_QUEUE_LIM = 'CommandQueueLimit'
 P_CMD_HIST_LIM = 'CommandHistoryLimit'
-# Web Interface
-P_WEB_ENABLE = 'EnableWebInterface'
-P_WEB_IP = 'WebServerIP'
-P_WEB_PAGE_PORT = 'WebPagePort'
-P_WEB_SOCK_PORT = 'WebSocketPort'
-P_WEB_TICK_RATE = 'WebTickRate'
 # Media Settings
 P_MEDIA_FFMPEG_PATH = 'FfmpegPath'
 P_MEDIA_VLC_PATH = 'VlcPath'

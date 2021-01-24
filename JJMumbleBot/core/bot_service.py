@@ -103,21 +103,6 @@ class BotService:
         self.initialize_mumble(mumble_login_data)
         log(INFO, "######### Initialized Mumble Client #########",
             origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
-        # Initialize web interface
-        if global_settings.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE,
-                                          fallback=False) and global_settings.safe_mode is False:
-            log(INFO, "######### Configuring Web Interface #########",
-                origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
-            from JJMumbleBot.lib.database import InsertDB
-            from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
-            from JJMumbleBot.lib.privileges import Privileges
-            if InsertDB.insert_new_user(db_conn=get_memory_db(),
-                                        username=global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]):
-                InsertDB.insert_new_permission(db_conn=get_memory_db(),
-                                               username=global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID],
-                                               permission_level=int(Privileges.SUPERUSER.value))
-            log(INFO, "######### Configured Web Interface #########",
-                origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Start runtime loop.
         BotService.loop()
 
