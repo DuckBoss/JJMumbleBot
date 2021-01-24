@@ -1,5 +1,5 @@
 from JJMumbleBot.settings import global_settings as gs
-from JJMumbleBot.lib.resources.strings import *
+from JJMumbleBot.lib.resources.strings import P_TXT_IND_COL, C_PGUI_SETTINGS
 from JJMumbleBot.lib.audio.audio_api import TrackType
 
 
