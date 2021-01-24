@@ -28,5 +28,3 @@ CMD_INVALID_GET_USER_CONNECTION = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}getuserconnectionsound 'username'"
 ]
-
-
