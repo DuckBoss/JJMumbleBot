@@ -1,5 +1,6 @@
 command,level
-setuserconnectionsound,4
-getuserconnectionsound,4
-clearuserconnectionsound,4
-toggleuserconnectionsound,4
+setloginsound,4
+getloginsound,4
+clearloginsound,4
+toggleloginsounds,4
+setdefaultloginsound,4

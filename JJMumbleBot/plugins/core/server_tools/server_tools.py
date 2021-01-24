@@ -157,7 +157,7 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
 
-    def cmd_toggleuserconnectionsound(self, data):
+    def cmd_toggleloginsounds(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
         current_status = not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False)
         self.metadata[C_PLUGIN_SET][P_PLAY_AUDIO_CLIP_ON_USER_JOIN] = f"{'True' if current_status else 'False'}"
@@ -181,7 +181,7 @@ class Plugin(PluginBase):
                                      user=data_actor['name'])
             return
 
-    def cmd_clearuserconnectionsound(self, data):
+    def cmd_clearloginsound(self, data):
         all_data = data.message.strip().split(' ', 1)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 2:
@@ -203,7 +203,7 @@ class Plugin(PluginBase):
                                      box_align='left',
                                      user=data_actor['name'])
 
-    def cmd_setdefaultconnectionsound(self, data):
+    def cmd_setdefaultloginsound(self, data):
         all_data = data.message.strip().split(' ', 1)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 2:
@@ -245,7 +245,7 @@ class Plugin(PluginBase):
                                      user=data_actor['name'])
             return
 
-    def cmd_setuserconnectionsound(self, data):
+    def cmd_setloginsound(self, data):
         all_data = data.message.strip().split(' ', 2)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 3:
@@ -276,7 +276,7 @@ class Plugin(PluginBase):
         log(INFO, f"Set user connection sound: {track} to play whenever {username} connects to the server.",
             origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
-    def cmd_getuserconnectionsound(self, data):
+    def cmd_getloginsound(self, data):
         all_data = data.message.strip().split(' ', 1)
         data_actor = gs.mumble_inst.users[data.actor]
         if len(all_data) != 2:
