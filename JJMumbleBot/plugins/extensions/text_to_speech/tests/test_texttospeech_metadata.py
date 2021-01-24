@@ -31,4 +31,4 @@ class TestTextToSpeech:
         assert self.cfg[C_PLUGIN_SET][P_TTS_DEF_VOICE] == "Brian"
 
     def test_allowed_voice_list(self):
-        assert len(list(loads(self.cfg[C_PLUGIN_SET, P_TTS_ALL_VOICE]))) == 57
+        assert len(list(loads(self.cfg[C_PLUGIN_SET][P_TTS_ALL_VOICE]))) == 57

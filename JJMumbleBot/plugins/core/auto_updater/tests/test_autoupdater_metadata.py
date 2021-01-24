@@ -24,5 +24,4 @@ class TestAutoUpdater:
         assert len(method_list) == len(list(loads(self.cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS])))
 
     def test_pip_executable(self):
-        pip_exec = self.cfg.getboolean(C_PLUGIN_SET, P_PIP_CMD)
-        assert pip_exec == "pip"
+        assert self.cfg[C_PLUGIN_SET][P_PIP_CMD] == "pip"
