@@ -138,17 +138,17 @@ class Plugin(PluginBase):
                     track_type=TrackType.FILE,
                     quiet=True
                 )
-                return
-            # Otherwise, retrieve the clip from the server tools plugin media directory.
-            track_obj = TrackInfo(
-                uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
-                alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
-                name=to_play,
-                sender=get_bot_name(),
-                duration=None,
-                track_type=TrackType.FILE,
-                quiet=True
-            )
+            else:
+                # Otherwise, retrieve the clip from the server tools plugin media directory.
+                track_obj = TrackInfo(
+                    uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+                    alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+                    name=to_play,
+                    sender=get_bot_name(),
+                    duration=None,
+                    track_type=TrackType.FILE,
+                    quiet=True
+                )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
