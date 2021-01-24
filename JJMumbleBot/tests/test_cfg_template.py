@@ -5,7 +5,7 @@ from JJMumbleBot.lib.utils.runtime_utils import get_version
 from JJMumbleBot.lib.resources.strings import *
 
 
-class Test_Cfg:
+class TestConfigTemplate:
     def setup_method(self):
         # Initialize configs.
         self.cfg = configparser.ConfigParser()
@@ -45,28 +45,6 @@ class Test_Cfg:
         assert default_comment == "Hello! I am JJMumbleBot!"
     #################################
 
-    # Web Interface Config Tests
-    def test_web_intf(self):
-        enable_web_interface = self.cfg.getboolean(C_WEB_SETTINGS, P_WEB_ENABLE)
-        assert enable_web_interface is True
-
-    def test_web_ip(self):
-        web_server_ip = self.cfg[C_WEB_SETTINGS][P_WEB_IP]
-        assert web_server_ip == "127.0.0.1"
-
-    def test_web_port(self):
-        web_page_port = int(self.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT])
-        assert web_page_port == 7000
-
-    def test_socket_port(self):
-        web_socket_port = int(self.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT])
-        assert web_socket_port == 7001
-
-    def test_web_tick_rate(self):
-        web_tick_rate = int(self.cfg[C_WEB_SETTINGS][P_WEB_TICK_RATE])
-        assert web_tick_rate == 1
-    #################################
-
     # Media Settings Config Tests
     def test_ffmpeg_location(self):
         vlc_location = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH]
@@ -80,41 +58,41 @@ class Test_Cfg:
         stereo_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO)
         assert stereo_audio is True
 
-    def test_vlc_quiet(self):
-        vlc_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_AUDIO_LIB_QUIET)
-        assert vlc_quiet is True
+    def test_audio_library_quiet(self):
+        audio_library_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_AUDIO_LIB_QUIET)
+        assert audio_library_quiet is True
 
-    def test_vlc_default_volume(self):
-        vlc_default_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]
-        assert vlc_default_volume == "0.3"
+    def test_media_default_volume(self):
+        media_default_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]
+        assert media_default_volume == "0.3"
 
-    def test_vlc_duck_audio(self):
-        vlc_duck_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO)
-        assert vlc_duck_audio is False
+    def test_media_duck_audio(self):
+        media_duck_audio = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO)
+        assert media_duck_audio is False
 
-    def test_vlc_duck_volume(self):
-        vlc_duck_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME]
-        assert vlc_duck_volume == "0.05"
+    def test_media_duck_volume(self):
+        media_duck_volume = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME]
+        assert media_duck_volume == "0.05"
 
-    def test_vlc_duck_threshold(self):
-        vlc_duck_threshold = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]
-        assert vlc_duck_threshold == "2500.0"
+    def test_media_duck_threshold(self):
+        media_duck_threshold = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]
+        assert media_duck_threshold == "2500.0"
 
-    def test_vlc_duck_delay(self):
-        vlc_duck_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY]
-        assert vlc_duck_delay == "1.0"
+    def test_media_duck_delay(self):
+        media_duck_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY]
+        assert media_duck_delay == "1.0"
 
-    def test_vlc_max_queue_length(self):
-        vlc_max_queue_length = int(self.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
-        assert vlc_max_queue_length == 50
+    def test_media_max_queue_length(self):
+        media_max_queue_length = int(self.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
+        assert media_max_queue_length == 50
 
-    def test_youtube_dl_proxy(self):
-        youtube_dl_proxy = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
-        assert youtube_dl_proxy == ""
+    def test_media_proxy(self):
+        media_proxy = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
+        assert media_proxy == ""
 
-    def test_youtube_dl_cookie(self):
-        youtube_dl_cookie = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
-        assert youtube_dl_cookie == ""
+    def test_media_cookie(self):
+        media_cookie = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
+        assert media_cookie == ""
 
     def test_temp_media_directory(self):
         temp_media_directory = self.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]
@@ -145,6 +123,10 @@ class Test_Cfg:
     def test_log_directory(self):
         log_directory = self.cfg[C_LOGGING][P_LOG_DIR]
         assert log_directory == ""
+
+    def test_enable_log_stack_trace(self):
+        hide_message_logging = self.cfg.getboolean(C_LOGGING, P_LOG_TRACE)
+        assert hide_message_logging is False
     #################################
 
     # Plugin Config Tests
