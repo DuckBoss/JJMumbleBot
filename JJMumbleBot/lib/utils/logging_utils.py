@@ -26,8 +26,8 @@ def initialize_logging():
 
 
 def log(level: str, message: Union[List[str], str], origin: str = None, error_type: str = None, print_mode: int = -1):
-    # Don't attempt to log anything if the use_logging flag is false.
-    if not runtime_settings.use_logging:
+    # Don't attempt to log anything if the use_logging flag is false and the log event isn't also trying to be printed.
+    if not runtime_settings.use_logging and print_mode == -1:
         return
     # If logging is enabled and the log service is missing, raise an error.
     if global_settings.log_service is None:
@@ -38,23 +38,27 @@ def log(level: str, message: Union[List[str], str], origin: str = None, error_ty
         message = [message]
     # Format the log messages for outputting.
     log_msg = "\n".join(message) if len(message) > 1 else message[0]
-    log_out = f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]: ' \
-              f'{"<"+error_type+">:" if error_type is not None else ""}{log_msg}'
-    # If log stack tracing is enabled, include the stack trace in the log message.
-    if runtime_settings.log_trace:
-        log_out += f"\n{''.join(traceback.format_stack())}\n"
-    # Log the formatted message based on the logging level.
-    if level == INFO:
-        global_settings.log_service.info(log_out)
-    elif level == DEBUG:
-        global_settings.log_service.debug(log_out)
-    elif level == WARNING:
-        global_settings.log_service.warning(log_out)
-    elif level == ERROR:
-        global_settings.log_service.error(log_out)
-    elif level == CRITICAL:
-        global_settings.log_service.critical(log_out)
-    # Additionally, print out the log message if required.
+
+    # Format the message and log the event as necessary if logging is enabled.
+    if runtime_settings.use_logging:
+        log_out = f'[{META_NAME}({META_VERSION}).{origin if origin is not None else L_GENERAL}]: ' \
+                  f'{"<" + error_type + ">:" if error_type is not None else ""}{log_msg}'
+        # If log stack tracing is enabled, include the stack trace in the log message.
+        if runtime_settings.log_trace:
+            log_out += f"\n{''.join(traceback.format_stack())}\n"
+        # Log the formatted message based on the logging level.
+        if level == INFO:
+            global_settings.log_service.info(log_out)
+        elif level == DEBUG:
+            global_settings.log_service.debug(log_out)
+        elif level == WARNING:
+            global_settings.log_service.warning(log_out)
+        elif level == ERROR:
+            global_settings.log_service.error(log_out)
+        elif level == CRITICAL:
+            global_settings.log_service.critical(log_out)
+
+    # Print out the log message if required.
     if print_mode == PrintMode.REG_PRINT.value:
         rprint(log_msg, origin=origin, error_type=error_type)
     elif print_mode == PrintMode.VERBOSE_PRINT.value:
