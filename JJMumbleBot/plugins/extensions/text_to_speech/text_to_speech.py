@@ -45,12 +45,6 @@ class Plugin(PluginBase):
         if not self.is_running:
             self.__init__()
 
-    def cmd_ttsstop(self, data):
-        if gs.aud_interface.check_dni_is_mine(self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]):
-            gs.aud_interface.stop()
-            gs.gui_service.quick_gui("Stopped text-to-speech audio.", text_type='header',
-                                     box_align='left')
-
     def cmd_ttslist(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
         internal_list = []
