@@ -117,16 +117,15 @@ class Plugin(PluginBase):
                                          text_type='header',
                                          box_align='left')
                 return
-            else:
-                track_obj = TrackInfo(
-                    uri=f'{dir_utils.get_core_plugin_dir()}/server_tools/resources/default_user_sound.wav',
-                    alt_uri=f'{dir_utils.get_core_plugin_dir()}/server_tools/resources/default_user_sound.wav',
-                    name='default_user_sound.wav',
-                    sender=get_bot_name(),
-                    duration=None,
-                    track_type=TrackType.FILE,
-                    quiet=True
-                )
+            track_obj = TrackInfo(
+                uri=f'{dir_utils.get_core_plugin_dir()}/server_tools/resources/default_user_sound.wav',
+                alt_uri=f'{dir_utils.get_core_plugin_dir()}/server_tools/resources/default_user_sound.wav',
+                name='default_user_sound.wav',
+                sender=get_bot_name(),
+                duration=None,
+                track_type=TrackType.FILE,
+                quiet=True
+            )
         else:
             # If the plugin is set to use sound board clips, retrieve the clip from the sound board media directory.
             if self.metadata.getboolean(C_PLUGIN_SET, P_USE_SOUNDBOARD_CLIPS, fallback=True):
@@ -139,17 +138,17 @@ class Plugin(PluginBase):
                     track_type=TrackType.FILE,
                     quiet=True
                 )
+                return
             # Otherwise, retrieve the clip from the server tools plugin media directory.
-            else:
-                track_obj = TrackInfo(
-                    uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
-                    alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
-                    name=to_play,
-                    sender=get_bot_name(),
-                    duration=None,
-                    track_type=TrackType.FILE,
-                    quiet=True
-                )
+            track_obj = TrackInfo(
+                uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+                alt_uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{audio_clip}',
+                name=to_play,
+                sender=get_bot_name(),
+                duration=None,
+                track_type=TrackType.FILE,
+                quiet=True
+            )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
             to_front=False,
