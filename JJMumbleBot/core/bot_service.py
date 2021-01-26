@@ -2,6 +2,7 @@ import pymumble_py3 as pymumble
 from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED, PYMUMBLE_CLBK_CONNECTED, PYMUMBLE_CLBK_SOUNDRECEIVED, \
     PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, PYMUMBLE_CLBK_DISCONNECTED, PYMUMBLE_CLBK_CHANNELUPDATED, \
     PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED
+from pymumble_py3.errors import ConnectionRejectedError
 from JJMumbleBot.core.callback_service import CallbackService
 from JJMumbleBot.lib.utils.remote_utils import RemoteTextMessage
 from JJMumbleBot.settings import runtime_settings
@@ -32,13 +33,6 @@ class BotService:
         global_settings.clbk_service = CallbackService()
         # Initialize user settings.
         BotServiceHelper.initialize_settings()
-
-        # Initialize logging directory if unavailable.
-        if global_settings.cfg.get(C_LOGGING, P_LOG_DIR, fallback=None):
-            dir_utils.make_directory(global_settings.cfg[C_LOGGING][P_LOG_DIR])
-        else:
-            dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/logs')
-            global_settings.cfg[C_LOGGING][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/cfg/logs'
 
         # Initialize logging services.
         initialize_logging()
@@ -147,15 +141,21 @@ class BotService:
 
         global_settings.mumble_inst.set_codec_profile('audio')
         global_settings.mumble_inst.set_receive_sound(True)
-        global_settings.mumble_inst.start()
-        global_settings.mumble_inst.is_ready()
 
-        if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER, fallback=False):
-            global_settings.mumble_inst.users.myself.register()
-        global_settings.mumble_inst.users.myself.comment(
-            f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
-        runtime_utils.mute()
-        runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]).move_in()
+        try:
+            global_settings.mumble_inst.start()
+            global_settings.mumble_inst.is_ready()
+
+            if global_settings.cfg.getboolean(C_CONNECTION_SETTINGS, P_SELF_REGISTER, fallback=False):
+                global_settings.mumble_inst.users.myself.register()
+            global_settings.mumble_inst.users.myself.comment(
+                f'{runtime_utils.get_comment()}<br>[{META_NAME}({META_VERSION})] - {runtime_utils.get_bot_name()}<br>{runtime_utils.get_about()}')
+            runtime_utils.mute()
+            runtime_utils.get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]).move_in()
+        except ConnectionRejectedError as e:
+            log(CRITICAL, f"The connection to the server was rejected! {e}",
+                origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+            return
 
     def message_received(self, message):
         text = message[0]
@@ -227,7 +227,7 @@ class BotService:
     def process_command_queue(com):
         execute_cmd.execute_command(com)
 
-    def on_connected(self):
+    def on_connected(self, data):
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     def on_disconnected(self, data):

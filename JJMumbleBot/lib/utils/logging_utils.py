@@ -11,6 +11,16 @@ def initialize_logging():
     if not runtime_settings.use_logging:
         return
     from logging.handlers import RotatingFileHandler
+
+    # Initialize logging directory if unavailable.
+    if global_settings.cfg.get(C_LOGGING, P_LOG_DIR, fallback=None):
+        from JJMumbleBot.lib.utils import dir_utils
+        dir_utils.make_directory(global_settings.cfg[C_LOGGING][P_LOG_DIR])
+    else:
+        from JJMumbleBot.lib.utils import dir_utils
+        dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/logs')
+        global_settings.cfg[C_LOGGING][P_LOG_DIR] = f'{dir_utils.get_main_dir()}/cfg/logs'
+
     logging.getLogger('chardet.charsetprober').setLevel(logging.INFO)
     log_file_name = f"{global_settings.cfg[C_LOGGING][P_LOG_DIR]}/runtime.log"
     global_settings.log_service = logging.getLogger("RuntimeLogging")
@@ -30,7 +40,7 @@ def log(level: str, message: Union[List[str], str], origin: str = None, error_ty
     if not runtime_settings.use_logging and print_mode == -1:
         return
     # If logging is enabled and the log service is missing, raise an error.
-    if global_settings.log_service is None:
+    if global_settings.log_service is None and runtime_settings.use_logging:
         from JJMumbleBot.lib.errors import LogError
         raise LogError("ERROR: Logging is enabled but an instance of the logging service could not be created!")
     # If the provided message is not a list, convert it to a list.
