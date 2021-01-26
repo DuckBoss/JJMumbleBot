@@ -3,7 +3,7 @@ from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 
 
 class Plugin(PluginBase):
@@ -15,19 +15,20 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
-        self.is_running = True
         # Add any custom initialization code here...
         # ...
         # ...
-        rprint(
-            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+        self.is_running = True
+        log(INFO,
+            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.REG_PRINT.value)
 
     # This is the standard quit method that is called when the bot is shutting down.
     # Don't modify this method unless you need to conduct some clean-up before the plugin exits.
     def quit(self):
         self.is_running = False
-        dprint(f"Exiting {self.plugin_name} plugin...")
-        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
 
     # This method is called when a controllable plugin is requested to stop from a command.
     # Do not modify this command unless you need to conduct some clean-up before the plugin exits.
