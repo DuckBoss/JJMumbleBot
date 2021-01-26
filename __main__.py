@@ -20,13 +20,17 @@ if __name__ == "__main__":
 
     # Connection launch parameters
     required_args.add_argument('-ip', dest='server_ip', default='127.0.0.1',
-                               required=True,
-                               help='Enter the server IP using this parameter.')
+                               required=False,
+                               help='Enter the server IP using this parameter if environment variables are not being used.')
     required_args.add_argument('-port', dest='server_port', default='64738',
-                               required=True,
-                               help='Enter the server port using this parameter.')
+                               required=False,
+                               help='Enter the server port using this parameter if environment variables are not being used.')
+    optional_args.add_argument('-env', dest='use_env', action='store_true', default=False,
+                               help="Uses the system environment variables MUMBLE_IP, MUMBLE_PORT, MUMBLE_PASS for the server IP/Port/Password")
     optional_args.add_argument('-password', dest='server_password', default='',
                                help='Enter the server password using this parameter.')
+    optional_args.add_argument('-forcedefaults', dest='force_defaults', action='store_true', default=False,
+                               help="Forces the bot instance to use the default config, aliases, and regenerates the internal database.")
     optional_args.add_argument('-cert', dest='server_cert', default=None,
                                help='Enter the bot client certificate path using this parameter.')
     optional_args.add_argument('-generatecert', dest='generate_cert', action='store_true', default=False,
@@ -166,6 +170,10 @@ if __name__ == "__main__":
 
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/'):
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/')
+
+    if args.force_defaults:
+        dir_utils.clear_directory(f'{dir_utils.get_main_dir()}/cfg/')
+
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
         copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
@@ -299,5 +307,21 @@ if __name__ == "__main__":
     if args.canvas_subheader_text_color:
         global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL] = args.canvas_subheader_text_color
 
+    # Set the IP/Port from the environment variables if '-env' is used, otherwise use '-ip/-port'
+    server_ip = args.server_ip
+    server_port = args.server_port
+    server_password = args.server_password
+    if args.use_env:
+        from os import environ
+        server_ip = environ.get('MUMBLE_IP')
+        if server_ip is None:
+            server_ip = args.server_ip
+        server_port = environ.get('MUMBLE_PORT')
+        if server_port is None:
+            server_port = args.server_port
+        server_password = environ.get('MUMBLE_PASS')
+        if server_password is None:
+            server_password = args.server_password
+
     # Initialize bot service.
-    service.BotService(args.server_ip, int(args.server_port), args.server_password)
+    service.BotService(server_ip, int(server_port), server_password)
