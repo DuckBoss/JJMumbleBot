@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>JJMumbleBot - Web Server Plugin</title>
     <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
     <noscript>Please enable JavaScript in your browser!</noscript>
@@ -11,16 +12,19 @@
 <body>
     <nav id="table_of_contents"></nav>
     <div class="main-content">
-        <h2>Images Plugin</h2>
+        <h2>Web Server Plugin</h2>
         <p>
         This is a built-in extension plugin that follows the plugin template system. <br>
-        This plugin can post images into the channel from urls, or from a local directory.
+        The web_server plugin is a plugin that introduces a web interface for the bot along with REST APIs for custom implementations.<br>
+        <b>The web_server settings can be modified in the <code>metadata.ini</code> file or by using launch parameters.</b>
         </p>
 
         <h3>Usage:</h3>
-        <code>!post 'image_url'</code>: Posts the image from the url in the channel chat.<br>
-        <code>!img 'image_name'</code>: Posts locally hosted images in the channel chat. The image must be a jpg.<br>
-        <code>!imglist</code>: Lists all locally hosted images in a private message.
+        <ul>
+            <li><code>!startwebserver</code>: Starts the web server instance if it is not already running.</li>
+            <li><code>!stopwebserver</code>: Stops the web server instance if it is running.</li>
+        </ul>
+
     </div>
     <footer></footer>
 </body>

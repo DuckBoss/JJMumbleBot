@@ -5,6 +5,7 @@
     <title>JJMumbleBot - Core Commands Plugin</title>
     <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <noscript>Please enable JavaScript in your browser!</noscript>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
 </head>
@@ -19,6 +20,9 @@
         <code>!exit/!quit</code>: Initializes the bot exit procedure.<br>
         <code>!help</code>: Displays a list of the help commands for all the available plugins.<br>
         <code>!help 'plugin_name'</code>: Displays all the commands available for the given plugin.<br>
+        <code>!stopplugin 'plugin_name'</code>: Stops a running plugin using the plugin's shutdown procedures.<br>
+        <code>!startplugin 'plugin_name'</code>: Starts an inactive plugin using the plugin's startup procedures.<br>
+        <code>!restartplugin 'plugin_name</code>: Restarts a currently running plugin.<br>
         <code>!setcomment 'comment_text'</code>: Sets the bot's user comment with the given text.<br>
         <code>!resetcomment</code>: Resets the bot's user comment to the default text.<br>
         <code>!pguistresstest</code>: Conducts a stress test of the PGUI system in the channel chat. Uses a default of 5 lines.<br>
