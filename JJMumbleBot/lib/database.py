@@ -10,14 +10,11 @@ import sqlite3
 from os import path
 
 
-user_priv_path = "cfg/jjmumblebot.db"
-
-
 def init_database():
-    if not path.exists(f"{dir_utils.get_main_dir()}/{user_priv_path}"):
+    if not path.exists(f"{dir_utils.get_main_dir()}/cfg/jjmumblebot.db"):
         dprint("JJMumbleBot database is missing, creating a new database.", origin=L_DATABASE)
         log(WARNING, "JJMumbleBot database is missing, creating a new database.", origin=L_DATABASE)
-        with sqlite3.connect(f"{dir_utils.get_main_dir()}/{user_priv_path}") as conn:
+        with sqlite3.connect(f"{dir_utils.get_main_dir()}/cfg/jjmumblebot.db") as conn:
             cursor = conn.cursor()
             # Create the users table.
             if CreateDB.create_table_users(db_cursor=cursor):
@@ -82,5 +79,5 @@ def init_database():
                 origin=L_DATABASE)
             save_memory_db(mem_db_conn=conn)
             return
-    with sqlite3.connect(f"{dir_utils.get_main_dir()}/{user_priv_path}") as conn:
+    with sqlite3.connect(f"{dir_utils.get_main_dir()}/cfg/jjmumblebot.db") as conn:
         save_memory_db(conn)
