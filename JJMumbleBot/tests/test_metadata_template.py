@@ -47,4 +47,4 @@ class TestMetadataTemplate:
         assert self.cfg.getboolean(C_PLUGIN_TYPE, P_CORE_PLUGIN) is False
 
     def test_is_extension(self):
-        assert self.cfg.getboolean(C_PLUGIN_TYPE, P_EXT_PLUGIN) is False
+        assert self.cfg.getboolean(C_PLUGIN_TYPE, P_EXT_PLUGIN) is True

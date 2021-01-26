@@ -4,7 +4,7 @@ from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 
 class TestAliasesTemplate:
     def setup_method(self):
-        self.alias_file_name = f"{get_main_dir}/templates/aliases_template.csv"
+        self.alias_file_name = f"{get_main_dir()}/templates/aliases_template.csv"
         self.aliases_dict = {}
         try:
             with open(self.alias_file_name, mode='r') as csv_file:
