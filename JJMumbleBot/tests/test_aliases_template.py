@@ -4,7 +4,6 @@ from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 
 class TestAliasesTemplate:
     def setup_method(self):
-        # Initialize configs.
         self.alias_file_name = f"{get_main_dir}/templates/aliases_template.csv"
         self.aliases_dict = {}
         try:
