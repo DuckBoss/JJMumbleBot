@@ -307,21 +307,21 @@ if __name__ == "__main__":
 
     # Set the IP, port and password from the environment variables if not passed using options
     if args.server_ip is None:
-        server_ip = environ.get('MUMBLE_IP')
+        server_ip = environ.get(ENV_MUMBLE_IP)
         if server_ip is None:
             server_ip = '127.0.0.1'
     else:
         server_ip = args.server_ip
 
     if args.server_port is None:
-        server_port = environ.get('MUMBLE_PORT')
+        server_port = environ.get(ENV_MUMBLE_PORT)
         if server_port is None:
             server_port = '64738'
     else:
         server_port = args.server_port
 
     if args.server_password is None:
-        server_password = environ.get('MUMBLE_PASSWORD')
+        server_password = environ.get(ENV_MUMBLE_PASSWORD)
         if server_password is None:
             server_password = ''
     else:
