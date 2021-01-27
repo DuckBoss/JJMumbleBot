@@ -19,12 +19,10 @@ if __name__ == "__main__":
     optional_args = parser.add_argument_group("Optional Arguments")
 
     # Connection launch parameters
-    required_args.add_argument('-ip', dest='server_ip', required=False,
+    required_args.add_argument('-ip', dest='server_ip', required=False, default=None,
                                help='Enter the server IP using this parameter if environment variables are not being used.')
-    required_args.add_argument('-port', dest='server_port', required=False,
+    required_args.add_argument('-port', dest='server_port', required=False, default=None,
                                help='Enter the server port using this parameter if environment variables are not being used.')
-    optional_args.add_argument('-env', dest='use_env', action='store_true', default=False,
-                               help="Uses the system environment variables MUMBLE_IP, MUMBLE_PORT, MUMBLE_PASS for the server IP/Port/Password")
     optional_args.add_argument('-password', dest='server_password',
                                help='Enter the server password using this parameter.')
     optional_args.add_argument('-forcedefaults', dest='force_defaults', action='store_true', default=False,
@@ -83,9 +81,9 @@ if __name__ == "__main__":
                                help='Enter the delay before ducking audio (If audio ducking enabled).')
     optional_args.add_argument('-maxqueuelength', dest='max_queue_length', default=None,
                                help='Enter the maximum queue length allowed for the bot audio system.')
-    optional_args.add_argument('-ydlproxy', dest='ydl_proxy', default=None,
+    optional_args.add_argument('-mediaproxy', dest='media_proxy', default=None,
                                help='Enter a proxy url used for the youtube-dl library with this launch parameter.')
-    optional_args.add_argument('-ydlcookie', dest='ydl_cookie', default=None,
+    optional_args.add_argument('-mediacookie', dest='media_cookie', default=None,
                                help='Enter a cookies.txt directory path used for the youtube-dl library with this launch parameter.\n'
                                     'This is useful to deal with rate limits on the bot.')
     optional_args.add_argument('-tempmediadirectory', dest='temp_media_directory', default=None,
@@ -209,6 +207,7 @@ if __name__ == "__main__":
         global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_SU] = args.super_user
     if args.default_comment:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT] = args.default_comment
+
     # Overwrite web settings if the launch parameter is provided.
     if args.web_interface:
         if global_settings.web_cfg:
@@ -230,6 +229,7 @@ if __name__ == "__main__":
         if global_settings.web_cfg:
             from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_TICK_RATE
             global_settings.web_cfg[C_PLUGIN_SET][P_WEB_TICK_RATE] = args.web_tick_rate
+
     # Overwrite media settings if the launch parameter is provided.
     if args.ffmpeg_path:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH] = args.ffmpeg_path
@@ -251,10 +251,10 @@ if __name__ == "__main__":
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY] = args.duck_delay
     if args.max_queue_length:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN] = args.max_queue_length
-    if args.ydl_proxy:
-        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL] = args.ydl_proxy
-    if args.ydl_cookie:
-        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE] = args.ydl_cookie
+    if args.media_proxy:
+        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL] = args.media_proxy
+    if args.media_cookie:
+        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE] = args.media_cookie
     if args.temp_media_directory:
         global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR] = args.temp_media_directory
     if args.temp_media_directory:
@@ -308,7 +308,6 @@ if __name__ == "__main__":
     # Set the IP, port and password from the environment variables if not passed using options
     if args.server_ip is None:
         server_ip = environ.get('MUMBLE_IP')
-        print("yo", server_ip)
         if server_ip is None:
             server_ip = '127.0.0.1'
     else:
@@ -328,7 +327,5 @@ if __name__ == "__main__":
     else:
         server_password = args.server_password
 
-
     # Initialize bot service.
     service.BotService(server_ip, int(server_port), server_password)
-
