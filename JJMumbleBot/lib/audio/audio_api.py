@@ -304,7 +304,7 @@ class AudioLibraryInterface:
         create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'],
                                               audio_lib=audio_lib)
         self.status['start_time'] = int(time())
-        self.status['progress_time'] = 0
+        # self.status['progress_time'] = 0
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
             self.display_playing_gui()
