@@ -6,7 +6,7 @@ from JJMumbleBot.lib.resources.strings import *
 import argparse
 import configparser
 from shutil import copy
-from os import path
+from os import path, environ
 
 
 if __name__ == "__main__":
@@ -19,15 +19,13 @@ if __name__ == "__main__":
     optional_args = parser.add_argument_group("Optional Arguments")
 
     # Connection launch parameters
-    required_args.add_argument('-ip', dest='server_ip', default='127.0.0.1',
-                               required=False,
+    required_args.add_argument('-ip', dest='server_ip', required=False,
                                help='Enter the server IP using this parameter if environment variables are not being used.')
-    required_args.add_argument('-port', dest='server_port', default='64738',
-                               required=False,
+    required_args.add_argument('-port', dest='server_port', required=False,
                                help='Enter the server port using this parameter if environment variables are not being used.')
     optional_args.add_argument('-env', dest='use_env', action='store_true', default=False,
                                help="Uses the system environment variables MUMBLE_IP, MUMBLE_PORT, MUMBLE_PASS for the server IP/Port/Password")
-    optional_args.add_argument('-password', dest='server_password', default='',
+    optional_args.add_argument('-password', dest='server_password',
                                help='Enter the server password using this parameter.')
     optional_args.add_argument('-forcedefaults', dest='force_defaults', action='store_true', default=False,
                                help="Forces the bot instance to use the default config, aliases, and regenerates the internal database.")
@@ -307,21 +305,30 @@ if __name__ == "__main__":
     if args.canvas_subheader_text_color:
         global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL] = args.canvas_subheader_text_color
 
-    # Set the IP/Port from the environment variables if '-env' is used, otherwise use '-ip/-port'
-    server_ip = args.server_ip
-    server_port = args.server_port
-    server_password = args.server_password
-    if args.use_env:
-        from os import environ
+    # Set the IP, port and password from the environment variables if not passed using options
+    if args.server_ip is None:
         server_ip = environ.get('MUMBLE_IP')
+        print("yo", server_ip)
         if server_ip is None:
-            server_ip = args.server_ip
+            server_ip = '127.0.0.1'
+    else:
+        server_ip = args.server_ip
+
+    if args.server_port is None:
         server_port = environ.get('MUMBLE_PORT')
         if server_port is None:
-            server_port = args.server_port
-        server_password = environ.get('MUMBLE_PASS')
+            server_port = '64738'
+    else:
+        server_port = args.server_port
+
+    if args.server_password is None:
+        server_password = environ.get('MUMBLE_PASSWORD')
         if server_password is None:
-            server_password = args.server_password
+            server_password = ''
+    else:
+        server_password = args.server_password
+
 
     # Initialize bot service.
     service.BotService(server_ip, int(server_port), server_password)
+
