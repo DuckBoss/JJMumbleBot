@@ -47,6 +47,12 @@ async def resume_audio():
     return ResponseModel(200, "success").toDict()
 
 
+@router.post("/api/replay")
+async def replay_audio():
+    global_settings.aud_interface.replay()
+    return ResponseModel(200, "success").toDict()
+
+
 @router.post("/api/nexttrack")
 async def next_audio():
     global_settings.aud_interface.skip(0)
