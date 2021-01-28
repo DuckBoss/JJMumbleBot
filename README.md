@@ -26,8 +26,6 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - Download and Play Audio Clips
     - Mumble Whisper Support
   - <b>Randomizer Plugin</b> - Do custom dice rolls, coin flips, etc in the channel.
-    - Dice Rolls
-    - Coin Flips
   - <b>Whisper Plugin</b> - Mumble Whisper support for audio data.
   - <b>Bot Commands Plugin</b> - Enhanced interactivity and management commands.
   - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
