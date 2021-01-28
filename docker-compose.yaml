@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   bot:
     build: .
@@ -7,8 +7,7 @@ services:
     volumes:
       - ./JJMumbleBot/cfg:/app/JJMumbleBot/cfg
     environment:
-      - MUMBLE_IP=test
+      - MUMBLE_IP=localhost
       - MUMBLE_PORT=64738
       - MUMBLE_PASSWORD=
-    entrypoint: python /app
 
