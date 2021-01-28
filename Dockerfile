@@ -23,5 +23,5 @@ COPY . /app
 # Cleanup database files
 RUN find /app -name "*.db" -exec rm -rf {} \;
 
-CMD ["python", "/app"]
+ENTRYPOINT ["python", "/app"]
 
