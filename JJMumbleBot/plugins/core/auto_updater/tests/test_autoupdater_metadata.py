@@ -17,7 +17,7 @@ class TestAutoUpdater:
         assert len(commands_list) == 2
 
     def test_plugin_version(self):
-        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "4.4.0"
+        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "5.0.0"
 
     def test_match_commands_to_methods(self):
         method_list = [item for item in dir(Plugin) if callable(getattr(Plugin, item)) and item.startswith("cmd_")]

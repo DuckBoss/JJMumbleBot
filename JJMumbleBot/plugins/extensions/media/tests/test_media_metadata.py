@@ -14,7 +14,7 @@ class TestMedia:
         self.cfg.read(f"{get_extension_plugin_dir()}/media/metadata.ini")
 
     def test_plugin_version(self):
-        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "4.4.0"
+        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "5.0.0"
 
     def test_commands_list_size(self):
         commands_list = list(loads(self.cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS]))
