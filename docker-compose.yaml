@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   bot:
-    image: jasonjerome/jjmumblebot
+    build: .
     # Expose all ports to localhost
     network_mode: "host"
     volumes:
