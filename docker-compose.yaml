@@ -10,4 +10,4 @@ services:
       - MUMBLE_IP
       - MUMBLE_PORT
       - MUMBLE_PASSWORD
-
+    entrypoint: python /app
