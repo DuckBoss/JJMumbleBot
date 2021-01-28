@@ -158,7 +158,7 @@ class Plugin(PluginBase):
             to_front=False
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbrandomquiet(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -183,7 +183,7 @@ class Plugin(PluginBase):
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbrandomnow(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -288,7 +288,7 @@ class Plugin(PluginBase):
             to_front=False,
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbnow(self, data):
         all_data = data.message.strip().split()
@@ -363,7 +363,7 @@ class Plugin(PluginBase):
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbquietnow(self, data):
         all_data = data.message.strip().split()
