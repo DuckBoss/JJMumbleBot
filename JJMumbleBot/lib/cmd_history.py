@@ -1,7 +1,7 @@
 from collections import deque
 
-class CMDQueue:
 
+class CMDQueue:
     queue_storage = None
     queue_size = 0
 

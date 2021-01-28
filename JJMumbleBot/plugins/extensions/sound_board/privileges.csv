@@ -4,6 +4,8 @@ sbnow,2
 sbquiet,3
 sbquietnow,3
 sbrandom,3
+sbrandomquiet,3
+sbrandomquietnow,3
 sbrandomnow,3
 sbsearch,2
 sblist,2

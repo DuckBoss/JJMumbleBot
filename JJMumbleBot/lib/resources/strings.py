@@ -1,8 +1,11 @@
 ###########################################################################
+# INTERNAL STRING CONSTANTS - DO NOT MODIFY
+ENV_MUMBLE_IP = 'MUMBLE_IP'
+ENV_MUMBLE_PORT = 'MUMBLE_PORT'
+ENV_MUMBLE_PASSWORD = 'MUMBLE_PASSWORD'
 # PROGRAM CONFIG CATEGORY STRINGS
 C_CONNECTION_SETTINGS = 'Connection Settings'
 C_MAIN_SETTINGS = 'Main Settings'
-C_WEB_SETTINGS = 'Web Interface'
 C_PLUGIN_SETTINGS = 'Plugin Settings'
 C_PGUI_SETTINGS = 'PGUI Settings'
 C_MEDIA_SETTINGS = 'Media Settings'
@@ -23,12 +26,6 @@ P_CMD_MULTI_LIM = 'MultiCommandLimit'
 P_CMD_TOKEN = 'CommandToken'
 P_CMD_QUEUE_LIM = 'CommandQueueLimit'
 P_CMD_HIST_LIM = 'CommandHistoryLimit'
-# Web Interface
-P_WEB_ENABLE = 'EnableWebInterface'
-P_WEB_IP = 'WebServerIP'
-P_WEB_PAGE_PORT = 'WebPagePort'
-P_WEB_SOCK_PORT = 'WebSocketPort'
-P_WEB_TICK_RATE = 'WebTickRate'
 # Media Settings
 P_MEDIA_FFMPEG_PATH = 'FfmpegPath'
 P_MEDIA_VLC_PATH = 'VlcPath'
@@ -64,12 +61,28 @@ P_LOG_MAX = 'MaxLogs'
 P_LOG_SIZE_MAX = 'MaxLogSize'
 P_LOG_MESSAGES = 'HideMessageLogging'
 P_LOG_DIR = 'LogDirectory'
+P_LOG_TRACE = 'LogStackTrace'
 ###########################################################################
 # LOGGING STRINGS - DO NOT MODIFY
 INFO = 'info'
 DEBUG = 'debug'
 WARNING = 'warning'
+ERROR = 'error'
 CRITICAL = 'critical'
+
+# TEMPORARY DATA STRINGS - DO NOT MODIFY
+T_TEMP_IMG_NAME = '_image'
+
+# ERROR STRINGS - DO NOT MODIFY
+CMD_INVALID_ERR = 'InvalidCommandFormat'
+CMD_PROCESS_ERR = 'CommandProcessingError'
+GEN_PROCESS_ERR = 'GeneralProcessingError'
+DEP_PROCESS_ERR = 'DependencyProcessingError'
+# WARNING STRINGS - DO NOT MODIFY
+GEN_PROCESS_WARN = 'GeneralProcessingWarning'
+DEP_PROCESS_WARN = 'DependencyProcessingWarning'
+WARN_INVALID_IMG_FORMAT = 'InvalidImageFormat'
+WARN_FIXED_IMG_FORMAT = 'FixedImageFormat'
 ###########################################################################
 # LOGGING PREFIX STRINGS
 L_GENERAL = "General"
@@ -82,6 +95,7 @@ L_ALIASES = "Aliases"
 L_LOGGING = "Logging"
 L_DEPENDENCIES = "Dependencies"
 L_WEB_INTERFACE = "WebInterface"
+L_PLUGIN = "Plugin"
 ###########################################################################
 # PLUGIN CONFIG CATEGORY STRINGS
 C_PLUGIN_INFO = 'Plugin Information'
@@ -96,6 +110,7 @@ P_PLUGIN_DESC = 'PluginDescription'
 P_PLUGIN_CMDS = 'PluginCommands'
 P_PLUGIN_LANG = 'PluginLanguage'
 # Plugin Type
+P_CTR_PLUGIN = 'ControllablePlugin'
 P_AUD_PLUGIN = 'AudioPlugin'
 P_IMG_PLUGIN = 'ImagePlugin'
 P_CORE_PLUGIN = 'CorePlugin'
@@ -106,5 +121,5 @@ P_THREAD_SINGLE = 'UseSingleThread'
 ###########################################################################
 # BOT META INFORMATION STRINGS
 META_NAME = "JJMumbleBot"
-META_VERSION = "4.3.4"
+META_VERSION = "5.0.0"
 ###########################################################################

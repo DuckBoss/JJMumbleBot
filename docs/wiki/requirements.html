@@ -13,6 +13,27 @@
     <div class="main-content">
         <h2 id="page-title">Requirements</h2>
         <hr>
+        <p><b>Note: Some third-party plugins may require additional dependencies</b></p>
+        <h3 id="dependency-installation">Dependency Installation</h3>
+        <ul>
+            <li>Download and install python 3.7+
+                <ul>
+                    <li>Linux: Depends on the distribution.</li>
+                    <li>Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a></li>
+                    <li>Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a></li>
+                </ul>
+            </li>
+            <li>Install project dependencies
+                <ul>
+                    <li><code>pip install -r requirements/requirements.txt</code> OR <code>python3 -m pip install -r requirements/requirements.txt</code></li>
+                    <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
+                </ul>
+            </li>
+            <li>Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)</li>
+            <li>Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki">Wiki</a> for setup procedures and more information.</li>
+            <li>JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.</li>
+        </ul>
+        <hr>
         <h4 id="base-requirements">Base Requirements</h4>
         <ul>
             <li><a href="https://www.python.org/downloads/">Python 3.7+</a></li>
@@ -39,10 +60,10 @@
             <li><a href="https://github.com/ytdl-org/youtube-dl#installation">youtube-dl</a> (This is updated often, so the
                 requirements.txt might be outdated)
                 <ul>
-                    <li>Used for playing audio from youtube, etc.</li>
+                    <li>Allows interaction with media sharing websites such as Youtube to stream/download media content.</li>
                 </ul>
             </li>
-            <li><a href="https://pypi.org/project/Pillow/">pillow</a>
+            <li><a href="https://pypi.org/project/Pillow/">Pillow</a>
                 <ul>
                     <li>Used for image processing to support displaying images.</li>
                 </ul>
@@ -58,45 +79,41 @@
                 </ul>
             </li>
         </ul>
-        <h4 id="additional-dependencies">Additional Dependencies (Required if the
-            Web Interface is enabled)</h4>
+        <h4 id="additional-dependencies">Additional Dependencies (Requirements vary by plugin)</h4>
         <ul>
-            <li><a href="https://pypi.org/project/websockets/">websockets</a>
+            <li>
+                <h5 id="dependency-web_server">Web Server Plugin</h5>
+                <p>Installation:<br>
+                    <code>pip install -r requirements/web_server.txt</code> OR <code>python3 -m pip install -r requirements/web_server.txt</code>
+                </p>
                 <ul>
-                    <li>Provides continuous data to the web interface.</li>
+                    <li><a href="https://pypi.org/project/websockets/">websockets</a>
+                    <ul>
+                        <li>Provides continuous data to the web interface.</li>
+                    </ul>
+                    </li>
+                    <li><a href="https://pypi.org/project/Flask/">fastapi</a>
+                        <ul>
+                            <li>Internal framework for the web interface that provides the main API and web page.</li>
+                        </ul>
+                    </li>
+                    <li><a href="https://pypi.org/project/gevent/">uvicorn</a>
+                        <ul>
+                            <li>Web server for the web interface.</li>
+                        </ul>
+                    </li>
+                    <li><a href="https://pypi.org/project/gevent/">pydantic</a>
+                        <ul>
+                            <li>Used to create appropriate data models for web data.</li>
+                        </ul>
+                    </li>
+                    <li><a href="https://pypi.org/project/aiofiles/">aiofiles</a>
+                        <ul>
+                            <li>Utilized by fastapi's underlying starlette module.</li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
-            <li><a href="https://pypi.org/project/Flask/">Flask</a>
-                <ul>
-                    <li>Internal framework for the web interface.</li>
-                </ul>
-            </li>
-            <li><a href="https://pypi.org/project/gevent/">gevent</a>
-                <ul>
-                    <li>Production web server for the web interface.</li>
-                </ul>
-            </li>
-        </ul>
-        <p><b>Note: Some third-party plugins may require additional dependencies</b></p>
-        <h3 id="dependency-installation">Dependency Installation</h3>
-        <ul>
-            <li>Download and install python 3.7+
-                <ul>
-                    <li>Linux: Depends on the distribution.</li>
-                    <li>Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a></li>
-                    <li>Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a></li>
-                </ul>
-            </li>
-            <li>Install project dependencies
-                <ul>
-                    <li><code>pip install -r requirements.txt</code></li>
-                    <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
-                    <li><b>Note: v4.2+ requires FFmpeg. v4.1 and under uses vlc.</b></li>
-                </ul>
-            </li>
-            <li>Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)</li>
-            <li>Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki">Wiki</a> for setup procedures and more information.</li>
-            <li>JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.</li>
         </ul>
     </div>
     <footer></footer>

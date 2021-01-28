@@ -13,8 +13,8 @@ class CallbackService:
         global_settings.core_callbacks.callback(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, text, remote_cmd)
 
     @staticmethod
-    def sound_received(user, audiochunk):
-        global_settings.core_callbacks.callback(PYMUMBLE_CLBK_SOUNDRECEIVED, user, audiochunk)
+    def sound_received(user, audio_chunk):
+        global_settings.core_callbacks.callback(PYMUMBLE_CLBK_SOUNDRECEIVED, user, audio_chunk)
 
     @staticmethod
     def connected():

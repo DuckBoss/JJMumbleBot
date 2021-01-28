@@ -13,19 +13,20 @@
     <div class="main-content">
         <h2 id="bot-commands-system">Bot Commands System</h2>
         <hr>
+        <h5>Please note that commands are CASE-SENSITIVE</h5>
+        <hr>
         <h3 id="simple-commands">Simple Commands:</h3>
         <p><b>Users can enter commands to the bot by typing the Command Token before a command like so:</b><br>
             <code>!help</code> --&gt; This command shows the list of available plugin help content.<br>
             <code>!help &#39;plugin_name&#39;</code> --&gt; This command shows help commands for individual plugins.<br>
             <code>!version</code> --&gt; This command shows the current bot version.<br>
-            <b>Please note that commands are CASE-SENSITIVE</b><br></p>
+        </p>
         <h3 id="multi-commands">Multi-Commands:</h3>
         <p><b>There is also support for multi-command inputs which allows you to input multiple commands in a single line
             like so:</b><br>
             <code>!version ; !about ; !echo test</code> --&gt; This multi-command calls the !version, !about, and !echo
             commands.<br>
-            <code>!ytsearch songname ; !p 1</code> --&gt; This multi-command searches youtube for a song and play the first
-            result.<br>
+            <code>!ytsearch songname ; !ytplay 1</code> --&gt; This multi-command searches youtube for a song and plays item #1 from the search results.<br>
             <b>You can set the multi-command limit (commands per input) in the config.ini</b></p>
         <h3 id="custom-command-tokens">Custom Command Tokens:</h3>
         <p><b>You can also change the command token to any single character in your <i>config.ini</i> file.<br>
@@ -35,54 +36,11 @@
             <code>/version</code> --&gt; This command shows the current bot version.<br></p>
         <h3 id="primary-bot-control-plugins">Primary Bot Control Plugins: Core Commands and
             Bot Commands</h3>
-        <h4 id="core-commands-">Core Commands:</h4>
-        <p><b>A List Of Core Commands:</b><br>
-            <code>!sleep &#39;seconds&#39;</code> --&gt; The command queue sleeps for the given amount of seconds.<br>
-            <code>!version</code> --&gt; Retrieves the current version of the bot.<br>
-            <code>!about</code> --&gt; Retrieves the bot&#39;s description provided in the config.ini file.<br>
-            <code>!uptime</code> --&gt; Displays the amount of time the bot has been online.<br>
-            <code>!exit</code> --&gt; Quits all plugins and shuts down the bot.<br>
-            <code>!restart</code> --&gt; Completely stops the bot and restarts it.<br>
-            <code>!restartplugins</code> --&gt; Quits and restarts all active plugins.<br>
-            <code>!setcomment &#39;comment_text&#39;</code> --&gt; Sets the bot&#39;s user comment with the given text.<br>
-            <code>!pguistresstest</code> --&gt; Conducts a stress test of the PGUI system in the channel chat. Uses a
-            default of 5 lines.<br>
-            <code>!pguistresstest &#39;num_of_lines&#39;</code> --&gt; Conducts a stress test of the PGUI system in the
-            channel chat. Optionally set the number of lines to control the size of the test.<br>
-            <code>!resetcomment</code> --&gt; Resets the bot&#39;s user comment to the default text.<br>
-            <code>!help</code> --&gt; Displays all the plugins available with help content.<br>
-            <code>!help &#39;plugin_name</code> --&gt; Displays all the commands available for the given plugin.<br>
-            <code>!setalias &#39;alias_name&#39; &#39;command&#39;|&#39;command&#39;|...</code> --&gt; Registers an alias
-            for single/multi-commands.<br>
-            <code>!aliases</code> --&gt; Echoes a list of all registered aliases in the channel chat.<br>
-            <code>!removealias &#39;alias_name&#39;</code> --&gt; Removes the registered alias.<br>
-            <code>!clearaliases</code> --&gt; Removes all registered aliases.<br>
-            <code>!history</code> --&gt; Displays the command history.<br>
-            <code>!clearhistory</code> --&gt; Clears the command history.<br>
-        </p>
-        <h4 id="bot-commands-">Bot Commands:</h4>
-        <p><b>A List Of Bot Commands:</b><br>
-            <code>!echo &#39;message/image&#39;</code> --&gt; Echoes a message/image in the chat.<br>
-            <code>!msg &#39;username&#39; &#39;message&#39;</code> --&gt; Anonymously private messages a user from the
-            bot.<br>
-            <code>!log &#39;message&#39;</code> --&gt; Manually logs a message by an administrator.<br>
-            <code>!showplugins</code> --&gt; Displays a list of all the active plugins.<br>
-            <code>!makechannel &#39;channel_name&#39;</code> --&gt; Creates a channel with the given name.<br>
-            <code>!move &#39;channel_name&#39;</code> --&gt; Moves to an existing channel with the given name.<br>
-            <code>!move default/Default</code> --&gt; Moves the bot to the default channel stated in the config.ini
-            file.<br>
-            <code>!joinme</code> --&gt; Moves to the users channel.<br>
-            <code>!joinuser &#39;username&#39;</code> --&gt; Moves the bot to the specified users channel.<br>
-            <code>!leave</code> --&gt; Moves the bot to the default channel.<br>
-            <code>!showprivileges</code> --&gt; Displays the full user list with privilege levels.<br>
-            <code>!setprivileges &#39;username&#39; &#39;level&#39;</code> --&gt; Sets a user&#39;s privilege level.<br>
-            <code>!addprivileges &#39;username&#39; &#39;level&#39;</code> --&gt; Adds a new user to the user privilege
-            list.<br>
-            <code>!blacklistuser</code> --&gt; Displays the current list of users in the blacklist.<br>
-            <code>!blacklist &#39;username&#39;</code> --&gt; Blacklists specific users from using certain plugin
-            commands.<br>
-            <code>!whitelistuser &#39;username&#39;</code> --&gt; Removes an existing user from the blacklist.<br>
-        </p>
+        <h5 id="core-commands-plugin">Core Commands:</h5>
+        <p>Please refer to the <a href="https://duckboss.github.io/JJMumbleBot/wiki/plugins/core/core_commands_plugin.html">Core Commands Plugin</a> wiki page for a full list of commands.</p>
+        <h5 id="bot-commands-plugin">Bot Commands:</h5>
+        <p>Please refer to the <a href="https://duckboss.github.io/JJMumbleBot/wiki/plugins/core/bot_commands_plugin.html">Bot Commands Plugin</a> wiki page for a full list of commands.</p>
+
 
     </div>
     <footer></footer>

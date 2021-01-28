@@ -1,4 +1,7 @@
 command,level
+stopplugin,4
+startplugin,4
+restartplugin,4
 sleep,2
 version,1
 about,1

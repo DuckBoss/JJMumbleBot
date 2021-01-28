@@ -6,7 +6,7 @@ from JJMumbleBot.lib.resources.strings import *
 import argparse
 import configparser
 from shutil import copy
-from os import path
+from os import path, environ
 
 
 if __name__ == "__main__":
@@ -19,14 +19,14 @@ if __name__ == "__main__":
     optional_args = parser.add_argument_group("Optional Arguments")
 
     # Connection launch parameters
-    required_args.add_argument('-ip', dest='server_ip', default='127.0.0.1',
-                               required=True,
-                               help='Enter the server IP using this parameter.')
-    required_args.add_argument('-port', dest='server_port', default='64738',
-                               required=True,
-                               help='Enter the server port using this parameter.')
-    optional_args.add_argument('-password', dest='server_password', default='',
+    required_args.add_argument('-ip', dest='server_ip', required=False, default=None,
+                               help='Enter the server IP using this parameter if environment variables are not being used.')
+    required_args.add_argument('-port', dest='server_port', required=False, default=None,
+                               help='Enter the server port using this parameter if environment variables are not being used.')
+    optional_args.add_argument('-password', dest='server_password',
                                help='Enter the server password using this parameter.')
+    optional_args.add_argument('-forcedefaults', dest='force_defaults', action='store_true', default=False,
+                               help="Forces the bot instance to use the default config, aliases, and regenerates the internal database.")
     optional_args.add_argument('-cert', dest='server_cert', default=None,
                                help='Enter the bot client certificate path using this parameter.')
     optional_args.add_argument('-generatecert', dest='generate_cert', action='store_true', default=False,
@@ -49,14 +49,14 @@ if __name__ == "__main__":
                                help='Enter the comments that are shown when users view the bot comment in a server.')
 
     # Web Interface Launch Parameters
-    optional_args.add_argument('-webinterface', dest='web_interface', action='store_true', default=False,
+    optional_args.add_argument('-useweb', dest='web_interface', action='store_true', default=False,
                                help='Enable the bot web interface with this launch parameter.')
+    optional_args.add_argument('-noweb', dest='no_web_interface', action='store_true', default=False,
+                               help='Disable the bot web interface with this launch parameter if it is enabled in the config.')
     optional_args.add_argument('-webip', dest='web_ip', default=None,
                                help='Enter the IP to use for the web server (if enabled).')
-    optional_args.add_argument('-webpageport', dest='web_page_port', default=None,
-                               help='Enter the main web interface page port for the web server (if enabled).')
-    optional_args.add_argument('-websocketport', dest='web_sock_port', default=None,
-                               help='Enter the web socket port for the web server (if enabled).')
+    optional_args.add_argument('-webport', dest='web_port', default=None,
+                               help='Enter the port to use for the web server (if enabled).')
     optional_args.add_argument('-webtickrate', dest='web_tick_rate', default=None,
                                help='Enter the tick rate of the processing loop that sends data to the web interface (if enabled).')
 
@@ -81,9 +81,9 @@ if __name__ == "__main__":
                                help='Enter the delay before ducking audio (If audio ducking enabled).')
     optional_args.add_argument('-maxqueuelength', dest='max_queue_length', default=None,
                                help='Enter the maximum queue length allowed for the bot audio system.')
-    optional_args.add_argument('-ydlproxy', dest='ydl_proxy', default=None,
+    optional_args.add_argument('-mediaproxy', dest='media_proxy', default=None,
                                help='Enter a proxy url used for the youtube-dl library with this launch parameter.')
-    optional_args.add_argument('-ydlcookie', dest='ydl_cookie', default=None,
+    optional_args.add_argument('-mediacookie', dest='media_cookie', default=None,
                                help='Enter a cookies.txt directory path used for the youtube-dl library with this launch parameter.\n'
                                     'This is useful to deal with rate limits on the bot.')
     optional_args.add_argument('-tempmediadirectory', dest='temp_media_directory', default=None,
@@ -101,6 +101,8 @@ if __name__ == "__main__":
                                help='Hide potentially sensitive information in logs such as usernames/messages.')
     optional_args.add_argument('-logdirectory', dest='log_directory', default=None,
                                help='Enter the log directory path to be used by the bot to store logs.')
+    optional_args.add_argument('-logtrace', dest='log_trace', action='store_true', default=False,
+                               help='Enable stack trace logging for all logged events.')
 
     # Plugin launch parameters are currently unsupported.
     # If you wish to modify these properties you can edit your config.ini file.
@@ -164,6 +166,10 @@ if __name__ == "__main__":
 
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/'):
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/')
+
+    if args.force_defaults:
+        dir_utils.clear_directory(f'{dir_utils.get_main_dir()}/cfg/')
+
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
         copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
@@ -173,6 +179,9 @@ if __name__ == "__main__":
 
     global_settings.cfg = configparser.ConfigParser()
     global_settings.cfg.read(f'{dir_utils.get_main_dir()}/cfg/config.ini')
+    global_settings.web_cfg = configparser.ConfigParser()
+    if path.exists(f'{dir_utils.get_core_plugin_dir()}/web_server/metadata.ini'):
+        global_settings.web_cfg.read(f'{dir_utils.get_core_plugin_dir()}/web_server/metadata.ini')
 
     # Overwrite connection settings if the launch parameter is provided.
     if args.server_username:
@@ -198,17 +207,29 @@ if __name__ == "__main__":
         global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_SU] = args.super_user
     if args.default_comment:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT] = args.default_comment
+
     # Overwrite web settings if the launch parameter is provided.
     if args.web_interface:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_ENABLE] = args.web_interface
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_ENABLE
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = "True"
+    if args.no_web_interface:
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_ENABLE
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = "False"
     if args.web_ip:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_IP] = args.web_ip
-    if args.web_page_port:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_PAGE_PORT] = args.web_page_port
-    if args.web_sock_port:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_SOCK_PORT] = args.web_sock_port
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_IP
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_IP] = args.web_ip
+    if args.web_port:
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_PORT
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_PORT] = args.web_port
     if args.web_tick_rate:
-        global_settings.cfg[C_WEB_SETTINGS][P_WEB_TICK_RATE] = args.web_tick_rate
+        if global_settings.web_cfg:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_TICK_RATE
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_TICK_RATE] = args.web_tick_rate
+
     # Overwrite media settings if the launch parameter is provided.
     if args.ffmpeg_path:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_FFMPEG_PATH] = args.ffmpeg_path
@@ -230,10 +251,10 @@ if __name__ == "__main__":
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY] = args.duck_delay
     if args.max_queue_length:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN] = args.max_queue_length
-    if args.ydl_proxy:
-        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL] = args.ydl_proxy
-    if args.ydl_cookie:
-        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE] = args.ydl_cookie
+    if args.media_proxy:
+        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL] = args.media_proxy
+    if args.media_cookie:
+        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE] = args.media_cookie
     if args.temp_media_directory:
         global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR] = args.temp_media_directory
     if args.temp_media_directory:
@@ -249,6 +270,8 @@ if __name__ == "__main__":
         global_settings.cfg[C_LOGGING][P_LOG_MESSAGES] = args.hide_log_messages
     if args.log_directory:
         global_settings.cfg[C_LOGGING][P_LOG_DIR] = args.log_directory
+    if args.log_trace:
+        global_settings.cfg[C_LOGGING][P_LOG_TRACE] = args.log_trace
     # Overwrite main settings if the launch parameter is provided.
     if args.use_database_backups:
         global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.use_database_backups
@@ -282,5 +305,27 @@ if __name__ == "__main__":
     if args.canvas_subheader_text_color:
         global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL] = args.canvas_subheader_text_color
 
+    # Set the IP, port and password from the environment variables if not passed using options
+    if args.server_ip is None:
+        server_ip = environ.get(ENV_MUMBLE_IP)
+        if server_ip is None:
+            server_ip = '127.0.0.1'
+    else:
+        server_ip = args.server_ip
+
+    if args.server_port is None:
+        server_port = environ.get(ENV_MUMBLE_PORT)
+        if server_port is None:
+            server_port = '64738'
+    else:
+        server_port = args.server_port
+
+    if args.server_password is None:
+        server_password = environ.get(ENV_MUMBLE_PASSWORD)
+        if server_password is None:
+            server_password = ''
+    else:
+        server_password = args.server_password
+
     # Initialize bot service.
-    service.BotService(args.server_ip, int(args.server_port), args.server_password)
+    service.BotService(server_ip, int(server_port), server_password)

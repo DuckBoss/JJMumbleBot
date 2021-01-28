@@ -1,9 +1,11 @@
 from JJMumbleBot.lib.helpers.pgui_helper import PGUIHelper
-from JJMumbleBot.lib.utils.print_utils import dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils
 from JJMumbleBot.settings import global_settings as GS
 from JJMumbleBot.lib.helpers import image_helper as IH
+from typing import Union, List
 
 
 class PseudoGUI:
@@ -11,9 +13,14 @@ class PseudoGUI:
     box_open = False
 
     def __init__(self):
-        dprint("Pseudo-GUI initialized.")
+        log(
+            INFO,
+            "Pseudo-GUI initialized.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.VERBOSE_PRINT.value
+        )
 
-    def quick_gui(self, content, text_type="data", text_color=None, text_font=None, text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None, ignore_whisper=False):
+    def quick_gui(self, content: Union[List[str], str], text_type="data", text_color=None, text_font=None, text_align="center", bgcolor=None, border=None, box_align=None, row_align="center", cellpadding="5", cellspacing="5", channel=None, user=None, ignore_whisper=False):
         if self.box_open:
             return False
         if channel is None:
@@ -28,6 +35,11 @@ class PseudoGUI:
             text_color = GS.cfg[C_PGUI_SETTINGS][P_CANVAS_TXT_COL]
 
         self.open_box(bgcolor=bgcolor, border=border, align=box_align, cellspacing=cellspacing, cellpadding=cellpadding)
+        # Convert the content message into a list if it is a single string.
+        if not isinstance(content, list):
+            content = [content]
+        # Convert the content message list into a string delimited by <br>
+        content = "<br>".join(content) if len(content) > 1 else content[0]
         content = self.make_content(content, text_type=text_type, text_color=text_color, text_font=text_font, text_align=text_align)
         self.append_row(content, align=row_align)
         self.close_box()

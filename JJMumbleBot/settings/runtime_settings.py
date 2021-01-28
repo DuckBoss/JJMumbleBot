@@ -9,6 +9,7 @@
 use_logging: bool = False
 max_logs: int = 15
 max_log_size: int = 150000
+log_trace: bool = False
 
 # COMMAND SETTINGS
 # Command Tick Rate
@@ -28,7 +29,3 @@ whisper_target = None
 muted = False
 # Up-Time Tracking
 start_time = 0
-
-# DIRECTORY SETTINGS
-# User Privileges Path
-user_priv_path: str = ""

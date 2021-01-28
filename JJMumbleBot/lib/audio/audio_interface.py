@@ -1,7 +1,8 @@
 import audioop
 import os
 from time import sleep
-from JJMumbleBot.lib.utils.print_utils import dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils import runtime_utils as rutils
@@ -62,7 +63,8 @@ def create_audio_thread(audio_lib_path: str, audio_lib_type, uri: str, skipto: i
             os.kill(pid, 0)
             global_settings.audio_inst.kill()
         except OSError as e:
-            dprint(e)
+            log(WARNING, f"Encountered an error closing the media library process: {e}",
+                origin=L_GENERAL, error_type=GEN_PROCESS_WARN, print_mode=PrintMode.VERBOSE_PRINT.value)
         global_settings.audio_inst = None
 
     if audio_lib_type.value == AudioLibrary.FFMPEG.value:

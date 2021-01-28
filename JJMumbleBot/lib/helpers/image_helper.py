@@ -1,4 +1,9 @@
-from JJMumbleBot.lib.utils.print_utils import dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.utils.logging_utils import log
+from JJMumbleBot.lib.resources.strings import INFO, ERROR, WARNING, L_GENERAL, WARN_INVALID_IMG_FORMAT,\
+    WARN_FIXED_IMG_FORMAT, GEN_PROCESS_ERR
+from JJMumbleBot.lib.resources.log_strings import INFO_IMG_DOWNLOADED, INFO_IMG_HTML_FORMATTED, \
+    WARN_IMG_INCORRECT_FORMAT, WARN_IMG_CONVERTED, INFO_IMG_RAW_FORMATTED
 from urllib.parse import quote
 from PIL import Image
 from binascii import b2a_base64
@@ -12,7 +17,7 @@ def mid(text, begin, length):
     return text[begin:begin + length]
 
 
-def format_image_html(img_ext, byte_arr):
+def format_image_html(img_ext, byte_arr, quiet=False, src_only=False):
     if img_ext == "jpg":
         img_ext = "JPEG"
     elif img_ext == "jpeg":
@@ -35,15 +40,22 @@ def format_image_html(img_ext, byte_arr):
         mid_raw_base = mid(raw_base, begin, 72)
         encoded.append(quote(mid_raw_base, safe=''))
         i += 1
+    if not quiet:
+        log(INFO, INFO_IMG_HTML_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+    if src_only:
+        return f"data:image/{img_ext};base64,{''.join(encoded)}"
     return f"<img src='data:image/{img_ext};base64,{''.join(encoded)}' />"
 
 
-def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270):
+def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw=False, max_width=480, max_height=270, quiet=False, src_only=False):
     # Convert to JPG if it's PNG
     img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     if img_ext.upper() == 'PNG':
         img.convert('RGB').save(f'{img_dir}/{img_name}.jpg', 'JPEG')
         img_ext = 'jpg'
+        if not quiet:
+            log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
+                error_type=WARN_INVALID_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
     # Open images
     img = Image.open(f"{img_dir}/{img_name}.{img_ext}")
     img.load()
@@ -71,15 +83,18 @@ def format_image(img_name: str, img_ext: str, img_dir: str, size_goal=65536, raw
         img.save(f"{img_dir}/{img_name}.{img_ext}", quality=img_quality)
         img.close()
         img_quality -= 10
-    if len(img_byte_arr) < size_goal:
-        # delete jpg if generated from png
-        if os.path.isfile(f"{img_dir}/{img_name}.png"):
-            os.unlink(f"{img_dir}/{img_name}.jpg")
-        if raw:
-            return img_byte_arr
-        # return formatted html img string
-        return format_image_html(img_ext=img_ext, byte_arr=img_byte_arr)
-    return ""
+    # delete jpg if generated from png
+    if os.path.isfile(f"{img_dir}/{img_name}.png"):
+        os.unlink(f"{img_dir}/{img_name}.jpg")
+        if not quiet:
+            log(WARNING, WARN_IMG_CONVERTED, origin=L_GENERAL,
+                error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
+    if raw:
+        if not quiet:
+            log(INFO, INFO_IMG_RAW_FORMATTED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return img_byte_arr
+    # return formatted html img string
+    return format_image_html(img_ext=img_ext, byte_arr=img_byte_arr, quiet=quiet, src_only=src_only)
 
 
 def encode_b64(byte_arr):
@@ -106,9 +121,15 @@ def download_image_requests(img_url):
         with open(f"{dir_utils.get_temp_med_dir()}/internal/images/_image.{img_ext}", 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
-        dprint(f"Downloaded image from: {img_url}")
+        log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
     else:
-        dprint(f"{r.status_code} Error! - {img_url}")
+        log(
+            ERROR,
+            f"ERROR: Encountered a Requests Module error while trying to download an image - {r.status_code} - {img_url}",
+            origin=L_GENERAL,
+            error_type=GEN_PROCESS_ERR,
+            print_mode=PrintMode.VERBOSE_PRINT.value
+        )
 
 
 def download_image_stream(img_url):
@@ -120,7 +141,7 @@ def download_image_stream(img_url):
             if not block:
                 break
             img_file.write(block)
-    dprint(f"Downloaded image from: {img_url}")
+    log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
 def download_image_stream_to_dir(img_url, dir_name):
@@ -133,11 +154,12 @@ def download_image_stream_to_dir(img_url, dir_name):
                 break
             img_file.write(block)
     if img_ext == 'png':
-        dprint(f"Fixing image to force jpg conversion: {img_url}")
+        log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
+            error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
         img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
         img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.jpg")
         dir_utils.remove_file("_image.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
-    dprint(f"Downloaded image from: {img_url}")
+    log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
 def download_image_requests_to_dir(img_url, dir_name):
@@ -149,12 +171,18 @@ def download_image_requests_to_dir(img_url, dir_name):
         with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}", 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
-        dprint(f"Downloaded image from: {img_url}")
+        log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
     else:
-        dprint(f"{r.status_code} Error! - {img_url}")
+        log(
+            ERROR,
+            f"ERROR: Encountered a Requests Module error while trying to download an image - {r.status_code} - {img_url}",
+            origin=L_GENERAL,
+            error_type=GEN_PROCESS_ERR,
+            print_mode=PrintMode.VERBOSE_PRINT.value
+        )
     if img_ext == 'png':
-        dprint(f"Fixing image to force jpg conversion: {img_url}")
+        log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
+            error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
         img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
         img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.jpg")
         dir_utils.remove_file("_image.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
-    dprint(f"Downloaded image from: {img_url}")

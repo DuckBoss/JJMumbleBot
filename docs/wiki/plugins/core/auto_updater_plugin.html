@@ -5,6 +5,7 @@
     <title>JJMumbleBot - Auto-Updater Plugin</title>
     <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
     <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <noscript>Please enable JavaScript in your browser!</noscript>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
 </head>
@@ -12,7 +13,11 @@
     <nav id="table_of_contents"></nav>
     <div class="main-content">
         <h2 id="page-title">Auto-Updater Plugin</h2>
-        <p>This is a built-in core plugin that follows the plugin template system.</p>
+        <p>
+            This is a built-in core plugin that follows the plugin template system.<br/>
+            It handles dependency management and allows the bot owner to check for dependency updates and update such dependencies.<br/>
+            This is particularly useful for the <code>youtube_dl</code> dependency which is updated often and used predominantly in the media plugin.
+        </p>
 
         <h3>Usage:</h3>
         <code>!checkforupdates 'dependency_name'</code>: Checks if the given dependency has an update available.<br>

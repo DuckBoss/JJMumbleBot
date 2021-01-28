@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JJMumbleBot - Logging</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+</head>
+<body>
+    <nav id="table_of_contents"></nav>
+    <div class="main-content">
+        <h2 id="page-title">Logging System</h2>
+        <hr>
+        <p>
+            <b>JJMumbleBot uses a custom logging system built on top of the standard python logging module.</b>
+        </p>
+        <hr>
+        <h3>Custom Logging</h3>
+        <p>To add logging functionality to third party plugins, follow these steps:</p>
+        <ol>
+            <li>Import the logging utility: 
+                <br><code>from JJMumbleBot.lib.utils.logging_utils import log</code></li>
+            <li>If you wish to print the event to the console in addition to logging it, import the print utility: 
+                <br><code>from JJMumbleBot.lib.utils.print_utils import PrintMode</code></li>
+            <li>Import the severity/origin resource strings as necessary: 
+                <br><code>from JJMumbleBot.lib.resources.strings import *</code></li>
+            <li>Use the <code>log</code> method to log/print events.
+                <br>Refer to the logging API provided at the bottom of this page for more information on the method.
+                <br>Example usage: <code>log(INFO, "Initialized plugin!", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)</code>
+            </li>
+        </ol>
+        <h3>Log API</h3>
+        <p><code>log (LOG_SEVERITY, LOG_MESSAGE(S), LOG_ORIGIN (Optional), LOG_ERROR_TYPE (Optional), LOG_PRINTING (Optional))</code></p>
+        <ol>
+            <li><code>LOG_SEVERITY</code>: This is the severity of the event which is being logged.
+                <br>The severity strings must be imported as required: 
+                    <br><code>from JJMumbleBot.lib.resources.strings import INFO,DEBUG,WARNING,ERROR,CRITICAL</code>
+                <br>The available severities are:
+                <ol>
+                    <li><code>INFO</code>: Standard severity which is meant to provide information on an event.</li>
+                    <li><code>DEBUG</code>: Used to log debug events.</li>
+                    <li><code>WARNING</code>: Used to log events that could possible disrupt services.</li>
+                    <li><code>ERROR</code>: Used to log events that cause errors within the application.</li>
+                    <li><code>CRITICAL</code>: Used to log events that cause critical errors, usually resulting in the crashing of the application.</li>
+                </ol></li>
+            <li><code>LOG_MESSAGE(S)</code>: This is the content that is to be logged from the event.
+                <br>The message can either be a <code>string</code> or a <code>List[string]</code>:
+                <ol>
+                    <li>Single Message: <code>"This is my message."</code></li>
+                    <li>Multi-line Message: <code>["Message 1", "Message 2"]</code></li>
+                </ol>
+            </li>
+            <li><code>LOG_ORIGIN (Optional)</code>: This is an optional parameter that indicates the origin of the log event which is used to indicate during what process the event occurred.
+                <br>The origin strings must be imported as required: 
+                    <br><code>from JJMumbleBot.lib.resources.strings import L_GENERAL, L_COMMAND, L_STARTUP, etc...</code>
+                <br>The origin parameter is optional and will default to L_GENERAL if not provided.
+                <br>The available origins are:
+                <ol>
+                    <li><code>L_GENERAL</code>: Used to indicate an event with a non-specific origin.</li>
+                    <li><code>L_USER_PRIV</code>: Used to indicate an event related to user privileges.</li>
+                    <li><code>L_DATABASE</code>: Used to indicate an event related to database operations.</li>
+                    <li><code>L_COMMAND</code>: Used to indicate an event related to command processing.</li>
+                    <li><code>L_STARTUP</code>: Used to indicate an event related to startup procedures.</li>
+                    <li><code>L_SHUTDOWN</code>: Used to indicate an event related to shutdown procedures.</li>
+                    <li><code>L_ALIASES</code>: Used to indicate an event related to aliases.</li>
+                    <li><code>L_LOGGING</code>: Used to indicate an event related to logging.</li>
+                    <li><code>L_DEPENDENCIES</code>: Used to indicate an event related to dependency handling.</li>
+                    <li><code>L_WEB_INTERFACE</code>: Used to indicate an event related to the web interface.</li>
+                    <li><code>L_PLUGIN</code>: Used to indicate a non-specific plugin related event.</li>
+                </ol>
+            </li>
+            <li><code>LOG_ERROR_TYPE (Optional)</code>: This is an optional parameter that indicates the type of error that occurred from the event.
+                <br>The error message can be any <code>string</code> as it is specific to the event:
+                <br>Examples:
+                <ol>
+                    <li><code>"MyPlugin_SpecificError"</code></li>
+                    <li><code>"MyPlugin_RandomError"</code></li>
+                </ol>
+            </li>
+            <li><code>LOG_PRINTING (Optional)</code>: This is an optional parameter that allows the log event to also be printed to the console.
+                <br>By default, if a value is not provided then event will not be printed to the console.
+                <br>The print mode must be imported as required: 
+                    <br><code>from JJMumbleBot.lib.utils.print_utils import PrintMode</code>
+                <br>The available print modes are:
+                <ol>
+                    <li><code>PrintMode.REG_PRINT.value</code>: Use this when you want to print the log event message to the console under regular operation.</li>
+                    <li><code>PrintMode.VERBOSE_PRINT.value</code>: Use this when you want to print the log event message to the console only when verbose mode is enabled.</li>
+                </ol>
+            </li>
+        </ol>
+    </div>
+    <footer></footer>
+</body>
+</html>

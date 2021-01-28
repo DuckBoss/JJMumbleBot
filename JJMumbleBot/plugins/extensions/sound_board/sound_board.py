@@ -1,7 +1,7 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.utils.print_utils import rprint, dprint
+from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.extensions.sound_board.resources.strings import *
@@ -23,20 +23,33 @@ class Plugin(PluginBase):
         self.plugin_name = path.basename(__file__).rsplit('.')[0]
         self.metadata = PluginUtilityService.process_metadata(f'plugins/extensions/{self.plugin_name}')
         self.plugin_cmds = loads(self.metadata.get(C_PLUGIN_INFO, P_PLUGIN_CMDS))
+        self.is_running = True
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]}/{self.plugin_name}/')
         dir_utils.make_directory(f'{gs.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/{self.plugin_name}/')
         sbu_settings.sound_board_metadata = self.metadata
         sbu_settings.plugin_name = self.plugin_name
-        rprint(
-            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.")
+        log(
+            INFO,
+            f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.REG_PRINT.value
+        )
 
     def quit(self):
         if gs.aud_interface.check_dni_is_mine(self.plugin_name):
             gs.aud_interface.stop()
             gs.audio_dni = None
+        self.is_running = False
         dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{self.plugin_name}')
-        dprint(f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
-        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN)
+        log(INFO, f"Exiting {self.plugin_name} plugin...", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
+
+    def stop(self):
+        if self.is_running:
+            self.quit()
+
+    def start(self):
+        if not self.is_running:
+            self.__init__()
 
     def cmd_sblist(self, data):
         internal_list = []
@@ -145,7 +158,32 @@ class Plugin(PluginBase):
             to_front=False
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+
+    def cmd_sbrandomquiet(self, data):
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        sender = gs.mumble_inst.users[data.actor]['name']
+        gather_list = sbu.prepare_sb_list(include_file_extensions=True)
+        random.seed(datetime.now())
+        random_sfx = random.choice(gather_list)
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}',
+            name=random_sfx,
+            sender=sender,
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
+        )
+        gs.aud_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbrandomnow(self, data):
         if gs.aud_interface.check_dni(self.plugin_name):
@@ -163,6 +201,30 @@ class Plugin(PluginBase):
             duration=None,
             track_type=TrackType.FILE,
             quiet=False
+        )
+        gs.aud_interface.enqueue_track(
+            track_obj=track_obj,
+            to_front=False,
+            quiet=True
+        )
+        gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
+
+    def cmd_sbrandomquietnow(self, data):
+        if gs.aud_interface.check_dni(self.plugin_name):
+            gs.aud_interface.set_dni(self.plugin_name, self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME])
+        else:
+            return
+        sender = gs.mumble_inst.users[data.actor]['name']
+        gather_list = sbu.prepare_sb_list(include_file_extensions=True)
+        random.seed(datetime.now())
+        random_sfx = random.choice(gather_list)
+        track_obj = TrackInfo(
+            uri=f'{dir_utils.get_perm_med_dir()}/{self.plugin_name}/{random_sfx}',
+            name=random_sfx,
+            sender=sender,
+            duration=None,
+            track_type=TrackType.FILE,
+            quiet=True
         )
         gs.aud_interface.enqueue_track(
             track_obj=track_obj,
@@ -226,7 +288,7 @@ class Plugin(PluginBase):
             to_front=False,
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbnow(self, data):
         all_data = data.message.strip().split()
@@ -301,7 +363,7 @@ class Plugin(PluginBase):
             quiet=True
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG,
-                              override=self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
+                              override=not self.metadata.getboolean(C_PLUGIN_SETTINGS, P_ENABLE_QUEUE, fallback=False))
 
     def cmd_sbquietnow(self, data):
         all_data = data.message.strip().split()

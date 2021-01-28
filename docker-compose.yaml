@@ -6,6 +6,9 @@ services:
     network_mode: "host"
     volumes:
       - ./JJMumbleBot/cfg:/app/JJMumbleBot/cfg
+    environment:
+      - MUMBLE_IP=test
+      - MUMBLE_PORT=64738
+      - MUMBLE_PASSWORD=
     entrypoint: python /app
-    # This parameters can be overrided in docker-compose run command
-    command: -ip 127.0.0.1 -port 64738
+

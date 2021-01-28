@@ -8,7 +8,10 @@ class PluginUtilityService:
     def process_metadata(meta_path: str):
         cfg = configparser.ConfigParser()
         # print(f'{dir_utils.get_main_dir()}/{meta_path.split(".")[0]}/metadata.ini')
-        cfg.read(f'{dir_utils.get_main_dir()}/{meta_path.split(".")[0]}/metadata.ini')
+        try:
+            cfg.read(f'{dir_utils.get_main_dir()}/{meta_path.split(".")[0]}/metadata.ini')
+        except configparser.Error:
+            return None
         return cfg
 
     @staticmethod
