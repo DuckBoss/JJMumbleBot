@@ -1,5 +1,3 @@
-### Jan 28: This project is in the middle of a transition to update v5.0.0, so the documentation/wiki will be slightly inaccurate for the next few days.
-
 # JJMumbleBot
 [![GitHub release](https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
 [![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
