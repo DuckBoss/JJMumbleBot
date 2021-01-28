@@ -301,10 +301,10 @@ class AudioLibraryInterface:
         if global_settings.audio_inst:
             stop_audio_instance()
         self.status['audio_library'] = audio_lib
-        create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'],
-                                              audio_lib=audio_lib)
         self.status['start_time'] = int(time())
-        # self.status['progress_time'] = 0
+        self.status['progress_time'] = 0
+        create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'],
+                              audio_lib=audio_lib)
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
             self.display_playing_gui()
@@ -401,7 +401,7 @@ class AudioLibraryInterface:
             if global_settings.audio_inst:
                 stop_audio_instance()
             create_audio_instance(self.status.get_track().uri, skipto=seconds,
-                                                  audio_lib=self.status['audio_library'])
+                                  audio_lib=self.status['audio_library'])
 
             self.status['start_time'] = int(time())
             self.status['pause_time'] = 0
