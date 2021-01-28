@@ -42,8 +42,15 @@
                     <code>docker pull jasonjerome/jjmumblebot</code>
                 </li>
                 <li>
-                    <b>Minimal run command using docker-compose:</b><br/>
-                    <code>sudo docker-compose run bot -ip 'server_ip' -port 'server_port' -password 'server_password' -username 'bot_username' -superuser 'superuser_username' </code><br>
+                    <b>Minimal run command using docker (with environment variables for IP/Port/Password):</b><br/>
+                    <code>sudo -E docker run -e MUMBLE_IP -e MUMBLE_PORT -e MUMBLE_PASSWORD --network "host"  jasonjerome/jjmumblebot -generatecert -username 'bot_username' -superuser 'superuser_username'</code><br>
+                    <b>Minimal run command using docker (no environment variables):</b><br/>
+                    <code>sudo docker run --network "host" jasonjerome/jjmumblebot -generatecert -ip 'server_ip' -port 'server_port' -username 'bot_username' -superuser 'superuser_username'</code><br>
+                    <b>Minimal run command using docker-compose (with environment variables for IP/Port/Password):</b><br/>
+                    <code>sudo -E docker-compose run bot -generatecert -username 'bot_username' -superuser 'superuser_username'</code><br>
+                    <b>Minimal run command using docker-compose (no environment variables):</b><br/>
+                    <code>sudo docker-compose run bot -generatecert -ip 'server_ip' -port 'server_port' -username 'bot_username' -superuser 'superuser_username'</code><br>
+
                     <b>Required bot launch parameters:</b><br>
                     <ul>
                         <li><code>-ip</code>: Sets the server ip.</li>

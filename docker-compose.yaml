@@ -7,7 +7,7 @@ services:
     volumes:
       - ./JJMumbleBot/cfg:/app/JJMumbleBot/cfg
     environment:
-      - MUMBLE_IP=localhost
-      - MUMBLE_PORT=64738
-      - MUMBLE_PASSWORD=
+      - MUMBLE_IP
+      - MUMBLE_PORT
+      - MUMBLE_PASSWORD
 
