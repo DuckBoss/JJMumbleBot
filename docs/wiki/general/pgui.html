@@ -11,7 +11,7 @@
 <body>
     <nav id="table_of_contents"></nav>
     <div class="main-content">
-        <h2 id="pgui-system">PGUI System</h2>
+        <h2 id="pgui-system">PGUI System API</h2>
         <p>The PGUI System is a pseudo-graphical user interface created with html tags.
             It is used to wrap output data from the bot such as messages, images, etc and neatly present it to the server in
             the form of an html table with clean formatting.</p>
@@ -70,7 +70,12 @@
                 It wraps text content in a pgui and sends it to the server to display.
                 Refer to any built-in plugin that displays data to see how this method is used.
                 <ul>
-                    <li><b>Overrides</b>:
+                    <li><b>Required Parameters</b>:
+                        <ul>
+                            <li><code>content</code>: This can be either a string or a list of strings. The string(s) provided here will be the text displayed in the pgui.</li>
+                        </ul>
+                    </li>
+                    <li><b>Override Parameters</b>:
                         <ul>
                             <li><code>channel</code>: None or &quot;channel name&quot;. Sends the pgui message to the specified
                                 channel.
