@@ -47,7 +47,7 @@
                     <b>Minimal run command using docker (no environment variables):</b><br/>
                     <code>sudo docker run --network "host" jasonjerome/jjmumblebot -generatecert -ip 'server_ip' -port 'server_port' -username 'bot_username' -superuser 'superuser_username'</code><br>
                     <b>Minimal run command using docker-compose (with environment variables for IP/Port/Password):</b><br/>
-                    <code>sudo -E docker-compose run bot -generatecert -username 'bot_username' -superuser 'superuser_username'</code><br>
+                    <code>sudo -E docker-compose run -e MUMBLE_IP -e MUMBLE_PORT -e MUMBLE_PASSWORD bot -generatecert -username 'bot_username' -superuser 'superuser_username'</code><br>
                     <b>Minimal run command using docker-compose (no environment variables):</b><br/>
                     <code>sudo docker-compose run bot -generatecert -ip 'server_ip' -port 'server_port' -username 'bot_username' -superuser 'superuser_username'</code><br>
 
