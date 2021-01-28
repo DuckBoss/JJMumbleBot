@@ -41,7 +41,9 @@
                 <li> You can pull the docker container from DockerHub.<br>
                     <code>docker pull jasonjerome/jjmumblebot</code>
                 </li>
-                <li>
+                <li>Run the bot with one of the various commands provided below:<br/><br/>
+                    <i>Make sure you export MUMBLE_IP/MUMBLE_PORT/MUMBLE_PASSWORD environment variables if you're using environment variables.</i><br/>
+
                     <b>Minimal run command using docker (with environment variables for IP/Port/Password):</b><br/>
                     <code>sudo -E docker run -e MUMBLE_IP -e MUMBLE_PORT -e MUMBLE_PASSWORD --network "host"  jasonjerome/jjmumblebot -generatecert -username 'bot_username' -superuser 'superuser_username'</code><br>
                     <b>Minimal run command using docker (no environment variables):</b><br/>
