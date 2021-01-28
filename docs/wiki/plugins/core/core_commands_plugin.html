@@ -39,6 +39,52 @@
         <code>!history</code>: Displays the command history.<br>
         <code>!clearhistory</code>: Clears the command history.<br>
         <code>!uptime</code>: Displays the amount of time the bot has been online.
+        <div>
+        <details>
+            <summary>Plugin Metadata</summary>
+            <pre><code>
+    [Plugin Information]
+    PluginVersion = 5.0.0
+    PluginName = Core Commands
+    PluginDescription = The Core Commands plugin handles core functionality commands.
+    PluginLanguage = EN
+    PluginCommands: [
+                    "stopplugin",
+                    "startplugin",
+                    "restartplugin",
+                    "sleep",
+                    "version",
+                    "about",
+                    "uptime",
+                    "exit",
+                    "restart",
+                    "saferestart",
+                    "restartplugins",
+                    "setcomment",
+                    "resetcomment",
+                    "pguistresstest",
+                    "help",
+                    "setalias",
+                    "aliases",
+                    "removealias",
+                    "clearaliases",
+                    "clearhistory",
+                    "history"
+                    ]
+
+    [Plugin Settings]
+    ThreadWaitForCommands: ["exit", "sleep"]
+    UseSingleThread = False
+
+    [Plugin Type]
+    ControllablePlugin = False
+    AudioPlugin = False
+    ImagePlugin = False
+    CorePlugin = True
+    ExtensionPlugin = False
+            </code></pre>
+        </details>
+        </div>
     </div>
     <footer></footer>
 </body>

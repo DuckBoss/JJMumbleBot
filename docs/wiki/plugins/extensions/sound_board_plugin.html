@@ -24,11 +24,61 @@
         <code>!sbquiet/!sbq 'file_name'</code>: Plays a locally saved audio file without displaying what is being played.<br>
         <code>!sbquietnow/!sbqn 'file_name'</code>: Plays a locally saved audio file without displaying what is being played and overrides queueing.<br>
         <code>!sbrandom/!sbr</code>: Plays a random sound clip from the list of available clips.<br>
+        <code>!sbrandomquiet/!sbrq</code>: Plays a random sound clip from local storage without displaying it to the channel chat.<br>
+        <code>!sbrandomquietnow/!sbrqn</code>: Plays a random sound clip from local storage without displaying it to the channel chat and overrides the queue to play immediately.<br>
         <code>!sbrandomnow/!sbrn</code>: Plays a random sound clip from the list of available clips and overrides queueing.<br>
         <code>!sbsearch 'file_name'</code>: Finds locally saved audio clips by best match and displays the results in a list.<br>
         <code>!sblist/!sbl</code>: Displays the full exhaustive list of all the available sound board clips in a private message.<br>
         <code>!sbdownload 'youtube_url' 'file_name'</code>: Downloads a sound clip from a youtube link and adds it to the sound board.<br>
         <code>!sbdelete 'file_name.extension'</code>: Deletes an audio clip from the sound board storage.
+
+    <div>
+        <details>
+            <summary>Plugin Metadata</summary>
+            <pre><code>
+    [Plugin Information]
+    PluginVersion = 5.0.0
+    PluginName = Sound Board
+    PluginDescription = The Sound Board plugin allows users to play saved sound clips in the channel.
+    PluginLanguage = EN
+    PluginCommands: [
+                    "sb",
+                    "sbnow",
+                    "sbquiet",
+                    "sbquietnow",
+                    "sblist",
+                    "sbdownload",
+                    "sbsearch",
+                    "sbdelete",
+                    "sbrandom",
+                    "sbrandomquiet",
+                    "sbrandomquietnow",
+                    "sbrandomnow"
+                    ]
+
+    [Plugin Settings]
+    ; This allows the sound board plugin to queue sound clips instead of playing them directly. (default=False)
+    EnableQueue = True
+    ; The maximum number of search results to be shown from the !sbsearch command. (default=5)
+    MaxSearchResults = 5
+    ; The fuzzy-search threshold between 0 to 100. Higher thresholds result in fewer, but more accurate search results. (default=80)
+    ; A search threshold of 0 includes all files.
+    FuzzySearchThreshold = 80
+    ; List commands that need the core thread to wait for completion.
+    ; This may include processes that require multiple commands in succession.
+    ; For example: [Youtube Plugin - !yt -> !p] process requires 2 commands in that order.
+    ThreadWaitForCommands: []
+    UseSingleThread = False
+
+    [Plugin Type]
+    ControllablePlugin = True
+    AudioPlugin = True
+    ImagePlugin = False
+    CorePlugin = False
+    ExtensionPlugin = True
+            </code></pre>
+        </details>
+        </div>
     </div>
     <footer></footer>
 </body>

@@ -29,6 +29,45 @@
         <code>!d16roll</code>: A standard 16-sided dice roll.<br>
         <code>!d20roll</code>: A standard 20-sided dice roll.<br>
         <code>!d100roll</code>: A standard 100-sided dice roll.
+
+        <div>
+        <details>
+            <summary>Plugin Metadata</summary>
+            <pre><code>
+    [Plugin Information]
+    PluginVersion = 5.0.0
+    PluginName = Randomizer
+    PluginDescription = A randomizer plugin.
+    PluginLanguage = EN
+    PluginCommands: [
+                    "customroll",
+                    "coinflip",
+                    "d4roll",
+                    "d6roll",
+                    "d8roll",
+                    "d10roll",
+                    "d12roll",
+                    "d16roll",
+                    "d20roll",
+                    "d100roll"
+                    ]
+
+    [Plugin Settings]
+    ; List commands that need the core thread to wait for completion.
+    ; This may include processes that require multiple commands in succession.
+    ; For example: [Youtube Plugin - !yt -> !p] process requires 2 commands in that order.
+    ThreadWaitForCommands: []
+    UseSingleThread = False
+
+    [Plugin Type]
+    ControllablePlugin = True
+    AudioPlugin = False
+    ImagePlugin = False
+    CorePlugin = False
+    ExtensionPlugin = True
+            </code></pre>
+        </details>
+        </div>
     </div>
     <footer></footer>
 </body>

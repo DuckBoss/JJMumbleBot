@@ -22,6 +22,37 @@
         <h3>Usage:</h3>
         <code>!checkforupdates 'dependency_name'</code>: Checks if the given dependency has an update available.<br>
         <code>!updatedependency 'dependency_name'</code>: Updates the given dependency if an update is available.
+        <div>
+        <details>
+            <summary>Plugin Metadata</summary>
+            <pre><code>
+    [Plugin Information]
+    PluginVersion = 5.0.0
+    PluginName = Auto-Updater
+    PluginDescription = The Auto-Updater plugin helps automatically update and check bot dependency packages.
+    PluginLanguage = EN
+    PluginCommands: [
+                    "updatedependency",
+                    "checkforupdates"
+                    ]
+
+    [Plugin Settings]
+    PIPCommand = pip
+    ; List commands that need the core thread to wait for completion.
+    ; This may include processes that require multiple commands in succession.
+    ; For example: [Youtube Plugin - !yt -> !p] process requires 2 commands in that order.
+    ThreadWaitForCommands: []
+    UseSingleThread = False
+
+    [Plugin Type]
+    ControllablePlugin = True
+    AudioPlugin = False
+    ImagePlugin = False
+    CorePlugin = True
+    ExtensionPlugin = False
+            </code></pre>
+        </details>
+        </div>
     </div>
     <footer></footer>
 </body>

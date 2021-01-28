@@ -33,6 +33,52 @@
         <code>!showblacklist</code>: Displays the current list of users in the blacklist.<br>
         <code>!blacklistuser 'username'</code>: Blacklists specific users from using certain plugin commands.<br>
         <code>!whitelistuser 'username'</code>: Removes an existing user from the blacklist.
+        <div>
+        <details>
+            <summary>Plugin Metadata</summary>
+            <pre><code>
+    [Plugin Information]
+    PluginVersion = 5.0.0
+    PluginName = Bot Commands
+    PluginDescription = The Bot Commands plugin handles bot service functionality commands.
+    PluginLanguage = EN
+    PluginCommands: [
+                    "echo",
+                    "msg",
+                    "log",
+                    "showplugins",
+                    "aliassearch",
+                    "cmdsearch",
+                    "move",
+                    "makechannel",
+                    "leave",
+                    "removechannel",
+                    "joinme",
+                    "joinuser",
+                    "showprivileges",
+                    "setprivileges",
+                    "addprivileges",
+                    "showblacklist",
+                    "blacklistuser",
+                    "whitelistuser"
+                    ]
+
+    [Plugin Settings]
+    ; List commands that need the core thread to wait for completion.
+    ; This may include processes that require multiple commands in succession.
+    ; For example: [Youtube Plugin - !yt -> !p] process requires 2 commands in that order.
+    ThreadWaitForCommands: []
+    UseSingleThread = False
+
+    [Plugin Type]
+    ControllablePlugin = False
+    AudioPlugin = False
+    ImagePlugin = False
+    CorePlugin = True
+    ExtensionPlugin = False
+            </code></pre>
+        </details>
+        </div>
     </div>
     <footer></footer>
 </body>
