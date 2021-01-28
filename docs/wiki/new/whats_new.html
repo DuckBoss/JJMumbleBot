@@ -10,25 +10,407 @@
     <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
 </head>
 <body>
-    <nav id="table_of_contents"></nav>
-    <div class="main-content">
-        <h2 id="page-title">v4.4.0 Update</h2>
-        <h4>Bug Fixes</h4>
-        <strong><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v4.3.4">Github Download Link</a></strong>
-        <hr>
+<nav id="table_of_contents"></nav>
+<div class="main-content">
+    <h2 id="page-title">v4.4.0 Update</h2>
+    <h4>Bug Fixes</h4>
+    <strong><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v4.3.4">Github Download Link</a></strong>
+    <hr>
+    <div>
+        <h3>Core Updates</h3>
+        <hr/>
         <div>
-            <h3>Major Updates</h3>
+            <h4>Web Interface Changes</h4>
+            <p>
+                The web interface is now a part of the new <b>web_server</b> core plugin.<br>
+                As a result, references to the web interface in the config.ini file has been moved to the web_server
+                plugin's metadata.ini file. The new plugin will provide a REST API and serve the web interface.<br>
+                This update has a change in dependencies as a result.
+            </p>
+        </div>
+
+        <div>
+            <h4>Dependency Updates</h4>
+            <p>
+                There are now multiple requirements files located in the <code>requirements/</code> directory.<br/>
+                This directory will contain a <code>requirements.txt</code> file which has the core requirements for the
+                bot,<br/>
+                and additional requirement files for plugins such as the web_server.
+            </p>
+            <b>To install all dependencies for v4.4.0, you can use the following commands:</b><br/>
+            <code>pip install -r requirements/requirements.txt</code><br/>
+            <code>pip install -r requirements/web_server.txt</code><br/>
+            <p><b>This change will allow users who want a minimal setup without a web interface<br/> to install the
+                minimum number of dependencies to run the bot.</b></p>
+        </div>
+
+        <div>
+            <h4>Updated Launch Parameters</h4>
             <ul>
-                <li></li>
+                <li> Renamed <code>-webinterface</code> to <code>-useweb</code>
+                <li> Added <code>-noweb</code> parameter to disable the web interface on startup if it is enabled by
+                    default in the plugin metadata.
+                </li>
+                <li> Added <code>-logtrace</code> parameter to enable logging stack traces of events.</li>
             </ul>
         </div>
+
         <div>
-            <h3>Bug Fixes</h3>
+            <h4>Plugin Template Generator Updates</h4>
+            <p>The plugin template generator has been updated to v4.4.0.<br/>
+                If you are a developer looking to make a JJMumbleBot plugin, but don't know where to start, then
+                generate a template plugin like so: <code>python3 JJMumbleBot/utility/plugin_template_generator.py
+                    my_example_plugin</code>.<br/>This plugin will be generated in the
+                <code>JJMumbleBot/user_generated/</code>directory, and must be placed in the <code>JJMumbleBot/plugins/extensions/</code>directory
+                to work.</p>
+        </div>
+
+        <div>
+            <h4>Persistent Plugin Data in Docker Containers</h4>
+            <p>So far, docker images of JJMumbleBot haven't been able to store persistent data for plugins easily.<br/>
+                In this update each plugin will receive it's own directory in the /cfg/plugins/ directory to use for
+                persistent data.<br/>Since the content of this directory is dependent on the plugin, some plugins may
+                opt not to use it.</p>
             <ul>
-                <li></li>
+                <li>A persistent data utility is now available in the bot library for third-party plugins to utilize for
+                    containerized bots.
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Updated Logging and Console Printing System</h4>
+            <ul>
+                <li>More bot/plugin events are now logged.</li>
+                <li>Added 'LogStackTrace' option to the config.ini file to allow the logging API to log the event stack
+                    trace.<br/>
+                    <b>Launch parameter:</b> <code>-logtrace</code>
+                </li>
+                <li>
+                    <details>
+                        <summary>Logging API Updates</summary>
+                        <ul>
+                            <li>The logging API now supports multi-line messages as a list of strings.<br/>
+                                <code>log ( INFO, [string1, string2, string3], ... )</code></li>
+                            <li>Added new logging origin for plugins: L_PLUGIN</li>
+                            <li>The logging API supports displaying custom error types.</li>
+                            <li>The logging API now supports 'error' log level.</li>
+                            <li>The logging API has been updated to make it easier than ever for third-party developed
+                                plugins to adopt logging features.<br/>For more information on the logging API, refer to
+                                the wiki page: [Logging
+                                API](https://duckboss.github.io/JJMumbleBot/wiki/general/logging.html)
+                            </li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Updated PGUI System</h4>
+            <ul>
+                <li>
+                    <details>
+                        <summary>PGUI System API Updates</summary>
+
+                        <ul>
+                            <li>
+                                The PGUI system now supports multi-line messages.
+                            </li>
+                        </ul>
+                    </details>
+                </li>
             </ul>
         </div>
     </div>
-    <footer></footer>
+
+    <div>
+        <h3>Plugin Updates</h3>
+        <div>
+            <h4>Bot Commands Plugin - New Commands</h4>
+            <p>The bot commands plugin has new commands.</p>
+            <ul>
+                <li><code>!aliassearch 'search_term'</code>: Searches and returns a list of aliases that most closely
+                    matched the search term.
+                </li>
+            </ul>
+        </div>
+        <div>
+            <h4>Core Commands Plugin - New Commands</h4>
+            <p>The core commands plugin now has commands that can be used to individually stop/start/restart
+                plugins.<br/>
+                A plugin's ability to be stopped/started/restarted in this way is controlled in the plugin's respective
+                metadata.ini file.</p>
+            <ul>
+                <li><code>!stopplugin 'plugin_name'</code>: Stops the plugin by the name provided if it is running.</li>
+                <li><code>!startplugin 'plugin_name'</code>: Starts the plugin by the name provided if it is currently
+                    inactive.
+                </li>
+                <li><code>!restartplugin 'plugin_name'</code>: Restarts the plugin by the name provided if it is
+                    currently running.
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Server Tools Plugin</h4>
+            <p>The server tools plugin is now considered a core plugin and has been moved from the extension plugin
+                folder to the core plugin folder.<br/>Some plugin commands have also been shortened so that they are
+                easier to use.</p>
+            <ul>
+                <li>The server tools plugin now only uses audio clips from the sound_board permanent media directory if
+                    the option is enabled in the plugin's metadata.ini file.
+                </li>
+                <li>The plugin now comes with a default built-in "ping" sound clip to play when a user connects to the
+                    server.<br/>This can be configured in the metadata.ini file.
+                </li>
+                <li>The plugin can now send a welcome message to a user that connects to the server.<br/>The content of
+                    this message can be configured in the metadata.ini file.
+                </li>
+                <li>Shortened the <code>!setuserrconnectionsound</code> command to <code>!setloginsound</code></li>
+                <li>Shortened the <code>!getuserconnectionsound</code> command to <code>!getloginsound</code></li>
+                <li>Shortened the <code>!clearuserconnectionsound</code> command to <code>!clearloginsound</code></li>
+                <li>Shortened the <code>!toggleuserconnectionsound</code> command to <code>!toggleloginsounds</code>
+                </li>
+                <li>Shortened the <code>!setdefaultconnectionsound</code> command to <code>!setdefaultloginsound</code>
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Web Server Plugin [NEW] - New Web Interface</h4>
+            <p>The web interface is now a part of the web_server plugin, which gives it the benefit of being a
+                drag-and-drop optional feature to the bot. This plugin is included by default, but it can be removed by
+                simple deleting it from the plugins list.</p>
+            <ul>
+                <li><b>One port access for both the interface + socket</b>: For example <code>localhost:7000/</code>
+                    provides the web interface, and <code>localhost:7000/ws</code> will provide the socket connection
+                    for the interface.
+                </li>
+                <li><b>Modern front-end visuals</b>: The interface has been completely reworked using ReactJS</li>
+                <li><b>Transition to a plugin-based web server</b>: The web interface is now a part of the web_server
+                    plugin, which gives it the benefit of being a drag-and-drop optional feature to the bot.
+                </li>
+                <li><b>Better API implementation</b>: New, fast API system utilizing the FastAPI library that is open
+                    for customization and third-party web interfaces. The API can also be used for other third-party
+                    integrations.
+                </li>
+                <li><b>Dark/Light Mode themes</b>: A new theme selector has been added so that users who prefer a dark/
+                    or light interface scheme can select their preference.
+                </li>
+
+                <li>
+                    <details>
+                        <summary><b>CLICK HERE TO SEE PREVIEW IMAGES</b></summary>
+
+                        <h5>Navigation Bar</h5>
+                        <img width=500
+                             src="https://user-images.githubusercontent.com/20238115/106061593-8f0fd200-60c3-11eb-974e-1e9c4817bde5.png"
+                             alt="Navigation Bar Image"/>
+
+                        <h5>Commands Tab</h5>
+                        <img width=500
+                             src="https://user-images.githubusercontent.com/20238115/106063315-f9c20d00-60c5-11eb-9846-25d3b79c551f.png"
+                             alt="Commands Tab Image"/>
+
+
+                        <h5>Audio Tab</h5>
+                        <img width=500
+                             src="https://user-images.githubusercontent.com/20238115/106061227-1f014c00-60c3-11eb-9540-dd8a9222438d.png"
+                             alt="Audio Tab Image"/>
+
+                        <h5>Debug Tab</h5>
+                        <img width=500
+                             src="https://user-images.githubusercontent.com/20238115/106063400-1e1de980-60c6-11eb-8ab0-c52b1f097186.png"
+                             alt="Debug Tab Image"/>
+
+                    </details>
+                </li>
+                <li>
+                    <details>
+                        <summary>Web Server API</summary>
+
+                        <ul>
+                            <li><code>[POST] /api/command</code>: Sends a given command to the bot.<br/>
+                                Example request body: <code>{ "text": "!echo test" }</code>
+                            </li>
+                            <li><code>[GET] /api/lastcommand</code>: Retrieves the most recent command sent to the bot.
+                            </li>
+                            <li><code>[POST] /api/pause</code>: Pauses the audio interface.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/pause</code>: Pauses the current track in the audio interface.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/resume</code>: Resumes the current track in the audio interface.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/replay</code>: Replays the current track in the audio interface.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/nexttrack</code>: Skips to the next track in the audio interface
+                                queue.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/decreasevolume</code>: Decreases the volume of the audio interface by
+                                0.1<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/increasevolume</code>: Increases the volume of the audio interface by
+                                0.1<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/clearcmdhistory</code>: Clears the command history of the bot.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[GET] /api/cmdhistory</code>: Retrieves the command history of the bot.</li>
+                            <li><code>[POST] /api/loop</code>: Sets the audio interface to loop tracks.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/skipto</code>: Skips to the given track in the audio interface
+                                queue.<br/>
+                                Example request body: <code>{ "text": "track_index_in_queue" }</code>
+                            </li>
+                            <li><code>[POST] /api/removetrack</code>: Removes the given track in the audio interface
+                                queue.<br/>
+                                Example request body: <code>{ "text": "track_index_in_queue" }</code>
+                            </li>
+                            <li><code>[POST] /api/stop</code>: Stops the current track and clears the queue in the audio
+                                interface.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[GET] /api/plugins</code>: Retrieves a list of all the active plugins in the bot.
+                            </li>
+                            <li><code>[GET] /api/channels</code>: Retrieves a list of all the server channels in the
+                                mumble server.
+                            </li>
+                            <li><code>[GET] /api/soundboardclips</code>: Retrieves a list of all the sound_board clips
+                                in local storage.
+                            </li>
+                            <li><code>[POST] /api/soundboard-random</code>: Plays a random soundboard clip from local
+                                storage.<br/>
+                                Example request body: <code>No request body required</code>
+                            </li>
+                            <li><code>[POST] /api/soundboard-play</code>: Plays a soundboard clip by the given name from
+                                local storage.<br/>
+                                Example request body: <code>{ "text": "my_clip_name" }</code>
+                            </li>
+                            <li><code>[GET] /api/system</code>: Retrieves the system information that the bot is running
+                                on.
+                            </li>
+                            <li><code>[GET] /api/general/</code>: Retrieves general bot information such as the name and
+                                command token.
+                            </li>
+                            <li><code>[GET] /api/general/name</code>: Retrieves the bot name.</li>
+                            <li><code>[GET] /api/general/token</code>: Retrieves the bot command token.</li>
+                        </ul>
+                        For more information on the Web Server REST API, please check the <a
+                            href="https://duckboss.github.io/JJMumbleBot/wiki/general/web_server_api.html">Web Server
+                        API Wiki Page</a>
+                    </details>
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Randomizer Plugin - New Commands</h4>
+            <ul>
+                <li>Added <code>d100roll</code> command to the randomizer plugin.</li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Media Plugin</h4>
+            <ul>
+                <li>The internal track duration tracking now uses integers, and only converts to a string timedelta
+                    representation for outputting to the user.
+                </li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>Sound Board Plugin - New Commands</h4>
+            <p>The sound board plugin has new commands.</p>
+            <ul>
+                <li><code>!sbrandomquiet</code>: Plays a random sound clip from local storage without displaying it to
+                    the channel chat.
+                </li>
+                <li><code>!sbrandomquietnow</code>: Plays a random sound clip from local storage without displaying it
+                    to the channel chat and overrides the queue to play immediately.
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div>
+        <h3>Docker Updates</h3>
+        <ul>
+            <li>The bot now supports the IP/PORT/PASS of the server to be provided automatically through system
+                environment variables (MUMBLE_IP/MUMBLE_PORT/MUMBLE_PASSWORD). If these environment variables are
+                unavailable, it uses default parameters or parameters provided through the
+                <code>-ip/-port/-password</code> parameters.
+            </li>
+            <li>Updated the docker file to install all the necessary dependencies as per the new requirements/
+                directory.
+            </li>
+            <li>Updated the docker container to pass through required system environment variables for connecting to a
+                mumble server.
+            </li>
+            <li>The docker container now exposes port 7000 by default.</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Wiki Updates</h3>
+        <ul>
+            <li>Updated the wiki as per the updates in v4.4.0</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Unit Tests</h3>
+        <ul>
+            <li>Added unit testing to plugins</li>
+            <li>Added unit testing for template files such as configs, aliases, etc.</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Bug Fixes</h3>
+        <ul>
+            <li>Logging: Fixed message printing error where the message origin was not displayed.</li>
+            <li>Audio API: Fixed thumbnail downloading issue that occurred due to recent youtube_dl updated.</li>
+            <li>Audio API: "now"-postfixed commands such as <code>!sbnow</code> override the audio interface queue as
+                expected.
+            </li>
+            <li>Audio API: Fixed an issue where the progress tracking of audio clips wasn't being reset properly.</li>
+            <li>Server Tools Plugin: Added missing documentation for commands in the help.html file.</li>
+            <li>Media Plugin: Fixed the <code>!ytsearch</code> command.</li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Misc</h3>
+        <ul>
+            <li>Updated all plugins to v4.4.0</li>
+            <li>Optimized imports and dependency usage.</li>
+            <li>Added generic warning/error resource strings.</li>
+            <li>Plugin help data no longer displays the bot name as 'JJMumbleBot'.</li>
+            <li>Added a <code>on_disconnect</code> callback to the core bot service.</li>
+            <li>Added new utility methods to the runtime utility.</li>
+            <li>Added logging/printing suppression to the image helper script.</li>
+            <li>Added support for base64 image encoded string retrieval without html formatting.</li>
+            <li>Removed localization folder, as it is currently unimplemented.</li>
+            <li>The monitor service that was previously used for the web interface has been moved to the web_server
+                plugin.
+            </li>
+            <li>Updated the core bot service and runtime utility to allow the web server plugin to handle it's own
+                start/shutdown procedures.
+            </li>
+            <li>Removed unused dependencies and licensing associated with it.</li>
+        </ul>
+    </div>
+</div>
+<footer></footer>
 </body>
 </html>
