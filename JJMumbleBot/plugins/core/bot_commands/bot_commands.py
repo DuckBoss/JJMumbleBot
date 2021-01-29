@@ -79,6 +79,48 @@ class Plugin(PluginBase):
                                  ignore_whisper=True)
         log(INFO, f"Msg:[{send_to}]->[{message_to_send}]", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
+    def cmd_kickuser(self, data):
+        split_data = data.message.strip().split(' ', 2)
+        if len(split_data) != 3:
+            log(ERROR, CMD_INVALID_KICK,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_MSG,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        send_to = split_data[1]
+        reason = split_data[2]
+        gs.gui_service.quick_gui(
+            f"Attempting to kick user: {send_to}",
+            text_type='header',
+            box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+            ignore_whisper=True)
+        log(INFO, f"Attempting to kick user:[{send_to}]->[{reason}]", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        rutils.kick_user(send_to, reason)
+
+    def cmd_banuser(self, data):
+        split_data = data.message.strip().split(' ', 2)
+        if len(split_data) != 3:
+            log(ERROR, CMD_INVALID_KICK,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_MSG,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        send_to = split_data[1]
+        reason = split_data[2]
+        gs.gui_service.quick_gui(
+            f"Attempting to ban user: {send_to}",
+            text_type='header',
+            box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+            ignore_whisper=True)
+        log(INFO, f"Attempting to ban user:[{send_to}]->[{reason}]", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        rutils.ban_user(send_to, reason)
+
     def cmd_log(self, data):
         split_data = data.message.strip().split(' ', 1)
         if len(split_data) != 2:

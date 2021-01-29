@@ -1,7 +1,8 @@
 from JJMumbleBot.settings import global_settings
 from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED, PYMUMBLE_CLBK_CONNECTED, PYMUMBLE_CLBK_SOUNDRECEIVED, \
     PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, PYMUMBLE_CLBK_DISCONNECTED, PYMUMBLE_CLBK_CHANNELUPDATED, \
-    PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED
+    PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED, \
+    PYMUMBLE_CLBK_PERMISSIONDENIED
 
 
 class CallbackService:
@@ -47,3 +48,7 @@ class CallbackService:
     @staticmethod
     def user_removed(user, message):
         global_settings.core_callbacks.callback(PYMUMBLE_CLBK_USERREMOVED, user, message)
+
+    @staticmethod
+    def permission_denied(data):
+        global_settings.core_callbacks.callback(PYMUMBLE_CLBK_PERMISSIONDENIED, data)

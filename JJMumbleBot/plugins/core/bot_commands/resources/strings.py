@@ -23,6 +23,14 @@ CMD_INVALID_MSG = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}msg 'username' 'message'"
 ]
+CMD_INVALID_KICK = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}kick 'username' 'reason'"
+]
+CMD_INVALID_BAN = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}ban 'username' 'reason'"
+]
 CMD_INVALID_LOG = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}log 'message'"

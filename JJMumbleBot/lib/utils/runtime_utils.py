@@ -126,6 +126,20 @@ def clear_whisper():
     global_settings.mumble_inst.sound_output.remove_whisper()
 
 
+def kick_user(receiver, reason='N/A'):
+    for user in global_settings.mumble_inst.users:
+        if global_settings.mumble_inst.users[user]['name'] == receiver:
+            log(INFO, f"Kicking user:[{global_settings.mumble_inst.users[user]['name']}-{global_settings.mumble_inst.users[user]['session']}]->[{reason}]", origin=L_COMMAND,
+                print_mode=PrintMode.REG_PRINT.value)
+            global_settings.mumble_inst.users[user].kick(reason=reason)
+
+
+def ban_user(receiver, reason='N/A'):
+    for user in global_settings.mumble_inst.users:
+        if global_settings.mumble_inst.users[user]['name'] == receiver:
+            global_settings.mumble_inst.users[user].ban(reason=reason)
+
+
 def msg(receiver, message):
     for user in global_settings.mumble_inst.users:
         if global_settings.mumble_inst.users[user]['name'] == receiver:

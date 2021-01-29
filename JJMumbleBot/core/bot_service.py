@@ -1,7 +1,8 @@
 import pymumble_py3 as pymumble
 from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED, PYMUMBLE_CLBK_CONNECTED, PYMUMBLE_CLBK_SOUNDRECEIVED, \
     PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, PYMUMBLE_CLBK_DISCONNECTED, PYMUMBLE_CLBK_CHANNELUPDATED, \
-    PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED
+    PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED, \
+    PYMUMBLE_CLBK_PERMISSIONDENIED
 from pymumble_py3.errors import ConnectionRejectedError
 from JJMumbleBot.core.callback_service import CallbackService
 from JJMumbleBot.lib.utils.remote_utils import RemoteTextMessage
@@ -138,6 +139,10 @@ class BotService:
         # Callback - channel_updated
         global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_CHANNELUPDATED,
                                                            global_settings.clbk_service.channel_updated)
+        # Callback - permission_denied
+        global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_PERMISSIONDENIED,
+                                                           global_settings.clbk_service.permission_denied)
+        global_settings.core_callbacks.append_to_callback(PYMUMBLE_CLBK_DISCONNECTED, self.on_permission_denied)
 
         global_settings.mumble_inst.set_codec_profile('audio')
         global_settings.mumble_inst.set_receive_sound(True)
@@ -226,6 +231,9 @@ class BotService:
     @staticmethod
     def process_command_queue(com):
         execute_cmd.execute_command(com)
+
+    def on_permission_denied(self, data):
+        log(INFO, f"Permission Denied: {data}", origin=L_USER_PRIV, print_mode=PrintMode.REG_PRINT.value)
 
     def on_connected(self, data):
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
