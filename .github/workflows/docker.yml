@@ -1,7 +1,7 @@
 name: docker
 on: [push]
 jobs:
-  pull-and-build-dev:
+  build-and-publish-latest:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master' # Running this job only for develop branch
 
@@ -12,5 +12,19 @@ jobs:
       uses: VaultVulp/gp-docker-action@1.1.7
       with:
         github-token: ${{ secrets.TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
-        image-name: jjmumblebot # Provide Docker image name
+        image-name: jjmumblebot-latest # Provide Docker image name
         image-tag: head # Raise the flag to try to pull image
+
+  build-and-publish-tag:
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') # Running this job only for tags
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build and Publish Tag Docker image
+      uses: VaultVulp/gp-docker-action@1.1.7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
+        image-name: jjmumblebot # Provide only Docker image name
+        extract-git-tag: true # Provide flag to extract Docker image tag from git reference
