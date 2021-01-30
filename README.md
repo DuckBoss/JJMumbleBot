@@ -70,7 +70,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 - JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.
 
 ## Docker Setup 🏃
-- Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/docker.html">Docker Setup Wiki Page</a> for more information.
+Please check the <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/docker.html">Docker Setup Wiki Page</a> for more information.
 
 ## Documentation 📝
 <b><a href="https://duckboss.github.io/JJMumbleBot/wiki/new/whats_new.html">JJMumbleBot Documentation Wiki</a></b> <br>
