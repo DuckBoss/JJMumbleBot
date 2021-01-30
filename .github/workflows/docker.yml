@@ -14,15 +14,3 @@ jobs:
         github-token: ${{ secrets.TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
         image-name: jjmumblebot # Provide Docker image name
         image-tag: head # Raise the flag to try to pull image
-  build-test:  
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/4.4.0-update
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build and Publish dev Docker image
-        uses: VaultVulp/gp-docker-action@1.1.7
-        with:
-          github-token: ${{secrets.TOKEN}}
-          image-name: jjmumblebot-dev
-          image-tag: dev
-      
