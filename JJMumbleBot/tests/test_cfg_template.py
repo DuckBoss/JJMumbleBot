@@ -114,7 +114,7 @@ class TestConfigTemplate:
 
     def test_max_log_size(self):
         max_log_size = int(self.cfg[C_LOGGING][P_LOG_SIZE_MAX])
-        assert max_log_size == 150000
+        assert max_log_size == 1500000
 
     def test_hide_message_logging(self):
         hide_message_logging = self.cfg.getboolean(C_LOGGING, P_LOG_MESSAGES)
