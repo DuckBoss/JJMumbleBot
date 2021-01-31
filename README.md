@@ -60,8 +60,9 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
     - Linux: Depends on distribution
     - Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a>
     - Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a>
-- Install project dependencies
-    - `pip install -r requirements.txt`
+- Full project dependency installation:
+    - Install all requirements files: `pip install -r requirements/xxxxx.txt`
+    - Update installed pymumble to the latest github release: `pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3`
     - <b><a href="https://ffmpeg.org/">FFmpeg</a> and <a href="https://www.videolan.org/vlc/index.html">VLC</a> must be installed on your system</b>
     - <b>Note: You must have libopus installed, and installation varies by operating system.</b>
     - <b>Note: v4.2+ requires FFmpeg and VLC. v4.1 and under uses only VLC.</b>
