@@ -13,7 +13,7 @@ class TestWebServer:
         self.cfg.read(f"{get_core_plugin_dir()}/web_server/metadata.ini")
 
     def test_plugin_version(self):
-        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "5.0.0"
+        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "5.1.0"
 
     def test_commands_list_size(self):
         commands_list = list(loads(self.cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS]))
