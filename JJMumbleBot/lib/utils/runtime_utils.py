@@ -127,26 +127,41 @@ def clear_whisper():
 
 
 def kick_user(receiver, reason='N/A'):
-    for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['name'] == receiver:
-            log(INFO, f"Kicking user:[{global_settings.mumble_inst.users[user]['name']}-{global_settings.mumble_inst.users[user]['session']}]->[{reason}]", origin=L_COMMAND,
-                print_mode=PrintMode.REG_PRINT.value)
-            global_settings.mumble_inst.users[user].kick(reason=reason)
+    user = get_user(receiver)
+    if user:
+        log(INFO, f"Kicking user:[{user['name']}]->[{reason}]", origin=L_COMMAND,
+            print_mode=PrintMode.REG_PRINT.value)
+        user.kick(reason=reason)
 
 
 def ban_user(receiver, reason='N/A'):
-    for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['name'] == receiver:
-            global_settings.mumble_inst.users[user].ban(reason=reason)
+    user = get_user(receiver)
+    if user:
+        log(INFO,
+            f"Banning user:[{user['name']}]->[{reason}]", origin=L_COMMAND,
+            print_mode=PrintMode.REG_PRINT.value)
+        user.ban(reason=reason)
 
 
-def msg(receiver, message):
-    for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['name'] == receiver:
-            global_settings.mumble_inst.users[user].send_text_message(message)
+def move_user(receiver: str, new_channel_name: str):
+    channel = get_channel(new_channel_name)
+    if channel:
+        user = get_user(receiver)
+        if user:
+            log(INFO,
+                f"Moving user:[{user['name']}]->[{new_channel_name}]",
+                origin=L_COMMAND,
+                print_mode=PrintMode.REG_PRINT.value)
+            channel.move_in(session=user['session'])
 
 
-def msg_id(receiver_id, message):
+def msg(receiver: str, message: str):
+    user = get_user(receiver)
+    if user:
+        user.send_text_message(message)
+
+
+def msg_id(receiver_id: str, message: str):
     for user in global_settings.mumble_inst.users:
         if global_settings.mumble_inst.users[user]['session'] == receiver_id:
             global_settings.mumble_inst.users[user].send_text_message(message)
@@ -172,8 +187,24 @@ def get_bot_internal_name():
     return META_NAME
 
 
-def get_channel(channel_name):
-    return global_settings.mumble_inst.channels.find_by_name(channel_name)
+def get_user(username: str):
+    for user in global_settings.mumble_inst.users:
+        if global_settings.mumble_inst.users[user]['name'] == username:
+            return global_settings.mumble_inst.users[user]
+    return None
+
+
+def rename_channel(cur_channel_name: str, new_channel_name: str):
+    channel = get_channel(cur_channel_name)
+    if channel:
+        channel.rename_channel(new_channel_name)
+
+
+def get_channel(channel_name: str):
+    try:
+        return global_settings.mumble_inst.channels.find_by_name(channel_name)
+    except errors.UnknownChannelError:
+        return None
 
 
 def get_default_channel():
@@ -212,34 +243,46 @@ def get_comment():
 
 def get_users_in_my_channel():
     cur_channel = get_my_channel()
-    users = cur_channel.get_users()
-    return users
+    if cur_channel:
+        users = cur_channel.get_users()
+        return users
+    return None
 
 
-def make_channel(root_channel, channel_name):
+def make_channel(root_channel, channel_name, temporary=False):
     from json import loads
     allowed_channels = loads(global_settings.cfg[C_PLUGIN_SETTINGS][P_PLUG_ALLOWED_CHANNELS])
     if allowed_channels is not None:
         for chan_name in allowed_channels:
             found_channel = global_settings.mumble_inst.channels.find_by_name(chan_name)
             if found_channel is not None and found_channel.get_id() == root_channel.get_id():
-                return global_settings.mumble_inst.channels.new_channel(root_channel.get_id(), channel_name)
+                return global_settings.mumble_inst.channels.new_channel(root_channel.get_id(), channel_name, temporary=temporary)
     return None
 
 
 def leave_channel():
     default_channel = get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL])
-    default_channel.move_in()
+    if default_channel:
+        default_channel.move_in()
 
 
-def remove_channel():
+def remove_current_channel():
     cur_channel = get_my_channel()
-    cur_channel.remove()
+    if cur_channel:
+        cur_channel.remove()
+
+
+def remove_channel(channel_name: str):
+    channel = get_channel(channel_name)
+    if channel:
+        channel.remove()
 
 
 def check_up_time():
     cur_time = datetime.datetime.now() - runtime_settings.start_time
-    return f"{str(cur_time)[:-7]}"
+    if cur_time:
+        return f"{str(cur_time)[:-7]}"
+    return ""
 
 
 def refresh_plugins():

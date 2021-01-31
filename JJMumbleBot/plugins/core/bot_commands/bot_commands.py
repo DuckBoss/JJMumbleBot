@@ -79,26 +79,66 @@ class Plugin(PluginBase):
                                  ignore_whisper=True)
         log(INFO, f"Msg:[{send_to}]->[{message_to_send}]", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
+    def cmd_renamechannel(self, data):
+        split_data = data.message.strip().split(' ', 2)
+        if len(split_data) != 3:
+            log(ERROR, CMD_INVALID_RENAME_CHANNEL,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_RENAME_CHANNEL,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        cur_channel = split_data[1].strip()
+        renamed_channel = split_data[2].strip()
+        log(INFO, f"Attempting to rename channel:[{cur_channel}]->[{renamed_channel}]", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
+        rutils.rename_channel(cur_channel, renamed_channel)
+
+    def cmd_moveuser(self, data):
+        split_data = data.message.strip().split(' ', 2)
+        if len(split_data) != 3:
+            log(ERROR, CMD_INVALID_MOVE_USER,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_MOVE_USER,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        user = split_data[1].strip()
+        channel = split_data[2].strip()
+        gs.gui_service.quick_gui(
+            f"Attempting to move user: {user}",
+            text_type='header',
+            box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+            ignore_whisper=True)
+        log(INFO, f"Attempting to move user:[{user}]->[{channel}]", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
+        rutils.move_user(user, channel)
+
     def cmd_kickuser(self, data):
         split_data = data.message.strip().split(' ', 2)
         if len(split_data) != 3:
             log(ERROR, CMD_INVALID_KICK,
                 origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
-                CMD_INVALID_MSG,
+                CMD_INVALID_KICK,
                 text_type='header',
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
             return
-        send_to = split_data[1]
-        reason = split_data[2]
+        user = split_data[1].strip()
+        reason = split_data[2].strip()
         gs.gui_service.quick_gui(
-            f"Attempting to kick user: {send_to}",
+            f"Attempting to kick user: {user}",
             text_type='header',
             box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
             ignore_whisper=True)
-        log(INFO, f"Attempting to kick user:[{send_to}]->[{reason}]", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
-        rutils.kick_user(send_to, reason)
+        log(INFO, f"Attempting to kick user:[{user}]->[{reason}]", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
+        rutils.kick_user(user, reason)
 
     def cmd_banuser(self, data):
         split_data = data.message.strip().split(' ', 2)
@@ -111,15 +151,16 @@ class Plugin(PluginBase):
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
             return
-        send_to = split_data[1]
-        reason = split_data[2]
+        user = split_data[1].strip()
+        reason = split_data[2].strip()
         gs.gui_service.quick_gui(
-            f"Attempting to ban user: {send_to}",
+            f"Attempting to ban user: {user}",
             text_type='header',
             box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
             ignore_whisper=True)
-        log(INFO, f"Attempting to ban user:[{send_to}]->[{reason}]", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
-        rutils.ban_user(send_to, reason)
+        log(INFO, f"Attempting to ban user:[{user}]->[{reason}]", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
+        rutils.ban_user(user, reason)
 
     def cmd_log(self, data):
         split_data = data.message.strip().split(' ', 1)
@@ -170,30 +211,57 @@ class Plugin(PluginBase):
         gs.gui_service.quick_gui(
             f"{rutils.get_bot_name()} was moved by {data_actor}",
             text_type='header', box_align='left', ignore_whisper=True)
-        log(INFO, f"Moved to channel: {channel_name} by {data_actor}", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"Moved to channel: {channel_name} by {data_actor}", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_makechannel(self, data):
-        data_actor = gs.mumble_inst.users[data.actor]['name']
         split_data = data.message.strip().split(' ', 1)
         if len(split_data) != 2:
-            log(ERROR, CMD_INVALID_MAKE,
+            log(ERROR, CMD_INVALID_MAKE_TEMP,
                 origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
             gs.gui_service.quick_gui(
-                CMD_INVALID_MAKE,
+                CMD_INVALID_MAKE_TEMP,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        rutils.make_channel(rutils.get_my_channel(), split_data[1], temporary=True)
+        log(INFO, f"Made a channel: {split_data[1]} by {gs.mumble_inst.users[data.actor]['name']}", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
+
+    def cmd_makepermanentchannel(self, data):
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            log(ERROR, CMD_INVALID_MAKE_PERM,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_MAKE_PERM,
                 text_type='header',
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
             return
         rutils.make_channel(rutils.get_my_channel(), split_data[1])
-        log(INFO, f"Made a channel: {split_data[1]} by {data_actor}", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"Made a channel: {split_data[1]} by {gs.mumble_inst.users[data.actor]['name']}", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_leave(self, data):
         rutils.leave_channel()
         log(INFO, INFO_LEFT_CHANNEL, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_removechannel(self, data):
-        rutils.remove_channel()
-        log(INFO, INFO_REMOVE_CHANNEL, origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            log(ERROR, CMD_INVALID_REMOVE,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_REMOVE,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        rutils.remove_channel(split_data[1].strip())
+        log(INFO, f"Removed a channel: {split_data[1].strip()} by {gs.mumble_inst.users[data.actor]['name']}", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_joinme(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
@@ -221,7 +289,8 @@ class Plugin(PluginBase):
                 gs.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
                                          box_align='left', ignore_whisper=True)
                 gs.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
-                log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+                log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND,
+                    print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_aliassearch(self, data):
         all_data = data.message.strip().split(' ', 1)

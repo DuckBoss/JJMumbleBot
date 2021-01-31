@@ -4,11 +4,14 @@ echo,2
 log,4
 kickuser,4
 banuser,4
+moveuser,4
 showplugins,2
 aliassearch,2
 cmdsearch,2
-make,4
-remove,4
+makechannel,4
+makepermanentchannel,4
+removechannel,4
+renamechannel,4
 move,2
 joinme,2
 joinuser,2

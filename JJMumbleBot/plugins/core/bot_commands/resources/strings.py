@@ -7,7 +7,7 @@ from JJMumbleBot.lib.utils.runtime_utils import get_command_token
 INFO_DISPLAYED_PLUGINS = "Displayed all active plugins."
 INFO_DISPLAYED_CMD_SEARCH = "Displayed command search results."
 INFO_LEFT_CHANNEL = "Returned to default channel."
-INFO_REMOVE_CHANNEL = "Removed current channel."
+INFO_REMOVE_CHANNEL = "Removed a channel."
 INFO_DISPLAYED_BLACKLIST = "Displayed all blacklisted user."
 
 # ERROR STRINGS
@@ -22,6 +22,14 @@ CMD_INVALID_ECHO = [
 CMD_INVALID_MSG = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}msg 'username' 'message'"
+]
+CMD_INVALID_RENAME_CHANNEL = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}renamechannel 'channel_name' 'new_channel_name'"
+]
+CMD_INVALID_MOVE_USER = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}moveuser 'username' 'channel_name'"
 ]
 CMD_INVALID_KICK = [
     "ERROR: Incorrect command formatting!",
@@ -39,9 +47,17 @@ CMD_INVALID_MOVE = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}move 'channel_name'"
 ]
-CMD_INVALID_MAKE = [
+CMD_INVALID_MAKE_TEMP = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}makechannel 'channel_name'"
+]
+CMD_INVALID_MAKE_PERM = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}makepermanentchannel 'channel_name'"
+]
+CMD_INVALID_REMOVE = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}removechannel 'channel_name'"
 ]
 CMD_INVALID_JOIN_USER = [
     "ERROR: Incorrect command formatting!",
