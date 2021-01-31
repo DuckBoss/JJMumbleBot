@@ -23,6 +23,10 @@
         <code>!kickuser 'username'</code>: Kicks the user from the server if the bot has the appropriate privileges.<br>
         <code>!banuser 'username'</code>: Bans the user from the server if the bot has the appropriate privileges.<br>
         <code>!moveuser 'username' 'channel_name'</code>: Moves a user from one channel to another.<br>
+        <code>!muteuser 'username'</code>: Mutes the use by the name provided.<br>
+        <code>!unmuteuser 'username'</code>: Unmutes the user by the name provided.<br>
+        <code>!deafenuser 'username'</code>: Deafens the use by the name provided.<br>
+        <code>!undeafenuser 'username'</code>: Undeafens the use by the name provided.<br>
         <code>!showplugins</code>: Displays a list of all the active plugins.<br>
         <code>!aliassearch 'alias_name</code>: Search for an alias from the full list of aliases available.<br>
         <code>!cmdsearch 'command_name'</code>: Search for a command from the full list of commands available.<br>
@@ -52,16 +56,25 @@
     PluginCommands: [
                     "echo",
                     "msg",
+                    "kickuser",
+                    "banuser",
+                    "muteuser",
+                    "unmuteuser",
+                    "deafenuser",
+                    "undeafenuser",
                     "log",
                     "showplugins",
                     "aliassearch",
                     "cmdsearch",
                     "move",
                     "makechannel",
+                    "makepermanentchannel",
                     "leave",
                     "removechannel",
+                    "renamechannel",
                     "joinme",
                     "joinuser",
+                    "moveuser",
                     "showprivileges",
                     "setprivileges",
                     "addprivileges",
