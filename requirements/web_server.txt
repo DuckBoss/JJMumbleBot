@@ -1,6 +1,7 @@
 # Web Server dependencies -
 uvicorn
 fastapi
+fastapi-utils
 pydantic
 websockets
 aiofiles
