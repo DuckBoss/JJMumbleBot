@@ -78,9 +78,13 @@ def get_all_online():
         users_in_channels[channel_id] = {}
         for user in all_users_in_channel:
             users_in_channels[channel_id][user["name"]] = {
-                f'name': f'{user["name"]}',
-                f'channel_id': f'{user["channel_id"]}',
-                f'channel_name': f'{all_channels_dict[channel_id]["name"]}'
+                'name': f'{user["name"]}',
+                'channel_id': f'{user["channel_id"]}',
+                'channel_name': f'{all_channels_dict[channel_id]["name"]}',
+                'self_mute': f'{user.get("self_mute", False)}',
+                'server_mute': f'{user.get("mute", False)}',
+                'self_deaf': f'{user.get("self_deaf", False)}',
+                'server_deaf': f'{user.get("deaf", False)}'
             }
 
     # Remove description_hash key if inside any channel data.
@@ -124,7 +128,13 @@ def get_server_hierarchy():
         }
         # Set the users in every channel into the channel_info dictionary.
         for user in all_channels[channel_id].get_users():
-            channel_info["users"].append(user["name"])
+            channel_info["users"].append({
+                'name': user["name"],
+                'self_mute': f'{user.get("self_mute", False)}',
+                'server_mute': f'{user.get("mute", False)}',
+                'self_deaf': f'{user.get("self_deaf", False)}',
+                'server_deaf': f'{user.get("deaf", False)}'
+            })
         # Append the channel_info dictionary to the server dictionary.
         channels_list.append(channel_info)
 
@@ -132,7 +142,6 @@ def get_server_hierarchy():
     # The first channel in the list is always root.
     server.append(channels_list[0])
 
-    # print(channels_list[1:])
     # The rest of the channels are either root, or have a parent.
     set_channel_data(server, channels_list[1:])
 
