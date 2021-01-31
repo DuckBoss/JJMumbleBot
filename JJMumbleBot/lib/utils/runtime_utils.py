@@ -41,20 +41,62 @@ def parse_message(text):
     return None
 
 
-def mute():
-    if runtime_settings.muted:
-        return
-    global_settings.mumble_inst.users.myself.mute()
-    runtime_settings.muted = True
-    return
+def deafen(username):
+    user = get_user(username)
+    if user:
+        if not user.get("deaf", False):
+            log(INFO, f"Deafening user:[{user['name']}]", origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value)
+            user.deafen()
+            return True
+    return False
 
 
-def unmute():
-    if not runtime_settings.muted:
-        return
-    global_settings.mumble_inst.users.myself.unmute()
-    runtime_settings.muted = False
-    return
+def undeafen(username):
+    user = get_user(username)
+    if user:
+        if user.get("deaf", False):
+            log(INFO, f"Undeafening user:[{user['name']}]", origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value)
+            user.undeafen()
+            return True
+    return False
+
+
+def mute(username: str = None):
+    if username:
+        user = get_user(username)
+        if user:
+            if not user.get("mute", False):
+                log(INFO, f"Muting user:[{user['name']}]", origin=L_COMMAND,
+                    print_mode=PrintMode.VERBOSE_PRINT.value)
+                user.mute()
+                return True
+        return False
+    else:
+        if runtime_settings.muted:
+            return False
+        global_settings.mumble_inst.users.myself.mute()
+        runtime_settings.muted = True
+        return True
+
+
+def unmute(username: str = None):
+    if username:
+        user = get_user(username)
+        if user:
+            if user.get("mute", False):
+                log(INFO, f"Unmuting user:[{user['name']}]", origin=L_COMMAND,
+                    print_mode=PrintMode.VERBOSE_PRINT.value)
+                user.unmute()
+                return True
+        return False
+    else:
+        if not runtime_settings.muted:
+            return False
+        global_settings.mumble_inst.users.myself.unmute()
+        runtime_settings.muted = False
+        return True
 
 
 def echo(channel, message_text, ignore_whisper=False):
@@ -130,7 +172,7 @@ def kick_user(receiver, reason='N/A'):
     user = get_user(receiver)
     if user:
         log(INFO, f"Kicking user:[{user['name']}]->[{reason}]", origin=L_COMMAND,
-            print_mode=PrintMode.REG_PRINT.value)
+            print_mode=PrintMode.VERBOSE_PRINT.value)
         user.kick(reason=reason)
 
 
@@ -139,7 +181,7 @@ def ban_user(receiver, reason='N/A'):
     if user:
         log(INFO,
             f"Banning user:[{user['name']}]->[{reason}]", origin=L_COMMAND,
-            print_mode=PrintMode.REG_PRINT.value)
+            print_mode=PrintMode.VERBOSE_PRINT.value)
         user.ban(reason=reason)
 
 
@@ -151,7 +193,7 @@ def move_user(receiver: str, new_channel_name: str):
             log(INFO,
                 f"Moving user:[{user['name']}]->[{new_channel_name}]",
                 origin=L_COMMAND,
-                print_mode=PrintMode.REG_PRINT.value)
+                print_mode=PrintMode.VERBOSE_PRINT.value)
             channel.move_in(session=user['session'])
 
 
@@ -194,10 +236,24 @@ def get_user(username: str):
     return None
 
 
+def get_user_channel(username: str):
+    all_users = get_all_users()
+    for user_id in get_all_users():
+        if all_users[user_id]['name'] == username:
+            return global_settings.mumble_inst.channels[all_users[user_id]['channel_id']]
+    return None
+
+
 def rename_channel(cur_channel_name: str, new_channel_name: str):
     channel = get_channel(cur_channel_name)
     if channel:
         channel.rename_channel(new_channel_name)
+
+
+def move_to_channel(channel_name: str):
+    channel_search = get_channel(channel_name)
+    if channel_search:
+        channel_search.move_in()
 
 
 def get_channel(channel_name: str):
