@@ -17,9 +17,17 @@ from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.plugins.core.web_server.utility.web_utils import ResponseModel
 from JJMumbleBot.plugins.core.web_server.resources.strings import *
 from JJMumbleBot.settings import global_settings
-from JJMumbleBot.plugins.core.web_server.routing.api import routing
+from JJMumbleBot.plugins.core.web_server.routing.core import routing as core_routing
+from JJMumbleBot.plugins.core.web_server.routing.audio import routing as audio_routing
+from JJMumbleBot.plugins.core.web_server.routing.bot_commands import routing as bot_commands_routing
+from JJMumbleBot.plugins.core.web_server.routing.sound_board import routing as sound_board_routing
 
-web_app = FastAPI()
+web_app = FastAPI(
+    title="JJMumbleBot Web API",
+    description="This is the REST API for JJMumbleBot built with FastAPI",
+    version=META_VERSION,
+    redoc_url=None
+)
 web_app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -27,7 +35,10 @@ web_app.add_middleware(
     allow_headers=["*"]
 )
 web_app.mount("/static", StaticFiles(directory=f"{get_core_plugin_dir()}/web_server/static"), name="static")
-web_app.include_router(routing.router)
+web_app.include_router(core_routing.router)
+web_app.include_router(audio_routing.router)
+web_app.include_router(bot_commands_routing.router)
+web_app.include_router(sound_board_routing.router)
 
 
 @web_app.exception_handler(StarletteHTTPException)
