@@ -26,7 +26,7 @@
         </ul>
         <h3 id="web-interface">Web Interface</h3>
         <ul>
-            <li>The web interface (if enabled in your <code>config.ini</code> file) must have the bot itself as a
+            <li>The web interface (if enabled by default in your <code>plugins/web_server/metadata.ini</code> file) must have the bot itself as a
                 high-privileged user in the user privileges.
             </li>
             <li>To add the bot to the user privileges, use the !addprivileges command: <code>!addprivileges MyBotName 5</code>
@@ -58,9 +58,17 @@
                             <li>Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a></li>
                         </ul>
                     </li>
-                    <li>Install project dependencies
+                    <li>Installing project dependencies
                         <ul>
-                            <li><code>pip install -r requirements.txt</code></li>
+                            <li><code>pip install -r requirements/requirements.txt</code> OR <code>python3 -m pip install -r requirements/requirements.txt</code></li>
+                            <li><code>pip install git+git://github.com/azlux/pymumble@pymumble_py3</code> OR <code>python3 -m pip install git+git://github.com/azlux/pymumble@pymumble_py3</code></li>
+                            <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
+                        </ul>
+                    </li>
+                    <li>Updating project dependencies
+                        <ul>
+                            <li><code>pip install --upgrade -r requirements/requirements.txt</code> OR <code>python3 -m pip install --upgrade -r requirements/requirements.txt</code></li>
+                            <li><code>pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code> OR <code>python3 -m pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code></li>
                             <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
                         </ul>
                     </li>
@@ -94,19 +102,6 @@
                         <ul>
                             <li>
                                 <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/config_file.html">Config.ini Setup Page</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>Optional setup using web interface:
-                        <ul>
-                            <li>
-                                <b>For Release Versions:</b><br><a href="https://duckboss.github.io/JJMumbleBot/wiki/qsu/qsu.html">Quick
-                                Setup Utility - Web Interface For Config.ini File</a>
-                            </li>
-                            <li>
-                                <b>For Master/Development Versions:</b><br>
-                                <a href="https://duckboss.github.io/JJMumbleBot/wiki/qsu/qsu_master.html">Quick Setup Utility -
-                                Web Interface For Config.ini File (MASTER BRANCH)</a>
                             </li>
                         </ul>
                     </li>

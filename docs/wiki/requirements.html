@@ -14,7 +14,7 @@
         <h2 id="page-title">Requirements</h2>
         <hr>
         <p><b>Note: Some third-party plugins may require additional dependencies</b></p>
-        <h3 id="dependency-installation">Dependency Installation</h3>
+        <h3 id="dependency-installation">Dependency Installation/Updating</h3>
         <ul>
             <li>Download and install python 3.7+
                 <ul>
@@ -23,9 +23,17 @@
                     <li>Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a></li>
                 </ul>
             </li>
-            <li>Install project dependencies
+            <li>Installing project dependencies
                 <ul>
                     <li><code>pip install -r requirements/requirements.txt</code> OR <code>python3 -m pip install -r requirements/requirements.txt</code></li>
+                    <li><code>pip install git+git://github.com/azlux/pymumble@pymumble_py3</code> OR <code>python3 -m pip install git+git://github.com/azlux/pymumble@pymumble_py3</code></li>
+                    <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
+                </ul>
+            </li>
+            <li>Updating project dependencies
+                <ul>
+                    <li><code>pip install --upgrade -r requirements/requirements.txt</code> OR <code>python3 -m pip install --upgrade -r requirements/requirements.txt</code></li>
+                    <li><code>pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code> OR <code>python3 -m pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code></li>
                     <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
                 </ul>
             </li>
@@ -42,7 +50,8 @@
         </ul>
         <h4 id="dependencies">Dependencies (Can be installed with pip)</h4>
         <ul>
-            <li><a href="https://pypi.org/project/pymumble/">pymumble</a>
+            <li><a href="https://pypi.org/project/pymumble/">pymumble</a><br/>
+                I highly recommend installing the updated version directly from github like so: <code>pip install git+git://github.com/azlux/pymumble@pymumble_py3</code>
                 <ul>
                     <li>Core python wrapper for mumble interaction.</li>
                 </ul>
@@ -84,7 +93,10 @@
             <li>
                 <h5 id="dependency-web_server">Web Server Plugin</h5>
                 <p>Installation:<br>
-                    <code>pip install -r requirements/web_server.txt</code> OR <code>python3 -m pip install -r requirements/web_server.txt</code>
+                    <code>pip install -r requirements/web_server.txt</code> OR <code>python3 -m pip install -r requirements/web_server.txt</code><br/>
+                </p>
+                <p>Upgrading:<br>
+                    <code>pip install --upgrade -r requirements/web_server.txt</code> OR <code>python3 -m pip install --upgrade -r requirements/requirements.txt</code><br/>
                 </p>
                 <ul>
                     <li><a href="https://pypi.org/project/websockets/">websockets</a>
@@ -92,17 +104,22 @@
                         <li>Provides continuous data to the web interface.</li>
                     </ul>
                     </li>
-                    <li><a href="https://pypi.org/project/Flask/">fastapi</a>
+                    <li><a href="https://pypi.org/project/fastapi/">fastapi</a>
                         <ul>
                             <li>Internal framework for the web interface that provides the main API and web page.</li>
                         </ul>
                     </li>
-                    <li><a href="https://pypi.org/project/gevent/">uvicorn</a>
+                    <li><a href="https://pypi.org/project/fastapi-utils/">fastapi-utils</a>
+                        <ul>
+                            <li>Additional required utilities for the FastAPI framework.</li>
+                        </ul>
+                    </li>
+                    <li><a href="https://pypi.org/project/uvicorn/">uvicorn</a>
                         <ul>
                             <li>Web server for the web interface.</li>
                         </ul>
                     </li>
-                    <li><a href="https://pypi.org/project/gevent/">pydantic</a>
+                    <li><a href="https://pypi.org/project/pydantic/">pydantic</a>
                         <ul>
                             <li>Used to create appropriate data models for web data.</li>
                         </ul>
