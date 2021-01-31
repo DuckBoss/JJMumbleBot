@@ -5,6 +5,10 @@ log,4
 kickuser,4
 banuser,4
 moveuser,4
+muteuser,4
+unmuteuser,4
+deafenuser,4
+undeafenuser,4
 showplugins,2
 aliassearch,2
 cmdsearch,2

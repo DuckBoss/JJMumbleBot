@@ -201,7 +201,7 @@ class Plugin(PluginBase):
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
             return
-        channel_name = split_data[1]
+        channel_name = split_data[1].strip()
         if channel_name == "default" or channel_name == "Default":
             channel_name = rutils.get_default_channel()
         channel_search = rutils.get_channel(channel_name)
@@ -266,7 +266,8 @@ class Plugin(PluginBase):
     def cmd_joinme(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
         gs.gui_service.quick_gui(f"Joining user: {data_actor['name']}", text_type='header',
-                                 box_align='left', ignore_whisper=True)
+                                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                                 ignore_whisper=True)
 
         gs.mumble_inst.channels[data_actor['channel_id']].move_in()
         log(INFO, f"Joined user: {data_actor['name']}", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
@@ -282,15 +283,91 @@ class Plugin(PluginBase):
                 box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
                 ignore_whisper=True)
             return
-        to_join = split_data[1]
-        all_users = rutils.get_all_users()
-        for user_id in rutils.get_all_users():
-            if all_users[user_id]['name'] == to_join:
-                gs.gui_service.quick_gui(f"Joining user: {all_users[user_id]['name']}", text_type='header',
-                                         box_align='left', ignore_whisper=True)
-                gs.mumble_inst.channels[all_users[user_id]['channel_id']].move_in()
-                log(INFO, f"Joined user: {all_users[user_id]['name']}", origin=L_COMMAND,
-                    print_mode=PrintMode.VERBOSE_PRINT.value)
+        to_join = split_data[1].strip()
+        user_channel = rutils.get_user_channel(to_join)
+        if user_channel:
+            gs.gui_service.quick_gui(f"Joining user: {to_join}", text_type='header',
+                                     box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                                     ignore_whisper=True)
+            user_channel.move_in()
+            log(INFO, f"Joined user: {to_join}", origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value)
+
+    def cmd_muteuser(self, data):
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            log(ERROR, CMD_INVALID_MUTE_USER,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_MUTE_USER,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        to_mute = split_data[1].strip()
+        if rutils.mute(username=to_mute):
+            gs.gui_service.quick_gui(
+                f"Muted user:[{to_mute}]",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+
+    def cmd_unmuteuser(self, data):
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            log(ERROR, CMD_INVALID_UNMUTE_USER,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_UNMUTE_USER,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        to_unmute = split_data[1].strip()
+        if rutils.unmute(username=to_unmute):
+            gs.gui_service.quick_gui(
+                f"Unmuted user:[{to_unmute}]",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+
+    def cmd_deafenuser(self, data):
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            log(ERROR, CMD_INVALID_DEAFEN_USER,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_DEAFEN_USER,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        to_deafen = split_data[1].strip()
+        if rutils.deafen(username=to_deafen):
+            gs.gui_service.quick_gui(
+                f"Deafened user:[{to_deafen}]",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+
+    def cmd_undeafenuser(self, data):
+        split_data = data.message.strip().split(' ', 1)
+        if len(split_data) != 2:
+            log(ERROR, CMD_INVALID_UNDEAFEN_USER,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            gs.gui_service.quick_gui(
+                CMD_INVALID_UNDEAFEN_USER,
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
+            return
+        to_undeafen = split_data[1].strip()
+        if rutils.undeafen(username=to_undeafen):
+            gs.gui_service.quick_gui(
+                f"Undeafened user:[{to_undeafen}]",
+                text_type='header',
+                box_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                ignore_whisper=True)
 
     def cmd_aliassearch(self, data):
         all_data = data.message.strip().split(' ', 1)

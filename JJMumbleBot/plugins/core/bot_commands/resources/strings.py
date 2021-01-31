@@ -13,77 +13,94 @@ INFO_DISPLAYED_BLACKLIST = "Displayed all blacklisted user."
 # ERROR STRINGS
 ERR_DATABASE_CMD = "There was an error retrieving the commands from the database."
 ERR_DATABASE_ALIAS = "There was an error retrieving the aliases from the database."
+ERR_STD = "ERROR: Incorrect command formatting!"
 
 # COMMAND ERROR STRINGS
 CMD_INVALID_ECHO = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}echo 'message'"
 ]
 CMD_INVALID_MSG = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}msg 'username' 'message'"
 ]
 CMD_INVALID_RENAME_CHANNEL = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}renamechannel 'channel_name' 'new_channel_name'"
 ]
 CMD_INVALID_MOVE_USER = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}moveuser 'username' 'channel_name'"
 ]
 CMD_INVALID_KICK = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}kick 'username' 'reason'"
 ]
 CMD_INVALID_BAN = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}ban 'username' 'reason'"
 ]
 CMD_INVALID_LOG = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}log 'message'"
 ]
 CMD_INVALID_MOVE = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}move 'channel_name'"
 ]
 CMD_INVALID_MAKE_TEMP = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}makechannel 'channel_name'"
 ]
 CMD_INVALID_MAKE_PERM = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}makepermanentchannel 'channel_name'"
 ]
 CMD_INVALID_REMOVE = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}removechannel 'channel_name'"
 ]
 CMD_INVALID_JOIN_USER = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}joinuser 'username'"
 ]
+CMD_INVALID_MUTE_USER = [
+    ERR_STD,
+    f"Format: {get_command_token()}muteuser 'username'"
+]
+CMD_INVALID_UNMUTE_USER = [
+    ERR_STD,
+    f"Format: {get_command_token()}unmuteuser 'username'"
+]
+CMD_INVALID_DEAFEN_USER = [
+    ERR_STD,
+    f"Format: {get_command_token()}deafenuser 'username'"
+]
+CMD_INVALID_UNDEAFEN_USER = [
+    ERR_STD,
+    f"Format: {get_command_token()}undeafenuser 'username'"
+]
 CMD_INVALID_ALIAS_SEARCH = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}aliassearch 'alias'"
 ]
 CMD_INVALID_CMD_SEARCH = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}cmdsearch 'command'"
 ]
 CMD_INVALID_SET_PRIVILEGES = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}setprivileges 'username' 'level'"
 ]
 CMD_INVALID_ADD_PRIVILEGES = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}addprivileges 'username' 'level'"
 ]
 CMD_INVALID_BLACKLIST_USER = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}blacklistuser 'username'"
 ]
 CMD_INVALID_WHITELIST_USER = [
-    "ERROR: Incorrect command formatting!",
+    ERR_STD,
     f"Format: {get_command_token()}whitelistuser 'username'"
 ]
