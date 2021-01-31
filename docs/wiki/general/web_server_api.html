@@ -26,65 +26,196 @@
 
     </p>
     <div>
-        <ul>
-            <li><code>[POST] /api/command</code>: Sends a given command to the bot.<br/>
-                Example request body: <code>{ "text": "!echo test" }</code>
-            </li>
-            <li><code>[GET] /api/lastcommand</code>: Retrieves the most recent command sent to the bot.</li>
-            <li><code>[POST] /api/pause</code>: Pauses the audio interface.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/pause</code>: Pauses the current track in the audio interface.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/resume</code>: Resumes the current track in the audio interface.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/replay</code>: Replays the current track in the audio interface.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/nexttrack</code>: Skips to the next track in the audio interface queue.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/decreasevolume</code>: Decreases the volume of the audio interface by 0.1<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/increasevolume</code>: Increases the volume of the audio interface by 0.1<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/clearcmdhistory</code>: Clears the command history of the bot.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[GET] /api/cmdhistory</code>: Retrieves the command history of the bot.</li>
-            <li><code>[POST] /api/loop</code>: Sets the audio interface to loop tracks.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/skipto</code>: Skips to the given track in the audio interface queue.<br/>
-                Example request body: <code>{ "text": "track_index_in_queue" }</code>
-            </li>
-            <li><code>[POST] /api/removetrack</code>: Removes the given track in the audio interface queue.<br/>
-                Example request body: <code>{ "text": "track_index_in_queue" }</code>
-            </li>
-            <li><code>[POST] /api/stop</code>: Stops the current track and clears the queue in the audio interface.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[GET] /api/plugins</code>: Retrieves a list of all the active plugins in the bot.</li>
-            <li><code>[GET] /api/channels</code>: Retrieves a list of all the server channels in the mumble server.</li>
-            <li><code>[GET] /api/soundboardclips</code>: Retrieves a list of all the sound_board clips in local storage.
-            </li>
-            <li><code>[POST] /api/soundboard-random</code>: Plays a random soundboard clip from local storage.<br/>
-                Example request body: <code>No request body required</code>
-            </li>
-            <li><code>[POST] /api/soundboard-play</code>: Plays a soundboard clip by the given name from local
-                storage.<br/>
-                Example request body: <code>{ "text": "my_clip_name" }</code>
-            </li>
-            <li><code>[GET] /api/system</code>: Retrieves the system information that the bot is running on.</li>
-            <li><code>[GET] /api/general/</code>: Retrieves general bot information such as the name and command token.
-            </li>
-            <li><code>[GET] /api/general/name</code>: Retrieves the bot name.</li>
-            <li><code>[GET] /api/general/token</code>: Retrieves the bot command token.</li>
-        </ul>
+        <details>
+            <summary>v5.1.0 API - </summary>
+
+            <ul>
+                <h4>/api/</h4>
+                <li><code>[POST] /api/command</code>: Sends a given command to the bot.<br/>
+                    Example request body: <code>{ "text": "!echo test" }</code>
+                </li>
+                <li><code>[GET] /api/lastcommand</code>: Retrieves the most recent command sent to the bot.</li>
+                <li><code>[POST] /api/clearcmdhistory</code>: Clears the command history of the bot.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[GET] /api/cmdhistory</code>: Retrieves the command history of the bot.</li>
+                <li><code>[GET] /api/plugins</code>: Retrieves a list of all the active plugins in the bot.</li>
+                <li><code>[GET] /api/channels</code>: Retrieves a list of all the server channels in the mumble server.</li>
+
+                <br/><h4>/api/general/</h4>
+                <li><code>[GET] /api/general/</code>: Retrieves general bot information such as the name and command token.</li>
+                <li><code>[GET] /api/general/name</code>: Retrieves the bot name.</li>
+                <li><code>[GET] /api/general/token</code>: Retrieves the bot command token.</li>
+                <li><code>[GET] /api/general/system</code>: Retrieves the system information that the bot is running on.</li>
+                <li><code>[GET] /api/general/uptime</code>: Retrieves the bot up-time information.</li>
+                <li><code>[GET] /api/general/version</code>: Retrieves the bot version information.</li>
+                <li><code>[GET] /api/general/about</code>: Retrieves the bot about information.</li>
+
+                <br/><h4>/api/audio/</h4>
+                <li><code>[POST] /api/audio/pause</code>: Pauses the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/pause</code>: Pauses the current track in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/resume</code>: Resumes the current track in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/replay</code>: Replays the current track in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/nexttrack</code>: Skips to the next track in the audio interface queue.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/decreasevolume</code>: Decreases the volume of the audio interface by 0.1<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/increasevolume</code>: Increases the volume of the audio interface by 0.1<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/loop</code>: Sets the audio interface to loop tracks.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/audio/skipto</code>: Skips to the given track in the audio interface queue.<br/>
+                    Example request body: <code>{ "text": "track_index_in_queue" }</code>
+                </li>
+                <li><code>[POST] /api/audio/removetrack</code>: Removes the given track in the audio interface queue.<br/>
+                    Example request body: <code>{ "text": "track_index_in_queue" }</code>
+                </li>
+                <li><code>[POST] /api/audio/stop</code>: Stops the current track and clears the queue in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+
+                <br/><h4>/api/admin/users/</h4>
+                <li><code>[POST] /api/admin/users/join</code> - Join the channel of a given user.<br/>
+                    Example request body: <code>{ "text": "username" }</code>
+                </li>
+                <li><code>[POST] /api/admin/users/move</code> - Move the given user to a channel.<br/>
+                    Example request body: <code>{ "text": "username channel_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/users/kick</code> - Kick the given user and provide an optional reason.<br/>
+                    Example request body: <code>{ "text": "username" }</code>
+                    Example request body: <code>{ "text": "username reason" }</code>
+                </li>
+                <li><code>[POST] /api/admin/users/ban</code> - Ban the given user and provide an optional reason.<br/>
+                    Example request body: <code>{ "text": "username" }</code>
+                    Example request body: <code>{ "text": "username reason" }</code>
+                </li>
+                <li><code>[POST] /api/admin/users/mute</code> - Mute/Unmute the given user.<br/>
+                    Example request body: <code>{ "text": "username" }</code>
+                </li>
+                <li><code>[POST] /api/admin/users/deafen</code> - Deafen/Undeafen the given user.<br/>
+                    Example request body: <code>{ "text": "username" }</code>
+                </li>
+
+                <br/><h4>/api/admin/channels/</h4>
+                <li><code>[POST] /api/admin/channels/rename</code> - Rename the given channel to a new name.<br/>
+                    Example request body: <code>{ "text": "current_name new_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/channels/remove</code> - Remove the given channel.<br/>
+                    Example request body: <code>{ "text": "channel_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/channels/move</code> - Move to the given channel.<br/>
+                    Example request body: <code>{ "text": "channel_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/channels/leave</code> - Leave the current channel and return to the default channel.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/admin/channels/make_temporary</code> - Make a temporary channel with the given name.<br/>
+                    Example request body: <code>{ "text": "channel_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/channels/make_permanent</code> - Make a permanent channel with the given name.<br/>
+                    Example request body: <code>{ "text": "channel_name" }</code>
+                </li>
+
+                <br/><h4>/api/admin/plugins/</h4>
+                <li><code>[POST] /api/admin/plugins/stop</code> - Stops an existing, running plugin with the given name.<br/>
+                    Example request body: <code>{ "text": "plugin_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/plugins/start</code> - Starts an existing, stopped plugin with the given name.<br/>
+                    Example request body: <code>{ "text": "plugin_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/plugins/restart</code> - Restarts an existing plugin with the given name.<br/>
+                    Example request body: <code>{ "text": "plugin_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/plugins/restart_all</code> - Restarts all existing plugins.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+
+                <br/><h4>/api/sound_board/</h4>
+                <li><code>[GET] /api/sound_board/clips</code>: Retrieves a list of all the sound_board clips in local storage.</li>
+                <li><code>[POST] /api/sound_board/random</code>: Plays a random soundboard clip from local storage.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/sound_board/play</code>: Plays a soundboard clip by the given name from local storage.<br/>
+                    Example request body: <code>{ "text": "my_clip_name" }</code>
+                </li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>v5.0.0 API - </summary>
+
+            <ul>
+                <li><code>[POST] /api/command</code>: Sends a given command to the bot.<br/>
+                    Example request body: <code>{ "text": "!echo test" }</code>
+                </li>
+                <li><code>[GET] /api/lastcommand</code>: Retrieves the most recent command sent to the bot.</li>
+                <li><code>[POST] /api/pause</code>: Pauses the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/pause</code>: Pauses the current track in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/resume</code>: Resumes the current track in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/replay</code>: Replays the current track in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/nexttrack</code>: Skips to the next track in the audio interface queue.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/decreasevolume</code>: Decreases the volume of the audio interface by 0.1<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/increasevolume</code>: Increases the volume of the audio interface by 0.1<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/clearcmdhistory</code>: Clears the command history of the bot.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[GET] /api/cmdhistory</code>: Retrieves the command history of the bot.</li>
+                <li><code>[POST] /api/loop</code>: Sets the audio interface to loop tracks.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/skipto</code>: Skips to the given track in the audio interface queue.<br/>
+                    Example request body: <code>{ "text": "track_index_in_queue" }</code>
+                </li>
+                <li><code>[POST] /api/removetrack</code>: Removes the given track in the audio interface queue.<br/>
+                    Example request body: <code>{ "text": "track_index_in_queue" }</code>
+                </li>
+                <li><code>[POST] /api/stop</code>: Stops the current track and clears the queue in the audio interface.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[GET] /api/plugins</code>: Retrieves a list of all the active plugins in the bot.</li>
+                <li><code>[GET] /api/channels</code>: Retrieves a list of all the server channels in the mumble server.</li>
+                <li><code>[GET] /api/soundboardclips</code>: Retrieves a list of all the sound_board clips in local storage.
+                </li>
+                <li><code>[POST] /api/soundboard-random</code>: Plays a random soundboard clip from local storage.<br/>
+                    Example request body: <code>No request body required</code>
+                </li>
+                <li><code>[POST] /api/soundboard-play</code>: Plays a soundboard clip by the given name from local
+                    storage.<br/>
+                    Example request body: <code>{ "text": "my_clip_name" }</code>
+                </li>
+                <li><code>[GET] /api/system</code>: Retrieves the system information that the bot is running on.</li>
+                <li><code>[GET] /api/general/</code>: Retrieves general bot information such as the name and command token.
+                </li>
+                <li><code>[GET] /api/general/name</code>: Retrieves the bot name.</li>
+                <li><code>[GET] /api/general/token</code>: Retrieves the bot command token.</li>
+            </ul>
+        </details>
     </div>
 </div>
 <footer></footer>
