@@ -45,24 +45,8 @@
             AutoReconnect = False
             DefaultChannel = DEFAULT_CHANNEL_NAME
             DefaultSuperUser = DEFAULT_SUPER_USER_NAME
-            SelfRegister = True
+            SelfRegister = False
             DefaultComment = Hello! I am JJMumbleBot!
-        </pre>
-        <h4 id="web-interface-optional">[Web Interface] (OPTIONAL)</h4>
-        <ul>
-        <li><code>EnableWebInterface</code>: To enable the web interface for the bot, check the box. Uncheck it to disable.</li>
-        <li><code>WebServerIP</code>: This sets the web server IP.</li>
-        <li><code>WebPagePort</code>: This sets the port of the web server for the main web interface page.</li>
-        <li><code>WebSocketPort</code>: This sets the port of the web socket on the web interface providing live data.</li>
-        <li><code>WebTickRate</code>: This sets the tick rate of the loop that sends data to the web interface.</li>
-        </ul>
-        <pre>
-            [Web Interface]
-            EnableWebInterface = True
-            WebServerIP = 127.0.0.1
-            WebPagePort = 7000
-            WebSocketPort = 7001
-            WebTickRate = 1
         </pre>
         <h4 id="media-settings-required">[Media Settings] (REQUIRED)</h4>
         <ul>
@@ -102,15 +86,19 @@
         <ul>
         <li><code>EnableLogging</code>:  Enable Logging Flag</li>
         <li><code>MaxLogs</code>: Maximum Log Limit</li>
+        <li><code>MaxLogSize</code>: Maximum size per log (in Bytes)</li>
         <li><code>HideMessageLogging</code>: Enable/Disable channel message logging (Enabling it will hide message logs to: Message Received: [User -&gt; #####])</li>
         <li><code>LogDirectory</code>: Path to the logs directory. All bot logs will be stored in this directory.</li>
+        <li><code>LogStackTrace</code>: Enable/Disable Stack Trace Logging. This will create large log files and log the stack trace of each logging event.</li>
         </ul>
         <pre>
             [Logging]
-            EnableLogging = True
+            EnableLogging = False
             MaxLogs = 20
+            MaxLogSize = 1500000
             HideMessageLogging = True
-            LogDirectory = LOGS_DIR_PATH
+            LogDirectory =
+            LogStackTrace = False
         </pre>
         <h4 id="plugin-settings-optional">[Plugin Settings] (OPTIONAL)</h4>
         <ul>
@@ -135,10 +123,10 @@
         </ul>
         <pre>
             [Main Settings]
-            EnableDatabaseBackup = True
+            EnableDatabaseBackup = False
             CommandTickRate = 0.1
-            MultiCommandLimit = 100
-            CommandQueueLimit = 500
+            MultiCommandLimit = 200
+            CommandQueueLimit = 600
             CommandToken = !
             CommandHistoryLimit = 25
         </pre>
@@ -161,8 +149,8 @@
             CanvasImageBGColor = black
             CanvasAlignment = center
             CanvasBorder = 0
-            CanvasTextColor = white
-            DefaultFont = Calibri
+            CanvasTextColor = Snow
+            DefaultFont = Georgia
             HeaderTextColor = red
             IndexTextColor = cyan
             SubHeaderTextColor = yellow
