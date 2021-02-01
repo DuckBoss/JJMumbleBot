@@ -19,7 +19,11 @@ class CoreRouter:
         return ResponseModel(200, "success").toDict()
 
     @router.get("/api/admin/")
-    async def main_api(self):
+    async def admin_api(self):
+        return ResponseModel(200, "success").toDict()
+
+    @router.get("/api/admin/plugins/")
+    async def admin_plugin_api(self):
         return ResponseModel(200, "success").toDict()
 
     @router.post("/api/command")
@@ -87,7 +91,7 @@ class CoreRouter:
         ).toDict()
 
     @router.get("/api/general")
-    async def get_token(self):
+    async def general_api(self):
         return ResponseModel(
             200, "success",
             {"name": get_bot_name(), "command_token": global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TOKEN]}
