@@ -26,11 +26,11 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
   - <b>Randomizer Plugin</b> - Do custom dice rolls, coin flips, etc in the channel.
   - <b>Whisper Plugin</b> - Mumble Whisper support for audio data.
   - <b>Bot Commands Plugin</b> - Enhanced interactivity and management commands.
-  - <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki">Full list of built-in plugins</a></b>
+  - <b><a href="https://duckboss.github.io/JJMumbleBot/wiki/">Full list of built-in plugins</a></b>
 - <b>Docker Support</b> - Deploy JJMumbleBot on the cloud or on any docker-supported device.
 - <b>Web Interface</b> - Control and manage the bot with an optional web interface.
 - <b>Auto-Updater</b> - A System to update dependencies through bot commands.
-- <b><a href="https://github.com/DuckBoss/JJMumbleBot/wiki/Plugins">Support for custom plugins</a></b>
+- <b><a href="https://duckboss.github.io/JJMumbleBot/wiki/general/plugins.html">Support for custom plugins</a></b>
 - <b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.
 - <b>Event logging to keep track of bot usage and command history.</b>
 - <b>Multi-Command Input</b> - Input multiple commands in a single line.
