@@ -3,9 +3,13 @@ from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.resources.strings import *
 from pymumble_py3 import errors
-import datetime
+from os import path
+from json import loads, dumps
+from datetime import datetime
+import configparser
 
 
 def parse_message(text):
@@ -335,10 +339,33 @@ def remove_channel(channel_name: str):
 
 
 def check_up_time():
-    cur_time = datetime.datetime.now() - runtime_settings.start_time
+    cur_time = datetime.now() - runtime_settings.start_time
     if cur_time:
         return f"{str(cur_time)[:-7]}"
     return ""
+
+
+def get_plugin_metadata(plugin_name: str) -> dict:
+    if path.exists(f"{dir_utils.get_main_dir()}/plugins/core/{plugin_name}"):
+        plugin_path = f"{dir_utils.get_main_dir()}/plugins/core/{plugin_name}"
+    elif path.exists(f"{dir_utils.get_main_dir()}/plugins/extensions/{plugin_name}"):
+        plugin_path = f"{dir_utils.get_main_dir()}/plugins/extensions/{plugin_name}"
+    else:
+        return {}
+
+    plugin_metadata = {}
+    cfg = configparser.ConfigParser()
+    try:
+        cfg.read(f'{plugin_path}/metadata.ini')
+        # cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS] = cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS].replace("\n", "").strip()
+    except configparser.Error as e:
+        log(ERROR, f"Encountered an error while parsing {plugin_name} metadata file: {e}",
+            origin=L_GENERAL, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return {}
+
+    plugin_metadata = dict(cfg)
+    plugin_metadata[C_PLUGIN_INFO][P_PLUGIN_CMDS] = dumps(list(loads(cfg.get(C_PLUGIN_INFO, P_PLUGIN_CMDS, fallback={}))))
+    return plugin_metadata
 
 
 def refresh_plugins():
@@ -367,7 +394,6 @@ def refresh_plugins():
 
 
 def exit_bot():
-    from JJMumbleBot.lib.utils import dir_utils
     if global_settings.mumble_inst:
         global_settings.gui_service.quick_gui(
             f"{get_bot_name()} is being shutdown.",
@@ -388,7 +414,6 @@ def exit_bot():
 
 
 def exit_bot_error(error_code: ExitCodes):
-    from JJMumbleBot.lib.utils import dir_utils
     if global_settings.mumble_inst:
         global_settings.gui_service.quick_gui(
             f"{get_bot_name()} has encountered an error and is being shutdown.<br>Please check the bot logs/console."

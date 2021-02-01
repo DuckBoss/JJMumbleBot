@@ -20,6 +20,7 @@ from JJMumbleBot.settings import global_settings
 from JJMumbleBot.plugins.core.web_server.routing.core import routing as core_routing
 from JJMumbleBot.plugins.core.web_server.routing.audio import routing as audio_routing
 from JJMumbleBot.plugins.core.web_server.routing.bot_commands import routing as bot_commands_routing
+from JJMumbleBot.plugins.core.web_server.routing.core_commands import routing as core_commands_routing
 from JJMumbleBot.plugins.core.web_server.routing.sound_board import routing as sound_board_routing
 
 web_app = FastAPI(
@@ -38,6 +39,7 @@ web_app.mount("/static", StaticFiles(directory=f"{get_core_plugin_dir()}/web_ser
 web_app.include_router(core_routing.router)
 web_app.include_router(audio_routing.router)
 web_app.include_router(bot_commands_routing.router)
+web_app.include_router(core_commands_routing.router)
 web_app.include_router(sound_board_routing.router)
 
 
