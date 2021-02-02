@@ -1,3 +1,4 @@
+from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.utils.logging_utils import log
@@ -357,15 +358,51 @@ def get_plugin_metadata(plugin_name: str) -> dict:
     cfg = configparser.ConfigParser()
     try:
         cfg.read(f'{plugin_path}/metadata.ini')
-        # cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS] = cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS].replace("\n", "").strip()
     except configparser.Error as e:
         log(ERROR, f"Encountered an error while parsing {plugin_name} metadata file: {e}",
             origin=L_GENERAL, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
         return {}
 
     plugin_metadata = dict(cfg)
+    if "DEFAULT" in plugin_metadata:
+        del plugin_metadata["DEFAULT"]
     plugin_metadata[C_PLUGIN_INFO][P_PLUGIN_CMDS] = dumps(list(loads(cfg.get(C_PLUGIN_INFO, P_PLUGIN_CMDS, fallback={}))))
     return plugin_metadata
+
+
+def set_plugin_metadata(plugin_name: str, metadata) -> bool:
+    if path.exists(f"{dir_utils.get_main_dir()}/plugins/core/{plugin_name}"):
+        plugin_path = f"{dir_utils.get_main_dir()}/plugins/core/{plugin_name}"
+    elif path.exists(f"{dir_utils.get_main_dir()}/plugins/extensions/{plugin_name}"):
+        plugin_path = f"{dir_utils.get_main_dir()}/plugins/extensions/{plugin_name}"
+    else:
+        return False
+
+    if "DEFAULT" in metadata:
+        del metadata["DEFAULT"]
+
+    cfg = configparser.ConfigParser()
+    for key, values in metadata.items():
+        cfg[key] = {}
+        for item, value in values.items():
+            cfg[key][item] = value
+    try:
+        with open(f"{plugin_path}/metadata.ini", 'w') as f:
+            cfg.write(f)
+        for plugin in global_settings.bot_plugins.values():
+            if plugin.plugin_name == plugin_name:
+                cfg = configparser.ConfigParser()
+                if plugin_name == "web_server":
+                    global_settings.web_cfg = cfg.read(f'{plugin_path}/metadata.ini')
+                else:
+                    plugin.metadata = cfg.read(f'{plugin_path}/metadata.ini')
+                if force_restart_plugin(plugin_name):
+                    return True
+        return False
+    except IOError as e:
+        log(ERROR, f"Encountered an error while updating {plugin_name} metadata file: {e}",
+            origin=L_GENERAL, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
 
 
 def refresh_plugins():
@@ -391,6 +428,15 @@ def refresh_plugins():
         box_align='left',
         ignore_whisper=True)
     log(INFO, f"{META_NAME} has refreshed all plugins.", print_mode=PrintMode.REG_PRINT.value)
+
+
+def force_restart_plugin(plugin_name: str) -> bool:
+    for name, plugin in global_settings.bot_plugins.items():
+        if name == plugin_name:
+            plugin.stop()
+            plugin.start()
+            return True
+    return False
 
 
 def exit_bot():
