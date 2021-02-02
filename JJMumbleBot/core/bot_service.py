@@ -142,7 +142,6 @@ class BotService:
         # Callback - permission_denied
         global_settings.mumble_inst.callbacks.set_callback(PYMUMBLE_CLBK_PERMISSIONDENIED,
                                                            global_settings.clbk_service.permission_denied)
-        global_settings.core_callbacks.append_to_callback(PYMUMBLE_CLBK_DISCONNECTED, self.on_permission_denied)
 
         global_settings.mumble_inst.set_codec_profile('audio')
         global_settings.mumble_inst.set_receive_sound(True)
@@ -231,9 +230,6 @@ class BotService:
     @staticmethod
     def process_command_queue(com):
         execute_cmd.execute_command(com)
-
-    def on_permission_denied(self, data):
-        log(INFO, f"Permission Denied: {data}", origin=L_USER_PRIV, print_mode=PrintMode.REG_PRINT.value)
 
     def on_connected(self, data):
         log(INFO, f"{runtime_utils.get_bot_name()} is Online.", origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
