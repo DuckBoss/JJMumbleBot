@@ -24,7 +24,7 @@
             <summary>Plugin Metadata</summary>
             <pre><code>
     [Plugin Information]
-    PluginVersion = 5.0.0
+    PluginVersion = 5.1.0
     PluginName = WebServer
     PluginDescription = The Web Server plugin handles REST+WebSocket+WebApp functionality.
     PluginLanguage = EN
@@ -42,6 +42,16 @@
     WebServerPort = 7000
     ; This sets the tick rate of the loop that sends data to the web interface.
     WebTickRate = 1
+
+    ; Enable/Disable HTTPS for the web server.
+    EnableHTTPS = False
+    ; SSL Certificate Path
+    SSLCertPath =
+    ; SSL Key Path
+    SSLKeyPath =
+    ; Optionally generate a self-signed cert/key at runtime so the SSLCertPath/SSLKeyPath doesn't have to be provided.
+    GenerateSSLCerts = False
+
     ; List commands that need the core thread to wait for completion.
     ; This may include processes that require multiple commands in succession.
     ; For example: [Youtube Plugin - !yt -> !p] process requires 2 commands in that order.
