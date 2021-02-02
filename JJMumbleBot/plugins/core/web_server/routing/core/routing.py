@@ -26,6 +26,10 @@ class CoreRouter:
     async def admin_plugin_api(self):
         return ResponseModel(200, "success").toDict()
 
+    @router.get("/api/admin/plugins/metadata/")
+    async def admin_plugin_api(self):
+        return ResponseModel(200, "success").toDict()
+
     @router.post("/api/command")
     async def send_command(self, command: StdModel):
         if len(command.text) > 0:

@@ -6,6 +6,11 @@ class StdModel(BaseModel):
     text: str
 
 
+class JSONModel(BaseModel):
+    name: str
+    text: dict
+
+
 class ResponseModel:
     status: str
     message: str

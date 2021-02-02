@@ -1,7 +1,7 @@
 from pymumble_py3.constants import PYMUMBLE_CLBK_TEXTMESSAGERECEIVED
 from JJMumbleBot.plugins.core.web_server import monitor_service
 from JJMumbleBot.lib.utils.runtime_utils import get_bot_name, get_command_history, clear_command_history
-from JJMumbleBot.plugins.core.web_server.utility.web_utils import ResponseModel, StdModel
+from JJMumbleBot.plugins.core.web_server.utility.web_utils import ResponseModel, StdModel, JSONModel
 from JJMumbleBot.plugins.core.core_commands.utility import core_commands_utility as cutils
 from JJMumbleBot.lib.utils.remote_utils import RemoteTextMessage
 from JJMumbleBot.lib.resources.strings import *
@@ -27,12 +27,25 @@ class CoreCommandsPluginAPI:
     async def get_about(self):
         return ResponseModel(200, "success", f"{rutils.get_about()}<br>{rutils.get_bot_name()} is on version {rutils.get_version()}").toDict()
 
-    @router.post("/api/admin/plugins/metadata")
+    @router.post("/api/admin/plugins/metadata/get")
     async def get_plugin_metadata(self, command: StdModel):
         if len(command.text.strip()) > 0:
             plugin_metadata = rutils.get_plugin_metadata(command.text.strip())
             if plugin_metadata:
                 return ResponseModel(200, "success", {"metadata": plugin_metadata}).toDict()
+            return ResponseModel(400, "error",
+                                 {"error_message": f"Failed to retrieve metadata file!"}).toDict()
+        return ResponseModel(400, "error",
+                             {"error_message": f"Please make sure you provide an existing plugin to retrieve metadata."}).toDict()
+
+    @router.post("/api/admin/plugins/metadata/set")
+    async def set_plugin_metadata(self, command: JSONModel):
+        if len(command.name.strip()) > 0 and command.text:
+            results = rutils.set_plugin_metadata(command.name.strip(), command.text)
+            if results:
+                return ResponseModel(200, "success").toDict()
+            return ResponseModel(400, "error",
+                                 {"error_message": f"Failed to write metadata file!"}).toDict()
         return ResponseModel(400, "error",
                              {"error_message": f"Please make sure you provide an existing plugin to retrieve metadata."}).toDict()
 
