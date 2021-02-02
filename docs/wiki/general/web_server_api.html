@@ -130,6 +130,14 @@
                     Example request body: <code>No request body required</code>
                 </li>
 
+                <br/><h4>/api/admin/plugins/metadata/</h4>
+                <li><code>[POST] /api/admin/plugins/metadata/get</code> - Retrieves the metadata file contents of the plugin with the given name.<br/>
+                    Example request body: <code>{ "text": "plugin_name" }</code>
+                </li>
+                <li><code>[POST] /api/admin/plugins/metadata/set</code> - Overwrites the metadata file contents of the plugin with the given name, with the provided data.<br/>
+                    Example request body: <code>{ "name": "plugin_name" "text": "&#60;JSON Data&#62;" }</code>
+                </li>
+
                 <br/><h4>/api/sound_board/</h4>
                 <li><code>[GET] /api/sound_board/clips</code>: Retrieves a list of all the sound_board clips in local storage.</li>
                 <li><code>[POST] /api/sound_board/random</code>: Plays a random soundboard clip from local storage.<br/>

@@ -116,6 +116,10 @@
             <li><code>[POST] /api/admin/plugins/restart</code> - Restarts an existing plugin with the given name.</li>
             <li><code>[POST] /api/admin/plugins/restart_all</code> - Restarts all existing plugins.</li>
         </ul>
+        <ul><b>Added plugin metadata APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/6cda89f44286f13d480eb30ace6aae1ad9ebad3c">6cda89f</a>]
+            <li><code>[POST] /api/admin/plugins/metadata/get</code> - Retrieves the metadata file contents of the plugin with the given name.</li>
+            <li><code>[POST] /api/admin/plugins/metadata/set</code> - Overwrites the metadata file contents of the plugin with the given name, with the provided data.</li>
+        </ul>
         <ul>
             <b>Updated audio APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
             <li>Moved all <code>/api/xxxx</code> audio APIs to <code>/api/audio/xxxx</code></li>
@@ -129,7 +133,6 @@
         <ul>
             <b>Updated general APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
             <li>Changed <code>/api/system</code> to <code>/api/general/system</code></li>
-
         </ul>
     </div>
     <div>
@@ -139,6 +142,7 @@
             <li>Optimized runtime utilities.</li>
             <li>Updated web server's monitor service to support user state data such as muted/deafened/etc. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/372a8315eb2a3c16f7216b68d661d84cb4208d1a">372a831</a>]</li>
             <li>Updated default config parameter: MaxLogSize to 1500000 bytes (1.5Mb). [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/83be3f201c5f1db5f64a977930c54afdaf06ea48">83be3f2</a>]</li>
+            <li>Removed on_permission_denied callback in core bot service. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/a30ae8a72a55399e21950220098202ca70b064df">a30ae8a</a></li>
             <li>Updated bot and relevant plugins to v5.1.0</li>
         </ul>
     </div>
