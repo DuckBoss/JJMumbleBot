@@ -391,11 +391,13 @@ def set_plugin_metadata(plugin_name: str, metadata) -> bool:
             cfg.write(f)
         for plugin in global_settings.bot_plugins.values():
             if plugin.plugin_name == plugin_name:
-                cfg = configparser.ConfigParser()
                 if plugin_name == "web_server":
-                    global_settings.web_cfg = cfg.read(f'{plugin_path}/metadata.ini')
+                    global_settings.web_cfg = configparser.ConfigParser()
+                    global_settings.web_cfg.read(f'{plugin_path}/metadata.ini')
+                    plugin.metadata = global_settings.web_cfg
                 else:
-                    plugin.metadata = cfg.read(f'{plugin_path}/metadata.ini')
+                    plugin.metadata = configparser.ConfigParser()
+                    plugin.metadata.read(f'{plugin_path}/metadata.ini')
                 if force_restart_plugin(plugin_name):
                     return True
         return False
@@ -433,9 +435,13 @@ def refresh_plugins():
 def force_restart_plugin(plugin_name: str) -> bool:
     for name, plugin in global_settings.bot_plugins.items():
         if name == plugin_name:
-            plugin.stop()
-            plugin.start()
-            return True
+            if name == "web_server":
+                plugin.stop_server()
+                return True
+            else:
+                plugin.stop()
+                plugin.start()
+                return True
     return False
 
 

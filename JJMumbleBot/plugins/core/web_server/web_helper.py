@@ -83,15 +83,19 @@ class ServerThreadWorker(threading.Thread):
     def __init__(self, *args, **kwargs):
         super(ServerThreadWorker, self).__init__(*args, **kwargs)
         self._stop_event = threading.Event()
+        self.ip = kwargs["kwargs"]["ip"]
+        self.port = int(kwargs["kwargs"]["port"])
         self.server = UvicornServer(
             config=uvicorn.Config(
                 web_app,
-                host=kwargs["kwargs"]["ip"],
-                port=int(kwargs["kwargs"]["port"]),
+                host=self.ip,
+                port=self.port,
                 reload=False,
                 log_level="info" if global_settings.verbose_mode else "critical",
                 loop="asyncio",
                 ws="websockets",
+                ssl_certfile=kwargs["kwargs"].get("ssl_cert"),
+                ssl_keyfile=kwargs["kwargs"].get("ssl_key"),
                 timeout_keep_alive=99999
             )
         )
@@ -102,14 +106,52 @@ class ServerThreadWorker(threading.Thread):
     def stop(self):
         self.server.should_exit = True
         log(INFO,
-            f"Stopping Web Application Server on: {global_settings.web_cfg[C_PLUGIN_SET][P_WEB_IP]}:{global_settings.web_cfg[C_PLUGIN_SET][P_WEB_PORT]}/",
+            f"Stopping Web Application Server on: {self.ip}:{self.port}/",
             origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
 
 
-def initialize_web(ip, port):
-    global_settings.data_server = ServerThreadWorker(kwargs={"ip": ip, "port": port}, daemon=True)
+def initialize_web(ip, port, use_https=False, ssl_cert=None, ssl_key=None):
+    global_settings.data_server = ServerThreadWorker(
+        kwargs={
+            "ip": ip, "port": port,
+            "ssl_cert": ssl_cert if use_https else None,
+            "ssl_key": ssl_key if use_https else None
+            },
+        daemon=True
+    )
     global_settings.data_server.start()
     # start_rest_server()
     log(INFO, f"Initialized API Server on: {ip}:{port}/api/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
     log(INFO, f"Server API documentation can be found on: {ip}:{port}/docs/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
     log(INFO, f"Initialized Web Application on: {ip}:{port}/", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
+
+
+def generate_cert():
+    from os import path
+    from subprocess import call
+    from JJMumbleBot.lib.utils.dir_utils import get_plugin_data_dir, get_main_dir, get_core_plugin_dir
+    import configparser
+    if not path.exists(f'{get_plugin_data_dir()}/web_server/web_cert.pem') or not path.exists(f'{get_plugin_data_dir()}/web_server/web_key.pem'):
+        call(['openssl', 'req', '-x509', '-nodes', '-days', '3650',
+              '-newkey', 'rsa:2048', '-keyout', f'{get_plugin_data_dir()}/web_server/web_key.pem',
+              '-out', f'{get_plugin_data_dir()}/web_server/web_cert.pem', '-subj',
+              f'/CN={global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]}'])
+        global_settings.web_cfg[C_PLUGIN_SET][P_SSL_CERT] = f'{get_plugin_data_dir()}/web_server/web_cert.pem'
+        global_settings.web_cfg[C_PLUGIN_SET][P_SSL_KEY] = f'{get_plugin_data_dir()}/web_server/web_key.pem'
+
+        cfg = configparser.ConfigParser()
+        for key, values in global_settings.web_cfg.items():
+            cfg[key] = {}
+            for item, value in values.items():
+                cfg[key][item] = value
+        try:
+            with open(f'{get_core_plugin_dir}/web_server/metadata.ini', 'w') as f:
+                cfg.write(f)
+            global_settings.web_cfg = configparser.ConfigParser()
+            global_settings.web_cfg.read(f'{get_core_plugin_dir()}/web_server/metadata.ini')
+        except IOError as e:
+            log(ERROR, f"Encountered an error while updating the web_server metadata file: {e}",
+                origin=L_GENERAL, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            return False
+        return True
+    return False

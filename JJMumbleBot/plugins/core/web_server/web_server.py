@@ -1,10 +1,9 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
-from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.settings import global_settings as gs
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.plugins.core.web_server.web_helper import initialize_web
+from JJMumbleBot.plugins.core.web_server.web_helper import initialize_web, generate_cert
 from JJMumbleBot.plugins.core.web_server.utility import settings as ws_settings
 from JJMumbleBot.plugins.core.web_server.resources.strings import *
 
@@ -34,16 +33,30 @@ class Plugin(PluginBase):
             InsertDB.insert_new_permission(db_conn=get_memory_db(),
                                            username=gs.cfg[C_CONNECTION_SETTINGS][P_USER_ID],
                                            permission_level=int(Privileges.SUPERUSER.value))
+        if self.metadata.getboolean(C_PLUGIN_SET, P_HTTPS_ENABLE, fallback=False):
+            if self.metadata.getboolean(C_PLUGIN_SET, P_SSL_GENERATE, fallback=False):
+                if not generate_cert():
+                    log(
+                        INFO,
+                        f"Error generating web interface SSL certificate!",
+                        origin=L_WEB_INTERFACE,
+                        print_mode=PrintMode.REG_PRINT.value
+                    )
+
         log(INFO, "######### Configured Web Interface #########",
             origin=L_WEB_INTERFACE, print_mode=PrintMode.VERBOSE_PRINT.value)
         if self.metadata.getboolean(C_PLUGIN_SET, P_WEB_ENABLE, fallback=False):
-            initialize_web(self.metadata[C_PLUGIN_SET][P_WEB_IP], self.metadata[C_PLUGIN_SET][P_WEB_PORT])
+            self.init_server()
         log(
             INFO,
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
             origin=L_STARTUP,
             print_mode=PrintMode.REG_PRINT.value
         )
+
+    def init_server(self):
+        initialize_web(self.metadata[C_PLUGIN_SET][P_WEB_IP], self.metadata[C_PLUGIN_SET][P_WEB_PORT],
+                       self.metadata.getboolean(C_PLUGIN_SET, P_HTTPS_ENABLE, fallback=False), self.metadata[C_PLUGIN_SET][P_SSL_CERT], self.metadata[C_PLUGIN_SET][P_SSL_KEY])
 
     def stop_server(self):
         if gs.data_server:
@@ -53,7 +66,7 @@ class Plugin(PluginBase):
 
     def start_server(self):
         if not gs.data_server:
-            initialize_web(self.metadata[C_PLUGIN_SET][P_WEB_IP], self.metadata[C_PLUGIN_SET][P_WEB_PORT])
+            self.init_server()
             log(INFO, f"Initializing new web server instance", origin=L_WEB_INTERFACE, print_mode=PrintMode.REG_PRINT.value)
             gs.gui_service.quick_gui(
                 f"Initializing new web server instance",
@@ -79,6 +92,7 @@ class Plugin(PluginBase):
 
     def stop(self):
         if self.is_running:
+            self.stop_server()
             self.quit()
 
     def start(self):
