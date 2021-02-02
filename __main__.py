@@ -189,10 +189,10 @@ if __name__ == "__main__":
 
     if args.generate_cert:
         from subprocess import call
-        if not path.exists('/app/JJMumbleBot/cfg/jjmumblebot.pem'):
+        if not path.exists(f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.pem'):
             call(['openssl', 'req', '-x509', '-nodes', '-days', '3650',
-              '-newkey', 'rsa:2048', '-keyout', '/app/JJMumbleBot/cfg/jjmumblebot.pem',
-              '-out', '/app/JJMumbleBot/cfg/jjmumblebot.pem', '-subj',
+              '-newkey', 'rsa:2048', '-keyout', f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.pem',
+              '-out', f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.pem', '-subj',
               f'/CN={global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]}'])
             global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT] = f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.pem'
     if args.server_cert:
