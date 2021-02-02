@@ -2,7 +2,7 @@ import configparser
 from json import loads
 from JJMumbleBot.lib.utils.dir_utils import get_core_plugin_dir
 from JJMumbleBot.lib.resources.strings import C_PLUGIN_INFO, P_PLUGIN_VERS, P_PLUGIN_CMDS, C_PLUGIN_SET
-from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_PORT, P_WEB_ENABLE, P_WEB_IP, P_WEB_TICK_RATE
+from JJMumbleBot.plugins.core.web_server.resources.strings import *
 from JJMumbleBot.plugins.core.web_server.web_server import Plugin
 
 
@@ -38,3 +38,17 @@ class TestWebServer:
     def test_web_tick_rate(self):
         web_tick_rate = int(self.cfg[C_PLUGIN_SET][P_WEB_TICK_RATE])
         assert web_tick_rate == 1
+
+    def test_web_https(self):
+        enable_https = self.cfg.getboolean(C_PLUGIN_SET, P_HTTPS_ENABLE)
+        assert enable_https is False
+
+    def test_ssl_cert_path(self):
+        assert len(self.cfg[C_PLUGIN_SET][P_SSL_CERT]) == 0
+
+    def test_ssl_key_path(self):
+        assert len(self.cfg[C_PLUGIN_SET][P_SSL_KEY]) == 0
+
+    def test_ssl_generate(self):
+        enable_https = self.cfg.getboolean(C_PLUGIN_SET, P_SSL_GENERATE)
+        assert enable_https is False
