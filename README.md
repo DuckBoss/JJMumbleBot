@@ -47,10 +47,10 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
 <img width=700 src="https://user-images.githubusercontent.com/20238115/88094381-75fcf600-cb61-11ea-8113-495db67a415d.png" alt="Channel Chat Image"/>
 
 #### Web Interface - Commands Page
-<img width=700 src="https://user-images.githubusercontent.com/20238115/106063315-f9c20d00-60c5-11eb-9846-25d3b79c551f.png" alt="Commands Tab Image"/>
+<img width=700 src="https://user-images.githubusercontent.com/20238115/106856286-3bd1ec80-668c-11eb-88dd-290e7e1dc027.png" alt="Commands Tab Image"/>
 
 #### Web Interface - Audio Page
-<img width=700 src="https://user-images.githubusercontent.com/20238115/106856286-3bd1ec80-668c-11eb-88dd-290e7e1dc027.png" alt="Audio Tab Image"/>
+<img width=700 src="https://user-images.githubusercontent.com/20238115/106061227-1f014c00-60c3-11eb-9540-dd8a9222438d.png" alt="Audio Tab Image"/>
 
 #### Web Interface - Debug Page
 <img width=700 src="https://user-images.githubusercontent.com/20238115/106063400-1e1de980-60c6-11eb-8ab0-c52b1f097186.png" alt="Debug Tab Image"/>
