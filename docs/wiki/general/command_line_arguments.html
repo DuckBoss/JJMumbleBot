@@ -48,6 +48,10 @@
                 <li><code>-webip</code> - Enter the IP to use for the web server (if enabled).</li>
                 <li><code>-webport</code> - Enter the port to use for the web server (if enabled).</li>
                 <li><code>-webtickrate</code> - Enter the tick rate of the processing loop that sends data to the web interface (if enabled).</li>
+                <li><code>-usehttps</code> - Enables the usage of HTTPS for the web server, this requires a cert/key file to be provided or generated.</li>
+                <li><code>-websslcert</code> - Enter the path to the SSL certificate file for the web interface if HTTPS is enabled.</li>
+                <li><code>-websslkey</code> - Enter the path to the SSL key file for the web interface if HTTPS is enabled.</li>
+                <li><code>-webgeneratecert</code> - Enables automatic certificate/key creation for the web interface if HTTPS is enabled.<br>This is useful for local deployment, but it is recommended to use a certificate authority.</li>
                 <b>Main Settings Launch Parameters:</b><br>
                 <li><code>-usedatabasebackups</code> - Enable automatic database backups for the bot service.</li>
                 <li><code>-cmdtickrate</code> - Enter a custom tick rate for commands to be processed.</li>
@@ -60,6 +64,7 @@
                 <li><code>-vlcpath</code> - Enter the path to vlc to be used by media plugins.</li>
                 <li><code>-stereoaudio</code> - Enable stereo audio playback for the bot audio system.</li>
                 <li><code>-quietaudiolib</code> - Suppress audio library console messages with this launch parameter.</li>
+                <li><code>-audiolibdebug</code> - Enables debugging messages for the audio libraries to be displayed.</li>
                 <li><code>-volume</code> - Enter the default volume to be used by the bot audio system.</li>
                 <li><code>-audioduck</code> - Enable audio ducking for the bot audio system.</li>
                 <li><code>-audioduckvolume</code> - Enter the volume to duck to when audio ducking (If audio ducking enabled).</li>

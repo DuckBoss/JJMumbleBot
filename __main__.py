@@ -41,17 +41,21 @@ if __name__ == "__main__":
                                     'match the username registered in the certificate.')
     optional_args.add_argument('-defaultchannel', dest='default_channel', default=None,
                                help='Enter the default channel the bot should join after connecting to the server.')
-    optional_args.add_argument('-autoreconnect', dest='auto_reconnect', action='store_true', default=False,
+    optional_args.add_argument('-autoreconnect', dest='auto_reconnect', action='store_const', const="True", default=None,
                                help='Enables auto-reconnecting if the bot disconnects from the mumble server.')
-    optional_args.add_argument('-selfregister', dest='self_register', action='store_true', default=False,
+    optional_args.add_argument('-noautoreconnect', dest='no_auto_reconnect', action='store_const', const="False", default=None,
+                               help='Disables auto-reconnecting if the bot disconnects from the mumble server if enabled in the config file.')
+    optional_args.add_argument('-selfregister', dest='self_register', action='store_const', const="True", default=None,
                                help='Enables self-registration to the connected mumble server.')
+    optional_args.add_argument('-noselfregister', dest='no_self_register', action='store_const', const="False", default=None,
+                               help='Disables self-registration to the connected mumble server if enabled in the config file.')
     optional_args.add_argument('-comment', dest='default_comment', default=None,
                                help='Enter the comments that are shown when users view the bot comment in a server.')
 
     # Web Interface Launch Parameters
-    optional_args.add_argument('-useweb', dest='web_interface', action='store_true', default=False,
+    optional_args.add_argument('-useweb', dest='web_interface', action='store_const', const="True", default=None,
                                help='Enable the bot web interface with this launch parameter.')
-    optional_args.add_argument('-noweb', dest='no_web_interface', action='store_true', default=False,
+    optional_args.add_argument('-noweb', dest='no_web_interface', action='store_const', const="False", default=None,
                                help='Disable the bot web interface with this launch parameter if it is enabled in the config.')
     optional_args.add_argument('-webip', dest='web_ip', default=None,
                                help='Enter the IP to use for the web server (if enabled).')
@@ -60,19 +64,35 @@ if __name__ == "__main__":
     optional_args.add_argument('-webtickrate', dest='web_tick_rate', default=None,
                                help='Enter the tick rate of the processing loop that sends data to the web interface (if enabled).')
 
+    optional_args.add_argument('-usehttps', dest='web_use_https', action='store_const', const="True", default=None,
+                               help='Enable the use of HTTPS for the web interface.')
+    optional_args.add_argument('-nousehttps', dest='no_web_use_https', action='store_const', const="False", default=None,
+                               help='Disable the use of HTTPS for the web interface if enabled in the config file.')
+    optional_args.add_argument('-websslcert', dest='web_ssl_cert', default=None,
+                               help='Enter the path to the SSL certificate file for the web interface (if HTTPS enabled).')
+    optional_args.add_argument('-websslkey', dest='web_ssl_key', default=None,
+                               help='Enter the path to the SSL key file for the web interface (if HTTPS enabled).')
+    optional_args.add_argument('-webgeneratecert', dest='web_generate_cert', action='store_const', const="True", default=None,
+                               help='Enables automatic certificate/key creation for the web interface if HTTPS is enabled.\n'
+                                    'This is useful for local deployment, but it is recommended to use a certificate authority.')
+
     # Media Settings Launch Parameters
     optional_args.add_argument('-ffmpegpath', dest='ffmpeg_path', default=None,
                                help='Enter the path to ffmpeg to be used by media plugins.')
     optional_args.add_argument('-vlcpath', dest='vlc_path', default=None,
                                help='Enter the path to vlc to be used by media plugins.')
-    optional_args.add_argument('-stereoaudio', dest='stereo_audio', action='store_true', default=False,
+    optional_args.add_argument('-stereoaudio', dest='stereo_audio', action='store_const', const="True", default=None,
                                help='Enable stereo audio playback for the bot audio system.')
-    optional_args.add_argument('-quietaudiolib', dest='quiet_audio_lib', action='store_true', default=False,
+    optional_args.add_argument('-quietaudiolib', dest='quiet_audio_lib', action='store_const', const="True", default=None,
                                help='Suppress audio library console messages with this launch parameter.')
+    optional_args.add_argument('-audiolibdebug', dest='audio_lib_debug', action='store_const', const="False", default=None,
+                               help='Enables debugging messages for the audio libraries to be displayed.')
     optional_args.add_argument('-volume', dest='default_volume', default=None,
                                help='Enter the default volume to be used by the bot audio system.')
-    optional_args.add_argument('-audioduck', dest='audio_duck', action='store_true', default=False,
+    optional_args.add_argument('-audioduck', dest='audio_duck', action='store_const', const="True", default=None,
                                help='Enable audio ducking for the bot audio system.')
+    optional_args.add_argument('-noaudioduck', dest='no_audio_duck', action='store_const', const="False", default=None,
+                               help='Disable audio ducking for the bot audio system if enabled in the config file.')
     optional_args.add_argument('-audioduckvolume', dest='duck_volume', default=None,
                                help='Enter the volume to duck to when audio ducking (If audio ducking enabled).')
     optional_args.add_argument('-audioduckthreshold', dest='duck_threshold', default=None,
@@ -91,25 +111,30 @@ if __name__ == "__main__":
     optional_args.add_argument('-permmediadirectory', dest='perm_media_directory', default=None,
                                help='Enter the permanent media directory path to be used by media plugins.')
     # Logging Launch Parameters
-    optional_args.add_argument('-uselogging', dest='use_logging', action='store_true', default=False,
+    optional_args.add_argument('-uselogging', dest='use_logging', action='store_const', const="True", default=None,
                                help='Enable event logging for the bot service.')
+    optional_args.add_argument('-nologging', dest='no_logging', action='store_const', const="False", default=None,
+                               help='Disable event logging for the bot service if enabled in the config file.')
     optional_args.add_argument('-maxlogs', dest='max_logs', default=None,
                                help='Enter the maximum number of logs to be stored by the logging system.')
     optional_args.add_argument('-maxlogsize', dest='max_log_size', default=None,
                                help='Enter the maximum size of each log generated by the logging system.')
-    optional_args.add_argument('-hidelogmessages', dest='hide_log_messages', action='store_true', default=False,
-                               help='Hide potentially sensitive information in logs such as usernames/messages.')
+    optional_args.add_argument('-hidelogmessages', dest='hide_log_messages', action='store_const', const="True", default=None,
+                               help='Hide potentially sensitive information in logs such as messages.')
+    optional_args.add_argument('-showlogmessages', dest='show_log_messages', action='store_const', const="False", default=None,
+                               help='Show potentially sensitive information in logs such as messages if enabled in the config file.')
     optional_args.add_argument('-logdirectory', dest='log_directory', default=None,
                                help='Enter the log directory path to be used by the bot to store logs.')
-    optional_args.add_argument('-logtrace', dest='log_trace', action='store_true', default=False,
+    optional_args.add_argument('-logtrace', dest='log_trace', action='store_const', const="True", default=None,
                                help='Enable stack trace logging for all logged events.')
-
-    # Plugin launch parameters are currently unsupported.
-    # If you wish to modify these properties you can edit your config.ini file.
+    optional_args.add_argument('-nologtrace', dest='no_log_trace', action='store_const', const="False", default=None,
+                               help='Disable stack trace logging for all logged events if enabled in the config file.')
 
     # Main Settings Launch Parameters
-    optional_args.add_argument('-usedatabasebackups', dest='use_database_backups', action='store_true', default=False,
+    optional_args.add_argument('-usedatabasebackups', dest='use_database_backups', action='store_const', const="True", default=None,
                                help='Enable automatic database backups for the bot service.')
+    optional_args.add_argument('-nodatabasebackups', dest='no_database_backups', action='store_const', const="False", default=None,
+                               help='Disable automatic database backups for the bot service if enabled in the config file.')
     optional_args.add_argument('-cmdtickrate', dest='cmd_tick_rate', default=None,
                                help='Enter a custom tick rate for commands to be processed.')
     optional_args.add_argument('-multicmdlimit', dest='multi_cmd_limit', default=None,
@@ -199,36 +224,51 @@ if __name__ == "__main__":
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT] = args.server_cert
     if args.auto_reconnect:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_SERVER_RECONNECT] = args.auto_reconnect
+    if args.no_auto_reconnect:
+        global_settings.cfg[C_CONNECTION_SETTINGS][P_SERVER_RECONNECT] = args.no_auto_reconnect
     if args.default_channel:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL] = args.default_channel
     if args.self_register:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_SELF_REGISTER] = args.self_register
+    if args.no_self_register:
+        global_settings.cfg[C_CONNECTION_SETTINGS][P_SELF_REGISTER] = args.no_self_register
     if args.super_user:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_SU] = args.super_user
     if args.default_comment:
         global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT] = args.default_comment
 
     # Overwrite web settings if the launch parameter is provided.
-    if args.web_interface:
-        if global_settings.web_cfg:
+    if global_settings.web_cfg:
+        if args.web_interface:
             from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_ENABLE
-            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = "True"
-    if args.no_web_interface:
-        if global_settings.web_cfg:
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = args.web_interface
+        if args.no_web_interface:
             from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_ENABLE
-            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = "False"
-    if args.web_ip:
-        if global_settings.web_cfg:
+            global_settings.web_cfg[C_PLUGIN_SET][P_WEB_ENABLE] = args.no_web_interface
+        if args.web_ip:
             from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_IP
             global_settings.web_cfg[C_PLUGIN_SET][P_WEB_IP] = args.web_ip
-    if args.web_port:
-        if global_settings.web_cfg:
+        if args.web_port:
             from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_PORT
             global_settings.web_cfg[C_PLUGIN_SET][P_WEB_PORT] = args.web_port
-    if args.web_tick_rate:
-        if global_settings.web_cfg:
+        if args.web_tick_rate:
             from JJMumbleBot.plugins.core.web_server.resources.strings import P_WEB_TICK_RATE
             global_settings.web_cfg[C_PLUGIN_SET][P_WEB_TICK_RATE] = args.web_tick_rate
+        if args.web_use_https:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_HTTPS_ENABLE
+            global_settings.web_cfg[C_PLUGIN_SET][P_HTTPS_ENABLE] = args.web_use_https
+        if args.no_web_use_https:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_HTTPS_ENABLE
+            global_settings.web_cfg[C_PLUGIN_SET][P_HTTPS_ENABLE] = args.no_web_use_https
+        if args.web_ssl_cert:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_SSL_CERT
+            global_settings.web_cfg[C_PLUGIN_SET][P_SSL_CERT] = args.web_ssl_cert
+        if args.web_ssl_key:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_SSL_KEY
+            global_settings.web_cfg[C_PLUGIN_SET][P_SSL_KEY] = args.web_ssl_key
+        if args.web_generate_cert:
+            from JJMumbleBot.plugins.core.web_server.resources.strings import P_SSL_GENERATE
+            global_settings.web_cfg[C_PLUGIN_SET][P_SSL_GENERATE] = args.web_generate_cert
 
     # Overwrite media settings if the launch parameter is provided.
     if args.ffmpeg_path:
@@ -239,10 +279,14 @@ if __name__ == "__main__":
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_USE_STEREO] = args.stereo_audio
     if args.quiet_audio_lib:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_AUDIO_LIB_QUIET] = args.quiet_audio_lib
+    if args.audio_lib_debug:
+        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_AUDIO_LIB_QUIET] = args.audio_lib_debug
     if args.default_volume:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME] = args.default_volume
     if args.audio_duck:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_AUDIO] = args.audio_duck
+    if args.no_audio_duck:
+        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_AUDIO] = args.no_audio_duck
     if args.duck_volume:
         global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME] = args.duck_volume
     if args.duck_threshold:
@@ -262,12 +306,16 @@ if __name__ == "__main__":
     # Overwrite logging settings if the launch parameter is provided.
     if args.use_logging:
         global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.use_logging
+    if args.no_logging:
+        global_settings.cfg[C_LOGGING][P_LOG_ENABLE] = args.no_logging
     if args.max_logs:
         global_settings.cfg[C_LOGGING][P_LOG_MAX] = args.max_logs
     if args.max_log_size:
         global_settings.cfg[C_LOGGING][P_LOG_SIZE_MAX] = args.max_log_size
     if args.hide_log_messages:
         global_settings.cfg[C_LOGGING][P_LOG_MESSAGES] = args.hide_log_messages
+    if args.show_log_messages:
+        global_settings.cfg[C_LOGGING][P_LOG_MESSAGES] = args.show_log_messages
     if args.log_directory:
         global_settings.cfg[C_LOGGING][P_LOG_DIR] = args.log_directory
     if args.log_trace:
@@ -275,6 +323,8 @@ if __name__ == "__main__":
     # Overwrite main settings if the launch parameter is provided.
     if args.use_database_backups:
         global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.use_database_backups
+    if args.no_database_backups:
+        global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.no_database_backups
     if args.cmd_tick_rate:
         global_settings.cfg[C_MAIN_SETTINGS][P_CMD_TICK_RATE] = args.cmd_tick_rate
     if args.multi_cmd_limit:
