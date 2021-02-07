@@ -65,9 +65,9 @@ if __name__ == "__main__":
                                help='Enter the tick rate of the processing loop that sends data to the web interface (if enabled).')
 
     optional_args.add_argument('-usehttps', dest='web_use_https', action='store_const', const="True", default=None,
-                               help='Enable the use of HTTPS for the web interface.')
-    optional_args.add_argument('-nousehttps', dest='no_web_use_https', action='store_const', const="False", default=None,
-                               help='Disable the use of HTTPS for the web interface if enabled in the config file.')
+                               help='Enable the usage of HTTPS for the web interface.')
+    optional_args.add_argument('-nohttps', dest='no_web_use_https', action='store_const', const="False", default=None,
+                               help='Disable the usage of HTTPS for the web interface if enabled in the config file.')
     optional_args.add_argument('-websslcert', dest='web_ssl_cert', default=None,
                                help='Enter the path to the SSL certificate file for the web interface (if HTTPS enabled).')
     optional_args.add_argument('-websslkey', dest='web_ssl_key', default=None,
@@ -90,9 +90,9 @@ if __name__ == "__main__":
     optional_args.add_argument('-volume', dest='default_volume', default=None,
                                help='Enter the default volume to be used by the bot audio system.')
     optional_args.add_argument('-audioduck', dest='audio_duck', action='store_const', const="True", default=None,
-                               help='Enable audio ducking for the bot audio system.')
+                               help='Enables audio ducking for the bot audio system.')
     optional_args.add_argument('-noaudioduck', dest='no_audio_duck', action='store_const', const="False", default=None,
-                               help='Disable audio ducking for the bot audio system if enabled in the config file.')
+                               help='Disables audio ducking for the bot audio system if enabled in the config file.')
     optional_args.add_argument('-audioduckvolume', dest='duck_volume', default=None,
                                help='Enter the volume to duck to when audio ducking (If audio ducking enabled).')
     optional_args.add_argument('-audioduckthreshold', dest='duck_threshold', default=None,
@@ -112,9 +112,9 @@ if __name__ == "__main__":
                                help='Enter the permanent media directory path to be used by media plugins.')
     # Logging Launch Parameters
     optional_args.add_argument('-uselogging', dest='use_logging', action='store_const', const="True", default=None,
-                               help='Enable event logging for the bot service.')
+                               help='Enables event logging for the bot service.')
     optional_args.add_argument('-nologging', dest='no_logging', action='store_const', const="False", default=None,
-                               help='Disable event logging for the bot service if enabled in the config file.')
+                               help='Disables event logging for the bot service if enabled in the config file.')
     optional_args.add_argument('-maxlogs', dest='max_logs', default=None,
                                help='Enter the maximum number of logs to be stored by the logging system.')
     optional_args.add_argument('-maxlogsize', dest='max_log_size', default=None,
@@ -126,15 +126,15 @@ if __name__ == "__main__":
     optional_args.add_argument('-logdirectory', dest='log_directory', default=None,
                                help='Enter the log directory path to be used by the bot to store logs.')
     optional_args.add_argument('-logtrace', dest='log_trace', action='store_const', const="True", default=None,
-                               help='Enable stack trace logging for all logged events.')
+                               help='Enables stack trace logging for all logged events.')
     optional_args.add_argument('-nologtrace', dest='no_log_trace', action='store_const', const="False", default=None,
-                               help='Disable stack trace logging for all logged events if enabled in the config file.')
+                               help='Disables stack trace logging for all logged events if enabled in the config file.')
 
     # Main Settings Launch Parameters
     optional_args.add_argument('-usedatabasebackups', dest='use_database_backups', action='store_const', const="True", default=None,
-                               help='Enable automatic database backups for the bot service.')
+                               help='Enables automatic database backups for the bot service.')
     optional_args.add_argument('-nodatabasebackups', dest='no_database_backups', action='store_const', const="False", default=None,
-                               help='Disable automatic database backups for the bot service if enabled in the config file.')
+                               help='Disables automatic database backups for the bot service if enabled in the config file.')
     optional_args.add_argument('-cmdtickrate', dest='cmd_tick_rate', default=None,
                                help='Enter a custom tick rate for commands to be processed.')
     optional_args.add_argument('-multicmdlimit', dest='multi_cmd_limit', default=None,
