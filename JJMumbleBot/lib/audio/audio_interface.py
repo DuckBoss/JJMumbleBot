@@ -73,7 +73,7 @@ def create_audio_thread(audio_lib_path: str, audio_lib_type, uri: str, skipto: i
             params.extend(["-loglevel", "quiet"])
         if use_reconnect:
             params.extend(["-reconnect", "1", "-reconnect_streamed", "1", "-reconnect_delay_max", "2"])
-        params.extend(["-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
+        params.extend(["-nostdin", "-i", uri, "-ss", f"{skipto}", "-acodec", "pcm_s16le", "-f", "s16le",
                        "-ab", "192k", "-ac", "2"])
         if stereo:
             params.extend(["-ar", "48000", "-threads", "8", "-"])
