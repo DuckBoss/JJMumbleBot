@@ -12,145 +12,47 @@
 <body>
 <nav id="table_of_contents"></nav>
 <div class="main-content">
-    <h2 id="page-title">v5.1.0 Update</h2>
-    <h4>New Administration Commands and Web Updates</h4>
-    <strong><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v5.1.0">Github Download Link</a></strong>
+    <h2 id="page-title">v5.1.1 Update</h2>
+    <h4>New Command Line Arguments And Bug Fixes</h4>
+    <strong><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v5.1.1">Github Download Link</a></strong>
     <hr>
     <div>
-        <h4>NOTE: Dependency Installation/Upgrading Instructions</h4>
-        <p>Please make sure you are using the new and updated dependencies from the <code>requirements/xxxxx.txt</code> files.</p>
+        <h4>Updating Notes</h4>
         <p>
-        In addition to that, please use the updated pymumble library from Github, as the PyPi repository is not updated.<br/>
-        To <b>INSTALL</b> the latest pymumble library and all other dependencies:<br/>
-        <code>pip install -r requirements/requirements.txt -r requirements/web_server.txt</code><br/>
-        <code>pip install git+git://github.com/azlux/pymumble@pymumble_py3</code><br/>
-        To <b>UPDATE</b> to the latest pymumble library and update all other dependencies:<br/>
-        <code>pip install --upgrade -r requirements/requirements.txt -r requirements/web_server.txt</code><br/>
-        <code>pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code>
+        This update <b>DOES NOT</b> require you to reconfigure configs, aliases, or database files.<br>
+        This should be a straight-forward update for v5.1.0 users.
         </p>
     </div>
     <div>
-        <h4>New Web Server Plugin Dependency</h4>
+        <h4>New Command Line Arguments</h4>
         <ul>
-            <li>Added new web server dependency: <code>fastapi-utils</code> to the <code>requirements/web_server.txt</code> file. [Added in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/62869061a1c97da6cd4ac9bf22a4b14691d9064e">6286906</a>]</li>
+            <li><code>-usehttps</code>: Enable the usage of HTTPS for the web interface.</li>
+            <li><code>-nohttps</code>: Disable the usage of HTTPS for the web interface if enabled in the config file.</li>
+            <li><code>-websslcert</code>: Enter the path to the SSL certificate file for the web interface (if HTTPS enabled).</li>
+            <li><code>-websslkey</code>: Enter the path to the SSL key file for the web interface (if HTTPS enabled).</li>
+            <li><code>-webgeneratecert</code>: Enables automatic certificate/key creation for the web interface (if HTTPS is enabled).</li>
+            <li><code>-noautoreconnect</code>: Disables auto-reconnecting if the bot disconnects from the mumble server if enabled in the config file.</li>
+            <li><code>-noselfregister</code>: Disables self-registration to the connected mumble server if enabled in the config file.</li>
+            <li><code>-nodatabasebackups</code>: Disables automatic database backups for the bot service if enabled in the config file.</li>
+            <li><code>-noaudioduck</code>: Disables audio ducking for the bot audio system if enabled in the config file.</li>
+            <li><code>-nologging</code>: Disables event logging for the bot service if enabled in the config file.</li>
+            <li><code>-nologtrace</code>: Disables stack trace logging for all logged events if enabled in the config file.</li>
         </ul>
     </div>
     <div>
-        <h4>Administrative Updates - New Commands...</h4>
+        <h4>Bug Fixes</h4>
         <ul>
-            <li>Add ability to kick/ban users from the mumble server [Added in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/10a510798e492764d9ebd628c7f68a791048d5d5">10a5107</a>]
-                <ul>
-                    <li><code>!kickuser 'username' 'reason'</code></li>
-                    <li><code>!banuser 'username' 'reason'</code></li>
-                </ul>
-            </li>
-            <li>Added ability to mute/unmute/deafen/undeafen users with commands [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/520a806ed28ab33ad670122e5034bee6f458fc69">520a806</a>]
-                <ul>
-                    <li><code>!muteuser 'username'</code></li>
-                    <li><code>!unmuteuser 'username'</code></li>
-                    <li><code>!deafenuser 'username'</code></li>
-                    <li><code>!undeafenuser 'username'</code></li>
-                </ul>
-            </li>
-            <li>Added/Updated ability to make temporary/permanent channels [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/7883ab709d0b6e714ecb9181d536cda81ac74a98">7883ab7</a>]
-                <ul>
-                    <li><code>!makechannel 'channel_name'</code> - This command now only make temporary channels.</li>
-                    <li><code>!makepermanentchannel 'channel_name'</code> - Creates a permanent channel.</li>
-                </ul>
-            </li>
-            <li>Updated the <code>!removechannel</code> command to require a channel name [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/7883ab709d0b6e714ecb9181d536cda81ac74a98">7883ab7</a>]
-                <ul>
-                    <li><code>!removechannel 'channel_name'</code></li>
-                </ul>
-            </li>
-            <li>Added ability to rename existing channels [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/7883ab709d0b6e714ecb9181d536cda81ac74a98">7883ab7</a>]
-                <ul>
-                    <li><code>!renamechannel 'channel_name' 'new_channel_name'</code></li>
-                </ul>
-            </li>
-            <li>Added ability to move users from one channel to another [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/7883ab709d0b6e714ecb9181d536cda81ac74a98">7883ab7</a>]
-                <ul>
-                    <li><code>!moveuser 'username' 'channel'</code></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-    <div>
-        <h4>Web Interface Updates - HTTPS Support, Administrative Controls...</h4>
-        <ul>
-            <li>Added optional HTTPS support. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/4d8fde4eae7694873e5b41811795b5d5994aadc4">4d8fde4</a>]</li>
-            <li>The main components on the Commands page now have a limited height, and use scrollbars if the content overflows. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/cb3ce182a9d7099429a4097cb48780075440bbba">cb3ce18</a>]</li>
-            <li>Added user administration controls (mute/deafen/kick/ban) to users in the channel hierarchy list. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/fcd0d8eea5c1c670f5bc485272636de4cf547231">fcd0d8e</a>]</li>
-            <li>Added user audio status icons to users in the channel hierarchy list to show when a user is muted/deafened. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/fcd0d8eea5c1c670f5bc485272636de4cf547231">fcd0d8e</a>]</li>
-            <li>Added dialog prompts for kicking/banning users and removing channels. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/9cd5c80a9ebd54f2ecd0773d789eb2c88508e457">9cd5c80</a>]</li>
-        </ul>
-    </div>
-    <div>
-        <h4>Web Server REST API Updates</h4>
-        <ul>
-            <b>Added general administrative APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/51fbb55524bdbce6ef1459b7cec8f2ab2e57e864">51fbb55</a>]
-            <li><code>[GET] /api/general/uptime</code> - Retrieves the bot up-time information.</li>
-            <li><code>[GET] /api/general/version</code> - Retrieves the bot version information.</li>
-            <li><code>[GET] /api/general/about</code> - Retrieves the bot about information.</li>
-        </ul>
-        <ul>
-            <b>Added user administrative APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
-            <li><code>[POST] /api/admin/users/join</code> - Join the channel of a given user.</li>
-            <li><code>[POST] /api/admin/users/move</code> - Move the given user to a channel.</li>
-            <li><code>[POST] /api/admin/users/kick</code> - Kick the given user and provide an optional reason.</li>
-            <li><code>[POST] /api/admin/users/ban</code> - Ban the given user and provide an optional reason.</li>
-            <li><code>[POST] /api/admin/users/mute</code> - Mute/Unmute the given user.</li>
-            <li><code>[POST] /api/admin/users/deafen</code> - Deafen/Undeafen the given user.</li>
-        </ul>
-        <ul>
-            <b>Added channel administrative APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
-            <li><code>[POST] /api/admin/channels/rename</code> - Rename the given channel to a new name.</li>
-            <li><code>[POST] /api/admin/channels/remove</code> - Remove the given channel.</li>
-            <li><code>[POST] /api/admin/channels/move</code> - Move to the given channel.</li>
-            <li><code>[POST] /api/admin/channels/leave</code> - Leave the current channel and return to the default channel.</li>
-            <li><code>[POST] /api/admin/channels/make_temporary</code> - Make a temporary channel with the given name.</li>
-            <li><code>[POST] /api/admin/channels/make_permanent</code> - Make a permanent channel with the given name.</li>
-        </ul>
-        <ul>
-            <b>Added plugin administrative APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/51fbb55524bdbce6ef1459b7cec8f2ab2e57e864">51fbb55</a>]
-            <li><code>[POST] /api/admin/plugins/stop</code> - Stops an existing, running plugin with the given name.</li>
-            <li><code>[POST] /api/admin/plugins/start</code> - Starts an existing, stopped plugin with the given name.</li>
-            <li><code>[POST] /api/admin/plugins/restart</code> - Restarts an existing plugin with the given name.</li>
-            <li><code>[POST] /api/admin/plugins/restart_all</code> - Restarts all existing plugins.</li>
-        </ul>
-        <ul><b>Added plugin metadata APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/6cda89f44286f13d480eb30ace6aae1ad9ebad3c">6cda89f</a>]
-            <li><code>[POST] /api/admin/plugins/metadata/get</code> - Retrieves the metadata file contents of the plugin with the given name.</li>
-            <li><code>[POST] /api/admin/plugins/metadata/set</code> - Overwrites the metadata file contents of the plugin with the given name, with the provided data.</li>
-        </ul>
-        <ul>
-            <b>Updated audio APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
-            <li>Moved all <code>/api/xxxx</code> audio APIs to <code>/api/audio/xxxx</code></li>
-        </ul>
-        <ul>
-            <b>Updated sound_board APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
-            <li>Changed <code>/api/soundboardclips</code> to <code>/api/sound_board/clips</code></li>
-            <li>Changed <code>/api/soundboard-play</code> to <code>/api/sound_board/play</code></li>
-            <li>Changed <code>/api/soundboard-random</code> to <code>/api/sound_board/random</code></li>
-        </ul>
-        <ul>
-            <b>Updated general APIs</b> [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1ab311e22127b966246c21065e42817039b17290">1ab311e</a>]
-            <li>Changed <code>/api/system</code> to <code>/api/general/system</code></li>
+            <li>Fixed multiple command line arguments that enabled bot features such as (-uselogging, -usedatabasebackups, -useweb, -autoreconnect, etc)</li>
+            <li>Fixed <code>-mediacookie</code> command line argument documentation in wiki.</li>
         </ul>
     </div>
     <div>
         <h4>Misc</h4>
         <ul>
-            <li>Optimized commands in bot_commands plugin.</li>
-            <li>Optimized runtime utilities.</li>
-            <li>Updated web server's monitor service to support user state data such as muted/deafened/etc. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/372a8315eb2a3c16f7216b68d661d84cb4208d1a">372a831</a>]</li>
-            <li>Updated default config parameter: MaxLogSize to 1500000 bytes (1.5Mb). [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/83be3f201c5f1db5f64a977930c54afdaf06ea48">83be3f2</a>]</li>
-            <li>Removed on_permission_denied callback in core bot service. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/a30ae8a72a55399e21950220098202ca70b064df">a30ae8a</a></li>
-            <li>Updated the -generatecert argument to use dynamic paths. [Updated in <a href="https://github.com/DuckBoss/JJMumbleBot/commit/1aa77c36e70c5feb29655b26a6b16aeca2636a19">1aa77c3</a>]</li>
-            <li>Updated bot and relevant plugins to v5.1.0</li>
+            <li>Added <code>-nostdin</code> parameter to ffmpeg launch options in the internal handling of the audio interface.</li>
+            <li>Updated bot version to v5.1.1</li>
         </ul>
     </div>
-
-
 </div>
 <footer></footer>
 </body>

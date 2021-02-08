@@ -39,7 +39,10 @@
             <ol>
                 <li>Make sure the docker service is started, for more information check here: <a href="https://docs.docker.com/config/daemon/systemd/">How To Start Docker Service</a></li>
                 <li> You can pull the docker container from DockerHub.<br>
-                    <code>docker pull jasonjerome/jjmumblebot</code>
+                    <ul>
+                        <li>Latest (Unstable): <code>docker pull jasonjerome/jjmumblebot:latest</code></li>
+                        <li>Release v5.1.1: <code>docker pull jasonjerome/jjmumblebot:release-5.1.1</code></li>
+                    </ul>
                 </li>
                 <li>Run the bot with one of the various commands provided below:<br/><br/>
                     <i>Make sure you export MUMBLE_IP/MUMBLE_PORT/MUMBLE_PASSWORD environment variables if you're using environment variables.</i><br/>
