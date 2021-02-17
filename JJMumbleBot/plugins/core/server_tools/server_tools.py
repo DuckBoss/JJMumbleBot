@@ -65,10 +65,6 @@ class Plugin(PluginBase):
             log(INFO, "Registered server_tools plugin callbacks", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def clbk_user_connected(self, user):
-        # Return if the user that connected is the bot (self-detection).
-        if len(get_users_in_my_channel()) == 1:
-            return
-
         # Display the welcome message to the user if any.
         if self.metadata.getboolean(C_PLUGIN_SET, P_USE_WELCOME_MSG, fallback=False):
             if len(self.metadata[C_PLUGIN_SET][P_WELCOME_MSG]) > 0:
@@ -76,6 +72,10 @@ class Plugin(PluginBase):
                                          text_type='header',
                                          box_align='left',
                                          user=user[0]['name'])
+
+        # Return if the user that connected is the bot (self-detection).
+        if len(get_users_in_my_channel()) == 1:
+            return
 
         # Return if playing audio clips on user join is disabled.
         if not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
