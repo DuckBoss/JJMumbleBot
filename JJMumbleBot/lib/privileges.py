@@ -57,7 +57,7 @@ def plugin_privileges_check(command, plugin_name):
 
 
 def plugin_privilege_checker(text, command, plugin_name):
-    if not privileges_check(gs.mumble_inst.users[text.actor]) >= plugin_privileges_check(command, plugin_name):
+    if privileges_check(gs.mumble_inst.users[text.actor]) < plugin_privileges_check(command, plugin_name):
         log(WARNING,
             f"User [{gs.mumble_inst.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]",
             origin=L_USER_PRIV, error_type=GEN_PROCESS_WARN, print_mode=PrintMode.VERBOSE_PRINT.value)
