@@ -15,8 +15,8 @@ class BotServiceHelper:
     @staticmethod
     def retrieve_mumble_data(serv_ip, serv_port, serv_pass):
         server_ip: str = serv_ip
-        server_pass: str = serv_pass
         server_port: int = serv_port
+        server_pass: str = serv_pass
         user_id: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_ID]
         user_cert: str = global_settings.cfg[C_CONNECTION_SETTINGS][P_USER_CERT]
         use_stereo: bool = global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_USE_STEREO, fallback=True)
