@@ -44,7 +44,9 @@ def execute_command(com):
             global_settings.gui_service.quick_gui(
                 f"{com.text.actor['name']} does not have the user privileges to use <code>{get_command_token()}{com.command}</code>.",
                 text_type='header', box_align='left')
-            log(INFO, f"{com.text.actor['name']} tried to use the {get_command_token()}{com.command} command, but lacked the user privileges to do so.",
+            log(INFO,
+                f"{com.text.actor['name']} tried to use the {get_command_token()}{com.command} command, but lacked the user privileges to do so.",
+                origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
             return
     else:
         global_settings.gui_service.quick_gui(
