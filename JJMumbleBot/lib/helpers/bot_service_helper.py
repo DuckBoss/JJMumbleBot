@@ -115,7 +115,7 @@ class BotServiceHelper:
         log(INFO, "######### Importing Global Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
-                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
         log(INFO, "######### Imported Global Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
@@ -287,7 +287,7 @@ class BotServiceHelper:
         log(INFO, "######### Importing Global Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
-                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
         log(INFO, "######### Imported Global Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
