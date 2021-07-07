@@ -114,6 +114,7 @@
         </pre>
         <h4 id="main-settings-optional">[Main Settings] (OPTIONAL)</h4>
         <ul>
+        <li><code>EnableDatabaseIntegrityCheck</code>: Enable or disable version/plugin integrity checking for the database.<br>Disabling this may cause database conflicts after code updates, plugin updates, or plugin addition/removal!</li>
         <li><code>EnableDatabaseBackup</code>: Enable or disable automatic internal database backups</li>
         <li><code>CommandTickRate</code>: The execution tick rate of commands in the command queue [Must be an integer/float]</li>
         <li><code>MultiCommandLimit</code>: Maximum commands in a multi-command input (this includes multi-commands in aliases) [Must be an integer]</li>
@@ -123,6 +124,7 @@
         </ul>
         <pre>
             [Main Settings]
+            EnableDatabaseIntegrityCheck = True
             EnableDatabaseBackup = False
             CommandTickRate = 0.1
             MultiCommandLimit = 200
