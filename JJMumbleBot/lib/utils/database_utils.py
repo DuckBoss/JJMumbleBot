@@ -2,11 +2,27 @@ from csv import DictReader
 from sqlite3 import Error
 from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.lib.utils.database_management_utils import save_memory_db, save_memory_db_to_file
+from JJMumbleBot.lib.utils.database_management_utils import save_memory_db, save_memory_db_to_file, get_memory_db
 from JJMumbleBot.lib.resources.strings import *
 
 
 class CreateDB:
+    @staticmethod
+    def create_table_metadata(db_cursor) -> bool:
+        table_query = """
+                CREATE TABLE IF NOT EXISTS metadata (
+                    id INTEGER UNIQUE PRIMARY KEY AUTOINCREMENT,
+                    version TEXT UNIQUE NOT NULL,
+                    checksum TEXT UNIQUE NOT NULL
+                );
+            """
+        try:
+            db_cursor.execute(table_query)
+            return True
+        except Error as err:
+            dprint(err)
+            return False
+
     @staticmethod
     def create_table_users(db_cursor) -> bool:
         table_query = """
@@ -20,7 +36,6 @@ class CreateDB:
             return True
         except Error as err:
             dprint(err)
-            log(WARNING, f'There was an error creating the users table in the user_privileges database: {err}')
             return False
 
     @staticmethod
@@ -38,7 +53,6 @@ class CreateDB:
             return True
         except Error as err:
             dprint(err)
-            log(WARNING, f'There was an error creating the permissions table in the user_privileges database: {err}')
             return False
 
     @staticmethod
@@ -54,7 +68,6 @@ class CreateDB:
             return True
         except Error as err:
             dprint(err)
-            log(WARNING, f'There was an error creating the users table in the user_privileges database: {err}')
             return False
 
     @staticmethod
@@ -126,6 +139,32 @@ class CreateDB:
 
 
 class InsertDB:
+    @staticmethod
+    def insert_metadata(db_conn, version, checksum, ignore_file_save=False) -> bool:
+        table_query = f"""
+                    INSERT INTO metadata(version, checksum)
+                    VALUES (
+                    ?,
+                    ?
+                    );
+                """
+        try:
+            db_conn.cursor().execute(table_query, (version, checksum))
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Inserted new metadata into the database: {version}-{checksum}",
+                       origin=L_DATABASE)
+                log(INFO, f"Inserted new metadata into the database: {version}-{checksum}",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            if 'UNIQUE' not in str(err):
+                dprint(err)
+            return False
+
     @staticmethod
     def insert_new_plugin(db_conn, plugin_name, ignore_file_save=False) -> bool:
         table_query = f"""
@@ -470,6 +509,26 @@ class DeleteDB:
 
 class GetDB:
     @staticmethod
+    def get_metadata(db_cursor):
+        get_metadata_query = f"""
+            SELECT * FROM metadata
+            WHERE id = 1;
+        """
+        try:
+            db_cursor.execute(get_metadata_query)
+            result_dict = {}
+            result_cols = [item[0] for item in db_cursor.description]
+            result_row = db_cursor.fetchone()
+            if result_row is None:
+                return None
+            for i, item in enumerate(result_cols):
+                result_dict[item] = list(result_row)[i]
+            return result_dict
+        except Error as err:
+            dprint(err)
+            return None
+
+    @staticmethod
     def get_user_data(db_cursor, user_id: int = None, user_name: str = None):
         # Output Dict: {user_id: str, name: str, level: int, level_type: str}
         if user_id is None and user_name is None:
@@ -687,6 +746,23 @@ class GetDB:
             return None
 
     @staticmethod
+    def get_command(db_cursor, command_name: str):
+        get_command_query = f"""
+            SELECT commands.name, commands.level
+            FROM commands
+            WHERE commands.name = ?
+        """
+        try:
+            db_cursor.execute(get_command_query, (command_name,))
+            result_row = db_cursor.fetchone()
+            if result_row is None:
+                return None
+            return result_row
+        except Error as err:
+            dprint(err)
+            return None
+
+    @staticmethod
     def get_all_commands(db_cursor):
         get_commands_query = f"""
             SELECT commands.name, commands.level, plugins.name AS plugin
@@ -705,6 +781,29 @@ class GetDB:
 
 
 class UpdateDB:
+    @staticmethod
+    def update_metadata(db_conn, version, checksum, ignore_file_save=False) -> bool:
+        update_metadata_query = f"""
+            UPDATE metadata
+            SET version = ?, checksum = ?
+            WHERE id = 1;
+        """
+        try:
+            db_conn.cursor().execute(update_metadata_query, (version, checksum))
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Updated metadata in the database: {version}-{checksum}",
+                       origin=L_DATABASE)
+                log(INFO, f"Updated metadata in the database: {version}-{checksum}",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            dprint(err)
+            return False
+
     @staticmethod
     def update_user_privileges(db_conn, user_name, level, ignore_file_save=False) -> bool:
         update_privileges_query = f"""
@@ -775,20 +874,74 @@ class UpdateDB:
             dprint(err)
             return False
 
+    @staticmethod
+    def update_command_privileges(db_conn, command_name, permission_level, ignore_file_save=False) -> bool:
+        update_cmd_query = f"""
+            UPDATE commands
+            SET level = ?
+            WHERE name = ?;
+        """
+        try:
+            db_conn.cursor().execute(update_cmd_query, (permission_level, command_name))
+            save_memory_db(db_conn)
+            if not ignore_file_save:
+                save_memory_db_to_file()
+            if db_conn.cursor().rowcount == -1:
+                dprint(f"Updated command permission in the database: {command_name}",
+                       origin=L_DATABASE)
+                log(INFO, f"Updated command permission in the database: {command_name}",
+                    origin=L_DATABASE)
+                return True
+            return False
+        except Error as err:
+            dprint(err)
+            return False
+
 
 class UtilityDB:
     @staticmethod
+    def check_database_metadata(db_conn, version: str, plugins_checksum: str) -> bool:
+        # Check database metadata for changes.
+        # If the version is different, or plugin checksum is modified,
+        # clear plugins, plugins_help, and commands tables on launch.
+
+        # Retrieve the metadata information in the database.
+        command_data = GetDB.get_metadata(db_cursor=get_memory_db().cursor())
+        if command_data is not None:
+            # Database integrity violated if version doesn't match or plugin checksum doesn't match.
+            if version != command_data['version'] or plugins_checksum != command_data['checksum']:
+                UpdateDB.update_metadata(db_conn, version=version, checksum=plugins_checksum)
+                return False
+        return True
+
+    @staticmethod
     def import_privileges_to_db(db_conn, csv_path):
         plugin_name = csv_path.split('/')[-2]
-        # InsertDB.insert_new_plugin(db_conn, plugin_name=plugin_name)
         with open(csv_path, mode='r') as csv_file:
             csvr = DictReader(csv_file)
             for i, row in enumerate(csvr):
                 try:
-                    InsertDB.insert_new_command(db_conn, plugin_name=plugin_name, command_name=row['command'],
+                    # Retrieve the command information in the database.
+                    command_data = GetDB.get_command(db_cursor=db_conn.cursor(), command_name=row['command'].strip())
+                    # Check if the command exists in the database already.
+                    if command_data is not None:
+                        # Skip command import if already present in the database.
+                        dprint(
+                            f"The command '{row['command'].strip()}' already exists in the database. Skipping command privilege import...",
+                            origin=L_DATABASE
+                        )
+                        log(INFO,
+                            f"The command '{row['command'].strip()}' already exists in the database. Skipping command privilege import...",
+                            origin=L_DATABASE)
+                        continue
+                    # Insert new command if it is not already present in the database.
+                    InsertDB.insert_new_command(db_conn, plugin_name=plugin_name, command_name=row['command'].strip(),
                                                 permission_level=int(row['level']), ignore_file_save=True)
                 except Error:
-                    dprint("Encountered an error while importing plugin privileges data into the database.")
+                    dprint(
+                        "Encountered an error while importing plugin privileges data into the database.",
+                        origin=L_DATABASE
+                    )
                     log(WARNING, "Encountered an error while importing plugin privileges data into the database.",
                         origin=L_DATABASE)
                     continue
@@ -800,12 +953,25 @@ class UtilityDB:
             csvr = DictReader(csv_file)
             for i, row in enumerate(csvr):
                 try:
+                    # Skip alias import if already present in the database.
+                    if GetDB.get_alias(db_cursor=get_memory_db().cursor(), alias_name=row['alias'].strip()) is not None:
+                        dprint(
+                            f"The alias '{row['alias'].strip()}' already exists in the database. Skipping alias import...",
+                            origin=L_DATABASE
+                        )
+                        log(INFO,
+                            f"The alias '{row['alias'].strip()}' already exists in the database. Skipping alias import...",
+                            origin=L_DATABASE)
+                        continue
+                    # Insert new alias if it is not already present in the database.
                     InsertDB.insert_new_alias(db_conn, alias_name=row['alias'].strip(), commands=row['command'].strip(), ignore_file_save=True)
                 except Error:
                     dprint(
-                        f"Encountered an error while importing a plugin alias from {file_name} plugin into the database.")
+                        f"Encountered an error while importing a plugin alias from {file_name} plugin into the database.",
+                        origin=L_DATABASE
+                    )
                     log(WARNING,
-                        "Encountered an error while importing a plugin alias from {file_name} plugin into the database.",
+                        f"Encountered an error while importing a plugin alias from {file_name} plugin into the database.",
                         origin=L_DATABASE)
                     continue
 
@@ -819,7 +985,10 @@ class UtilityDB:
                 UpdateDB.update_plugin_help(db_conn, plugin_name=file_name, plugin_help_text=file_content)
                 return True
             except Error:
-                dprint("Encountered an error while importing plugin help data into the database.")
+                dprint(
+                    "Encountered an error while importing plugin help data into the database.",
+                    origin=L_DATABASE
+                )
                 log(WARNING, "Encountered an error while importing plugin help data into the database.",
                     origin=L_DATABASE)
                 return False
