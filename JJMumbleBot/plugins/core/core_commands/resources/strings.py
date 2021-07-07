@@ -28,3 +28,18 @@ CMD_INVALID_SET_ALIAS = [
     "ERROR: Incorrect command formatting!",
     f"Format: {get_command_token()}setalias 'alias_name' (cmd) param | (cmd) param | ..."
 ]
+CMD_INVALID_GET_CMD_PERMISSION = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}getcmdpermission 'cmd_name'"
+]
+CMD_INVALID_SET_CMD_PERMISSION = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}setcmdpermission 'cmd_name' 'permission_level'"
+]
+CMD_INVALID_SET_CMD_PERMISSION_RANGE = [
+    "ERROR: Invalid command permission value!",
+    "The permission value must be a valid permission level."
+]
+CMD_ERR_SET_CMD_PERMISSION = [
+    "ERROR: An error occurred while modifying the command permission!"
+]

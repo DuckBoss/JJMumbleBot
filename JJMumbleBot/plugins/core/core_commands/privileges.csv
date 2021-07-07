@@ -14,6 +14,8 @@ setcomment,4
 resetcomment,4
 pguistresstest,5
 help,1
+getcmdpermission,1
+setcmdpermission,5
 setalias,4
 aliases,1
 removealias,4
