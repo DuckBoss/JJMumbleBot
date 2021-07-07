@@ -32,6 +32,9 @@
         <code>!restart</code>: Completely stops the bot and restarts it.<br>
         <code>!saferestart</code>: Completely stops the bot and restarts it.<br>
         <code>!about</code>: Displays the bots about screen.<br>
+        <code>!importuserprivileges 'url_to_csv_file'</code>: Imports user privileges a csv file downloaded from the provided URL and updates the database.<br>
+        <code>!importpermissions 'url_to_csv_file'</code>: Imports command permissions a csv file downloaded from the provided URL and updates the database.<br>
+        <code>!importaliases 'url_to_csv_file'</code>: Imports aliases from a csv file downloaded from the provided URL and updates the database.<br>
         <code>!getpermission 'commmand_name'</code>: Displays the command's permission level.<br>
         <code>!changepermission 'commmand_name' 'permission_level'</code>: Sets the command's permission level to the number provided.<br>
         <code>!setalias 'alias_name' 'command'|'command'|...</code>: Registers an alias for single/multi-commands.<br>
@@ -66,6 +69,9 @@
                     "resetcomment",
                     "pguistresstest",
                     "help",
+                    "importuserprivileges",
+                    "importpermissions",
+                    "importaliases",
                     "getpermission",
                     "changepermission",
                     "setalias",

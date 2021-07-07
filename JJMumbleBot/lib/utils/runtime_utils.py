@@ -1,4 +1,3 @@
-from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.utils.logging_utils import log
@@ -339,11 +338,22 @@ def remove_channel(channel_name: str):
         channel.remove()
 
 
-def check_up_time():
+def check_up_time() -> str:
     cur_time = datetime.now() - runtime_settings.start_time
     if cur_time:
         return f"{str(cur_time)[:-7]}"
     return ""
+
+
+def validate_url(url) -> bool:
+    from requests import get, ConnectionError
+    try:
+        resp = get(url)
+        if resp:
+            return True
+    except ConnectionError:
+        return False
+    return False
 
 
 def get_plugin_metadata(plugin_name: str) -> dict:

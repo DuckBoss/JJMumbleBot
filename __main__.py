@@ -208,6 +208,8 @@ if __name__ == "__main__":
         copy(f'{dir_utils.get_main_dir()}/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/plugins/'):
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/plugins/')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/downloads/'):
+        dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/downloads/')
 
     global_settings.cfg = configparser.ConfigParser()
     global_settings.cfg.read(f'{dir_utils.get_main_dir()}/cfg/config.ini')

@@ -73,6 +73,9 @@ CRITICAL = 'critical'
 
 # TEMPORARY DATA STRINGS - DO NOT MODIFY
 T_TEMP_IMG_NAME = '_image'
+T_TEMP_CMD_PERMISSIONS = '_permissions'
+T_TEMP_USER_PRIVILEGES = '_privileges'
+T_TEMP_ALIASES = '_aliases'
 
 # ERROR STRINGS - DO NOT MODIFY
 CMD_INVALID_ERR = 'InvalidCommandFormat'

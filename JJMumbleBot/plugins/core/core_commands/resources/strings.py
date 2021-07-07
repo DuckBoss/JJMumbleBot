@@ -30,16 +30,25 @@ CMD_INVALID_SET_ALIAS = [
 ]
 CMD_INVALID_GET_CMD_PERMISSION = [
     "ERROR: Incorrect command formatting!",
-    f"Format: {get_command_token()}getcmdpermission 'cmd_name'"
+    f"Format: {get_command_token()}getpermission 'cmd_name'"
 ]
 CMD_INVALID_SET_CMD_PERMISSION = [
     "ERROR: Incorrect command formatting!",
-    f"Format: {get_command_token()}setcmdpermission 'cmd_name' 'permission_level'"
+    f"Format: {get_command_token()}changepermission 'cmd_name' 'permission_level'"
 ]
 CMD_INVALID_SET_CMD_PERMISSION_RANGE = [
     "ERROR: Invalid command permission value!",
     "The permission value must be a valid permission level."
 ]
-CMD_ERR_SET_CMD_PERMISSION = [
-    "ERROR: An error occurred while modifying the command permission!"
+CMD_INVALID_IMPORT_PERMISSIONS = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}importpermissions 'url'"
+]
+CMD_INVALID_IMPORT_PRIVILEGES = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}importuserprivileges 'url'"
+]
+CMD_INVALID_IMPORT_ALIASES = [
+    "ERROR: Incorrect command formatting!",
+    f"Format: {get_command_token()}importaliases 'url'"
 ]

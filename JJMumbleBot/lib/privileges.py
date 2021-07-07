@@ -1,11 +1,10 @@
-from enum import Enum
-
 from JJMumbleBot.lib.resources.strings import *
-from JJMumbleBot.lib.utils.database_management_utils import get_memory_db
+from JJMumbleBot.lib.utils.database_management_utils import get_memory_db, save_memory_db_to_file
 from JJMumbleBot.lib.utils.database_utils import GetDB, InsertDB, UpdateDB
 from JJMumbleBot.lib.utils.logging_utils import log
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.settings import global_settings as gs
+from enum import Enum
 
 
 class Privileges(Enum):
@@ -17,7 +16,7 @@ class Privileges(Enum):
     SUPERUSER = 5
 
 
-def privileges_check(user):
+def privileges_check(user) -> int:
     # Print and log a critical database access error if the database has not been initialized.
     if not gs.mumble_db_string:
         log(CRITICAL,
@@ -39,7 +38,7 @@ def privileges_check(user):
     return int(user_data['level'])
 
 
-def plugin_privileges_check(command, plugin_name):
+def plugin_privileges_check(command, plugin_name) -> int:
     if not gs.mumble_db_string:
         log(CRITICAL,
             f"The JJMumbleBot database has not been initialized, but a user privilege check is trying to access it!",
@@ -56,7 +55,7 @@ def plugin_privileges_check(command, plugin_name):
     return -1
 
 
-def plugin_privilege_checker(text, command, plugin_name):
+def plugin_privilege_checker(text, command, plugin_name) -> bool:
     if privileges_check(gs.mumble_inst.users[text.actor]) < plugin_privileges_check(command, plugin_name):
         log(WARNING,
             f"User [{gs.mumble_inst.users[text.actor]['name']}] does not have the user privileges to use this command: [{command}]",
@@ -87,7 +86,7 @@ def get_blacklist():
     return blklist_txt
 
 
-def add_to_blacklist(username):
+def add_to_blacklist(username) -> bool:
     all_user_data = GetDB.get_all_user_data(get_memory_db().cursor())
     user_names_list = [x[0] for x in all_user_data]
     if username in user_names_list:
@@ -102,7 +101,7 @@ def add_to_blacklist(username):
     return False
 
 
-def remove_from_blacklist(username):
+def remove_from_blacklist(username) -> bool:
     all_user_data = GetDB.get_all_user_data(get_memory_db().cursor())
     user_names_list = [x[0] for x in all_user_data]
     if username in user_names_list:
@@ -128,7 +127,71 @@ def set_command_privileges(cmd_name, level) -> bool:
     return False
 
 
-def set_privileges(username, level, sender):
+def import_command_permissions() -> bool:
+    from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+    from JJMumbleBot.lib.resources.strings import T_TEMP_CMD_PERMISSIONS
+    from csv import DictReader, Error
+    try:
+        with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_CMD_PERMISSIONS}.csv", mode='r') as csv_file:
+            csvr = DictReader(csv_file)
+            for i, row in enumerate(csvr):
+                UpdateDB.update_command_privileges(get_memory_db(),
+                                                   command_name=row['command'].strip(),
+                                                   permission_level=int(row['level']),
+                                                   ignore_file_save=True)
+            save_memory_db_to_file()
+        log(INFO, f"Updated command permissions from the imported permission file!",
+            origin=L_DATABASE, print_mode=PrintMode.REG_PRINT.value)
+        return True
+    except FileNotFoundError:
+        log(ERROR, f"Could not import command permissions because the downloaded file is not found!",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
+    except Error:
+        log(ERROR, f"Encountered a problem reading the imported command permission file! "
+                   f"Please make sure the file is correctly formatted with headers: command, level",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
+    except KeyError:
+        log(ERROR, f"Encountered a problem reading the imported command permission file! "
+                   f"Please make sure the file is correctly formatted with headers: command, level",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
+
+
+def import_user_privileges() -> bool:
+    from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+    from JJMumbleBot.lib.resources.strings import T_TEMP_USER_PRIVILEGES
+    from csv import DictReader, Error
+    try:
+        with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", mode='r') as csv_file:
+            csvr = DictReader(csv_file)
+            for i, row in enumerate(csvr):
+                UpdateDB.update_user_privileges(get_memory_db(),
+                                                user_name=row['user'].strip(),
+                                                level=int(row['level']),
+                                                ignore_file_save=True)
+            save_memory_db_to_file()
+        log(INFO, f"Updated user privileges from the imported user privileges file!",
+            origin=L_DATABASE, print_mode=PrintMode.REG_PRINT.value)
+        return True
+    except FileNotFoundError:
+        log(ERROR, f"Could not import user privileges because the downloaded file is not found!",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
+    except Error:
+        log(ERROR, f"Encountered a problem reading the imported user privileges file! "
+                   f"Please make sure the file is correctly formatted with headers: user, level",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
+    except KeyError:
+        log(ERROR, f"Encountered a problem reading the imported user privileges file! "
+                   f"Please make sure the file is correctly formatted with headers: user, level",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return False
+
+
+def set_privileges(username, level, sender) -> bool:
     all_user_data = GetDB.get_all_user_data(get_memory_db().cursor())
     user_names_list = [x[0] for x in all_user_data]
     if username in user_names_list:
@@ -148,7 +211,7 @@ def set_privileges(username, level, sender):
     return False
 
 
-def add_to_privileges(username, level):
+def add_to_privileges(username, level) -> bool:
     if InsertDB.insert_new_user(db_conn=get_memory_db(), username=username):
         if InsertDB.insert_new_permission(db_conn=get_memory_db(), username=username,
                                           permission_level=int(level)):
