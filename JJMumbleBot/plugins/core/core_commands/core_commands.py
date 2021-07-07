@@ -9,6 +9,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.core.core_commands.resources.strings import *
 from JJMumbleBot.plugins.core.core_commands.utility import core_commands_utility as cutils
 from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.privileges import Privileges, set_command_privileges, get_command_privileges
 from JJMumbleBot.lib import aliases
 from time import sleep
 from bs4 import BeautifulSoup
@@ -337,6 +338,97 @@ class Plugin(PluginBase):
             GS.gui_service.close_box()
             GS.gui_service.display_box(channel=rutils.get_my_channel())
             log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+
+    def cmd_getcmdpermission(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_GET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_GET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        cmd_name = all_data[1]
+        cmd_data = get_command_privileges(cmd_name)
+        if cmd_data:
+            GS.gui_service.quick_gui(
+                f"Command: {cmd_data['name']}<br>"
+                f"Permission Level:{Privileges(int(cmd_data['level'])).name} ({cmd_data['level']})",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            GS.gui_service.quick_gui(
+                f"Error retrieving command information for: {cmd_name}",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_setcmdpermission(self, data):
+        all_data = data.message.strip().split(' ', 2)
+        if len(all_data) != 3:
+            log(ERROR, CMD_INVALID_SET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+
+        cmd_name = all_data[1]
+        try:
+            permission_level = int(all_data[2])
+        except ValueError:
+            log(ERROR, CMD_INVALID_SET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if permission_level <= Privileges.BLACKLIST.value or permission_level > Privileges.SUPERUSER.value:
+            log(ERROR, CMD_INVALID_SET_CMD_PERMISSION_RANGE,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_CMD_PERMISSION_RANGE,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if set_command_privileges(cmd_name=cmd_name, level=permission_level):
+            GS.gui_service.quick_gui(
+                f"Updated command permission level: [{cmd_name}] - [{Privileges(permission_level).name} ({permission_level})]",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            log(ERROR, CMD_ERR_SET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_ERR_SET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
 
     def cmd_setalias(self, data):
         all_data = data.message.strip().split(' ', 2)
