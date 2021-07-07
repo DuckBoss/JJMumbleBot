@@ -339,7 +339,7 @@ class Plugin(PluginBase):
             GS.gui_service.display_box(channel=rutils.get_my_channel())
             log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
 
-    def cmd_getcmdpermission(self, data):
+    def cmd_getpermission(self, data):
         all_data = data.message.strip().split(' ', 1)
         if len(all_data) != 2:
             log(ERROR, CMD_INVALID_GET_CMD_PERMISSION,
@@ -372,7 +372,7 @@ class Plugin(PluginBase):
                 ignore_whisper=True,
                 user=GS.mumble_inst.users[data.actor]['name'])
 
-    def cmd_setcmdpermission(self, data):
+    def cmd_changepermission(self, data):
         all_data = data.message.strip().split(' ', 2)
         if len(all_data) != 3:
             log(ERROR, CMD_INVALID_SET_CMD_PERMISSION,
