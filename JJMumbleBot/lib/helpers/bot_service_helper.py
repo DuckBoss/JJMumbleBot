@@ -111,12 +111,12 @@ class BotServiceHelper:
             log(INFO, "######### Database Integrity Verified #########",
                 origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
-        # Import global aliases into the database.
-        log(INFO, "######### Importing Global Aliases #########",
+        # Import custom aliases into the database.
+        log(INFO, "######### Importing Custom Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
                                        csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
-        log(INFO, "######### Imported Global Aliases #########",
+        log(INFO, "######### Imported Custom Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         global_settings.bot_plugins = {}
@@ -283,12 +283,12 @@ class BotServiceHelper:
             log(INFO, "######### Database Integrity Verified #########",
                 origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
-        # Import global aliases into the database.
-        log(INFO, "######### Importing Global Aliases #########",
+        # Import custom aliases into the database.
+        log(INFO, "######### Importing Custom Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
                                        csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
-        log(INFO, "######### Imported Global Aliases #########",
+        log(INFO, "######### Imported Custom Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         global_settings.bot_plugins = {}
