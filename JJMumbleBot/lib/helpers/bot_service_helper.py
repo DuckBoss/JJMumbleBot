@@ -54,6 +54,7 @@ class BotServiceHelper:
         from os import path, listdir
         from json import loads
         from JJMumbleBot.lib.resources.strings import C_PLUGIN_SETTINGS, P_PLUG_SAFE
+        from hashlib import md5
         if not global_settings.cfg:
             from JJMumbleBot.lib.errors import ExitCodes, ConfigError
             from JJMumbleBot.lib.utils import runtime_utils
