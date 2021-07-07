@@ -345,7 +345,7 @@ def check_up_time() -> str:
     return ""
 
 
-def validate_url(url) -> bool:
+def validate_url(url: str) -> bool:
     from requests import get, ConnectionError
     try:
         resp = get(url)
@@ -354,6 +354,27 @@ def validate_url(url) -> bool:
     except ConnectionError:
         return False
     return False
+
+
+def validate_csv(file_path: str, field_names) -> bool:
+    from csv import DictReader, Error
+    try:
+        with open(file_path, 'rb') as csv_handle:
+            csvr = DictReader(csv_handle)
+            columns = []
+            for i, row in enumerate(csvr):
+                columns.append(row)
+                break
+            for field in field_names:
+                if field not in columns[0]:
+                    return False
+        return True
+    except FileNotFoundError:
+        return False
+    except KeyError:
+        return False
+    except Error:
+        return False
 
 
 def get_plugin_metadata(plugin_name: str) -> dict:

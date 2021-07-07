@@ -361,6 +361,16 @@ class Plugin(PluginBase):
                 resp = get(url)
                 with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", "wb") as fileHandle:
                     fileHandle.write(resp.content)
+                field_names = ["user", "level"]
+                if not rutils.validate_csv(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", field_names):
+                    GS.gui_service.quick_gui(
+                        f"The downloaded csv file does not match the required format: {field_names}",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                    return
                 if import_user_privileges():
                     GS.gui_service.quick_gui(
                         f"Updated user privileges from the imported permission file!",
@@ -416,6 +426,16 @@ class Plugin(PluginBase):
                 resp = get(url)
                 with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_CMD_PERMISSIONS}.csv", "wb") as fileHandle:
                     fileHandle.write(resp.content)
+                field_names = ["command", "level"]
+                if not rutils.validate_csv(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", field_names):
+                    GS.gui_service.quick_gui(
+                        f"The downloaded csv file does not match the required format: {field_names}",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                    return
                 if import_command_permissions():
                     GS.gui_service.quick_gui(
                         f"Updated command permissions from the imported permission file!",
@@ -562,6 +582,16 @@ class Plugin(PluginBase):
                 resp = get(url)
                 with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_ALIASES}.csv", "wb") as fileHandle:
                     fileHandle.write(resp.content)
+                field_names = ["alias", "command"]
+                if not rutils.validate_csv(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", field_names):
+                    GS.gui_service.quick_gui(
+                        f"The downloaded csv file does not match the required format: {field_names}",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                    return
                 if import_aliases():
                     GS.gui_service.quick_gui(
                         f"Updated aliases from the imported aliases file!",
