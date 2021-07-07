@@ -144,6 +144,10 @@ class TestConfigTemplate:
     #################################
 
     # Main Settings Config Tests
+    def test_enable_database_integrity_check(self):
+        enable_database_integrity_check = self.cfg.getboolean(C_MAIN_SETTINGS, P_DB_INTEGRITY)
+        assert enable_database_integrity_check is True
+
     def test_enable_database_backup(self):
         enable_database_backup = self.cfg.getboolean(C_MAIN_SETTINGS, P_DB_BACKUP)
         assert enable_database_backup is False
