@@ -39,7 +39,7 @@ def execute_command(com):
         return
 
     # Check user privileges before attempting to execute any commands.
-    if privileges_check(com.text.actor) > Privileges.BLACKLIST.value:
+    if privileges_check(global_settings.mumble_inst.users[com.text.actor]) > Privileges.BLACKLIST.value:
         if not plugin_privilege_checker(com.text, com.command, plugin.plugin_name):
             global_settings.gui_service.quick_gui(
                 f"{com.text.actor['name']} does not have the user privileges to use <code>{get_command_token()}{com.command}</code>.",
