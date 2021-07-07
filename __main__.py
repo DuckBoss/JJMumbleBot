@@ -131,6 +131,13 @@ if __name__ == "__main__":
                                help='Disables stack trace logging for all logged events if enabled in the config file.')
 
     # Main Settings Launch Parameters
+    optional_args.add_argument('-enableintegritycheck', dest='enable_integrity_check', action='store_const',
+                               const="True", default=None,
+                               help='Enables database integrity checking on start-up. This will help prevent conflicts when updating the bot or modifying plugins.')
+    optional_args.add_argument('-disableintegritycheck', dest='disable_integrity_check', action='store_const',
+                               const="False", default=None,
+                               help='Disables database integrity checking on start-up.'
+                                    'Disabling this may cause database conflicts after code updates, plugin updates, or plugin addition/removal!')
     optional_args.add_argument('-usedatabasebackups', dest='use_database_backups', action='store_const', const="True", default=None,
                                help='Enables automatic database backups for the bot service.')
     optional_args.add_argument('-nodatabasebackups', dest='no_database_backups', action='store_const', const="False", default=None,
@@ -321,6 +328,10 @@ if __name__ == "__main__":
     if args.log_trace:
         global_settings.cfg[C_LOGGING][P_LOG_TRACE] = args.log_trace
     # Overwrite main settings if the launch parameter is provided.
+    if args.enable_integrity_check:
+        global_settings.cfg[C_MAIN_SETTINGS][P_DB_INTEGRITY] = args.enable_integrity_check
+    if args.disable_integrity_check:
+        global_settings.cfg[C_MAIN_SETTINGS][P_DB_INTEGRITY] = args.disable_integrity_check
     if args.use_database_backups:
         global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.use_database_backups
     if args.no_database_backups:
