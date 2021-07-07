@@ -113,6 +113,21 @@ def remove_from_blacklist(username):
     return False
 
 
+def get_command_privileges(cmd_name):
+    command_data = GetDB.get_command(db_cursor=get_memory_db().cursor(), command_name=cmd_name)
+    return command_data
+
+
+def set_command_privileges(cmd_name, level) -> bool:
+    if UpdateDB.update_command_privileges(db_conn=get_memory_db(), command_name=cmd_name, permission_level=level):
+        log(INFO, f"Updated command permission level: [{cmd_name}] - [{Privileges(level).name} ({level})]",
+            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return True
+    log(INFO, f"Could not update command permission level [{cmd_name}] to the registered command.",
+        origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+    return False
+
+
 def set_privileges(username, level, sender):
     all_user_data = GetDB.get_all_user_data(get_memory_db().cursor())
     user_names_list = [x[0] for x in all_user_data]
