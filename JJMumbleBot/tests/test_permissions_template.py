@@ -5,7 +5,7 @@ from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 class TestPermissionTemplate:
     def setup_method(self):
         self.permissions_file_name = f"{get_main_dir()}/templates/permissions_template.csv"
-        self.permissions_header_list = {}
+        self.permissions_header_list = []
         try:
             with open(self.permissions_file_name, mode='r') as csv_file:
                 csvr = DictReader(csv_file)
