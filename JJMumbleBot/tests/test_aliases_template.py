@@ -14,17 +14,6 @@ class TestAliasesTemplate:
         except IOError:
             print(f"Encountered an IO error reading the alias file: [{self.alias_file_name}] during unit tests.")
 
-    def test_alias_quit(self):
-        assert self.aliases_dict["quit"] == "(exit)"
+    def test_alias_fields(self):
+        assert self.aliases_dict["alias"] == "command"
 
-    def test_alias_volume(self):
-        assert self.aliases_dict["v"] == "(volume)"
-
-    def test_alias_queue(self):
-        assert self.aliases_dict["q"] == "(queue)"
-
-    def test_alias_replay(self):
-        assert self.aliases_dict["rp"] == "(replay)"
-
-    def test_alias_skip(self):
-        assert self.aliases_dict["skip"] == "(next)"
