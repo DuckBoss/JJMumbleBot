@@ -20,6 +20,7 @@ P_DEFAULT_SU = 'DefaultSuperUser'
 P_SELF_REGISTER = "SelfRegister"
 P_USER_COMMENT = "DefaultComment"
 # Main Settings
+P_DB_INTEGRITY = 'EnableDatabaseIntegrityCheck'
 P_DB_BACKUP = 'EnableDatabaseBackup'
 P_CMD_TICK_RATE = 'CommandTickRate'
 P_CMD_MULTI_LIM = 'MultiCommandLimit'
@@ -72,6 +73,9 @@ CRITICAL = 'critical'
 
 # TEMPORARY DATA STRINGS - DO NOT MODIFY
 T_TEMP_IMG_NAME = '_image'
+T_TEMP_CMD_PERMISSIONS = '_permissions'
+T_TEMP_USER_PRIVILEGES = '_privileges'
+T_TEMP_ALIASES = '_aliases'
 
 # ERROR STRINGS - DO NOT MODIFY
 CMD_INVALID_ERR = 'InvalidCommandFormat'
@@ -121,5 +125,5 @@ P_THREAD_SINGLE = 'UseSingleThread'
 ###########################################################################
 # BOT META INFORMATION STRINGS
 META_NAME = "JJMumbleBot"
-META_VERSION = "5.1.2"
+META_VERSION = "5.2.0"
 ###########################################################################

@@ -1,2 +1,3 @@
 alias,command
 quit,(exit)
+changepermission,(setpermission)

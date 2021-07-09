@@ -233,6 +233,19 @@ class Plugin(PluginBase):
     def cmd_volume(self, data):
         try:
             vol = float(data.message.strip().split(' ', 1)[1])
+        except ValueError:
+            log(
+                ERROR,
+                CMD_INVALID_VOLUME,
+                origin=L_COMMAND,
+                error_type=CMD_PROCESS_ERR,
+                print_mode=PrintMode.VERBOSE_PRINT.value
+            )
+            gs.gui_service.quick_gui(CMD_INVALID_VOLUME,
+                                     text_type='header',
+                                     box_align='left',
+                                     text_align='left')
+            return
         except IndexError:
             log(
                 INFO,

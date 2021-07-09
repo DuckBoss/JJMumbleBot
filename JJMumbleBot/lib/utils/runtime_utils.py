@@ -1,4 +1,3 @@
-from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.settings import runtime_settings
 from JJMumbleBot.lib.utils.logging_utils import log
@@ -311,7 +310,6 @@ def get_users_in_my_channel():
 
 
 def make_channel(root_channel, channel_name, temporary=False):
-    from json import loads
     allowed_channels = loads(global_settings.cfg[C_PLUGIN_SETTINGS][P_PLUG_ALLOWED_CHANNELS])
     if allowed_channels is not None:
         for chan_name in allowed_channels:
@@ -339,11 +337,43 @@ def remove_channel(channel_name: str):
         channel.remove()
 
 
-def check_up_time():
+def check_up_time() -> str:
     cur_time = datetime.now() - runtime_settings.start_time
     if cur_time:
         return f"{str(cur_time)[:-7]}"
     return ""
+
+
+def validate_url(url: str) -> bool:
+    from requests import get, exceptions
+    try:
+        resp = get(url)
+        if resp:
+            return True
+    except exceptions.ConnectionError:
+        return False
+    return False
+
+
+def validate_csv(file_path: str, field_names) -> bool:
+    from csv import DictReader, Error
+    try:
+        with open(file_path, 'rb') as csv_handle:
+            csvr = DictReader(csv_handle)
+            columns = []
+            for i, row in enumerate(csvr):
+                columns.append(row)
+                break
+            for field in field_names:
+                if field not in columns[0]:
+                    return False
+        return True
+    except FileNotFoundError:
+        return False
+    except KeyError:
+        return False
+    except Error:
+        return False
 
 
 def get_plugin_metadata(plugin_name: str) -> dict:

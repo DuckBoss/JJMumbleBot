@@ -9,6 +9,7 @@ from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.plugins.core.core_commands.resources.strings import *
 from JJMumbleBot.plugins.core.core_commands.utility import core_commands_utility as cutils
 from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.lib.privileges import Privileges, set_command_privileges, get_command_privileges
 from JJMumbleBot.lib import aliases
 from time import sleep
 from bs4 import BeautifulSoup
@@ -161,21 +162,24 @@ class Plugin(PluginBase):
     def cmd_exit(self, data):
         log(WARNING, "Stopping all threads...", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
         rutils.exit_bot()
-        log(INFO, f"{rutils.get_bot_name()} is being shut down.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"{rutils.get_bot_name()} is being shut down.", origin=L_SHUTDOWN,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
         log(INFO, "######################################", origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_restart(self, data):
         from os import execv
         from sys import argv, executable
         rutils.exit_bot()
-        log(INFO, f"{rutils.get_bot_name()} is being restarted.", origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"{rutils.get_bot_name()} is being restarted.", origin=L_STARTUP,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
         execv(executable, ['python3'] + argv)
 
     def cmd_saferestart(self, data):
         from os import execv
         from sys import argv, executable
         rutils.exit_bot()
-        log(INFO, f"{rutils.get_bot_name()} is being rebooted in safe mode.", origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"{rutils.get_bot_name()} is being rebooted in safe mode.", origin=L_STARTUP,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
         execv(executable, ['python3'] + argv + ['-safe'])
 
     def cmd_restartplugins(self, data):
@@ -210,7 +214,8 @@ class Plugin(PluginBase):
             box_align='left',
             ignore_whisper=True,
             user=GS.mumble_inst.users[data.actor]['name'])
-        log(INFO, f"Changed the bot's user comment to: {new_comment}.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"Changed the bot's user comment to: {new_comment}.", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_resetcomment(self, data):
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
@@ -255,7 +260,8 @@ class Plugin(PluginBase):
 
         GS.gui_service.close_box()
         GS.gui_service.display_box(channel=rutils.get_my_channel())
-        log(INFO, f"Conducted PGUI stress test in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(INFO, f"Conducted PGUI stress test in the channel.", origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value)
 
     def cmd_help(self, data):
         all_data = data.message.strip().split()
@@ -303,7 +309,8 @@ class Plugin(PluginBase):
 
             GS.gui_service.close_box()
             GS.gui_service.display_box(channel=rutils.get_my_channel())
-            log(INFO, f"Displayed general help screen in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(INFO, f"Displayed general help screen in the channel.", origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value)
             return
 
         plugin_name = all_data[1]
@@ -336,7 +343,345 @@ class Plugin(PluginBase):
                 GS.gui_service.append_row(content)
             GS.gui_service.close_box()
             GS.gui_service.display_box(channel=rutils.get_my_channel())
-            log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(INFO, f"Displayed help screen for {plugin_name} in the channel.", origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value)
+
+    def cmd_importuserprivileges(self, data):
+        from requests import get, HTTPError
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        from JJMumbleBot.lib.privileges import import_user_privileges
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_IMPORT_PRIVILEGES,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_IMPORT_PRIVILEGES,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        url = all_data[1].strip()
+        if rutils.validate_url(url):
+            try:
+                resp = get(url)
+                with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", "wb") as fileHandle:
+                    fileHandle.write(resp.content)
+                field_names = ["user", "level"]
+                if not rutils.validate_csv(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", field_names):
+                    GS.gui_service.quick_gui(
+                        f"The downloaded csv file does not match the required format: {field_names}",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                    return
+                if import_user_privileges():
+                    GS.gui_service.quick_gui(
+                        f"Updated user privileges from the imported permission file!",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                else:
+                    GS.gui_service.quick_gui(
+                        f"Encountered an error updating the user privileges from the imported user privileges file!",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+            except HTTPError:
+                GS.gui_service.quick_gui(
+                    f"An error occurred retrieving the user privileges file from the URL!",
+                    text_type='header',
+                    text_align='left',
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            GS.gui_service.quick_gui(
+                f"Invalid URL provided!",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_importpermissions(self, data):
+        from requests import get, HTTPError
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        from JJMumbleBot.lib.privileges import import_command_permissions
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_IMPORT_PERMISSIONS,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_IMPORT_PERMISSIONS,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        url = all_data[1].strip()
+        if rutils.validate_url(url):
+            try:
+                resp = get(url)
+                with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_CMD_PERMISSIONS}.csv", "wb") as fileHandle:
+                    fileHandle.write(resp.content)
+                field_names = ["command", "level"]
+                if not rutils.validate_csv(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", field_names):
+                    GS.gui_service.quick_gui(
+                        f"The downloaded csv file does not match the required format: {field_names}",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                    return
+                if import_command_permissions():
+                    GS.gui_service.quick_gui(
+                        f"Updated command permissions from the imported permission file!",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                else:
+                    GS.gui_service.quick_gui(
+                        f"Encountered an error updating the command permissions from the imported permission file!",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+            except HTTPError:
+                GS.gui_service.quick_gui(
+                    f"An error occurred retrieving the permissions file from the URL!",
+                    text_type='header',
+                    text_align='left',
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            GS.gui_service.quick_gui(
+                f"Invalid URL provided!",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_getpermission(self, data):
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_GET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_GET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        cmd_name = all_data[1].strip()
+        cmd_data = get_command_privileges(cmd_name)
+        if cmd_data:
+            GS.gui_service.quick_gui(
+                f"Command: {cmd_data['name']}<br>"
+                f"Permission Level:{Privileges(int(cmd_data['level'])).name} ({cmd_data['level']})",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            GS.gui_service.quick_gui(
+                f"Error retrieving command information for: {cmd_name}",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_setpermission(self, data):
+        all_data = data.message.strip().split(' ', 2)
+        if len(all_data) != 3:
+            log(ERROR, CMD_INVALID_SET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+
+        cmd_name = all_data[1].strip()
+        try:
+            permission_level = int(all_data[2])
+        except ValueError:
+            log(ERROR, CMD_INVALID_SET_CMD_PERMISSION,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_CMD_PERMISSION,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if permission_level <= Privileges.BLACKLIST.value or permission_level > Privileges.SUPERUSER.value:
+            log(ERROR, CMD_INVALID_SET_CMD_PERMISSION_RANGE,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_SET_CMD_PERMISSION_RANGE,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        if set_command_privileges(cmd_name=cmd_name, level=permission_level):
+            GS.gui_service.quick_gui(
+                f"Updated command permission level: [{cmd_name}] - [{Privileges(permission_level).name} ({permission_level})]",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            log(ERROR, "ERROR: An error occurred while modifying the command permission!",
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                "ERROR: An error occurred while modifying the command permission!",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_refreshuserprivileges(self, data):
+        from JJMumbleBot.lib.utils.database_utils import UtilityDB
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
+                                               csv_path=f'{get_main_dir()}/cfg/custom_user_privileges.csv',
+                                               update_if_exists=True,
+                                               ignore_file_save=False)
+        log(INFO, "Refreshed custom user privileges and updated the database.",
+            origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        GS.gui_service.quick_gui(
+            "Refreshed custom user privileges and updated the database.",
+            text_type='header',
+            text_align='left',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_refreshpermissions(self, data):
+        from JJMumbleBot.lib.utils.database_utils import UtilityDB
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                          csv_path=f'{get_main_dir()}/cfg/custom_permissions.csv',
+                                          update_if_exists=True,
+                                          ignore_file_save=False)
+        log(INFO, "Refreshed custom command permissions and updated the database.",
+            origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        GS.gui_service.quick_gui(
+            "Refreshed custom command permissions and updated the database.",
+            text_type='header',
+            text_align='left',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_refreshaliases(self, data):
+        from JJMumbleBot.lib.utils.database_utils import UtilityDB
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
+                                       csv_path=f'{get_main_dir()}/cfg/custom_aliases.csv',
+                                       update_if_exists=True,
+                                       ignore_file_save=False)
+        log(INFO, "Refreshed custom aliases and updated the database.",
+            origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        GS.gui_service.quick_gui(
+            "Refreshed custom aliases and updated the database.",
+            text_type='header',
+            text_align='left',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
+
+    def cmd_importaliases(self, data):
+        from requests import get, HTTPError
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        from JJMumbleBot.lib.aliases import import_aliases
+        all_data = data.message.strip().split(' ', 1)
+        if len(all_data) != 2:
+            log(ERROR, CMD_INVALID_IMPORT_ALIASES,
+                origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+            GS.gui_service.quick_gui(
+                CMD_INVALID_IMPORT_ALIASES,
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
+            return
+        url = all_data[1].strip()
+        if rutils.validate_url(url):
+            try:
+                resp = get(url)
+                with open(f"{get_main_dir()}/cfg/downloads/{T_TEMP_ALIASES}.csv", "wb") as fileHandle:
+                    fileHandle.write(resp.content)
+                field_names = ["alias", "command"]
+                if not rutils.validate_csv(f"{get_main_dir()}/cfg/downloads/{T_TEMP_USER_PRIVILEGES}.csv", field_names):
+                    GS.gui_service.quick_gui(
+                        f"The downloaded csv file does not match the required format: {field_names}",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                    return
+                if import_aliases():
+                    GS.gui_service.quick_gui(
+                        f"Updated aliases from the imported aliases file!",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+                else:
+                    GS.gui_service.quick_gui(
+                        f"Encountered an error updating the aliases from the imported aliases file!",
+                        text_type='header',
+                        text_align='left',
+                        box_align='left',
+                        ignore_whisper=True,
+                        user=GS.mumble_inst.users[data.actor]['name'])
+            except HTTPError:
+                GS.gui_service.quick_gui(
+                    f"An error occurred retrieving the aliases file from the URL!",
+                    text_type='header',
+                    text_align='left',
+                    box_align='left',
+                    ignore_whisper=True,
+                    user=GS.mumble_inst.users[data.actor]['name'])
+        else:
+            GS.gui_service.quick_gui(
+                f"Invalid URL provided!",
+                text_type='header',
+                text_align='left',
+                box_align='left',
+                ignore_whisper=True,
+                user=GS.mumble_inst.users[data.actor]['name'])
 
     def cmd_setalias(self, data):
         all_data = data.message.strip().split(' ', 2)
@@ -395,7 +740,7 @@ class Plugin(PluginBase):
             cur_alias_text = f"<font color='{GS.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>Registered Aliases:</font>"
             for i, alias in enumerate(aliases_list):
                 cur_alias_text += f"<br><font color={GS.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>[{alias[0]}]</font> - " \
-                            f"[{BeautifulSoup(alias[1], 'html.parser').get_text()}] "
+                                  f"[{BeautifulSoup(alias[1], 'html.parser').get_text()}] "
                 if i % 50 == 0 and i != 0:
                     GS.gui_service.quick_gui(
                         cur_alias_text,

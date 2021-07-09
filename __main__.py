@@ -27,6 +27,8 @@ if __name__ == "__main__":
                                help='Enter the server password using this parameter.')
     optional_args.add_argument('-forcedefaults', dest='force_defaults', action='store_true', default=False,
                                help="Forces the bot instance to use the default config, aliases, and regenerates the internal database.")
+    optional_args.add_argument('-regeneratedatabase', dest='regenerate_database', action='store_true', default=False,
+                               help='Regenerates the internal database during the bot start-up procedure. This is the equivalent to generating a new empty database.')
     optional_args.add_argument('-cert', dest='server_cert', default=None,
                                help='Enter the bot client certificate path using this parameter.')
     optional_args.add_argument('-generatecert', dest='generate_cert', action='store_true', default=False,
@@ -131,6 +133,13 @@ if __name__ == "__main__":
                                help='Disables stack trace logging for all logged events if enabled in the config file.')
 
     # Main Settings Launch Parameters
+    optional_args.add_argument('-enableintegritycheck', dest='enable_integrity_check', action='store_const',
+                               const="True", default=None,
+                               help='Enables database integrity checking on start-up. This will help prevent conflicts when updating the bot or modifying plugins.')
+    optional_args.add_argument('-disableintegritycheck', dest='disable_integrity_check', action='store_const',
+                               const="False", default=None,
+                               help='Disables database integrity checking on start-up.'
+                                    'Disabling this may cause database conflicts after code updates, plugin updates, or plugin addition/removal!')
     optional_args.add_argument('-usedatabasebackups', dest='use_database_backups', action='store_const', const="True", default=None,
                                help='Enables automatic database backups for the bot service.')
     optional_args.add_argument('-nodatabasebackups', dest='no_database_backups', action='store_const', const="False", default=None,
@@ -194,13 +203,21 @@ if __name__ == "__main__":
 
     if args.force_defaults:
         dir_utils.clear_directory(f'{dir_utils.get_main_dir()}/cfg/')
+    if args.regenerate_database:
+        dir_utils.remove_file('jjmumblebot.db', f'{dir_utils.get_main_dir()}/cfg/')
 
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
         copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
-    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv'):
-        copy(f'{dir_utils.get_main_dir()}/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/global_aliases.csv')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv'):
+        copy(f'{dir_utils.get_main_dir()}/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv'):
+        copy(f'{dir_utils.get_main_dir()}/templates/permissions_template.csv', f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv'):
+        copy(f'{dir_utils.get_main_dir()}/templates/user_privileges_template.csv', f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/plugins/'):
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/plugins/')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/downloads/'):
+        dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/downloads/')
 
     global_settings.cfg = configparser.ConfigParser()
     global_settings.cfg.read(f'{dir_utils.get_main_dir()}/cfg/config.ini')
@@ -321,6 +338,10 @@ if __name__ == "__main__":
     if args.log_trace:
         global_settings.cfg[C_LOGGING][P_LOG_TRACE] = args.log_trace
     # Overwrite main settings if the launch parameter is provided.
+    if args.enable_integrity_check:
+        global_settings.cfg[C_MAIN_SETTINGS][P_DB_INTEGRITY] = args.enable_integrity_check
+    if args.disable_integrity_check:
+        global_settings.cfg[C_MAIN_SETTINGS][P_DB_INTEGRITY] = args.disable_integrity_check
     if args.use_database_backups:
         global_settings.cfg[C_MAIN_SETTINGS][P_DB_BACKUP] = args.use_database_backups
     if args.no_database_backups:

@@ -32,6 +32,14 @@
         <code>!restart</code>: Completely stops the bot and restarts it.<br>
         <code>!saferestart</code>: Completely stops the bot and restarts it.<br>
         <code>!about</code>: Displays the bots about screen.<br>
+        <code>!refreshuserprivileges</code>: Refreshes the custom user privileges from the config folder and updates the database.<br>
+        <code>!refreshpermissions</code>: Refreshes the custom command permissions from the config folder and updates the database.<br>
+        <code>!refreshaliases</code>: Refreshes the custom aliases from the config folder and updates the database.<br>
+        <code>!importuserprivileges 'url_to_csv_file'</code>: Imports user privileges a csv file downloaded from the provided URL and updates the database.<br>
+        <code>!importpermissions 'url_to_csv_file'</code>: Imports command permissions a csv file downloaded from the provided URL and updates the database.<br>
+        <code>!importaliases 'url_to_csv_file'</code>: Imports aliases from a csv file downloaded from the provided URL and updates the database.<br>
+        <code>!getpermission 'commmand_name'</code>: Displays the command's permission level.<br>
+        <code>!setpermission 'commmand_name' 'permission_level'</code>: Sets the command's permission level to the number provided.<br>
         <code>!setalias 'alias_name' 'command'|'command'|...</code>: Registers an alias for single/multi-commands.<br>
         <code>!removealias 'alias_name'</code>: Removes a registered alias by the given name.<br>
         <code>!clearaliases</code>: Removes all registered aliases.<br>
@@ -44,7 +52,7 @@
             <summary>Plugin Metadata</summary>
             <pre><code>
     [Plugin Information]
-    PluginVersion = 5.0.0
+    PluginVersion = 5.2.0
     PluginName = Core Commands
     PluginDescription = The Core Commands plugin handles core functionality commands.
     PluginLanguage = EN
@@ -64,6 +72,14 @@
                     "resetcomment",
                     "pguistresstest",
                     "help",
+                    "refreshuserprivileges",
+                    "refreshpermissions",
+                    "refreshaliases",
+                    "importuserprivileges",
+                    "importpermissions",
+                    "importaliases",
+                    "getpermission",
+                    "setpermission",
                     "setalias",
                     "aliases",
                     "removealias",

@@ -129,7 +129,7 @@ def initialize_web(ip, port, use_https=False, ssl_cert=None, ssl_key=None):
 def generate_cert():
     from os import path
     from subprocess import call
-    from JJMumbleBot.lib.utils.dir_utils import get_plugin_data_dir, get_main_dir, get_core_plugin_dir
+    from JJMumbleBot.lib.utils.dir_utils import get_plugin_data_dir
     import configparser
     if not path.exists(f'{get_plugin_data_dir()}/web_server/web_cert.pem') or not path.exists(f'{get_plugin_data_dir()}/web_server/web_key.pem'):
         call(['openssl', 'req', '-x509', '-nodes', '-days', '3650',
