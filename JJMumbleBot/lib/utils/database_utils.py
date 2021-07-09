@@ -902,7 +902,7 @@ class UtilityDB:
                                 origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
                         continue
                     # Insert new user and update privileges if it is not already present in the database.
-                    add_to_privileges(username=row['command'].strip(), level=int(row['level']),
+                    add_to_privileges(username=row['username'].strip(), level=int(row['level']),
                                       ignore_file_save=ignore_file_save)
                 except Error:
                     log(ERROR, "Encountered an error while importing plugin privileges data into the database.",
