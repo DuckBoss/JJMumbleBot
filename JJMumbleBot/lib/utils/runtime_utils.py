@@ -346,12 +346,12 @@ def check_up_time() -> str:
 
 
 def validate_url(url: str) -> bool:
-    from requests import get, ConnectionError
+    from requests import get, exceptions
     try:
         resp = get(url)
         if resp:
             return True
-    except ConnectionError:
+    except exceptions.ConnectionError:
         return False
     return False
 
