@@ -27,6 +27,8 @@ if __name__ == "__main__":
                                help='Enter the server password using this parameter.')
     optional_args.add_argument('-forcedefaults', dest='force_defaults', action='store_true', default=False,
                                help="Forces the bot instance to use the default config, aliases, and regenerates the internal database.")
+    optional_args.add_argument('-regeneratedatabase', dest='regenerate_database', action='store_true', default=False,
+                               help='Regenerates the internal database during the bot start-up procedure. This is the equivalent to generating a new empty database.')
     optional_args.add_argument('-cert', dest='server_cert', default=None,
                                help='Enter the bot client certificate path using this parameter.')
     optional_args.add_argument('-generatecert', dest='generate_cert', action='store_true', default=False,
@@ -201,6 +203,8 @@ if __name__ == "__main__":
 
     if args.force_defaults:
         dir_utils.clear_directory(f'{dir_utils.get_main_dir()}/cfg/')
+    if args.regenerate_database:
+        dir_utils.remove_file('jjmumblebot.db', f'{dir_utils.get_main_dir()}/cfg/')
 
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/config.ini'):
         copy(f'{dir_utils.get_main_dir()}/templates/config_template.ini', f'{dir_utils.get_main_dir()}/cfg/config.ini')
