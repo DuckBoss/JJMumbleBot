@@ -211,10 +211,10 @@ def set_privileges(username, level, sender) -> bool:
     return False
 
 
-def add_to_privileges(username, level) -> bool:
-    if InsertDB.insert_new_user(db_conn=get_memory_db(), username=username):
+def add_to_privileges(username, level, ignore_file_save=False) -> bool:
+    if InsertDB.insert_new_user(db_conn=get_memory_db(), username=username, ignore_file_save=ignore_file_save):
         if InsertDB.insert_new_permission(db_conn=get_memory_db(), username=username,
-                                          permission_level=int(level)):
+                                          permission_level=int(level), ignore_file_save=ignore_file_save):
             log(INFO,
                 f"A new user: [{username}] has been added to the user privileges.",
                 origin=L_USER_PRIV, print_mode=PrintMode.VERBOSE_PRINT.value)

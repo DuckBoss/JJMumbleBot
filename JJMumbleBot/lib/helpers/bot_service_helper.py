@@ -87,7 +87,7 @@ class BotServiceHelper:
                 glob_files = [f for f in glob_files if path.isfile(f) and "__pycache__" not in f]
                 filenames.extend(glob_files)
 
-            hash_func = md5() # nosec
+            hash_func = md5()  # nosec
             for fn in filenames:
                 if path.isfile(fn):
                     hash_func.update(open(fn, "rb").read())
@@ -115,8 +115,27 @@ class BotServiceHelper:
         log(INFO, "######### Importing Custom Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
-                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv',
+                                       update_if_exists=False)
         log(INFO, "######### Imported Custom Aliases #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+
+        # Import custom command permissions into the database.
+        log(INFO, "######### Importing Custom Command Permissions #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+        UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv',
+                                       update_if_exists=False)
+        log(INFO, "######### Imported Custom Command Permissions #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+
+        # Import custom user privileges into the database.
+        log(INFO, "######### Importing Custom User Privileges #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+        UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv',
+                                       update_if_exists=False)
+        log(INFO, "######### Imported Custom User Privileges #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         global_settings.bot_plugins = {}
@@ -260,7 +279,7 @@ class BotServiceHelper:
                 glob_files = [f for f in glob_files if path.isfile(f) and "__pycache__" not in f]
                 filenames.extend(glob_files)
 
-            hash_func = md5() # nosec
+            hash_func = md5()  # nosec
             for fn in filenames:
                 if path.isfile(fn):
                     hash_func.update(open(fn, "rb").read())
@@ -287,8 +306,27 @@ class BotServiceHelper:
         log(INFO, "######### Importing Custom Aliases #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
-                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
+                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv',
+                                       update_if_exists=False)
         log(INFO, "######### Imported Custom Aliases #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+
+        # Import custom command permissions into the database.
+        log(INFO, "######### Importing Custom Command Permissions #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+        UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
+                                          csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv',
+                                          update_if_exists=False)
+        log(INFO, "######### Imported Custom Command Permissions #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+
+        # Import custom user privileges into the database.
+        log(INFO, "######### Importing Custom User Privileges #########",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+        UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
+                                               csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv',
+                                               update_if_exists=False)
+        log(INFO, "######### Imported Custom User Privileges #########",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         global_settings.bot_plugins = {}

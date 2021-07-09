@@ -14,13 +14,14 @@ setcomment,4
 resetcomment,4
 pguistresstest,5
 help,1
+refreshuserprivileges,5
 refreshpermissions,5
 refreshaliases,5
 importuserprivileges,5
 importpermissions,5
 importaliases,5
 getpermission,1
-changepermission,5
+setpermission,5
 setalias,4
 aliases,1
 removealias,4

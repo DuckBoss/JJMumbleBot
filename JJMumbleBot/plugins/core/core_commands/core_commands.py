@@ -509,7 +509,7 @@ class Plugin(PluginBase):
                 ignore_whisper=True,
                 user=GS.mumble_inst.users[data.actor]['name'])
 
-    def cmd_changepermission(self, data):
+    def cmd_setpermission(self, data):
         all_data = data.message.strip().split(' ', 2)
         if len(all_data) != 3:
             log(ERROR, CMD_INVALID_SET_CMD_PERMISSION,
@@ -567,12 +567,30 @@ class Plugin(PluginBase):
                 ignore_whisper=True,
                 user=GS.mumble_inst.users[data.actor]['name'])
 
+    def cmd_refreshuserprivileges(self, data):
+        from JJMumbleBot.lib.utils.database_utils import UtilityDB
+        from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+        UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
+                                               csv_path=f'{get_main_dir()}/cfg/custom_permissions.csv',
+                                               update_if_exists=True,
+                                               ignore_file_save=False)
+        log(INFO, "Refreshed custom user privileges and updated the database.",
+            origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        GS.gui_service.quick_gui(
+            "Refreshed custom user privileges and updated the database.",
+            text_type='header',
+            text_align='left',
+            box_align='left',
+            ignore_whisper=True,
+            user=GS.mumble_inst.users[data.actor]['name'])
+
     def cmd_refreshpermissions(self, data):
         from JJMumbleBot.lib.utils.database_utils import UtilityDB
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
         UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
                                           csv_path=f'{get_main_dir()}/cfg/custom_permissions.csv',
-                                          update_if_exists=True)
+                                          update_if_exists=True,
+                                          ignore_file_save=False)
         log(INFO, "Refreshed custom command permissions and updated the database.",
             origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
         GS.gui_service.quick_gui(
@@ -588,7 +606,8 @@ class Plugin(PluginBase):
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
                                        csv_path=f'{get_main_dir()}/cfg/custom_aliases.csv',
-                                       update_if_exists=True)
+                                       update_if_exists=True,
+                                       ignore_file_save=False)
         log(INFO, "Refreshed custom aliases and updated the database.",
             origin=L_COMMAND, error_type=CMD_INVALID_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
         GS.gui_service.quick_gui(

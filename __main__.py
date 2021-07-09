@@ -208,6 +208,8 @@ if __name__ == "__main__":
         copy(f'{dir_utils.get_main_dir()}/templates/aliases_template.csv', f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv'):
         copy(f'{dir_utils.get_main_dir()}/templates/permissions_template.csv', f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv')
+    if not path.exists(f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv'):
+        copy(f'{dir_utils.get_main_dir()}/templates/permissions_template.csv', f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/plugins/'):
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/plugins/')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/downloads/'):

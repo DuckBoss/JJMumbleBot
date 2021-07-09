@@ -877,7 +877,39 @@ class UtilityDB:
         return True
 
     @staticmethod
-    def import_privileges_to_db(db_conn, csv_path, update_if_exists=False):
+    def import_user_privileges_to_db(db_conn, csv_path, update_if_exists=False, ignore_file_save=True):
+        from JJMumbleBot.lib.privileges import add_to_privileges
+        with open(csv_path, mode='r') as csv_file:
+            csvr = DictReader(csv_file)
+            for i, row in enumerate(csvr):
+                try:
+                    # Retrieve the user information in the database.
+                    user_data = GetDB.get_user_data(db_cursor=db_conn.cursor(), user_name=row['username'].strip())
+                    # Check if the username exists in the database already.
+                    if user_data is not None:
+                        # Skip user privileges import if already present in the database.
+                        log(INFO,
+                            f"The user '{row['username'].strip()}' already exists in the database. Skipping username privileges import...",
+                            origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+                        # Update user privileges if it exists and the flag is set.
+                        if update_if_exists:
+                            UpdateDB.update_user_privileges(db_conn=db_conn,
+                                                            user_name=row['username'].strip(),
+                                                            level=int(row['level']),
+                                                            ignore_file_save=ignore_file_save)
+                            log(INFO,
+                                f"The user privileges for '{row['username'].strip()}' has been updated in the database.",
+                                origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+                        continue
+                    # Insert new user and update privileges if it is not already present in the database.
+                    add_to_privileges(username=row['command'].strip(), level=int(row['level']),
+                                      ignore_file_save=ignore_file_save)
+                except Error:
+                    log(ERROR, "Encountered an error while importing plugin privileges data into the database.",
+                        origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
+
+    @staticmethod
+    def import_privileges_to_db(db_conn, csv_path, update_if_exists=False, ignore_file_save=True):
         plugin_name = csv_path.split('/')[-2]
         with open(csv_path, mode='r') as csv_file:
             csvr = DictReader(csv_file)
@@ -895,21 +927,22 @@ class UtilityDB:
                         if update_if_exists:
                             UpdateDB.update_command_privileges(db_conn=db_conn,
                                                                command_name=row['command'].strip(),
-                                                               permission_level=int(row['level']))
+                                                               permission_level=int(row['level']),
+                                                               ignore_file_save=ignore_file_save)
                             log(INFO,
                                 f"The command '{row['command'].strip()}' has been updated in the database.",
                                 origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
                         continue
                     # Insert new command if it is not already present in the database.
                     InsertDB.insert_new_command(db_conn, plugin_name=plugin_name, command_name=row['command'].strip(),
-                                                permission_level=int(row['level']), ignore_file_save=True)
+                                                permission_level=int(row['level']), ignore_file_save=ignore_file_save)
                 except Error:
                     log(ERROR, "Encountered an error while importing plugin privileges data into the database.",
                         origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
                     continue
 
     @staticmethod
-    def import_aliases_to_db(db_conn, csv_path, update_if_exists=False):
+    def import_aliases_to_db(db_conn, csv_path, update_if_exists=False, ignore_file_save=True):
         file_name = csv_path.split('/')[-2]
         with open(csv_path, mode='r') as csv_file:
             csvr = DictReader(csv_file)
@@ -924,14 +957,15 @@ class UtilityDB:
                         if update_if_exists:
                             UpdateDB.update_alias(db_conn=db_conn,
                                                   alias_name=row['alias'].strip(),
-                                                  commands=row['command'].strip())
+                                                  commands=row['command'].strip(),
+                                                  ignore_file_save=ignore_file_save)
                             log(INFO,
                                 f"The alias '{row['alias'].strip()}' has been updated in the database.",
                                 origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
                         continue
                     # Insert new alias if it is not already present in the database.
                     InsertDB.insert_new_alias(db_conn, alias_name=row['alias'].strip(), commands=row['command'].strip(),
-                                              ignore_file_save=True)
+                                              ignore_file_save=ignore_file_save)
                 except Error:
                     log(ERROR,
                         f"Encountered an error while importing a plugin alias from {file_name} plugin into the database.",
