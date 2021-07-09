@@ -446,6 +446,8 @@ class BotServiceHelper:
         if not path.exists(f'{dir_utils.get_main_dir()}/cfg/backups'):
             makedirs(f'{dir_utils.get_main_dir()}/cfg/backups')
         if not path.exists(f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.db'):
+            log(WARNING, "The internal database is missing, so a backup could not be created!",
+                origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
             return None
         cur_time = str(datetime.now())[:19].replace(":", "_").replace(" ", "")
         src_file = f'{dir_utils.get_main_dir()}/cfg/jjmumblebot.db'
