@@ -571,7 +571,7 @@ class Plugin(PluginBase):
         from JJMumbleBot.lib.utils.database_utils import UtilityDB
         from JJMumbleBot.lib.utils.dir_utils import get_main_dir
         UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
-                                               csv_path=f'{get_main_dir()}/cfg/custom_permissions.csv',
+                                               csv_path=f'{get_main_dir()}/cfg/custom_user_privileges.csv',
                                                update_if_exists=True,
                                                ignore_file_save=False)
         log(INFO, "Refreshed custom user privileges and updated the database.",
