@@ -1,0 +1,2 @@
+[bandit]
+tests: B303, B607, B105
