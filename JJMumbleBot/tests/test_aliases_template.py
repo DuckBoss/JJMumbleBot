@@ -7,7 +7,7 @@ class TestAliasesTemplate:
         self.alias_file_name = f"{get_main_dir()}/templates/aliases_template.csv"
         self.alias_header_list = []
         try:
-            with open(self.alias_file_name, mode='rb') as csv_file:
+            with open(self.alias_file_name, mode='r') as csv_file:
                 csvr = reader(csv_file)
                 self.alias_header_list = next(csvr)
         except IOError:

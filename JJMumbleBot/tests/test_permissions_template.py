@@ -7,7 +7,7 @@ class TestPermissionTemplate:
         self.permissions_file_name = f"{get_main_dir()}/templates/permissions_template.csv"
         self.permissions_header_list = []
         try:
-            with open(self.permissions_file_name, mode='rb') as csv_file:
+            with open(self.permissions_file_name, mode='r') as csv_file:
                 csvr = reader(csv_file)
                 self.permissions_header_list = next(csvr)
         except IOError:
