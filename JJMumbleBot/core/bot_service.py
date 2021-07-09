@@ -38,7 +38,7 @@ class BotService:
         # Initialize logging services.
         initialize_logging()
 
-        log(INFO, "######### Initializing JJMumbleBot #########",
+        log(INFO, "######### Initializing JJMumbleBot",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         # Initialize up-time tracking.
         runtime_settings.start_time = datetime.now()
@@ -48,7 +48,7 @@ class BotService:
         global_settings.cmd_queue = QueueHandler([], maxlen=runtime_settings.cmd_queue_lim)
         # Initialize command history tracking.
         global_settings.cmd_history = CMDQueue(runtime_settings.cmd_hist_lim)
-        log(INFO, "######### Initializing Internal Database #########",
+        log(INFO, "######### Initializing Internal Database",
             origin=L_DATABASE, print_mode=PrintMode.REG_PRINT.value)
         # Back up internal database.
         if global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_DB_BACKUP, fallback=False):
@@ -58,7 +58,7 @@ class BotService:
                     origin=L_DATABASE, print_mode=PrintMode.REG_PRINT.value)
         # Initialize internal database.
         global_settings.mumble_db = init_database()
-        log(INFO, "######### Initialized Internal Database #########",
+        log(INFO, "######### Initialized Internal Database",
             origin=L_DATABASE, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize major directories.
         if global_settings.cfg.get(C_MEDIA_SETTINGS, P_TEMP_MED_DIR, fallback=None):
@@ -75,11 +75,11 @@ class BotService:
                 P_PERM_MEDIA_DIR] = f'{dir_utils.get_main_dir()}/cfg/permanent_media_directory'
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/images')
         dir_utils.make_directory(f'{global_settings.cfg[C_MEDIA_SETTINGS][P_TEMP_MED_DIR]}/internal/audio')
-        log(INFO, "######### Initialized Temporary Directories #########",
+        log(INFO, "######### Initialized Temporary Directories",
             origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize PGUI system.
         global_settings.gui_service = PseudoGUI()
-        log(INFO, "######### Initialized PGUI #########",
+        log(INFO, "######### Initialized PGUI",
             origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Initialize VLC interface.
         global_settings.aud_interface = AudioLibraryInterface()
@@ -91,12 +91,12 @@ class BotService:
                 origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         else:
             BotServiceHelper.initialize_plugins()
-        log(INFO, "######### Initializing Mumble Client #########",
+        log(INFO, "######### Initializing Mumble Client",
             origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Retrieve mumble client data from configs.
         mumble_login_data = BotServiceHelper.retrieve_mumble_data(serv_ip, serv_port, serv_pass)
         self.initialize_mumble(mumble_login_data)
-        log(INFO, "######### Initialized Mumble Client #########",
+        log(INFO, "######### Initialized Mumble Client",
             origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
         # Start runtime loop.
         BotService.loop()

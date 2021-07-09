@@ -65,7 +65,7 @@ class BotServiceHelper:
         # If the version is different, or plugin checksum is modified,
         # clear plugins, plugins_help, and commands tables on launch.
         if global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_DB_INTEGRITY, fallback=True):
-            log(INFO, "######### Checking Database Integrity #########",
+            log(INFO, "######### Checking Database Integrity",
                 origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
             all_core_plugins = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
@@ -108,41 +108,41 @@ class BotServiceHelper:
                 DeleteDB.delete_all_plugins_help(db_conn=get_memory_db())
                 DeleteDB.delete_all_plugins(db_conn=get_memory_db())
 
-            log(INFO, "######### Database Integrity Verified #########",
+            log(INFO, "######### Database Integrity Verified",
                 origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Import custom aliases into the database.
-        log(INFO, "######### Importing Custom Aliases #########",
+        log(INFO, "######### Importing Custom Aliases",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
                                        csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv',
                                        update_if_exists=False)
-        log(INFO, "######### Imported Custom Aliases #########",
+        log(INFO, "######### Imported Custom Aliases",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Import custom command permissions into the database.
-        log(INFO, "######### Importing Custom Command Permissions #########",
+        log(INFO, "######### Importing Custom Command Permissions",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
-                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv',
-                                       update_if_exists=False)
-        log(INFO, "######### Imported Custom Command Permissions #########",
+                                          csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv',
+                                          update_if_exists=False)
+        log(INFO, "######### Imported Custom Command Permissions",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Import custom user privileges into the database.
-        log(INFO, "######### Importing Custom User Privileges #########",
+        log(INFO, "######### Importing Custom User Privileges",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
-                                       csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv',
-                                       update_if_exists=False)
-        log(INFO, "######### Imported Custom User Privileges #########",
+                                               csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv',
+                                               update_if_exists=False)
+        log(INFO, "######### Imported Custom User Privileges",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         global_settings.bot_plugins = {}
         safe_mode_plugins = loads(global_settings.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_SAFE))
 
         # Load Core Plugins
-        log(INFO, "######### Initializing Core Plugins - Safe Mode #########",
+        log(INFO, "######### Initializing Core Plugins - Safe Mode",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
@@ -190,11 +190,11 @@ class BotServiceHelper:
                 # Create directory for user modifiable plugin-specific data and configs.
                 dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         sys.path.pop(0)
-        log(INFO, "######### Core Plugins Initialized - Safe Mode #########",
+        log(INFO, "######### Core Plugins Initialized - Safe Mode",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Load Extension Plugins
-        log(INFO, "######### Initializing Extension Plugins - Safe Mode #########",
+        log(INFO, "######### Initializing Extension Plugins - Safe Mode",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/extensions')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
@@ -244,7 +244,7 @@ class BotServiceHelper:
                 dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         save_memory_db_to_file()
         sys.path.pop(0)
-        log(INFO, "######### Extension Plugins Initialized - Safe Mode #########",
+        log(INFO, "######### Extension Plugins Initialized - Safe Mode",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     # Initializes all available plugins.
@@ -259,7 +259,7 @@ class BotServiceHelper:
         # If the version is different, or plugin checksum is modified,
         # clear plugins, plugins_help, and commands tables on launch.
         if global_settings.cfg.getboolean(C_MAIN_SETTINGS, P_DB_INTEGRITY, fallback=True):
-            log(INFO, "######### Checking Database Integrity #########",
+            log(INFO, "######### Checking Database Integrity",
                 origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
             all_core_plugins = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
@@ -275,7 +275,8 @@ class BotServiceHelper:
                 glob_files = [f for f in glob_files if path.isfile(f) and "__pycache__" not in f]
                 filenames.extend(glob_files)
             for ext_plugin in all_ext_plugins:
-                glob_files = glob.glob(f'{dir_utils.get_main_dir()}/plugins/extensions/{ext_plugin}/**/*', recursive=True)
+                glob_files = glob.glob(f'{dir_utils.get_main_dir()}/plugins/extensions/{ext_plugin}/**/*',
+                                       recursive=True)
                 glob_files = [f for f in glob_files if path.isfile(f) and "__pycache__" not in f]
                 filenames.extend(glob_files)
 
@@ -289,7 +290,8 @@ class BotServiceHelper:
                                                                 version=META_VERSION,
                                                                 plugins_checksum=plugins_checksum)
             if integrity_check is False:
-                log(WARNING, "Database integrity mismatch identified! Creating database backup and rebuilding database...",
+                log(WARNING,
+                    "Database integrity mismatch identified! Creating database backup and rebuilding database...",
                     origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
                 db_backup = BotServiceHelper.backup_database()
                 if db_backup:
@@ -299,40 +301,40 @@ class BotServiceHelper:
                 DeleteDB.delete_all_plugins_help(db_conn=get_memory_db())
                 DeleteDB.delete_all_plugins(db_conn=get_memory_db())
 
-            log(INFO, "######### Database Integrity Verified #########",
+            log(INFO, "######### Database Integrity Verified",
                 origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Import custom aliases into the database.
-        log(INFO, "######### Importing Custom Aliases #########",
+        log(INFO, "######### Importing Custom Aliases",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_aliases_to_db(db_conn=get_memory_db(),
                                        csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_aliases.csv',
                                        update_if_exists=False)
-        log(INFO, "######### Imported Custom Aliases #########",
+        log(INFO, "######### Imported Custom Aliases",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Import custom command permissions into the database.
-        log(INFO, "######### Importing Custom Command Permissions #########",
+        log(INFO, "######### Importing Custom Command Permissions",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_privileges_to_db(db_conn=get_memory_db(),
                                           csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_permissions.csv',
                                           update_if_exists=False)
-        log(INFO, "######### Imported Custom Command Permissions #########",
+        log(INFO, "######### Imported Custom Command Permissions",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Import custom user privileges into the database.
-        log(INFO, "######### Importing Custom User Privileges #########",
+        log(INFO, "######### Importing Custom User Privileges",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         UtilityDB.import_user_privileges_to_db(db_conn=get_memory_db(),
                                                csv_path=f'{dir_utils.get_main_dir()}/cfg/custom_user_privileges.csv',
                                                update_if_exists=False)
-        log(INFO, "######### Imported Custom User Privileges #########",
+        log(INFO, "######### Imported Custom User Privileges",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         global_settings.bot_plugins = {}
 
         # Load Core Plugins
-        log(INFO, "######### Initializing Core Plugins #########",
+        log(INFO, "######### Initializing Core Plugins",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/core')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/core') if
@@ -380,11 +382,11 @@ class BotServiceHelper:
             # Create directory for user modifiable plugin-specific data and configs.
             dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         sys.path.pop(0)
-        log(INFO, "######### Core Plugins Initialized #########",
+        log(INFO, "######### Core Plugins Initialized",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
         # Load Extension Plugins
-        log(INFO, "######### Initializing Extension Plugins #########",
+        log(INFO, "######### Initializing Extension Plugins",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
         sys.path.insert(0, f'{dir_utils.get_main_dir()}/plugins/extensions')
         all_imports = [name for name in listdir(f'{dir_utils.get_main_dir()}/plugins/extensions') if
@@ -433,7 +435,7 @@ class BotServiceHelper:
             dir_utils.make_directory(f'{dir_utils.get_plugin_data_dir()}/{p_file}')
         save_memory_db_to_file()
         sys.path.pop(0)
-        log(INFO, "######### Extension Plugins Initialized #########",
+        log(INFO, "######### Extension Plugins Initialized",
             origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
 
     @staticmethod
