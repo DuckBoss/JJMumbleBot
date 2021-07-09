@@ -87,7 +87,7 @@ class BotServiceHelper:
                 glob_files = [f for f in glob_files if path.isfile(f) and "__pycache__" not in f]
                 filenames.extend(glob_files)
 
-            hash_func = md5()
+            hash_func = md5() # nosec
             for fn in filenames:
                 if path.isfile(fn):
                     hash_func.update(open(fn, "rb").read())
@@ -260,7 +260,7 @@ class BotServiceHelper:
                 glob_files = [f for f in glob_files if path.isfile(f) and "__pycache__" not in f]
                 filenames.extend(glob_files)
 
-            hash_func = md5()
+            hash_func = md5() # nosec
             for fn in filenames:
                 if path.isfile(fn):
                     hash_func.update(open(fn, "rb").read())
