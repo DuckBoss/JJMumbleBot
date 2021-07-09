@@ -310,7 +310,6 @@ def get_users_in_my_channel():
 
 
 def make_channel(root_channel, channel_name, temporary=False):
-    from json import loads
     allowed_channels = loads(global_settings.cfg[C_PLUGIN_SETTINGS][P_PLUG_ALLOWED_CHANNELS])
     if allowed_channels is not None:
         for chan_name in allowed_channels:
