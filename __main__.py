@@ -2,6 +2,7 @@ import JJMumbleBot.core.bot_service as service
 import JJMumbleBot.settings.global_settings as global_settings
 from JJMumbleBot.lib.errors import SysArgError
 from JJMumbleBot.lib.utils import dir_utils
+from JJMumbleBot.lib.utils.runtime_utils import validate_cfg
 from JJMumbleBot.lib.resources.strings import *
 import argparse
 import configparser
@@ -218,6 +219,15 @@ if __name__ == "__main__":
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/plugins/')
     if not path.exists(f'{dir_utils.get_main_dir()}/cfg/downloads/'):
         dir_utils.make_directory(f'{dir_utils.get_main_dir()}/cfg/downloads/')
+
+    # Validate that the config.ini file has all the parameters included in the template to ensure integrity.
+    cfg_integrity_check = validate_cfg(cfg_path=f"{dir_utils.get_main_dir()}/cfg/config.ini",
+                                       template_path=f"{dir_utils.get_main_dir()}/templates/config_template.ini")
+    if not cfg_integrity_check:
+        raise AssertionError("The config.ini file is either missing options or has options that don't match "
+                             "the expected config options required to start the bot!\n"
+                             "Please make sure your config.ini file is updated and contains "
+                             "the options from the template_config.ini file in the /templates/ directory!")
 
     global_settings.cfg = configparser.ConfigParser()
     global_settings.cfg.read(f'{dir_utils.get_main_dir()}/cfg/config.ini')
