@@ -17,27 +17,34 @@
         <p><b>Note: Some third-party plugins may require additional dependencies</b></p>
         <h3 id="dependency-installation">Dependency Installation/Updating</h3>
         <ul>
-            <li>Download and install python 3.7+
+            <li><h6>Download and install python 3.7+</h6>
                 <ul>
                     <li>Linux: Depends on the distribution.</li>
                     <li>Mac OSX: <a href="https://www.python.org/downloads/mac-osx/">Mac OSX Python Downloads</a></li>
                     <li>Windows: <a href="https://www.python.org/downloads/windows/">Windows Python Downloads</a></li>
                 </ul>
             </li>
-            <li>Installing project dependencies
+            <li><h6>Installing Core Project Dependencies</h6>
                 <ul>
                     <li><code>pip install -r requirements/requirements.txt</code> OR <code>python3 -m pip install -r requirements/requirements.txt</code></li>
                     <li><code>pip install git+git://github.com/azlux/pymumble@pymumble_py3</code> OR <code>python3 -m pip install git+git://github.com/azlux/pymumble@pymumble_py3</code></li>
                     <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
                 </ul>
             </li>
-            <li>Updating project dependencies
+            <li>
+                <h6>Web Server Dependencies</h6>
+                <ul>
+                    <li>You don't need to do this if you're disabling the web interface.</li>
+                    <li><code>pip install -r requirements/web_server.txt</code> OR <code>python3 -m pip install -r requirements/web_server.txt</code><br/></li>
+                </ul>
+            </li>
+            <li><h6>Updating project dependencies</h6>
                 <ul>
                     <li><code>pip install --upgrade -r requirements/requirements.txt</code> OR <code>python3 -m pip install --upgrade -r requirements/requirements.txt</code></li>
                     <li><code>pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code> OR <code>python3 -m pip install --upgrade git+git://github.com/azlux/pymumble@pymumble_py3</code></li>
                     <li><b>Note: You must have libopus installed and installation varies by operating system.</b></li>
                 </ul>
-            </li>
+            </li><br/>
             <li>Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in your murmur.ini file)</li>
             <li>JJMumbleBot has been tested on Linux/Windows platforms. MacOS is untested, but it should theoretically work.</li>
         </ul>
