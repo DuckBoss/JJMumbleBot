@@ -20,6 +20,9 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
   - <b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.
   - <b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.
 
+  ### Built-in Web Interface
+  - <b>A fully featured web interface is included in JJMumbleBot by default</b>
+
   ### Built-in Plugins
   ####Fast Multi-threaded, responsive, plugin-based system for easy expandability.
   The list of features shown under each plugin is not inclusive of all the features the plugins contain,
