@@ -24,7 +24,7 @@ A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive feat
   - <b>A fully featured web interface is included in JJMumbleBot by default</b>
 
   ### Built-in Plugins
-  ####Fast Multi-threaded, responsive, plugin-based system for easy expandability.
+  #### Fast Multi-threaded, responsive, plugin-based system for easy expandability.
   The list of features shown under each plugin is not inclusive of all the features the plugins contain,
   but only the most important features.<br/>
   **This means that most plugins have more features than the ones listed below!**
