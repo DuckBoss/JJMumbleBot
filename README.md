@@ -115,4 +115,3 @@
 </details>
 
 ### Got any questions or concerns? Please post an issue report 👋
-#### Or email me @ <a href="mailto:duckboss@kakao.com">duckboss@kakao.com</a>
