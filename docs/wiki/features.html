@@ -8,84 +8,161 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="../js/insert_html.js"></script>
     <link rel="stylesheet" href="../css/content-pages.css" crossorigin="anonymous">
+    <style>
+        table, th, td {
+            border: 1px solid rgba(172, 160, 141, 0.1);
+        }
+        th, td {
+            padding: 10px;
+        }
+        .td-elem-1 {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <nav id="table_of_contents"></nav>
     <div class="main-content">
-        <h2 id="page-title">Features 🚀</h2>
+        <h2 id="page-title"> Features  🔥 </h2>
         <hr>
+        <h4> Feature-rich Command, Alias, and User Privileges System </h4>
         <ul>
-            <li><h5>Built-in Plugins</h5> Fast, responsive, plugin-based system for easy expandability.
-                <ul>
-                    <li><h5>Media Plugin</h5> Streams Youtube/SoundCloud audio in the channel.
-                        <ul>
-                            <li>Youtube Playlist Support</li>
-                            <li>Video Thumbnails</li>
-                            <li>Queue System</li>
-                            <li>Direct Youtube/SoundCloud Link Support</li>
-                            <li>Search/Browse Youtube Support</li>
-                            <li>Mumble Whisper Support</li>
-                        </ul>
-                    </li>
-                    <li><h5>Images Plugin</h5> Posts images from urls or from a local directory in the channel.
-                        <ul>
-                            <li>Local Images Support</li>
-                            <li>Direct Link Images Support</li>
-                        </ul>
-                    </li>
-                    <li><h5>Sound Board Plugin</h5> Sound Board that plays short wav audio clips in the channel.
-                        <ul>
-                            <li>Local Audio Clips Support</li>
-                            <li>Download and Play Audio Clips</li>
-                            <li>Mumble Whisper Support</li>
-                        </ul>
-                    </li>
-                    <li><h5>Randomizer Plugin</h5> Do custom dice rolls, coin flips, etc in the channel.
-                        <ul>
-                            <li>Dice Rolls</li>
-                            <li>Coin Flips</li>
-                        </ul>
-                    </li>
-                    <li><h5>Whisper Plugin</h5> Mumble Whisper support for audio data.</li>
-                    <li><h5>Bot Commands Plugin</h5> Enhanced interactivity and management commands.</li>
-                    <li><h5><a href="https://duckboss.github.io/JJMumbleBot/pages/table_of_contents.html">Full list of built-in
-                        plugins</a></h5></li>
-                </ul>
-            </li>
-            <li><h5>Web Interface</h5> Control and manage the bot with an optional web interface.</li>
-            <li><h5>Auto-Updater</h5> A System to update dependencies through bot commands.</li>
-            <li><h5><a href="https://duckboss.github.io/JJMumbleBot/pages/general/plugins.html">Support for custom
-                plugins</a></h5></li>
-            <li><h5>Pseudo-GUI System [PGUI]</h5> A pseudo graphical user interface built with html tags.</li>
-            <li><h5>Event logging to keep track of bot usage and command history.</h5></li>
-            <li><h5>Multi-Command Input</h5> Input multiple commands in a single line.</li>
-            <li><h5>Command Aliases</h5> Register custom aliases to shorten command calls, and do some nifty command
-                combinations.
-            </li>
-            <li><h5>Custom Command Tokens</h5> Custom command recognition tokens (ex: !command, ~command, /command, etc)</li>
-            <li><h5>Command Tick Rates</h5> Commands in the queue are processed by the tick rate assigned in the config.</li>
-            <li><h5>Multi-Threaded Command Processing</h5> Commands in the queue are handled in multiple threads for faster
-                processing.
-            </li>
-            <li><h5>Reconfigurable Command Privileges</h5> The user privileges required to execute commands can be completely
-                reconfigured.
-            </li>
-            <li><h5>User Privileges System</h5> Set user privileges to server users to limit the command usage on a per-user
-                basis.
-            </li>
-            <li><h5>Extensive Callback System</h5> Create custom callbacks to mumble server events and more.</li>
+            <li><b>Multi-Command Input</b>Input multiple commands in a single line.</li>
+            <li><b>Command Aliases</b> - Register custom aliases to shorten command calls, and do some nifty command combinations.</li>
+            <li><b>Custom Command Tokens</b> - Custom command recognition tokens (ex: !command, ~command, /command, etc)</li>
+            <li><b>Command Tick Rates</b> - Commands in the queue are processed by the tick rate assigned in the config.</li>
+            <li><b>Multi-Threaded Command Processing</b> - Commands in the queue are handled in multiple threads for faster processing.</li>
+            <li><b>Reconfigurable Command Privileges</b> - The user privileges required to execute commands can be completely reconfigured.</li>
         </ul>
-        <h2 id="screenshots">Screenshots</h2>
-        <h5 id="audio-interface-system">Audio Interface System (youtube plugin, sound
-            board plugin, etc)</h5>
-        <p><img src="https://user-images.githubusercontent.com/20238115/88094381-75fcf600-cb61-11ea-8113-495db67a415d.png"
-                alt="AudioInterfaceImage"></p>
-        <h5 id="web-interface-main-page">Web Interface - Main Page</h5>
-        <p><img src="https://user-images.githubusercontent.com/20238115/88028907-44efd780-cb07-11ea-85b8-21cc7d841ec3.png"
-                alt="WebInterfaceImage"></p>
-        <h5 id="web-interface-media-player">Web Interface - Media Player</h5>
-        <p><img src="https://user-images.githubusercontent.com/20238115/88487343-429bdc00-cf52-11ea-9af7-81289c1949a3.png"
-                alt="MediaPlayerImage"></p>
+        <h4>Built-in Web Interface</h4>
+        <ul>
+            <li><b>A fully featured web interface is included in JJMumbleBot by default</b></li>
+        </ul>
+        <h4>Built-in Plugins</h4>
+        <h6>Fast Multi-threaded, responsive, plugin-based system for easy expandability.</h6>
+        <p>
+            The list of features shown under each plugin is not inclusive of all the features the plugins contain,
+            but only the most important features.<br/>
+            <b>This means that most plugins have more features than the ones listed below!</b>>
+        </p>
+        <table>
+            <tr>
+                <th><h6>Server/Web Administration Plugins List</h6></th>
+                <th><h6>Features</h6></th>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Auto Updater Plugin</h6></td>
+                <td><p>A System to update dependencies through bot commands</p><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Check For Dependency Updates</li><li>Update Dependencies Directly Through The Bot</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Bot Commands Plugin</h6></td>
+                <td><p>Enhanced interactivity and management commands</p><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li><b>User Administration:</b> Kick/User/Ban/Move/Mute/Deafen Commands</li><li><b>Channel Administration:</b> Create/Remove/Rename Temporary and Permanent Channels</li><li><b>User Privileges:</b> Set User Privileges, Blacklist/Whitelist Users</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Core Commands Plugin</h6></td>
+                <td><p>Core bot administration commands</p><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li><b>Plugin Administration:</b>Start/Stop/Restart Plugins At Runtime</li><li><b>Bot Information:</b> Set Mumble Comment, Display Version/Uptime/About</li><li><b>Alias System</b>: Add/Update/Import Aliases For Commands At Runtime</li><li><b>Command Permission System</b>: Add/Update/Import Permissions For Commands At Runtime</li><li><b>Command History</b>: Display Recently Used Commands</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Server Tools Plugin</h6></td>
+                <td><p>Additional administrative features and server callback-related events</p><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Display A Link To The JJMumbleBot Wiki</li><li><b>User Connection Sounds:</b> Play Audio Clip When Users Join</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Whisper Plugin</h6></td>
+                <td><p>Mumble Whisper integration for audio data, which allows audio to be played to specific users only.</p><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li><b>User Whisper Support:</b> Set Mumble's whisper to single/multiple users.</li><li><b>Channel Whisper Support:</b> Set Mumble's whisper to channels.</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Audio Commands Plugin</h6></td>
+                <td><p>Full audio control of the bot with additional audio features like "audio ducking"</p><br/><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Queue Audio/Video Clips</li><li>Audio Controls - Pause/Resume/Shuffle/Skip/Loop/Seek/Stop</li><li>Audio Ducking Integration (Method of lowering currently playing audio when users are speaking)</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Web Server Plugin</h6></td>
+                <td><p>Control and manage the bot with an optional web interface, which allows remote usage of the bot and administrative features.<br/>This is a popular feature that server owners utilize to manage the bot.</p><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li><b>Web Interface Security:</b> HTTPS/SSL Support</li><li><b>Web Server Commands</b>: Start/Stop The Web Server Through Commands</li><li>Optional Automatic Certificate Generation</li></ul></details></td>
+            </tr>
+        </table>
+        <br/><hr/><br/>
+        <table>
+            <tr>
+                <th><h6>Entertainment/Media Plugins List</h6></th>
+                <th><h6>Features</h6></th>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Media Plugin</h6></td>
+                <td><p>Stream Youtube videos/playlists or SoundCloud tracks with thumbnail image support</p><br/><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Youtube Playlist Support</li><li>Video Thumbnails</li><li>Audio Queue System</li><li>Direct Youtube/SoundCloud Link Support</li><li>Search/Browse Youtube Support</li><li>Mumble Whisper Integration</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Images Plugin</h6></td>
+                <td><p>Display images from local files or download images from the internet</p></br><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Local Images Support</li><li>Direct URL Images Support</li><li>Audio Queue System</li><li>Direct Youtube/SoundCloud Link Support</li><li>Search/Browse Youtube Support</li><li>Mumble Whisper Integration</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Sound Board Plugin</h6></td>
+                <td><p>Stream audio clips from local files or download audio tracks from Youtube</p><br/><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Local Audio Clips Support</li><li>Download And Play Audio Clips From Youtube</li><li>Mumble Whisper Integration</li><li>Play Random Audio Clips From Library</li><li>Supports Popular File Types</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Randomizer Plugin</h6></td>
+                <td><p>Do custom dice rolls, coin flips, etc. in the channel</p></br><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Custom Dice Rolls</li><li>Coin Flips</li><li>Standard Dice Rolls (d6, d12, d100, etc.)</li></ul></details></td>
+            </tr>
+            <tr>
+                <td class="td-elem-1"><h6>Text-To-Speech Plugin</h6></td>
+                <td><p>Full-featured text-to-speech plugin with support for advanced <a href="https://docs.aws.amazon.com/polly/latest/dg/voicelist.html">Amazon Polly</a> voices, multiple language recognition, etc!</p></br><details><summary class="unselectable"><strong>Click To List Features</strong></summary><ul><li>Choose voices from a list of over 50 voices by Amazon Polly</li><li>Choose a default TTS voice</li><li>Set maximum character limits for TTS</li><li>Stream or Download TTS voice clips</li></ul></details></td>
+            </tr>
+        </table>
+        <br/><hr/><br/>
+        <details>
+            <summary><strong>Additional Features</strong></summary>
+            <h4>Custom GUI System</h4>
+            <ul>
+              <li><b>Pseudo-GUI System [PGUI]</b> - A pseudo graphical user interface built with html tags.</li>
+              <li><a href="">Pseudo-GUI API</a></li>
+            </ul>
+            <h4>Easy Expansion With Custom Plugins</h4>
+            <ul>
+                <li>Easily expand the features of your bot by building custom plugins with the extensive and detailed API provided by JJMumbleBot.</li>
+                <li><b><a href="https://duckboss.github.io/JJMumbleBot/wiki/general/plugins.html">Click here to check the Wiki Guide!</a></b></li>
+            </ul>
+        </details>
+
+        <details>
+          <summary><strong>Screenshots 📷</strong></summary>
+            <h4>Screenshots 📷</h4>
+            <hr/>
+
+            <h5> Audio Interface System (youtube plugin, sound board plugin, etc) </h5>
+            <img width=700 style="border-radius:3%" src="https://user-images.githubusercontent.com/20238115/88094381-75fcf600-cb61-11ea-8113-495db67a415d.png" alt="Channel Chat Image"/>
+
+            <h5> Web Interface - Commands Page </h5>
+            <img width=700 style="border-radius:3%" src="https://user-images.githubusercontent.com/20238115/106856286-3bd1ec80-668c-11eb-88dd-290e7e1dc027.png" alt="Commands Tab Image"/>
+
+            <h5> Web Interface - Audio Page </h5>
+            <img width=700 style="border-radius:3%" src="https://user-images.githubusercontent.com/20238115/106061227-1f014c00-60c3-11eb-9540-dd8a9222438d.png" alt="Audio Tab Image"/>
+
+            <h5> Web Interface - Debug Page </h5>
+            <img width=700 style="border-radius:3%" src="https://user-images.githubusercontent.com/20238115/106063400-1e1de980-60c6-11eb-8ab0-c52b1f097186.png" alt="Debug Tab Image"/>
+        </details>
+
+        <details>
+          <summary><strong>Installation And Setup 🏃</strong></summary>
+            <h4>Installation And Setup 🏃</h4>
+            <p>
+                Please refer to the <b><a href="https://duckboss.github.io/JJMumbleBot/wiki/requirements.html">Requirements Wiki Page</a></b> for a full list of requirements, and instructions for installation.
+                Additionally, the <b><a href="https://duckboss.github.io/JJMumbleBot/wiki/quick_start.html">Quick Start Guide</a></b> is also helpful for setting up the bot.
+            </p>
+
+            <h4>Docker Setup 🏃</h4>
+            <p>
+                Please check the <b><a href="https://duckboss.github.io/JJMumbleBot/wiki/general/docker.html">Docker Setup Wiki Page</a></b> for more information.
+            </p>
+        </details>
+
+        <details>
+          <summary><strong>Documentation 📝</strong></summary>
+            <h4>Documentation 📝</h4>
+            <ul>
+                <li><b><a href="https://duckboss.github.io/JJMumbleBot/wiki/new/whats_new.html">JJMumbleBot Documentation Wiki</a></b></li>
+                <li><b><a href="https://duckboss.github.io/JJMumbleBot/wiki/faq.html">F.A.Q - Solve common issues easily</a></b></li>
+                <li><b><a href="https://duckboss.github.io/JJMumbleBot/wiki/requirements.html">Requirements and Dependencies</a></b></li>
+                <li><b><a href="https://duckboss.github.io/JJMumbleBot/wiki/quick_start.html">Quick Start Guide</a></b></li>
+            </ul>
+        </details>
     </div>
     <footer></footer>
 </body>
