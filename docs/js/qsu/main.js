@@ -76,25 +76,12 @@ AllowedRootChannelsForTempChannels = [${document.getElementById('allowed-root').
 `;
 }
 
-function get_web_interface_settings() {
-  return `
-[Web Interface]
-; To enable the web interface for the bot, check the box. Uncheck it to disable.
-EnableWebInterface = ${document.getElementById('web-interface-enable').value}
-; This sets the web server IP.
-WebServerIP = ${document.getElementById('web-interface-ip').value}
-; This sets the port of the web server for the main web interface page.
-WebPagePort = ${document.getElementById('web-interface-server-port').value}
-; This sets the port of the web socket on the web interface providing live data.
-WebSocketPort = ${document.getElementById('web-interface-socket-port').value}
-; This sets the tick rate of the loop that sends data to the web interface.
-WebTickRate = ${document.getElementById('web-interface-tick-rate').value}
-`;
-}
-
 function get_main_settings() {
   return `
 [Main Settings]
+; EnableDatabaseIntegrityCheck: Enable or disable version/plugin integrity checking for the database.
+; Disabling this may cause database conflicts after code updates, plugin updates, or plugin addition/removal!
+EnableDatabaseIntegrityCheck = ${document.getElementById('main-settings-db-integrity').value}
 ; Enable or disable automatic internal database backups
 EnableDatabaseBackup = ${document.getElementById('main-settings-db-backups').value}
 ; The execution tick rate of commands in the command queue [Must be an integer/float].
@@ -160,12 +147,12 @@ function get_all_data() {
   form = document.getElementsByTagName('input')
   for(var i=0; i < form.length; i++) {
       if(form[i].value === '' && form[i].hasAttribute('required')) {
-        alert('Some required fields are empty!\nPlease make sure that all fields marked with a red outline are filled.');
+        $('.alert').show();
         return false;
       }
   }
 
-  var ini_out = `${get_connection_settings()}\n${get_web_interface_settings()}\n${get_media_directories()}\n${get_logging()}\n${get_plugin_settings()}\n${get_main_settings()}\n${get_pgui_settings()}`;
+  var ini_out = `${get_connection_settings()}\n${get_media_directories()}\n${get_logging()}\n${get_plugin_settings()}\n${get_main_settings()}\n${get_pgui_settings()}`;
   console.log(ini_out.trim())
   download(ini_out.trim(), 'config.ini', 'text/plain')
 }

@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - Plugins</title>
-    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <noscript>Please enable JavaScript in your browser!</noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+    <script src="../../js/insert_html.js"></script>
+    <link rel="stylesheet" href="../../css/content-pages.css" crossorigin="anonymous">
 </head>
 <body>
     <nav id="table_of_contents"></nav>
@@ -41,7 +42,8 @@
                 <li> You can pull the docker container from DockerHub.<br>
                     <ul>
                         <li>Latest (Unstable): <code>docker pull jasonjerome/jjmumblebot:latest</code></li>
-                        <li>Release v5.1.1: <code>docker pull jasonjerome/jjmumblebot:release-5.1.1</code></li>
+                        <li>Release v5.2.0: <code>docker pull jasonjerome/jjmumblebot:release-5.2.0</code></li>
+                        <b>Note: Use the release tag corresponding to the version you want to use!</b>
                     </ul>
                 </li>
                 <li>Run the bot with one of the various commands provided below:<br/><br/>
@@ -62,8 +64,8 @@
                         <li><code>-port</code>: Sets the server port.</li>
                         <li><code>-password</code>: Sets the password required to connect to the server. This is not required if your server is unprotected.</li>
                         <li><code>-username</code>: The username for the bot that will be displayed to other users in the server.</li>
-                        <li><code>-superuser</code>: The username of the admin/superuser who has full control over bot functionality.<br>For more information about user privileges, check this page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/user_privileges.html">User Privileges</a></a></li>
-                        <li>For a full list of launch parameters, check this page: <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/command_line_arguments.html">Launch Parameters</a></li>
+                        <li><code>-superuser</code>: The username of the admin/superuser who has full control over bot functionality.<br>For more information about user privileges, check this page: <a href="user_privileges.html">User Privileges</a></li>
+                        <li>For a full list of launch parameters, check this page: <a href="command_line_arguments.html">Launch Parameters</a></li>
                     </ul>
                     <b>Required docker launch parameters if a custom web interface port is used:</b><br>
                     <ul>

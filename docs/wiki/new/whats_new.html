@@ -3,55 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - What's New</title>
-    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
     <noscript>Please enable JavaScript in your browser!</noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+    <script src="../../js/insert_html.js"></script>
+    <link rel="stylesheet" href="../../css/content-pages.css" crossorigin="anonymous">
 </head>
 <body>
 <nav id="table_of_contents"></nav>
 <div class="main-content">
-    <h2 id="page-title">v5.1.1 Update</h2>
-    <h4>New Command Line Arguments And Bug Fixes</h4>
-    <strong><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v5.1.1">Github Download Link</a></strong>
-    <hr>
-    <div>
-        <h4>Updating Notes</h4>
-        <p>
-        This update <b>DOES NOT</b> require you to reconfigure configs, aliases, or database files.<br>
-        This should be a straight-forward update for v5.1.0 users.
-        </p>
+    <h2 id="page-title"><small><b>v</b></small>5.2.0 Update</h2>
+    <h4>Bot Management Improvements</h4>
+    <h6><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v5.2.0">Github Download Link</a></h6>
+    <hr/>
+    <div class="update-guide alert alert-dismissible alert-warning">
+        <h5>Update Guide For <small><b>v</b></small>5.1.0 and <small><b>v</b></small>5.1.1 Users</h5>
+
+        <details>
+            <summary class="unselectable">Click Here To View Guide</summary>
+            <ul>
+                <li><h6><b class="update-guide-header btn-danger">Required</b> Update Config.ini File</h6>
+                    Update your <code>config.ini</code> file to include <code>EnableDatabaseIntegrityCheck=True</code> under the <code>[Main Settings]</code> section:
+                    <pre class="left-shifted-pre">
+                        [Main Settings]
+                        EnableDatabaseIntegrityCheck = True
+                    </pre>
+                    <i>Refer to the /templates/ directory to see a template of the file.</i>
+                </li>
+                <li><h6><b class="update-guide-header btn-warning">Optional</b> Setup Custom Aliases File</h6>
+                    Rename your <code>global_aliases.csv</code> file to <code>custom_aliases.csv</code></br>
+                    <i>Alternatively, if you don't have custom aliases under <code>global_aliases.csv</code> you can simply delete it.</i>
+                </li>
+                <li><h6><b class="update-guide-header btn-warning">Optional</b> Setup Custom User Privileges File</h6>
+                    Create a <code>custom_user_privileges.csv</code> file <i>(template provided in /templates/ folder)</i> and fill it with custom user privileges as required.<br/>
+                    This is important since the new update will require the database to be regenerated, so doing this will prevent any loss of custom user privileges.
+                </li>
+                <li><h6><b class="update-guide-header btn-warning">Optional</b> Setup Custom Command Permissions File</h6>
+                    Create a <code>custom_permissions.csv</code> file <i>(template provided in /templates/ folder)</i> and fill it with custom command permissions as required.<br/>
+                    This is important since the new update will require the database to be regenerated, so doing this will prevent any loss of custom command permissions.
+                </li>
+            </ul>
+        </details>
     </div>
-    <div>
-        <h4>New Command Line Arguments</h4>
-        <ul>
-            <li><code>-usehttps</code>: Enable the usage of HTTPS for the web interface.</li>
-            <li><code>-nohttps</code>: Disable the usage of HTTPS for the web interface if enabled in the config file.</li>
-            <li><code>-websslcert</code>: Enter the path to the SSL certificate file for the web interface (if HTTPS enabled).</li>
-            <li><code>-websslkey</code>: Enter the path to the SSL key file for the web interface (if HTTPS enabled).</li>
-            <li><code>-webgeneratecert</code>: Enables automatic certificate/key creation for the web interface (if HTTPS is enabled).</li>
-            <li><code>-noautoreconnect</code>: Disables auto-reconnecting if the bot disconnects from the mumble server if enabled in the config file.</li>
-            <li><code>-noselfregister</code>: Disables self-registration to the connected mumble server if enabled in the config file.</li>
-            <li><code>-nodatabasebackups</code>: Disables automatic database backups for the bot service if enabled in the config file.</li>
-            <li><code>-noaudioduck</code>: Disables audio ducking for the bot audio system if enabled in the config file.</li>
-            <li><code>-nologging</code>: Disables event logging for the bot service if enabled in the config file.</li>
-            <li><code>-nologtrace</code>: Disables stack trace logging for all logged events if enabled in the config file.</li>
-        </ul>
+    <hr/>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Wiki Command For Server Tools Plugin <b class="update-details-header btn-success small">NEW</b></summary>
+            <ul>
+                This is a simple command that displays a link to the JJMumbleBot wiki for quick reference at runtime.
+                <li>
+                    <code>!wiki</code>: Displays a link to the JJMumbleBot wiki.
+                </li>
+            </ul>
+        </details>
     </div>
-    <div>
-        <h4>Bug Fixes</h4>
-        <ul>
-            <li>Fixed multiple command line arguments that enabled bot features such as (-uselogging, -usedatabasebackups, -useweb, -autoreconnect, etc)</li>
-            <li>Fixed <code>-mediacookie</code> command line argument documentation in wiki.</li>
-        </ul>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Custom Aliases And Runtime Modifications <b class="update-details-header btn-warning small">UPDATED</b></summary>
+            <p>
+                Previously, aliases could be updated by modifying the <code>global_aliases.csv</code> file. Every update to the file required restarting the bot which was very tedious!<br/>
+                In this update, the internal database handling of this process has been improved and the file has been renamed to <code>custom_aliases.csv</code> for consistency.<br/>
+                With this update, Updating multiple aliases can be updated at runtime using either a <code>local csv file</code> or a <code>remote csv file</code> downloaded through a URL.
+            </p>
+            <h6>Update Aliases With Local Files:</h6>
+            <ul>
+                <li>
+                    Users can now set custom aliases for commands by utilizing a <code>custom_aliases.csv</code> file within the cfg folder.<sup>*</sup><br/>
+                    This is useful for everyone, but particularly helpful for docker containers and cloud-hosted solutions that have their <code>/cfg/</code> folders mounted.<br/>
+                    <small><sup>*</sup><i>This file is automatically generated if it's missing and was formerly called the <code>global_aliases.csv</code> file.</i></small><br/>
+                </li>
+                <li>
+                    For example: <i>"I want to have an alias to display information about the bot!"</i><br/>
+                    <pre class="left-shifted-pre">
+                        alias,command
+                        botinfo,(about)|(version)
+                    </pre>
+                    In this simple example, the <code>custom_aliases.csv</code> is modified so that a <code>!botinfo</code> alias is made to call the <code>!about and !version</code> commands.
+                </li>
+                <li>
+                    You can update the database at runtime using the new command: <code>!refreshaliases</code>.
+                </li>
+            </ul>
+            <h6>Update Aliases With Remote Files:</h6>
+            <ul>
+                <li>
+                    Bot owners now have an option of updating aliases by utilizing a csv file on a remote endpoint/URL.<br/>
+                    This functions similarly to the local file method shown above, but has the advantage of not requiring extensive access to the filesystem.<br/>
+                    This is extremely useful for bot owners that use cloud-hosting solutions with limited filesystem access.<br/>
+                    <small><i>The csv file is downloaded to the following temporary path: <code>/cfg/downloads/_aliases.csv</code></i></small>
+                </li>
+                <li>
+                    This can be achieved by utilizing this new command: <code>!importaliases 'URL'</code>
+                </li>
+            </ul>
+        </details>
     </div>
-    <div>
-        <h4>Misc</h4>
-        <ul>
-            <li>Added <code>-nostdin</code> parameter to ffmpeg launch options in the internal handling of the audio interface.</li>
-            <li>Updated bot version to v5.1.1</li>
-        </ul>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Custom Command Permissions And Runtime Modifications <b class="update-details-header btn-success small">NEW</b></summary>
+            <p>
+                Previously, to update the command permissions, each command had to be meticulously updated by modifying multiple csv files across multiple plugin folders.<br/>
+                With this update, that is no longer the case and updating multiple commands can be updated at runtime using either a <code>local csv file</code> or a <code>remote csv file</code> downloaded through a URL.<br/>
+                In addition to those updates, new commands have been added to display/update individual command permissions.
+            </p>
+            <h6>Display/Update Individual Permissions With Commands:</h6>
+            <ul>
+                <li>
+                    <code>!getpermission 'command_name'</code>: Displays the permission level for the specified command.<br/>
+                    <code>!setpermission 'command_name' 'permission_level'</code>: Modifies the permission level for the specified command.<br/>
+                </li>
+            </ul>
+            <h6>Update Command Permissions With Local Files:</h6>
+            <ul>
+                <li>
+                    Users can now set custom permission levels for commands by utilizing a <code>custom_permissions.csv</code> file within the cfg folder.<sup>*</sup><br/>
+                    This is useful for everyone, but particularly helpful for docker containers and cloud-hosted solutions that have their <code>/cfg/</code> folders mounted.<br/>
+                    <small><sup>*</sup><i>This file is automatically generated if it's missing.</i></small><br/>
+                </li>
+                <li>
+                    For example: <i>"I want to allow only administrators to change the bot volume!"</i><br/>
+                    <pre class="left-shifted-pre">
+                        command,permission
+                        volume,4
+                    </pre>
+                    In this example, the <code>custom_permissions.csv</code> is modified so that the volume command is set to a permission level of 4 (administrators and above only).
+                </li>
+                <li>
+                    You can update the database at runtime using the new command: <code>!refreshpermissions</code>.
+                </li>
+            </ul>
+            <h6>Update Command Permissions With Remote Files:</h6>
+            <ul>
+                <li>
+                    Bot owners now have an option of updating the command permissions by utilizing a csv file on a remote endpoint/URL.<br/>
+                    This functions similarly to the local file method shown above, but has the advantage of not requiring extensive access to the filesystem.<br/>
+                    This is extremely useful for bot owners that use cloud-hosting solutions with limited filesystem access.<br/>
+                    <small><i>The csv file is downloaded to the following temporary path: <code>/cfg/downloads/_permissions.csv</code></i></small>
+                </li>
+                <li>
+                    This can be achieved by utilizing this command: <code>!importpermissions 'URL'</code>
+                </li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Custom User Privileges And Runtime Modifications <b class="update-details-header btn-success small">NEW</b></summary>
+            <p>
+                Previously, to update the user privileges, administrators had to individually update user privileges using the <code>!setprivileges</code> command for every user.<br/>
+                With this update, It is much simpler to update multiple user privileges at a time at runtime using either a <code>local csv file</code> or a <code>remove csv file</code> downloaded with a URL.
+            </p>
+            <h6>Update User Privileges With Local Files:</h6>
+            <ul>
+                <li>
+                    Users can now set custom privileges for users by utilizing a <code>custom_user_privileges.csv</code> file within the cfg folder.<sup>*</sup><br/>
+                    This is useful for everyone, but particularly helpful for docker containers and cloud hosted-solutions that have their <code>/cfg/</code> folders mounted.<br/>
+                    <small><sup>*</sup><i>This file is automatically generated if it's missing.</i></small><br/>
+                </li>
+                <li>
+                    For example: <i>"I want to change privileges for 4 users!"</i><br/>
+                    <pre class="left-shifted-pre">
+                        username,level
+                        Jason,4
+                        Thomas,3
+                        Suzy,4
+                        John,2
+                    </pre>
+                    In this example, the <code>custom_user_privileges.csv</code> is modified to update the privileges of individual users..
+                </li>
+                <li>
+                    You can update the database at runtime using the new command: <code>!refreshuserprivileges</code>.
+                </li>
+            </ul>
+            <h6>Update User Privileges With Remote Files:</h6>
+            <ul>
+                <li>
+                    Bot owners now have an option of updating user privileges by utilizing a csv file on a remote endpoint/URL.<br/>
+                    This functions similarly to the local file method shown above, but has the advantage of not requiring extensive access to the filesystem.<br/>
+                    This is extremely useful for bot owners that use cloud-hosting solutions with limited filesystem access.<br/>
+                    <small><i>The csv file is downloaded to the following temporary path: <code>/cfg/downloads/_privileges.csv</code></i></small>
+                </li>
+                <li>
+                    This can be achieved by utilizing this command: <code>!importuserprivileges 'URL'</code>
+                </li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Database and Config Integrity Checking <b class="update-details-header btn-success small">NEW</b></summary>
+            <ul>
+                <li>
+                    On startup, the database is updated with any custom command permissions, custom aliases, or custom user privileges provided in the
+                    <code>custom_aliases.csv, custom_permissions.csv, and custom_user_privileges.csv</code> files.<sup>1</sup><br/>
+                    <small><sup>1</sup><i>This feature can be disabled in the <code>config.ini</code> file, but disabling it may result in data conflicts when updates occur.</i></small>
+                </li>
+                <li>On startup, the <code>config.ini</code> file is scanned to make sure the options match the options in the <code>template_config.ini</code> file to ensure integrity.<sup>2</sup><br/>
+                    <small><sup>2</sup><i>This feature <b>CANNOT</b> be disabled in the <code>config.ini</code> file since it is critical to prevent conflicts in the config file.</i></small>
+                </li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">New Command Line Arguments <b class="update-details-header btn-success small">NEW</b></summary>
+            <ul>
+                <li><code>-regeneratedatabase</code>: Deletes the existing internal database if it exists, so that it can be regenerated from scratch.</li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Wiki Visual Overhaul <b class="update-details-header btn-warning small">UPDATED</b></summary>
+            <ul>
+                <li>
+                    The <a href="https://duckboss.github.io/JJMumbleBot/wiki/new/whats_new.html">JJMumbleBot Wiki</a> has had a visual overhaul to improve readability and navigation!<br/>
+                    Come check it out!
+                </li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Bug Fixes <b class="update-details-header btn-danger small">FIXES</b></summary>
+            <ul>
+                <li>Fixed error-handling for the <code>!volume</code> command.</li>
+                <li>Fixed issue where custom aliases would be re-added to the database on start-up if they were previously removed using a command.</li>
+                <li>The JJMumbleBot Wiki now properly displays an error if javascript is disabled.</li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Other Changes <b class="update-details-header btn-info small">MISC</b></summary>
+            <ul>
+                <li>A warning is now displayed if database backups are enabled but the database file is missing.</li>
+                <li>A different message is now displayed to blacklisted users that try to use bot commands.</li>
+                <li>Renamed the generated <code>global_aliases.csv</code> to <code>custom_aliases.csv</code></li>
+                <li>Cleaned up the console messages on regular bot startup.</li>
+                <li>Optimized logging and debugging messages in the internal database library.</li>
+                <li>Refactored user privilege checks.</li>
+                <li>Updated repository README to allow new users to better understand the features of JJMumbleBot.</li>
+                <li>Updated <code>Quick Setup Utility</code> web utility for v5.2.0</li>
+                <li>Updated bot internal version and updated plugins to v5.2.0</li>
+            </ul>
+        </details>
     </div>
 </div>
 <footer></footer>

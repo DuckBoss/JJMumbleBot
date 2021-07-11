@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - User Privileges</title>
-    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <noscript>Please enable JavaScript in your browser!</noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+    <script src="../../js/insert_html.js"></script>
+    <link rel="stylesheet" href="../../css/content-pages.css" crossorigin="anonymous">
 </head>
 <body>
     <nav id="table_of_contents"></nav>
@@ -24,7 +25,40 @@
         <h3>Setting User Privileges</h3>
         <p>
             To modify the user privileges of a user in your mumble server, follow these steps:
-        <h4> Manual Method: </h4>
+        <h4> Changing Single User Privileges: </h4>
+        <ol>
+            <li>As an administrator or super user, if the user doesn&#39;t already exist in the database, <br>
+                use the command: <b>[<code>!addprivileges &#39;username&#39; &#39;level_number&#39;</code>]</b> to add the user to the
+                database with the given privilege level.
+            <li>As an administrator or super user, <br>
+                use the command: <b>[<code>!setprivileges &#39;username&#39; &#39;level_number&#39;</code>]</b> to set an individual user&#39;s
+                privilege level. By default, any new users detected by the bot are set to default privilege levels.
+        </ol>
+        <b>NOTE: Only super users can modify the user privileges of an administrator through the command method.
+            Administrators cannot modify another administrator&#39;s user privileges.<br>
+            Users may also not modify their own user privileges (so an admin can&#39;t change his user privilege level to
+            owner).</b><br/><br/>
+        <h4> Changing Multiple User Privileges: </h4>
+        <p>There are two methods of updating multiple user privileges: <b>Local File Method</b> or <b>Remote URL Method</b>.</p>
+        <h5>Local File Method</h5>
+        <ol>
+            <li>Utilizes single <code>custom_user_privileges.csv</code> file in the <code>JJMumbleBot/cfg/</code> directory to update user privileges in the database</li>
+            <li>Useful for local deployments and docker builds with a mounted <code>/cfg/</code> folder.</li>
+            <li>Use the command: <b>[<code>!refreshuserprivileges</code>]</b> to update the user privileges to the
+                database with the given privilege level.</li>
+            <b>NOTE: Only super users can modify the user privileges of an administrator through the command method.
+            Administrators cannot modify another administrator&#39;s user privileges.<br>
+            Users may also not modify their own user privileges (so an admin can&#39;t change his user privilege level to
+            owner).</b>
+        </ol>
+        <h5>Remote URL Method / Import Method</h5>
+        <ol>
+            <li>Utilizes a csv file from a remote URL endpoint instead of a local file.</li>
+            <li>Useful for remote/cloud deployments where access to the filesystem is limited.</li>
+            <li>Use the command: <b>[<code>!importuserprivileges</code>]</b> to import user privileges from a csv file hosted at a URL.
+        </ol>
+
+        <h4> Manually Update User Privileges: </h4>
         <ol>
             <li>Access the <code>jjmumblebot.db</code> database file located under the cfg directory using a sqlite browsing
                 software.
@@ -44,19 +78,6 @@
             </li>
             <li>Save the file and start the bot.</li>
         </ol>
-        <h4> Normal/Command Method: </h4>
-        <ol>
-            <li>As an administrator or super user, if the user doesn&#39;t already exist in the database, <br>
-                use the command: <b>[<code>!addprivileges &#39;username&#39; &#39;level_number&#39;</code>]</b> to add the user to the
-                database with the given privilege level.
-            <li>As an administrator or super user, <br>
-                use the command: <b>[<code>!setprivileges &#39;username&#39; &#39;level_number&#39;</code>]</b> to set an individual user&#39;s
-                privilege level. By default, any new users detected by the bot are set to default privilege levels.
-        </ol>
-        <b>NOTE: Only super users can modify the user privileges of an administrator through the command method.
-            Administrators cannot modify another administrator&#39;s user privileges.<br>
-            Users may also not modify their own user privileges (so an admin can&#39;t change his user privilege level to
-            owner).</b>
         <hr>
         <h3>Checking User Privileges At Runtime</h3>
         There is a command available for checking the user privileges of all the registered users in the database at
@@ -65,23 +86,22 @@
         levels.<br>
         This is particularly useful when you need to quickly check a user&#39;s privilege level after modifying it recently.
         <hr>
-        </p>
         <h3>Adding Users To The Blacklist</h3>
         <p>
             There are commands that are used in plugins which you may not want all users to be able to access.<br>For this
             purpose, administrators and owners are able to use the <b>[<code>!blacklistuser &#39;username&#39; &#39;reason&#39;</code>]</b>
             command to blacklist users from using certain commands.<br>
             To add a user to the blacklist, follow these steps:
-        <h4>Manual Method:</h4>
+        <h5>Manual Method:</h5>
         <ol>
             <li>Access the <code>jjmumblebot.db</code> database file located under the cfg directory using a sqlite browsing
                 software.
             </li>
-            <li>Add the names of mumble users that you want if they don&#39;t already exist to the <i>users</i> table. Set
+            <li>Add the names of mumble users that you want if they don&#39;t already exist to the <code>users</code> table. Set
                 their permission levels to <code>0</code> in the <code>permissions</code> table.
             <li>Save the file and start the bot.</li>
         </ol>
-        <h4>Normal/Command Method:</h4>
+        <h5>Normal/Command Method:</h5>
         <ol>
             <li>Use the <b>[<code>!blacklistuser &#39;username&#39; &#39;reason&#39;</code>]</b> command to blacklist specific users from
                 using non-blacklist only commands.<br>You can optionally provide a reason to the blacklist so that the user can
