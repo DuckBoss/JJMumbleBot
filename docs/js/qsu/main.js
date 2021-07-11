@@ -5,6 +5,8 @@ function get_connection_settings() {
 UserID = ${document.getElementById('server-user').value}
 ; Enter the file path to your certificate. If your server doesn't require a certificate, leave this blank.
 UserCertification = ${document.getElementById('server-cert').value}
+; Auto-Reconnect to the server if connection is lost.
+AutoReconnect = ${document.getElementById('server-reconnect').value}
 ; Specify the default channel the bot should join when it connects to the server.
 DefaultChannel = ${document.getElementById('server-default-channel').value}
 ; Enter the bot owner's display name here. The bot must have at least 1 super user to be able to control all bot commands.
@@ -16,9 +18,9 @@ DefaultComment = ${document.getElementById('server-comment').value}
 `;
 }
 
-function get_media_directories() {
+function get_media_settings() {
   return `
-[Media Directories]
+[Media Settings]
 ; FFmpeg location
 FfmpegPath = ${document.getElementById('media-ffmpeg-path').value}
 ; VLC location
@@ -30,7 +32,7 @@ AudioLibraryRunQuiet = ${document.getElementById('media-quiet-enable').value}
 ; The default volume when the bot starts (default=0.3)
 DefaultVolume = ${document.getElementById('media-default-volume').value}
 ; Enable Audio Ducking (off by default, use !duckaudio to toggle on and off)
-AudioDuck = ${document.getElementById('media-duck-audio-enable').value}
+UseAudioDuck = ${document.getElementById('media-duck-audio-enable').value}
 ; The default audio ducking volume (How low the volume will drop down when ducking) (default=0.05)
 DuckingVolume: ${document.getElementById('media-ducking-volume').value}
 ; The default threshold before audio is ducked (default=2500.0)
@@ -57,10 +59,14 @@ function get_logging() {
 EnableLogging = ${document.getElementById('logging-enable').value}
 ; This sets the maximum number of logs the bot can have at a time before it overwrites the oldest one.
 MaxLogs = ${document.getElementById('logging-max-logs').value}
+; Maximum size per log (in Bytes)
+MaxLogSize = ${document.getElementById('logging-max-log-size').value}
 ; Enable/Disable channel message logging (Enabling it will hide message logs to: Message Received: [User -> #####])
 HideMessageLogging = ${document.getElementById('logging-hide-message-enable').value}
 ; This is the path to directory where logs are stored. All bot logs will be stored in this directory.
 LogDirectory = ${document.getElementById('logging-path').value}
+; Enable/Disable Stack Trace Logging. This will create large log files and log the stack trace of each logging event.
+LogStackTrace = ${document.getElementById('logging-stack-trace').value}
 `;
 }
 
@@ -152,7 +158,7 @@ function get_all_data() {
       }
   }
 
-  var ini_out = `${get_connection_settings()}\n${get_media_directories()}\n${get_logging()}\n${get_plugin_settings()}\n${get_main_settings()}\n${get_pgui_settings()}`;
+  var ini_out = `${get_connection_settings()}\n${get_media_settings()}\n${get_logging()}\n${get_plugin_settings()}\n${get_main_settings()}\n${get_pgui_settings()}`;
   console.log(ini_out.trim())
   download(ini_out.trim(), 'config.ini', 'text/plain')
 }
