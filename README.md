@@ -17,7 +17,7 @@
   ## Features  🔥
 
 
-  ### Feature-rich Command and Alias System
+  ### Feature-rich Command, Alias, and User Privileges System
   - <b>Multi-Command Input</b> - Input multiple commands in a single line.
   - <b>Command Aliases</b> - Register custom aliases to shorten command calls, and do some nifty command combinations.
   - <b>Custom Command Tokens</b> - Custom command recognition tokens (ex: !command, ~command, /command, etc)
