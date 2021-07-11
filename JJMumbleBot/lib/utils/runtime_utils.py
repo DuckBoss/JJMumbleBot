@@ -378,7 +378,7 @@ def validate_csv(file_path: str, field_names) -> bool:
 
 def validate_cfg(cfg_path: str, template_path: str) -> bool:
     options_results = []
-    detected_options = 0
+    detected_options_count = 0
     try:
         cur_cfg = configparser.ConfigParser()
         cur_cfg.read(cfg_path)
@@ -388,10 +388,10 @@ def validate_cfg(cfg_path: str, template_path: str) -> bool:
             for (option, value) in template_cfg.items(section):
                 options_results.append(cur_cfg.has_option(section, option))
         for section in cur_cfg.sections():
-            for (_, _) in cur_cfg.items(section):
-                detected_options += 1
+            for _ in cur_cfg.items(section):
+                detected_options_count += 1
         # Extra options detected in current config file, invalidate the config.
-        if len(options_results) != detected_options:
+        if len(options_results) != detected_options_count:
             log(ERROR,
                 f"Detected more options than allowed while trying to validate the current config.ini file!\n"
                 f"Please make sure your config.ini file does not "
