@@ -1,11 +1,16 @@
 # JJMumbleBot
-[![GitHub release](https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg)](https://github.com/DuckBoss/JJMumbleBot/releases/latest)
-[![Packagist](https://img.shields.io/badge/License-GPL-blue.svg)](https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE)
-<br>
-[![CodeFactor](https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge)](https://www.codefactor.io/repository/github/duckboss/jjmumblebot)
-[![Build Status](https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=master)](https://travis-ci.com/DuckBoss/JJMumbleBot)
+<h4 align="center">A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for custom plugins.</h4>
+<p align="center">
+  <a href="https://github.com/DuckBoss/JJMumbleBot/releases/latest"><img src="https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg"></a>
+  <a href="https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL-blue.svg"></a>
+  <a href="https://www.codefactor.io/repository/github/duckboss/jjmumblebot"><img src="https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge"></a>
+  <a href="https://travis-ci.com/DuckBoss/JJMumbleBot"><img src="https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=master"></a><br>
+</p>
+<p align="center">
+  :mailbox: <b>How to reach me:</b> <a href="mailto:duckboss@kakao.com" alt="duckboss@kakao.com">duckboss@kakao.com</a><br>
+  :information_desk_person: <b>Join my Discord:</b> <a href="https://discord.gg/7hHwyk85Wx">https://discord.gg/7hHwyk85Wx</a>
+</p>
 
-A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for custom plugins.
 
 
 
