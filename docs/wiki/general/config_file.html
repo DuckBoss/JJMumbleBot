@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - Config.ini File</title>
-    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <noscript>Please enable JavaScript in your browser!</noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+    <script src="../../js/insert_html.js"></script>
+    <link rel="stylesheet" href="../../css/content-pages.css" crossorigin="anonymous">
 </head>
 <body>
     <nav id="table_of_contents"></nav>
@@ -22,13 +23,13 @@
 
         <h4 id="web-interface-method">Web Interface Method</h4>
         <ol>
-            <li>Visit this link: <a href="https://duckboss.github.io/JJMumbleBot/wiki/qsu/qsu.html">Quick Setup Utility - Web Interface for Config.ini File Creation</a></li>
+            <li>Visit this link: <a href="../qsu/qsu.html">Quick Setup Utility - Web Interface for Config.ini File Creation</a></li>
             <li>Fill in all the required fields, and click the &quot;Download Config.ini File&quot; button to generate the <code>config.ini</code> file for the bot.</li>
             <li>Place the <code>config.ini</code> file in your <code>JJMumbleBot/cfg</code> folder.</li>
         </ol>
         <hr>
 
-        <h4 id="connection-settings-required">[Connection Settings] (REQUIRED)</h4>
+        <h4 id="connection-settings-required">[Connection Settings]</h4>
         <ul>
             <li><code>UserID</code>: Enter your bot username here, If the bot is registered with a certificate, the name must match the name in the certificate.</li>
             <li><code>UserCertification</code>: Enter the file path to your certificate. If your server doesn&#39;t require a certificate, leave this blank.</li>
@@ -48,7 +49,7 @@
             SelfRegister = False
             DefaultComment = Hello! I am JJMumbleBot!
         </pre>
-        <h4 id="media-settings-required">[Media Settings] (REQUIRED)</h4>
+        <h4 id="media-settings-required">[Media Settings]</h4>
         <ul>
         <li><code>FfmpegPath</code>: FFmpeg location</li>
         <li><code>VlcPath</code>: VLC location</li>
@@ -82,7 +83,7 @@
             TemporaryMediaDirectory = TEMP_MEDIA_DIR_PATH
             PermanentMediaDirectory = PERM_MEDIA_DIR_PATH
         </pre>
-        <h4 id="logging-required">[Logging] (REQUIRED)</h4>
+        <h4 id="logging-required">[Logging]</h4>
         <ul>
         <li><code>EnableLogging</code>:  Enable Logging Flag</li>
         <li><code>MaxLogs</code>: Maximum Log Limit</li>
@@ -100,7 +101,7 @@
             LogDirectory =
             LogStackTrace = False
         </pre>
-        <h4 id="plugin-settings-optional">[Plugin Settings] (OPTIONAL)</h4>
+        <h4 id="plugin-settings-optional">[Plugin Settings]</h4>
         <ul>
         <li><code>DisabledPlugins</code>: Disables plugins that are included in this list for regular operation.</li>
         <li><code>SafeModePlugins</code>: Plugins to use during safe mode operation.</li>
@@ -112,7 +113,7 @@
             SafeModePlugins = ["core_commands", "bot_commands"]
             AllowedRootChannelsForTempChannels = ["Root"]
         </pre>
-        <h4 id="main-settings-optional">[Main Settings] (OPTIONAL)</h4>
+        <h4 id="main-settings-optional">[Main Settings]</h4>
         <ul>
         <li><code>EnableDatabaseIntegrityCheck</code>: Enable or disable version/plugin integrity checking for the database.<br>Disabling this may cause database conflicts after code updates, plugin updates, or plugin addition/removal!</li>
         <li><code>EnableDatabaseBackup</code>: Enable or disable automatic internal database backups</li>
@@ -132,7 +133,7 @@
             CommandToken = !
             CommandHistoryLimit = 25
         </pre>
-        <h4 id="pgui-settings-optional">[PGUI Settings] (OPTIONAL)</h4>
+        <h4 id="pgui-settings-optional">[PGUI Settings]</h4>
         <p>Limitations: <a href="https://doc.qt.io/qt-5/richtext-html-subset.html">https://doc.qt.io/qt-5/richtext-html-subset.html</a></p>
         <ul>
         <li><code>CanvasBGColor</code>: Default Canvas BG Color (<a href="https://doc.qt.io/qt-5/qcolor.html#setNamedColor">https://doc.qt.io/qt-5/qcolor.html#setNamedColor</a>)</li>

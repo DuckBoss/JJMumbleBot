@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>JJMumbleBot - Quick Start</title>
-    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.css" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://duckboss.github.io/JJMumbleBot/css/content-pages.css" crossorigin="anonymous">
+    <noscript>Please enable JavaScript in your browser!</noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@4.5.2/dist/lux/bootstrap.min.css" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://duckboss.github.io/JJMumbleBot/js/insert_html.js"></script>
+    <script src="../js/insert_html.js"></script>
+    <link rel="stylesheet" href="../css/content-pages.css" crossorigin="anonymous">
 </head>
 <body>
     <nav id="table_of_contents"></nav>
     <div class="main-content">
         <h2 id="page-title">Quick Start</h2>
         <hr>
-        <h3 id="server-configuration">Server Configuration</h3>
+        <h4 id="server-configuration">Server Configuration</h4>
         <ul>
             <li>Please make sure your murmur server supports sending text messages of over 90000 characters. (Configurable in
                 your murmur.ini file)
@@ -24,30 +25,18 @@
                 </ul>
             </li>
         </ul>
-        <h3 id="web-interface">Web Interface</h3>
-        <ul>
-            <li>The web interface (if enabled by default in your <code>plugins/web_server/metadata.ini</code> file) must have the bot itself as a
-                high-privileged user in the user privileges.
-            </li>
-            <li>To add the bot to the user privileges, use the !addprivileges command: <code>!addprivileges MyBotName 5</code>
-                (This sets the bot at an equal privilege level as the owner)
-            </li>
-            <li>If the bot is already in the user privileges, use the !setprivileges command: <code>!setprivileges MyBotName
-                5</code> (This sets the bot at an equal privilege level as the owner)
-            </li>
-        </ul>
-        <h3 id="how-to-start">Already configured the bot? Here's how to start it</h3>
+        <h4 id="how-to-start">Already configured the bot? Here's how to start it</h4>
         <ul>
             <li>Use the <code>-ip</code> launch parameter to specify the server ip.</li>
             <li>Use the <code>-port</code> launch parameter to specify the server port.</li>
             <li>Optionally, use the <code>-password</code> launch parameter to specify the server password (if it has one).</li>
-            <li><a href="https://duckboss.github.io/JJMumbleBot/wiki/general/command_line_arguments.html">Full command line arguments
+            <li><a href="general/command_line_arguments.html">Full command line arguments
                 list</a>
                 <pre><code>python JJMumbleBot/ -ip &lt;serverip&gt; -port &lt;serverport&gt;
             </code></pre>
             </li>
         </ul>
-        <h2 id="quick-start">Quick Start - 5 Steps</h2>
+        <h3 id="quick-start">Quick Start - 5 Steps</h3>
         <ol>
             <li><b>Install the required dependencies and python version.</b>
                 <ul>
@@ -74,7 +63,7 @@
                     </li>
                 </ul>
             </li>
-            <li><b>Generate a .pem certificate and place it in the bot's root directory.</b>
+            <li><b>Generate a .pem certificate and place it in the bot's root directory (if required).</b>
                 <ul>
                     <li>You can skip this step if your server won't be using a certificate.</li>
                     <li>A .p12 certificate may be generated through the mumble client&#39;s certificate wizard and converted to .pem:
@@ -101,7 +90,7 @@
                     <li>Detailed explanation:
                         <ul>
                             <li>
-                                <a href="https://duckboss.github.io/JJMumbleBot/wiki/general/config_file.html">Config.ini Setup Page</a>
+                                <a href="general/config_file.html">Config.ini Setup Page</a>
                             </li>
                         </ul>
                     </li>

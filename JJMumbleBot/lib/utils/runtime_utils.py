@@ -376,6 +376,40 @@ def validate_csv(file_path: str, field_names) -> bool:
         return False
 
 
+def validate_cfg(cfg_path: str, template_path: str) -> bool:
+    options_results = []
+    detected_options_count = 0
+    try:
+        cur_cfg = configparser.ConfigParser()
+        cur_cfg.read(cfg_path)
+        template_cfg = configparser.ConfigParser()
+        template_cfg.read(template_path)
+        for section in template_cfg.sections():
+            for (option, value) in template_cfg.items(section):
+                options_results.append(cur_cfg.has_option(section, option))
+        for section in cur_cfg.sections():
+            for _ in cur_cfg.items(section):
+                detected_options_count += 1
+        # Extra options detected in current config file, invalidate the config.
+        if len(options_results) != detected_options_count:
+            log(ERROR,
+                f"Detected more options than allowed while trying to validate the current config.ini file!\n"
+                f"Please make sure your config.ini file does not "
+                f"have extra options compared to the template_config.ini file!",
+                origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+            return False
+    except configparser.Error as e:
+        log(ERROR, f"Encountered a critical error while trying to validate the current config.ini file!\n{e.message}",
+            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+        return False
+    # Validate the config if all the options match the template.
+    if all(option for option in options_results):
+        log(INFO, f"Successfully validated the current config.ini file.",
+            origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
+        return True
+    return False
+
+
 def get_plugin_metadata(plugin_name: str) -> dict:
     if path.exists(f"{dir_utils.get_main_dir()}/plugins/core/{plugin_name}"):
         plugin_path = f"{dir_utils.get_main_dir()}/plugins/core/{plugin_name}"

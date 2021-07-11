@@ -1,5 +1,4 @@
 command,level
-seek,3
 echo,2
 log,4
 kickuser,4

@@ -156,6 +156,13 @@ class Plugin(PluginBase):
         )
         gs.aud_interface.play(audio_lib=AudioLibrary.FFMPEG, override=True)
 
+    def cmd_wiki(self, data):
+        gs.gui_service.quick_gui(f'<a href="{LINK_WIKI}">Visit the JJMumbleBot Wiki</a>', text_type='header', box_align='left',
+                                 text_align='left', user=gs.mumble_inst.users[data.actor]['name'],
+                                 ignore_whisper=True)
+        log(INFO, f"Displayed wiki hyperlink to the user: {gs.mumble_inst.users[data.actor]['name']}",
+            origin=L_COMMAND, print_mode=PrintMode.VERBOSE_PRINT.value)
+
     def cmd_toggleloginsounds(self, data):
         data_actor = gs.mumble_inst.users[data.actor]
         current_status = not self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False)

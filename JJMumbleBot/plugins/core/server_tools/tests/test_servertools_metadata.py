@@ -16,11 +16,11 @@ class TestServerTools:
         self.cfg.read(f"{get_core_plugin_dir()}/server_tools/metadata.ini")
 
     def test_plugin_version(self):
-        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "5.0.0"
+        assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_VERS] == "5.2.0"
 
     def test_commands_list_size(self):
         commands_list = list(loads(self.cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS]))
-        assert len(commands_list) == 5
+        assert len(commands_list) == 6
 
     def test_match_commands_to_methods(self):
         method_list = [item for item in dir(Plugin) if callable(getattr(Plugin, item)) and item.startswith("cmd_")]

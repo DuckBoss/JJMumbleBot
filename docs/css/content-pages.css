@@ -1,20 +1,145 @@
+body {
+    background: #1E2021;
+}
+
+/*  Thanks to Volomike for the <details> tag transition effects code:
+    https://stackoverflow.com/questions/38213329/how-to-add-css3-transition-with-html5-details-summary-tag-reveal
+*/
+details[open] summary ~ * {
+  animation: fadeDown .5s ease-in-out;
+}
+@keyframes fadeDown {
+    0% { opacity: 0; transform: translateY(-1.25em); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
 .main-content {
+    background: #1E2021;
+    color: rgb(216, 208, 196);
     padding: 25px;
     margin-left: 250px;
     margin-bottom: 45px;
+}
+.main-content h1, h2, h3, h4, h5, h6 {
+    color: white;
+}
+.main-content hr {
+    border-top-color: rgba(172, 160, 141, 0.1);
+}
+.main-content a {
+    color: white;
+    font-weight: bold;
+}
+.main-content pre {
+    color: white;
+}
+.main-content a:hover {
+    color: #e83e8c;
+    text-decoration: none;
+}
+.main-content details {
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    border-color: rgba(172, 160, 141, 0.1);
+    padding: 15px;
+    margin: 5px;
+}
+.main-content details ul {
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    border-color: white;
+    list-style-type: square;
+    margin: 10px;
+}
+.main-content details h1, h2, h3, h4, h5, h6 {
+    margin: 10px;
+}
+.main-content p {
+    margin: 10px;
+}
+.update-guide {
+    border-radius: 5px;
+}
+.update-guide h5, .update-guide h6 {
+    color: black;
+}
+.update-guide-header {
+    padding: 5px;
+    border-radius: 5px;
+}
+.update-guide pre {
+    margin: 10px;
+    color: black;
+    white-space: pre-line;
+}
+.left-shifted-pre {
+    margin: 10px;
+    white-space: pre-line;
+}
+.update-guide details {
+    border-radius: 5px;
+    border: none;
+    padding: 15px;
+    margin: 5px;
+}
+.update-guide details ul {
+    border-radius: 5px;
+    border: 1px solid black;
+    border-color: black;
+    list-style-type: square;
+    margin: 10px;
+}
+.update-details details summary {
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: white;
+}
+.update-details details ul {
+    border: none;
+}
+.update-details-header {
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center;
+    float: right;
 }
 #table_of_contents {
     height: calc(100% - 45px);
     width: 250px;
     position: fixed;
     background-color: black;
-    padding-left: 10px;
+    color: white;
     padding-top: 10px;
     overflow: auto;
 }
+#table_of_contents a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+#table_of_contents a:hover {
+    color: #e83e8c;
+}
+#table_of_contents hr {
+    border-top-color: rgba(172, 160, 141, 0.1);
+}
+#table_of_contents h4, #table_of_contents h5 {
+    text-align: center;
+}
 #table_of_contents ul {
     list-style-position: inside;
-    padding-left: 10px;
+    list-style-type: none;
+    padding-left: 15%;
+    margin-bottom: 10px;
+    margin-top: 5px;
 }
 code {
     overflow: hidden;
@@ -30,4 +155,29 @@ footer {
     height: 45px;
     width: 100%;
     text-align: center;
+    color: rgb(216, 208, 196);
+}
+footer a {
+    color: white;
+}
+
+/* https://www.w3schools.com/howto/howto_css_custom_scrollbar.asp */
+/* width */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }

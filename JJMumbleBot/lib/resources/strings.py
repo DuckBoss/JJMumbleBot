@@ -71,6 +71,9 @@ WARNING = 'warning'
 ERROR = 'error'
 CRITICAL = 'critical'
 
+# EXTERNAL LINKS - DO NOT MODIFY
+LINK_WIKI = 'https://duckboss.github.io/JJMumbleBot/wiki/new/whats_new.html'
+
 # TEMPORARY DATA STRINGS - DO NOT MODIFY
 T_TEMP_IMG_NAME = '_image'
 T_TEMP_CMD_PERMISSIONS = '_permissions'
