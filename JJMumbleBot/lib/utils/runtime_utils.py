@@ -77,12 +77,11 @@ def mute(username: str = None):
                 user.mute()
                 return True
         return False
-    else:
-        if runtime_settings.muted:
-            return False
-        global_settings.mumble_inst.users.myself.mute()
-        runtime_settings.muted = True
-        return True
+    if runtime_settings.muted:
+        return False
+    global_settings.mumble_inst.users.myself.mute()
+    runtime_settings.muted = True
+    return True
 
 
 def unmute(username: str = None):
@@ -95,12 +94,11 @@ def unmute(username: str = None):
                 user.unmute()
                 return True
         return False
-    else:
-        if not runtime_settings.muted:
-            return False
-        global_settings.mumble_inst.users.myself.unmute()
-        runtime_settings.muted = False
-        return True
+    if not runtime_settings.muted:
+        return False
+    global_settings.mumble_inst.users.myself.unmute()
+    runtime_settings.muted = False
+    return True
 
 
 def echo(channel, message_text, ignore_whisper=False):
@@ -502,10 +500,9 @@ def force_restart_plugin(plugin_name: str) -> bool:
             if name == "web_server":
                 plugin.stop_server()
                 return True
-            else:
-                plugin.stop()
-                plugin.start()
-                return True
+            plugin.stop()
+            plugin.start()
+            return True
     return False
 
 
