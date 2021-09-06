@@ -144,7 +144,7 @@ def download_image_stream(img_url):
     log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
-def download_image_stream_to_dir(img_url, dir_name):
+def download_image_stream_to_dir(img_url, dir_name, force_jpg=True):
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{dir_name}')
     img_ext = img_url.rsplit('.', 1)[1]
     with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}", 'wb') as img_file:
@@ -153,7 +153,7 @@ def download_image_stream_to_dir(img_url, dir_name):
             if not block:
                 break
             img_file.write(block)
-    if img_ext == 'png':
+    if img_ext == 'png' and force_jpg:
         log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
             error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
         img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
@@ -162,7 +162,7 @@ def download_image_stream_to_dir(img_url, dir_name):
     log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
-def download_image_requests_to_dir(img_url, dir_name):
+def download_image_requests_to_dir(img_url, dir_name, force_jpg=True):
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{dir_name}')
     img_ext = img_url.rsplit('.', 1)[1]
     s = requests.Session()
@@ -180,7 +180,7 @@ def download_image_requests_to_dir(img_url, dir_name):
             error_type=GEN_PROCESS_ERR,
             print_mode=PrintMode.VERBOSE_PRINT.value
         )
-    if img_ext == 'png':
+    if img_ext == 'png' and force_jpg:
         log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
             error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
         img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
