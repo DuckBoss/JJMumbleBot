@@ -144,10 +144,10 @@ def download_image_stream(img_url):
     log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
-def download_image_stream_to_dir(img_url, dir_name, force_jpg=True):
+def download_image_stream_to_dir(img_url, dir_name, img_name='_image', force_jpg=True):
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{dir_name}')
     img_ext = img_url.rsplit('.', 1)[1]
-    with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}", 'wb') as img_file:
+    with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/{img_name}.{img_ext}", 'wb') as img_file:
         resp = requests.get(img_url, stream=True)
         for block in resp.iter_content(1024):
             if not block:
@@ -156,19 +156,19 @@ def download_image_stream_to_dir(img_url, dir_name, force_jpg=True):
     if img_ext == 'png' and force_jpg:
         log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
             error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
-        img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
-        img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.jpg")
-        dir_utils.remove_file("_image.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
+        img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/{img_name}.{img_ext}")
+        img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/{img_name}.jpg")
+        dir_utils.remove_file(f"{img_name}.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
     log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
 
 
-def download_image_requests_to_dir(img_url, dir_name, force_jpg=True):
+def download_image_requests_to_dir(img_url, dir_name, img_name='_image', force_jpg=True):
     dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{dir_name}')
     img_ext = img_url.rsplit('.', 1)[1]
     s = requests.Session()
     r = s.get(img_url)
     if r.status_code == 200:
-        with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}", 'wb') as f:
+        with open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/{img_name}.{img_ext}", 'wb') as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
         log(INFO, INFO_IMG_DOWNLOADED, origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
@@ -183,6 +183,6 @@ def download_image_requests_to_dir(img_url, dir_name, force_jpg=True):
     if img_ext == 'png' and force_jpg:
         log(WARNING, WARN_IMG_INCORRECT_FORMAT, origin=L_GENERAL,
             error_type=WARN_FIXED_IMG_FORMAT, print_mode=PrintMode.VERBOSE_PRINT.value)
-        img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.{img_ext}")
-        img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/_image.jpg")
-        dir_utils.remove_file("_image.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
+        img_fix = Image.open(f"{dir_utils.get_temp_med_dir()}/{dir_name}/{img_name}.{img_ext}")
+        img_fix.convert('RGB').save(f"{dir_utils.get_temp_med_dir()}/{dir_name}/{img_name}.jpg")
+        dir_utils.remove_file(f"{img_name}.png", f'{dir_utils.get_temp_med_dir()}/{dir_name}')
