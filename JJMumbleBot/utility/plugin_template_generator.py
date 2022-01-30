@@ -22,6 +22,7 @@ class Plugin(PluginBase):
         # Add any custom initialization code here...
         # ...
         # ...
+        self.register_callbacks()
         self.is_running = True
         log(INFO,
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
@@ -45,6 +46,14 @@ class Plugin(PluginBase):
     def start(self):
         if not self.is_running:
             self.__init__()
+            
+    # This method is used to register plugin-specific callbacks for event-driven actions.
+    # For example, in the media plugin, there are multiple callbacks registered to handle
+    # the automatic downloading of thumbnail images and sequencing of tracks.
+    # Since the implementation of a plugin's callbacks are unique to the plugin, this template leaves this blank.
+    # In addition, not all plugins require callbacks to be registered and is dependent on the use-case.
+    def register_callbacks(self):
+        pass
 
     # Each command must be its own method definition
     # All command methods must be prefixed with 'cmd_' and require 'self','data' in the parameters.
