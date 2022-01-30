@@ -1,9 +1,9 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.settings import global_settings
-from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.settings import global_settings as gs
+from JJMumbleBot.lib.resources.strings import *
 
 
 class Plugin(PluginBase):
@@ -42,14 +42,14 @@ class Plugin(PluginBase):
         if not self.is_running:
             self.__init__()
 
-    # Each command must be it's own method definition
-    # All command methods must be prefixed with 'cmd' and require 'self','data' in the parameters.
-    # Example: !my_echo_command -> def cmd_mycommand(self, data)
+    # Each command must be its own method definition
+    # All command methods must be prefixed with 'cmd_' and require 'self','data' in the parameters.
+    # Example: !example_echo -> def cmd_example_echo(self, data)
     # You can use the 'data' parameter to extract information such as the command name/message body.
-    # Example: !my_echo_command blah blah blah
-    #          data.command -> my_echo_command
-    #          data.message -> !my_echo_command blah blah blah
-    def cmd_my_echo_command(self, data):
+    # Example: !example_echo blah blah blah
+    #          data.command -> example_echo
+    #          data.message -> !example_echo blah blah blah
+    def cmd_example_echo(self, data):
         text_to_echo = data.message.strip().split(' ', 1)[1]
-        global_settings.gui_service.quick_gui(text_to_echo, text_type='header', box_align='left', ignore_whisper=True)
+        gs.gui_service.quick_gui(text_to_echo, text_type='header', box_align='left', ignore_whisper=True)
         log(INFO, f"Echo:[{text_to_echo}]", origin=L_GENERAL)
