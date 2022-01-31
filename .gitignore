@@ -123,6 +123,7 @@ global_aliases.csv
 config.ini
 *.pem
 *.wav
+!default_user_sound.wav
 *.oga
 *.ogg
 *.py.save
