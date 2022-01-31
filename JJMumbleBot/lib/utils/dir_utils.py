@@ -41,6 +41,18 @@ def clear_directory(d):
                 origin=L_COMMAND, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.REG_PRINT.value)
 
 
+def find_file(file_name, directory_name):
+    for the_file in listdir(directory_name):
+        try:
+            file_path = path.join(directory_name, the_file)
+            if path.isfile(file_path):
+                if the_file == file_name:
+                    return file_path
+        except Exception as e:
+            log(ERROR, f"Encountered an error trying to find the '{file_name}' file: {e}",
+                origin=L_COMMAND, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.REG_PRINT.value)
+
+
 def remove_file(file_name, directory_name):
     for the_file in listdir(directory_name):
         try:
