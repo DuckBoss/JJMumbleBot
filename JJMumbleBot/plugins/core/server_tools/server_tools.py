@@ -12,6 +12,7 @@ from JJMumbleBot.lib.utils.dir_utils import find_file as du_find_file
 from JJMumbleBot.lib.audio.audio_api import TrackType, TrackInfo, AudioLibrary
 from JJMumbleBot.lib.utils.runtime_utils import get_bot_name
 from os import path, listdir
+from typing import Union
 
 
 class Plugin(PluginBase):
@@ -92,7 +93,7 @@ class Plugin(PluginBase):
                 return file_item
         return None
 
-    def util_find_and_create_track(self, file_name) -> TrackInfo | None:
+    def util_find_and_create_track(self, file_name) -> Union[TrackInfo, None]:
         if self.metadata.getboolean(C_PLUGIN_SET, P_USE_SOUNDBOARD_CLIPS, fallback=True):
             if self.util_find_sb_file(file_name):
                 return TrackInfo(
