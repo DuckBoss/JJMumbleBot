@@ -158,7 +158,7 @@ class Plugin(PluginBase):
                 track_obj = track_search
             # If the clip is missing, attempt to find the default clip instead.
             else:
-                # If the clip is missing, end the command and log the error
+                # If the default clip is also missing, end the command and log the error
                 if not du_find_file(self.default_audio_clip,
                                     f'{get_core_plugin_dir()}/{self.plugin_name}/resources/'):
                     gs.aud_interface.clear_dni()
@@ -181,14 +181,14 @@ class Plugin(PluginBase):
         else:
             to_play = st_settings.user_connections.get(user[0]['name'])
             # If to_play doesn't exist, that means the user is not on the user_connections.csv file.
-            # use the built-in clip when the user isn't on the list.
+            # use the generic audio clip when the user isn't on the list.
             if not to_play:
                 to_play = self.metadata[C_PLUGIN_SET][P_GENERIC_CLIP_TO_PLAY_ON_USER_JOIN]
                 # If the clip is missing, end the command and log the error
                 if not du_find_file(self.metadata[C_PLUGIN_SET][P_GENERIC_CLIP_TO_PLAY_ON_USER_JOIN],
                                     f'{get_core_plugin_dir()}/{self.plugin_name}/resources/'):
                     gs.aud_interface.clear_dni()
-                    log(ERROR, f"The audio clip: {to_play} for the user connection sound could not be found! "
+                    log(ERROR, f"The audio clip: {to_play} user connection sound for {user[0]['name']} could not be found! "
                                f"If the generic clip has not been customized, the default 'default_user_sound.wav' should "
                                f"be included in the plugin's resource folder by default, "
                                f"please notify the developer if it's missing!",
@@ -293,15 +293,32 @@ class Plugin(PluginBase):
                                      user=data_actor['name'])
             return
         audio_clip_name = all_data[1]
-        if not find_file(audio_clip_name):
-            log(ERROR, f"{audio_clip_name} is not one of the available files in the sound board permanent directory.",
-                origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
-            gs.gui_service.quick_gui(
-                f"{audio_clip_name} is not one of the available files in the sound board permanent directory.",
-                text_type='header',
-                box_align='left',
-                user=data_actor['name'])
-            return
+
+        # If the plugin is set to use sound board clips, check if the file exists in the sound board media directory.
+        # Otherwise, check if the file exists in the server tools media directory.
+        if self.metadata.getboolean(C_PLUGIN_SET, P_USE_SOUNDBOARD_CLIPS, fallback=True):
+            if self.util_find_sb_file(audio_clip_name) is None:
+                log(ERROR,
+                   f"{audio_clip_name} is not one of the available files in the sound board media directory.",
+                   origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(
+                    f"{audio_clip_name} is not one of the available files in the sound board media directory.",
+                    text_type='header',
+                    box_align='left',
+                    user=data_actor['name'])
+                return
+        else:
+            if self.util_find_file(audio_clip_name) is None:
+                log(ERROR,
+                    f"{audio_clip_name} is not one of the available files in the server tools media directory.",
+                    origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(
+                    f"{audio_clip_name} is not one of the available files in the server tools media directory.",
+                    text_type='header',
+                    box_align='left',
+                    user=data_actor['name'])
+                return
+
         self.metadata[C_PLUGIN_SET][P_GENERIC_CLIP_TO_PLAY_ON_USER_JOIN] = audio_clip_name
         try:
             with open(f'{get_core_plugin_dir()}/{self.plugin_name}/metadata.ini', 'w') as metadata_file:
@@ -336,6 +353,32 @@ class Plugin(PluginBase):
             return
         username = all_data[1]
         track = all_data[2]
+
+        # If the plugin is set to use sound board clips, check if the file exists in the sound board media directory.
+        # Otherwise, check if the file exists in the server tools media directory.
+        if self.metadata.getboolean(C_PLUGIN_SET, P_USE_SOUNDBOARD_CLIPS, fallback=True):
+            if self.util_find_sb_file(track) is None:
+                log(ERROR,
+                    f"{track} is not one of the available files in the sound board media directory.",
+                    origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(
+                    f"{track} is not one of the available files in the sound board media directory.",
+                    text_type='header',
+                    box_align='left',
+                    user=data_actor['name'])
+                return
+        else:
+            if self.util_find_file(track) is None:
+                log(ERROR,
+                    f"{track} is not one of the available files in the server tools media directory.",
+                    origin=L_COMMAND, error_type=CMD_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+                gs.gui_service.quick_gui(
+                    f"{track} is not one of the available files in the server tools media directory.",
+                    text_type='header',
+                    box_align='left',
+                    user=data_actor['name'])
+                return
+
         st_settings.user_connections[username] = track
         st_utility.save_user_connections()
         if self.metadata.getboolean(C_PLUGIN_SET, P_PLAY_AUDIO_CLIP_ON_USER_JOIN, fallback=False):
