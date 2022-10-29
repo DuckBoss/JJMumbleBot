@@ -8,7 +8,6 @@
 </p>
 <p align="center">
   :mailbox: <b>How to reach me:</b> <a href="mailto:duckboss@kakao.com" alt="duckboss@kakao.com">duckboss@kakao.com</a><br>
-  :information_desk_person: <b>Join my Discord:</b> <a href="https://discord.gg/7hHwyk85Wx">https://discord.gg/7hHwyk85Wx</a>
 </p>
 
 
