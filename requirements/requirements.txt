@@ -5,4 +5,4 @@ beautifulsoup4
 requests
 Pillow
 youtube-dl
-pymumble==1.6.1
+pymumble==1.7
