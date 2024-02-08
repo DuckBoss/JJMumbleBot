@@ -12,7 +12,7 @@
 
 
   ## Development Status:
-  This project is actively being reworked here: [https://travis-ci.com/DuckBoss/JJMumbleBot](https://github.com/DuckBoss/Mumimo)<br>
+  This project is actively being reworked here as the Mumimo project: [Mumimo](https://github.com/DuckBoss/Mumimo)<br>
   The current version should still be functional for legacy users, but all new bugs/issues are being worked on in the reworked project.
 
   ## Features  🔥
