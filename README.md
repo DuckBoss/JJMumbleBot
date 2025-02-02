@@ -1,5 +1,5 @@
 # JJMumbleBot
-<h4 align="center">A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for custom plugins.</h4>
+<h4 align="center">A plugin-based All-In-One mumble bot solution in python 3.9+ with extensive features and support for custom plugins.</h4>
 <p align="center">
   <a href="https://github.com/DuckBoss/JJMumbleBot/releases/latest"><img src="https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg"></a>
   <a href="https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL-blue.svg"></a>

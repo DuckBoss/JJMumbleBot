@@ -12,7 +12,7 @@ from os import path, environ
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support "
+        description="A plugin-based All-In-One mumble bot solution in python 3.9+ with extensive features and support "
         "for custom plugins."
     )
     parser._action_groups.pop()

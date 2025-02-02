@@ -362,7 +362,7 @@ def get_version():
 
 def get_about():
     return (
-        "<br> A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for "
+        "<br> A plugin-based All-In-One mumble bot solution in python 3.9+ with extensive features and support for "
         'custom plugins.<br><a href="https://github.com/DuckBoss/JJMumbleBot">https://github.com/DuckBoss'
         "/JJMumbleBot</a><br> "
     )
