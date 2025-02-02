@@ -1,4 +1,4 @@
-import pymumble_py3 as pymumble
+import mumble
 import configparser
 from JJMumbleBot.lib.utils.dir_utils import get_main_dir
 from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
@@ -10,11 +10,16 @@ class TestBasicConnectivity:
         # Initialize configs.
         global_settings.cfg = configparser.ConfigParser()
         global_settings.cfg.read(f"{get_main_dir()}/tests/dummy_config.ini")
-        self.md = BotServiceHelper.retrieve_mumble_data('0.0.0.0', 64738, 'test')
+        self.md = BotServiceHelper.retrieve_mumble_data("0.0.0.0", 64738, "test")
 
     def test_connectivity(self):
-        mumble_inst = pymumble.Mumble(self.md.ip_address, port=self.md.port, user=self.md.user_id,
-                                           password=self.md.password, stereo=self.md.stereo)
+        mumble_inst = mumble.Mumble(
+            self.md.ip_address,
+            port=self.md.port,
+            user=self.md.user_id,
+            password=self.md.password,
+            stereo=self.md.stereo,
+        )
         assert mumble_inst is not None
 
     def test_server_ip(self):

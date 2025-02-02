@@ -5,7 +5,7 @@ from JJMumbleBot.lib.errors import ExitCodes
 from JJMumbleBot.lib.utils.print_utils import PrintMode
 from JJMumbleBot.lib.utils import dir_utils
 from JJMumbleBot.lib.resources.strings import *
-from pymumble_py3 import errors
+from mumble import errors
 from os import path
 from json import loads, dumps
 from datetime import datetime
@@ -17,31 +17,54 @@ def parse_message(text):
     user = global_settings.mumble_inst.users[text.actor]
 
     if message[0] == runtime_settings.cmd_token:
-        log(INFO, f"Commands Received: [{user['name']} -> {message}]", origin=L_COMMAND, print_mode=PrintMode.REG_PRINT.value)
+        log(
+            INFO,
+            f"Commands Received: [{user['name']} -> {message}]",
+            origin=L_COMMAND,
+            print_mode=PrintMode.REG_PRINT.value,
+        )
         # example all_commands input: !version ; !about ; !yt twice ; !p ; !status
-        all_commands = [msg.strip() for msg in message.split(';')]
+        all_commands = [msg.strip() for msg in message.split(";")]
         # example all_commands output: ["!version", "!about", "!yt twice", "!p", "!status"]
 
         # add to command history
         for cmd in all_commands:
             global_settings.cmd_history.insert(cmd)
         if len(all_commands) > runtime_settings.multi_cmd_limit:
-            log(WARNING,
+            log(
+                WARNING,
                 f"The multi-command limit was reached! The multi-command limit is {runtime_settings.multi_cmd_limit} commands per line.",
                 origin=L_COMMAND,
-                print_mode=PrintMode.REG_PRINT.value)
+                print_mode=PrintMode.REG_PRINT.value,
+            )
             return
         return all_commands
 
     if "<img" in message:
-        log(INFO, f"Message Received: [{user['name']} -> Image Data]", print_mode=PrintMode.REG_PRINT.value)
+        log(
+            INFO,
+            f"Message Received: [{user['name']} -> Image Data]",
+            print_mode=PrintMode.REG_PRINT.value,
+        )
     elif "<a href=" in message:
-        log(INFO, f"Message Received: [{user['name']} -> Hyperlink Data]", print_mode=PrintMode.REG_PRINT.value)
+        log(
+            INFO,
+            f"Message Received: [{user['name']} -> Hyperlink Data]",
+            print_mode=PrintMode.REG_PRINT.value,
+        )
     else:
         if global_settings.cfg.getboolean(C_LOGGING, P_LOG_MESSAGES, fallback=True):
-            log(INFO, f"Message Received: [{user['name']} -> #####]", print_mode=PrintMode.REG_PRINT.value)
+            log(
+                INFO,
+                f"Message Received: [{user['name']} -> #####]",
+                print_mode=PrintMode.REG_PRINT.value,
+            )
         else:
-            log(INFO, f"Message Received: [{user['name']} -> {message}]", print_mode=PrintMode.REG_PRINT.value)
+            log(
+                INFO,
+                f"Message Received: [{user['name']} -> {message}]",
+                print_mode=PrintMode.REG_PRINT.value,
+            )
     return None
 
 
@@ -49,8 +72,12 @@ def deafen(username):
     user = get_user(username)
     if user:
         if not user.get("deaf", False):
-            log(INFO, f"Deafening user:[{user['name']}]", origin=L_COMMAND,
-                print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(
+                INFO,
+                f"Deafening user:[{user['name']}]",
+                origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value,
+            )
             user.deafen()
             return True
     return False
@@ -60,8 +87,12 @@ def undeafen(username):
     user = get_user(username)
     if user:
         if user.get("deaf", False):
-            log(INFO, f"Undeafening user:[{user['name']}]", origin=L_COMMAND,
-                print_mode=PrintMode.VERBOSE_PRINT.value)
+            log(
+                INFO,
+                f"Undeafening user:[{user['name']}]",
+                origin=L_COMMAND,
+                print_mode=PrintMode.VERBOSE_PRINT.value,
+            )
             user.undeafen()
             return True
     return False
@@ -72,8 +103,12 @@ def mute(username: str = None):
         user = get_user(username)
         if user:
             if not user.get("mute", False):
-                log(INFO, f"Muting user:[{user['name']}]", origin=L_COMMAND,
-                    print_mode=PrintMode.VERBOSE_PRINT.value)
+                log(
+                    INFO,
+                    f"Muting user:[{user['name']}]",
+                    origin=L_COMMAND,
+                    print_mode=PrintMode.VERBOSE_PRINT.value,
+                )
                 user.mute()
                 return True
         return False
@@ -89,8 +124,12 @@ def unmute(username: str = None):
         user = get_user(username)
         if user:
             if user.get("mute", False):
-                log(INFO, f"Unmuting user:[{user['name']}]", origin=L_COMMAND,
-                    print_mode=PrintMode.VERBOSE_PRINT.value)
+                log(
+                    INFO,
+                    f"Unmuting user:[{user['name']}]",
+                    origin=L_COMMAND,
+                    print_mode=PrintMode.VERBOSE_PRINT.value,
+                )
                 user.unmute()
                 return True
         return False
@@ -106,7 +145,9 @@ def echo(channel, message_text, ignore_whisper=False):
         return
     if runtime_settings.whisper_target is not None and not ignore_whisper:
         if runtime_settings.whisper_target["type"] == 0:
-            global_settings.mumble_inst.channels[runtime_settings.whisper_target["id"]].send_text_message(message_text)
+            global_settings.mumble_inst.channels[
+                runtime_settings.whisper_target["id"]
+            ].send_text_message(message_text)
         elif runtime_settings.whisper_target["type"] == 1:
             msg_id(runtime_settings.whisper_target["id"], message_text)
         elif runtime_settings.whisper_target["type"] == 2:
@@ -118,9 +159,14 @@ def echo(channel, message_text, ignore_whisper=False):
 
 def set_whisper_user(username):
     for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['name'] == username:
-            runtime_settings.whisper_target = {"id": global_settings.mumble_inst.users[user]['session'], "type": 1}
-            global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=False)
+        if global_settings.mumble_inst.users[user]["name"] == username:
+            runtime_settings.whisper_target = {
+                "id": global_settings.mumble_inst.users[user]["session"],
+                "type": 1,
+            }
+            global_settings.mumble_inst.send_audio.set_whisper(
+                runtime_settings.whisper_target["id"], channel=False
+            )
             return True
     return False
 
@@ -130,19 +176,23 @@ def set_whisper_multi_user(users_list):
         return
     whisper_targets = []
     for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['name'] in users_list:
-            whisper_targets.append(global_settings.mumble_inst.users[user]['session'])
+        if global_settings.mumble_inst.users[user]["name"] in users_list:
+            whisper_targets.append(global_settings.mumble_inst.users[user]["session"])
     if len(whisper_targets) < 1:
         return
     runtime_settings.whisper_target = {"id": whisper_targets, "type": 2}
-    global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=False)
+    global_settings.mumble_inst.send_audio.set_whisper(
+        runtime_settings.whisper_target["id"], channel=False
+    )
 
 
 def set_whisper_channel(channel_name):
     try:
-        channel_id = get_channel(channel_name)['channel_id']
+        channel_id = get_channel(channel_name)["channel_id"]
         runtime_settings.whisper_target = {"id": channel_id, "type": 0}
-        global_settings.mumble_inst.sound_output.set_whisper(runtime_settings.whisper_target["id"], channel=True)
+        global_settings.mumble_inst.send_audio.set_whisper(
+            runtime_settings.whisper_target["id"], channel=True
+        )
         return True
     except errors.UnknownChannelError:
         return False
@@ -152,38 +202,53 @@ def get_whisper_clients_by_type(wh_type: int):
     if runtime_settings.whisper_target is None:
         return None
     if wh_type == 0:
-        return global_settings.mumble_inst.channels[runtime_settings.whisper_target['id']]['name']
+        return global_settings.mumble_inst.channels[
+            runtime_settings.whisper_target["id"]
+        ]["name"]
     if wh_type == 1:
         for user in global_settings.mumble_inst.users:
-            if global_settings.mumble_inst.users[user]['session'] == runtime_settings.whisper_target['id']:
-                return global_settings.mumble_inst.users[user]['name']
+            if (
+                global_settings.mumble_inst.users[user]["session"]
+                == runtime_settings.whisper_target["id"]
+            ):
+                return global_settings.mumble_inst.users[user]["name"]
     else:
         user_list = []
         for user in global_settings.mumble_inst.users:
-            if global_settings.mumble_inst.users[user]['session'] == runtime_settings.whisper_target['id']:
-                user_list.append(global_settings.mumble_inst.users[user]['name'])
+            if (
+                global_settings.mumble_inst.users[user]["session"]
+                == runtime_settings.whisper_target["id"]
+            ):
+                user_list.append(global_settings.mumble_inst.users[user]["name"])
         return user_list
 
 
 def clear_whisper():
     runtime_settings.whisper_target = None
-    global_settings.mumble_inst.sound_output.remove_whisper()
+    global_settings.mumble_inst.send_audio.remove_whisper()
 
 
-def kick_user(receiver, reason='N/A'):
+def kick_user(receiver, reason="N/A"):
     user = get_user(receiver)
     if user:
-        log(INFO, f"Kicking user:[{user['name']}]->[{reason}]", origin=L_COMMAND,
-            print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(
+            INFO,
+            f"Kicking user:[{user['name']}]->[{reason}]",
+            origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         user.kick(reason=reason)
 
 
-def ban_user(receiver, reason='N/A'):
+def ban_user(receiver, reason="N/A"):
     user = get_user(receiver)
     if user:
-        log(INFO,
-            f"Banning user:[{user['name']}]->[{reason}]", origin=L_COMMAND,
-            print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(
+            INFO,
+            f"Banning user:[{user['name']}]->[{reason}]",
+            origin=L_COMMAND,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         user.ban(reason=reason)
 
 
@@ -192,11 +257,13 @@ def move_user(receiver: str, new_channel_name: str):
     if channel:
         user = get_user(receiver)
         if user:
-            log(INFO,
+            log(
+                INFO,
                 f"Moving user:[{user['name']}]->[{new_channel_name}]",
                 origin=L_COMMAND,
-                print_mode=PrintMode.VERBOSE_PRINT.value)
-            channel.move_in(session=user['session'])
+                print_mode=PrintMode.VERBOSE_PRINT.value,
+            )
+            channel.move_in(session=user["session"])
 
 
 def msg(receiver: str, message: str):
@@ -207,7 +274,7 @@ def msg(receiver: str, message: str):
 
 def msg_id(receiver_id: str, message: str):
     for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['session'] == receiver_id:
+        if global_settings.mumble_inst.users[user]["session"] == receiver_id:
             global_settings.mumble_inst.users[user].send_text_message(message)
 
 
@@ -233,7 +300,7 @@ def get_bot_internal_name():
 
 def get_user(username: str):
     for user in global_settings.mumble_inst.users:
-        if global_settings.mumble_inst.users[user]['name'] == username:
+        if global_settings.mumble_inst.users[user]["name"] == username:
             return global_settings.mumble_inst.users[user]
     return None
 
@@ -241,8 +308,10 @@ def get_user(username: str):
 def get_user_channel(username: str):
     all_users = get_all_users()
     for user_id in get_all_users():
-        if all_users[user_id]['name'] == username:
-            return global_settings.mumble_inst.channels[all_users[user_id]['channel_id']]
+        if all_users[user_id]["name"] == username:
+            return global_settings.mumble_inst.channels[
+                all_users[user_id]["channel_id"]
+            ]
     return None
 
 
@@ -270,7 +339,9 @@ def get_default_channel():
 
 
 def get_my_channel():
-    return global_settings.mumble_inst.channels[global_settings.mumble_inst.users.myself['channel_id']]
+    return global_settings.mumble_inst.channels[
+        global_settings.mumble_inst.users.myself["channel_id"]
+    ]
 
 
 def get_all_users():
@@ -290,9 +361,11 @@ def get_version():
 
 
 def get_about():
-    return '<br> A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for ' \
-           'custom plugins.<br><a href="https://github.com/DuckBoss/JJMumbleBot">https://github.com/DuckBoss' \
-           '/JJMumbleBot</a><br> '
+    return (
+        "<br> A plugin-based All-In-One mumble bot solution in python 3.7+ with extensive features and support for "
+        'custom plugins.<br><a href="https://github.com/DuckBoss/JJMumbleBot">https://github.com/DuckBoss'
+        "/JJMumbleBot</a><br> "
+    )
 
 
 def get_comment():
@@ -308,17 +381,26 @@ def get_users_in_my_channel():
 
 
 def make_channel(root_channel, channel_name, temporary=False):
-    allowed_channels = loads(global_settings.cfg[C_PLUGIN_SETTINGS][P_PLUG_ALLOWED_CHANNELS])
+    allowed_channels = loads(
+        global_settings.cfg[C_PLUGIN_SETTINGS][P_PLUG_ALLOWED_CHANNELS]
+    )
     if allowed_channels is not None:
         for chan_name in allowed_channels:
             found_channel = global_settings.mumble_inst.channels.find_by_name(chan_name)
-            if found_channel is not None and found_channel.get_id() == root_channel.get_id():
-                return global_settings.mumble_inst.channels.new_channel(root_channel.get_id(), channel_name, temporary=temporary)
+            if (
+                found_channel is not None
+                and found_channel.get_id() == root_channel.get_id()
+            ):
+                return global_settings.mumble_inst.channels.new_channel(
+                    root_channel.get_id(), channel_name, temporary=temporary
+                )
     return None
 
 
 def leave_channel():
-    default_channel = get_channel(global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL])
+    default_channel = get_channel(
+        global_settings.cfg[C_CONNECTION_SETTINGS][P_DEFAULT_CHANNEL]
+    )
     if default_channel:
         default_channel.move_in()
 
@@ -344,6 +426,7 @@ def check_up_time() -> str:
 
 def validate_url(url: str) -> bool:
     from requests import get, exceptions
+
     try:
         resp = get(url)
         if resp:
@@ -355,8 +438,9 @@ def validate_url(url: str) -> bool:
 
 def validate_csv(file_path: str, field_names) -> bool:
     from csv import DictReader, Error
+
     try:
-        with open(file_path, 'rb') as csv_handle:
+        with open(file_path, "rb") as csv_handle:
             csvr = DictReader(csv_handle)
             columns = []
             for i, row in enumerate(csvr):
@@ -383,27 +467,38 @@ def validate_cfg(cfg_path: str, template_path: str) -> bool:
         template_cfg = configparser.ConfigParser()
         template_cfg.read(template_path)
         for section in template_cfg.sections():
-            for (option, value) in template_cfg.items(section):
+            for option, value in template_cfg.items(section):
                 options_results.append(cur_cfg.has_option(section, option))
         for section in cur_cfg.sections():
             for _ in cur_cfg.items(section):
                 detected_options_count += 1
         # Extra options detected in current config file, invalidate the config.
         if len(options_results) != detected_options_count:
-            log(ERROR,
+            log(
+                ERROR,
                 f"Detected more options than allowed while trying to validate the current config.ini file!\n"
                 f"Please make sure your config.ini file does not "
                 f"have extra options compared to the template_config.ini file!",
-                origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+                origin=L_STARTUP,
+                print_mode=PrintMode.REG_PRINT.value,
+            )
             return False
     except configparser.Error as e:
-        log(ERROR, f"Encountered a critical error while trying to validate the current config.ini file!\n{e.message}",
-            origin=L_STARTUP, print_mode=PrintMode.REG_PRINT.value)
+        log(
+            ERROR,
+            f"Encountered a critical error while trying to validate the current config.ini file!\n{e.message}",
+            origin=L_STARTUP,
+            print_mode=PrintMode.REG_PRINT.value,
+        )
         return False
     # Validate the config if all the options match the template.
     if all(option for option in options_results):
-        log(INFO, f"Successfully validated the current config.ini file.",
-            origin=L_STARTUP, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(
+            INFO,
+            f"Successfully validated the current config.ini file.",
+            origin=L_STARTUP,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         return True
     return False
 
@@ -419,16 +514,23 @@ def get_plugin_metadata(plugin_name: str) -> dict:
     plugin_metadata = {}
     cfg = configparser.ConfigParser()
     try:
-        cfg.read(f'{plugin_path}/metadata.ini')
+        cfg.read(f"{plugin_path}/metadata.ini")
     except configparser.Error as e:
-        log(ERROR, f"Encountered an error while parsing {plugin_name} metadata file: {e}",
-            origin=L_GENERAL, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(
+            ERROR,
+            f"Encountered an error while parsing {plugin_name} metadata file: {e}",
+            origin=L_GENERAL,
+            error_type=GEN_PROCESS_ERR,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         return {}
 
     plugin_metadata = dict(cfg)
     if "DEFAULT" in plugin_metadata:
         del plugin_metadata["DEFAULT"]
-    plugin_metadata[C_PLUGIN_INFO][P_PLUGIN_CMDS] = dumps(list(loads(cfg.get(C_PLUGIN_INFO, P_PLUGIN_CMDS, fallback={}))))
+    plugin_metadata[C_PLUGIN_INFO][P_PLUGIN_CMDS] = dumps(
+        list(loads(cfg.get(C_PLUGIN_INFO, P_PLUGIN_CMDS, fallback={})))
+    )
     return plugin_metadata
 
 
@@ -449,35 +551,46 @@ def set_plugin_metadata(plugin_name: str, metadata) -> bool:
         for item, value in values.items():
             cfg[key][item] = value
     try:
-        with open(f"{plugin_path}/metadata.ini", 'w') as f:
+        with open(f"{plugin_path}/metadata.ini", "w") as f:
             cfg.write(f)
         for plugin in global_settings.bot_plugins.values():
             if plugin.plugin_name == plugin_name:
                 if plugin_name == "web_server":
                     global_settings.web_cfg = configparser.ConfigParser()
-                    global_settings.web_cfg.read(f'{plugin_path}/metadata.ini')
+                    global_settings.web_cfg.read(f"{plugin_path}/metadata.ini")
                     plugin.metadata = global_settings.web_cfg
                 else:
                     plugin.metadata = configparser.ConfigParser()
-                    plugin.metadata.read(f'{plugin_path}/metadata.ini')
+                    plugin.metadata.read(f"{plugin_path}/metadata.ini")
                 if force_restart_plugin(plugin_name):
                     return True
         return False
     except IOError as e:
-        log(ERROR, f"Encountered an error while updating {plugin_name} metadata file: {e}",
-            origin=L_GENERAL, error_type=GEN_PROCESS_ERR, print_mode=PrintMode.VERBOSE_PRINT.value)
+        log(
+            ERROR,
+            f"Encountered an error while updating {plugin_name} metadata file: {e}",
+            origin=L_GENERAL,
+            error_type=GEN_PROCESS_ERR,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         return False
 
 
 def refresh_plugins():
     from JJMumbleBot.lib.helpers.bot_service_helper import BotServiceHelper
     from JJMumbleBot.lib import database
-    log(INFO, f"{META_NAME} is refreshing all plugins....", print_mode=PrintMode.REG_PRINT.value)
+
+    log(
+        INFO,
+        f"{META_NAME} is refreshing all plugins....",
+        print_mode=PrintMode.REG_PRINT.value,
+    )
     global_settings.gui_service.quick_gui(
         f"{get_bot_name()} is refreshing all plugins.",
-        text_type='header',
-        box_align='left',
-        ignore_whisper=True)
+        text_type="header",
+        box_align="left",
+        ignore_whisper=True,
+    )
     for plugin in global_settings.bot_plugins.values():
         plugin.quit()
     global_settings.bot_plugins.clear()
@@ -488,10 +601,15 @@ def refresh_plugins():
     database.init_database()
     global_settings.gui_service.quick_gui(
         f"{get_bot_name()} has refreshed all plugins.",
-        text_type='header',
-        box_align='left',
-        ignore_whisper=True)
-    log(INFO, f"{META_NAME} has refreshed all plugins.", print_mode=PrintMode.REG_PRINT.value)
+        text_type="header",
+        box_align="left",
+        ignore_whisper=True,
+    )
+    log(
+        INFO,
+        f"{META_NAME} has refreshed all plugins.",
+        print_mode=PrintMode.REG_PRINT.value,
+    )
 
 
 def force_restart_plugin(plugin_name: str) -> bool:
@@ -510,8 +628,8 @@ def exit_bot():
     if global_settings.mumble_inst:
         global_settings.gui_service.quick_gui(
             f"{get_bot_name()} is being shutdown.",
-            text_type='header',
-            box_align='left',
+            text_type="header",
+            box_align="left",
             ignore_whisper=True,
         )
     for plugin in global_settings.bot_plugins.values():
@@ -520,9 +638,19 @@ def exit_bot():
         global_settings.audio_inst.kill()
         global_settings.audio_inst = None
         global_settings.aud_interface.exit_flag = True
-        log(INFO, "Terminated audio interface instance.", origin=L_SHUTDOWN, print_mode=PrintMode.REG_PRINT.value)
+        log(
+            INFO,
+            "Terminated audio interface instance.",
+            origin=L_SHUTDOWN,
+            print_mode=PrintMode.REG_PRINT.value,
+        )
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
-    log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
+    log(
+        INFO,
+        "Cleared temporary directories on shutdown.",
+        origin=L_SHUTDOWN,
+        print_mode=PrintMode.VERBOSE_PRINT.value,
+    )
     global_settings.exit_flag = True
 
 
@@ -531,8 +659,8 @@ def exit_bot_error(error_code: ExitCodes):
         global_settings.gui_service.quick_gui(
             f"{get_bot_name()} has encountered an error and is being shutdown.<br>Please check the bot logs/console."
             f"<br>Exit Code: {error_code.value}",
-            text_type='header',
-            box_align='center',
+            text_type="header",
+            box_align="center",
             ignore_whisper=True,
         )
     try:
@@ -541,5 +669,10 @@ def exit_bot_error(error_code: ExitCodes):
     except AttributeError:
         pass
     dir_utils.clear_directory(dir_utils.get_temp_med_dir())
-    log(INFO, "Cleared temporary directories on shutdown.", origin=L_SHUTDOWN, print_mode=PrintMode.VERBOSE_PRINT.value)
+    log(
+        INFO,
+        "Cleared temporary directories on shutdown.",
+        origin=L_SHUTDOWN,
+        print_mode=PrintMode.VERBOSE_PRINT.value,
+    )
     global_settings.exit_flag = True

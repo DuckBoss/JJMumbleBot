@@ -129,10 +129,15 @@ config.ini
 *.py.save
 *.db
 *.dll
-cookies.txt
+# Ignore configuration and runtime files and directories
 JJMumbleBot/cfg/global_aliases.csv
 JJMumbleBot/cfg/custom_aliases.csv
+JJMumbleBot/cfg/custom_user_privileges.csv
+JJMumbleBot/cfg/custom_permissions.csv
+JJMumbleBot/cfg/plugins/
 JJMumbleBot/cfg/backups/
+JJMumbleBot/cfg/permanent_media_directory/
+JJMumbleBot/cfg/temporary_media_directory/
 # Ignore extra plugins that are available in the extra plugin repository
 JJMumbleBot/plugins/extensions/mhw_wiki/
 JJMumbleBot/plugins/extensions/osrs_wiki/

@@ -1,4 +1,4 @@
-import youtube_dl
+import yt_dlp
 from PIL import Image
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.print_utils import PrintMode
@@ -24,15 +24,15 @@ def on_next_track():
             if song_data is None:
                 return
             track_obj = TrackInfo(
-                uri=song_data['main_url'],
+                uri=song_data["main_url"],
                 name=cur_track.name,
                 sender=cur_track.sender,
-                duration=int(song_data['duration']),
+                duration=int(song_data["duration"]),
                 track_type=TrackType.STREAM,
                 track_id=cur_track.track_id,
                 alt_uri=cur_track.alt_uri,
                 image_uri=cur_track.image_uri,
-                quiet=False
+                quiet=False,
             )
             gs.aud_interface.status.set_track(track_obj)
             return
@@ -42,14 +42,14 @@ def on_next_track():
 
         download_thumbnail(gs.aud_interface.status.get_queue()[0])
         # Get the video metadata and fill in the information if the current track is missing metadata information.
-        if gs.aud_interface.status.get_queue()[0].uri == '':
-            if gs.aud_interface.status.get_queue()[0].alt_uri == '':
+        if gs.aud_interface.status.get_queue()[0].uri == "":
+            if gs.aud_interface.status.get_queue()[0].alt_uri == "":
                 return
             song_data = get_video_info(gs.aud_interface.status.get_queue()[0].alt_uri)
             if song_data is None:
                 return
             track_obj = TrackInfo(
-                uri=song_data['main_url'],
+                uri=song_data["main_url"],
                 name=gs.aud_interface.status.get_queue()[0].name,
                 sender=gs.aud_interface.status.get_queue()[0].sender,
                 duration=int(song_data["duration"]),
@@ -57,35 +57,39 @@ def on_next_track():
                 track_id=gs.aud_interface.status.get_queue()[0].track_id,
                 alt_uri=gs.aud_interface.status.get_queue()[0].alt_uri,
                 image_uri=gs.aud_interface.status.get_queue()[0].image_uri,
-                quiet=False
+                quiet=False,
             )
             gs.aud_interface.status.set_track(track_obj)
-            cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
+            cur_track_hashed_img_uri = hex(
+                crc32(str.encode(track_obj.track_id)) & 0xFFFFFFFF
+            )
             gs.aud_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def song_integrity_check():
     # Get the video metadata and fill in the information if the current track is missing metadata information.
     cur_track = gs.aud_interface.status.get_track()
-    if cur_track.uri == '':
-        if cur_track.alt_uri == '':
+    if cur_track.uri == "":
+        if cur_track.alt_uri == "":
             return
         song_data = get_video_info(cur_track.alt_uri)
         if song_data is None:
             return
         track_obj = TrackInfo(
-            uri=song_data['main_url'],
+            uri=song_data["main_url"],
             name=cur_track.name,
             sender=cur_track.sender,
-            duration=int(song_data['duration']),
+            duration=int(song_data["duration"]),
             track_type=TrackType.STREAM,
             track_id=cur_track.track_id,
             alt_uri=cur_track.alt_uri,
             image_uri=cur_track.image_uri,
-            quiet=False
+            quiet=False,
         )
         gs.aud_interface.status.set_track(track_obj)
-        cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
+        cur_track_hashed_img_uri = hex(
+            crc32(str.encode(track_obj.track_id)) & 0xFFFFFFFF
+        )
         gs.aud_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
@@ -95,85 +99,122 @@ def on_play():
         download_thumbnail(cur_track)
 
         # Get the video metadata and fill in the information if the current track is missing metadata information.
-        if cur_track.uri == '':
-            if cur_track.alt_uri == '':
+        if cur_track.uri == "":
+            if cur_track.alt_uri == "":
                 return
             song_data = get_video_info(cur_track.alt_uri)
             if song_data is None:
                 return
             track_obj = TrackInfo(
-                uri=song_data['main_url'],
+                uri=song_data["main_url"],
                 name=cur_track.name,
                 sender=cur_track.sender,
-                duration=int(song_data['duration']),
+                duration=int(song_data["duration"]),
                 track_type=TrackType.STREAM,
                 track_id=cur_track.track_id,
                 alt_uri=cur_track.alt_uri,
                 image_uri=cur_track.image_uri,
-                quiet=False
+                quiet=False,
             )
             gs.aud_interface.status.set_track(track_obj)
-            cur_track_hashed_img_uri = hex(crc32(str.encode(track_obj.track_id)) & 0xffffffff)
+            cur_track_hashed_img_uri = hex(
+                crc32(str.encode(track_obj.track_id)) & 0xFFFFFFFF
+            )
             gs.aud_interface.status["img_uri_hashed"] = cur_track_hashed_img_uri
 
 
 def on_skip():
     if gs.aud_interface.status.get_track().track_type == TrackType.STREAM:
         # Clear the thumbnails since the queue order has shifted.
-        dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
-        log(INFO, "Cleared the temporary media folder when skipping tracks.", origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+        dir_utils.clear_directory(
+            f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}"
+        )
+        log(
+            INFO,
+            "Cleared the temporary media folder when skipping tracks.",
+            origin=L_GENERAL,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
 
 
 def download_thumbnail(cur_track):
-    cur_track_hashed_img_uri = hex(crc32(str.encode(cur_track.track_id)) & 0xffffffff)
-    if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg"):
-        log(WARNING, f"Thumbnail exists for '{cur_track.name}'...skipping",
-            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+    cur_track_hashed_img_uri = hex(crc32(str.encode(cur_track.track_id)) & 0xFFFFFFFF)
+    if os.path.exists(
+        f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg"
+    ):
+        log(
+            WARNING,
+            f"Thumbnail exists for '{cur_track.name}'...skipping",
+            origin=L_GENERAL,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         return
     try:
         ydl_opts = {
-            'quiet': True,
-            'outtmpl': f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.%(ext)s',
-            'skip_download': True,
-            'writethumbnail': True,
-            'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
+            "quiet": True,
+            "outtmpl": f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.%(ext)s",
+            "skip_download": True,
+            "writethumbnail": True,
+            "proxy": gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
         }
         if runtime_settings.use_logging:
-            ydl_opts['logger'] = gs.log_service
+            ydl_opts["logger"] = gs.log_service
         if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
-            ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+            ydl_opts["cookiefile"] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.cache.remove()
             ydl.extract_info(cur_track.alt_uri, download=True)
-    except youtube_dl.utils.DownloadError as e:
-        log(ERROR, f"Encountered a youtube_dl download error while retrieving the thumbnail for {cur_track.name}.\n{e}",
-            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+    except yt_dlp.utils.DownloadError as e:
+        log(
+            ERROR,
+            f"Encountered a youtube_dl download error while retrieving the thumbnail for {cur_track.name}.\n{e}",
+            origin=L_GENERAL,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
     # Patch youtube-dl sometimes providing webp instead of jpg (youtube-dl needs to fix this).
-    if os.path.exists(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp"):
+    if os.path.exists(
+        f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp"
+    ):
         im = Image.open(
-            f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp").convert(
-            "RGB")
-        im.save(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg",
-                "jpeg")
-        os.remove(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp")
-        log(WARNING, f"The retrieved thumbnail was in an invalid format and has been fixed for {cur_track.name}.",
-            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+            f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp"
+        ).convert("RGB")
+        im.save(
+            f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.jpg",
+            "jpeg",
+        )
+        os.remove(
+            f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}/{cur_track_hashed_img_uri}.webp"
+        )
+        log(
+            WARNING,
+            f"The retrieved thumbnail was in an invalid format and has been fixed for {cur_track.name}.",
+            origin=L_GENERAL,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
 
 
 def on_stop():
     # Clear the thumbnails since the queue is cleared.
-    dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
-    log(INFO, "Cleared the thumbnails in the temporary media folder when stopping audio interface.", origin=L_GENERAL,
-        print_mode=PrintMode.VERBOSE_PRINT.value)
+    dir_utils.clear_directory(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}")
+    log(
+        INFO,
+        "Cleared the thumbnails in the temporary media folder when stopping audio interface.",
+        origin=L_GENERAL,
+        print_mode=PrintMode.VERBOSE_PRINT.value,
+    )
     settings.can_play = False
     settings.search_results = None
 
 
 def on_reset():
     # Clear the thumbnails since the queue is cleared.
-    dir_utils.clear_directory(f'{dir_utils.get_temp_med_dir()}/{settings.plugin_name}')
-    log(INFO, "Cleared the thumbnails in the temporary media folder when resetting audio interface.", origin=L_GENERAL,
-        print_mode=PrintMode.VERBOSE_PRINT.value)
+    dir_utils.clear_directory(f"{dir_utils.get_temp_med_dir()}/{settings.plugin_name}")
+    log(
+        INFO,
+        "Cleared the thumbnails in the temporary media folder when resetting audio interface.",
+        origin=L_GENERAL,
+        print_mode=PrintMode.VERBOSE_PRINT.value,
+    )
     settings.can_play = False
     settings.search_results = None
 
@@ -182,149 +223,189 @@ def get_video_info(video_url):
     # Update the audio interface status with the media mrl, duration, and video title.
     try:
         ydl_opts = {
-            'quiet': True,
-            'format': 'bestaudio/best',
-            'noplaylist': True,
-            'skip_download': True,
-            'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
+            "quiet": True,
+            "format": "bestaudio/best",
+            "noplaylist": True,
+            "skip_download": True,
+            "proxy": gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
         }
         if runtime_settings.use_logging:
-            ydl_opts['logger'] = gs.log_service
+            ydl_opts["logger"] = gs.log_service
         if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
-            ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
+            ydl_opts["cookiefile"] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
 
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.cache.remove()
             info_dict = ydl.extract_info(video_url, download=False)
 
             prep_struct = {
-                'std_url': video_url,
-                'main_url': info_dict['url'],
-                'main_title': info_dict['title'],
-                'main_id': info_dict['id'],
-                'duration': info_dict['duration']
+                "std_url": video_url,
+                "main_url": info_dict["url"],
+                "main_title": info_dict["title"],
+                "main_id": info_dict["id"],
+                "duration": info_dict["duration"],
             }
             return prep_struct
-    except youtube_dl.utils.DownloadError as e:
-        log(ERROR, f"Encountered a youtube_dl download error while retrieving the video information for {video_url}.\n{e}",
-            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+    except yt_dlp.utils.DownloadError as e:
+        log(
+            ERROR,
+            f"Encountered a youtube_dl download error while retrieving the video information for {video_url}.\n{e}",
+            origin=L_GENERAL,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         return None
 
 
 def get_playlist_info(playlist_url):
     ydl_opts = {
-        'quiet': True,
-        'format': 'bestaudio/best',
-        'noplaylist': False,
-        'extract_flat': True,
-        'skip_download': True,
-        'writethumbnail': False,
-        'ignoreerrors': True,
-        'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL]
+        "quiet": True,
+        "format": "bestaudio/best",
+        "noplaylist": False,
+        "extract_flat": True,
+        "skip_download": True,
+        "writethumbnail": False,
+        "ignoreerrors": True,
+        "proxy": gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
     }
     if runtime_settings.use_logging:
-        ydl_opts['logger'] = gs.log_service
+        ydl_opts["logger"] = gs.log_service
     if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
-        ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
-    if settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
+        ydl_opts["cookiefile"] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
+    if settings.youtube_metadata.getboolean(
+        C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True
+    ):
         ydl_opts = {
-            'quiet': True,
-            'format': 'bestaudio/best',
-            'noplaylist': False,
-            'extract_flat': True,
-            'skip_download': True,
-            'writethumbnail': False,
-            'ignoreerrors': True,
-            'proxy': gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
-            'playlistend': int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN])
+            "quiet": True,
+            "format": "bestaudio/best",
+            "noplaylist": False,
+            "extract_flat": True,
+            "skip_download": True,
+            "writethumbnail": False,
+            "ignoreerrors": True,
+            "proxy": gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_PROXY_URL],
+            "playlistend": int(
+                settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]
+            ),
         }
         if runtime_settings.use_logging:
-            ydl_opts['logger'] = gs.log_service
+            ydl_opts["logger"] = gs.log_service
         if len(gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]) > 0:
-            ydl_opts['cookiefile'] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        playlist_dict_check = ydl.extract_info(playlist_url, download=False, process=False)
+            ydl_opts["cookiefile"] = gs.cfg[C_MEDIA_SETTINGS][P_MEDIA_COOKIE_FILE]
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        playlist_dict_check = ydl.extract_info(
+            playlist_url, download=False, process=False
+        )
         if playlist_dict_check is None:
-            log(ERROR,
+            log(
+                ERROR,
                 f"The provided playlist cannot be played as it is either private or protected.",
-                origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+                origin=L_GENERAL,
+                print_mode=PrintMode.VERBOSE_PRINT.value,
+            )
             gs.gui_service.quick_gui(
                 f"This playlist is private or protected. Only unlisted/public playlists can be played.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
             return None
-        playlist_dict_check['entries'] = list(playlist_dict_check['entries'])
-        count = len(playlist_dict_check['entries'])
+        playlist_dict_check["entries"] = list(playlist_dict_check["entries"])
+        count = len(playlist_dict_check["entries"])
         if count > int(settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]):
-            if not settings.youtube_metadata.getboolean(C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True):
-                log(ERROR,
+            if not settings.youtube_metadata.getboolean(
+                C_PLUGIN_SETTINGS, P_YT_ALL_PLAY_MAX, fallback=True
+            ):
+                log(
+                    ERROR,
                     [
                         "The provided playlist is longer than the limit set in the config.",
-                        f"The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}."
+                        f"The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}.",
                     ],
-                    origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+                    origin=L_GENERAL,
+                    print_mode=PrintMode.VERBOSE_PRINT.value,
+                )
                 gs.gui_service.quick_gui(
                     [
                         "This playlist is longer than the limit set in the config.",
-                        f"The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}."
+                        f"The current limit is {settings.youtube_metadata[C_PLUGIN_SETTINGS][P_YT_MAX_PLAY_LEN]}.",
                     ],
-                    text_type='header',
-                    box_align='left')
+                    text_type="header",
+                    box_align="left",
+                )
                 return None
-        log(INFO,
+        log(
+            INFO,
             f"Generating playlist from the given url: {playlist_url}",
-            origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+            origin=L_GENERAL,
+            print_mode=PrintMode.VERBOSE_PRINT.value,
+        )
         gs.gui_service.quick_gui(
             "The playlist is being generated...this might take a while.",
-            text_type='header',
-            box_align='left')
+            text_type="header",
+            box_align="left",
+        )
         playlist_dict = ydl.extract_info(playlist_url, download=False, process=False)
         all_videos = []
-        if not playlist_dict['entries']:
-            log(ERROR,
+        if not playlist_dict["entries"]:
+            log(
+                ERROR,
                 f"Unable to retrieve playlist information from the given url: {playlist_url}",
-                origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+                origin=L_GENERAL,
+                print_mode=PrintMode.VERBOSE_PRINT.value,
+            )
             gs.gui_service.quick_gui(
                 "Unable to get playlist information.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
             return None
-        for video in list(playlist_dict['entries']):
+        for video in list(playlist_dict["entries"]):
             if not video:
-                log(ERROR,
+                log(
+                    ERROR,
                     [
                         f"Unable to retrieve video information in the playlist from the given url: {playlist_url}",
-                        "Skipping to the next video in the queue..."
+                        "Skipping to the next video in the queue...",
                     ],
-                    origin=L_GENERAL, print_mode=PrintMode.VERBOSE_PRINT.value)
+                    origin=L_GENERAL,
+                    print_mode=PrintMode.VERBOSE_PRINT.value,
+                )
                 continue
             prep_struct = {
-                'std_url': f"https://www.youtube.com/watch?v={video['url']}",
-                'main_url': '',
-                'main_title': video['title'],
-                'main_id': video['id'],
-                'duration': '',
+                "std_url": video["url"],
+                "main_url": "",
+                "main_title": video["title"],
+                "main_id": video["id"],
+                "duration": "",
             }
             all_videos.append(prep_struct)
         return all_videos
 
 
 def get_search_results(search_term, results_length):
-    ydl_opts = {
-        'quiet': True,
-        'format': 'bestaudio/best',
-        'noplaylist': True
-    }
+    ydl_opts = {"quiet": True, "format": "bestaudio/best", "noplaylist": True}
     search_results_list = []
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        search_results_list = list(ydl.extract_info(f"ytsearch{results_length}:{search_term}", download=False)["entries"])
-    print(len(search_results_list))
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        search_results_list = list(
+            ydl.extract_info(f"ytsearch{results_length}:{search_term}", download=False)[
+                "entries"
+            ]
+        )
+    # print(len(search_results_list))
     if len(search_results_list) == 0:
         list_urls = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_HEAD_COL]}'>No youtube search results found for: [{search_term}].</font><br>"
         return list_urls
-    search_results = [{"title": item["title"], "href": item["url"], "webpage_url": item["webpage_url"], "formatted_title": ""} for item in
-                      search_results_list]
+    search_results = [
+        {
+            "title": item["title"],
+            "href": item["url"],
+            "webpage_url": item["webpage_url"],
+            "formatted_title": "",
+        }
+        for item in search_results_list
+    ]
     for i, item in enumerate(search_results):
-        item["formatted_title"] = f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{item['webpage_url']}'>[{item['title']}]</a><br>"
+        item["formatted_title"] = (
+            f"<font color='{gs.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}'>[{i}]</font> - <a href='{item['webpage_url']}'>[{item['title']}]</a><br>"
+        )
     settings.search_results = search_results
     return search_results

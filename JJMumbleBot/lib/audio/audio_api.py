@@ -6,31 +6,49 @@ from JJMumbleBot.lib.utils.print_utils import dprint
 from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.settings import global_settings
 from JJMumbleBot.lib.helpers import queue_handler
-from JJMumbleBot.lib.audio.audio_interface import create_audio_instance, stop_audio_instance
+from JJMumbleBot.lib.audio.audio_interface import (
+    create_audio_instance,
+    stop_audio_instance,
+)
 from datetime import timedelta
 from enum import Enum
 from threading import Thread
 
+# radio imports:
+import re
+import struct
+import urllib.request as urllib2
+
 
 class TrackStatus(Enum):
-    PLAYING = 'Playing'
-    PAUSED = 'Paused'
-    STOPPED = 'Stopped'
+    PLAYING = "Playing"
+    PAUSED = "Paused"
+    STOPPED = "Stopped"
 
 
 class TrackType(Enum):
-    FILE = 'File'
-    STREAM = 'Stream'
+    FILE = "File"
+    STREAM = "Stream"
 
 
 class AudioLibrary(Enum):
-    FFMPEG = 'ffmpeg'
-    VLC = 'vlc'
+    FFMPEG = "ffmpeg"
+    VLC = "vlc"
 
 
 class TrackInfo:
-    def __init__(self, uri: str, name: str, sender: str, duration=None, track_type=None, track_id='', alt_uri='',
-                 image_uri='', quiet=False):
+    def __init__(
+        self,
+        uri: str,
+        name: str,
+        sender: str,
+        duration=None,
+        track_type=None,
+        track_id="",
+        alt_uri="",
+        image_uri="",
+        quiet=False,
+    ):
         self.uri = uri
         self.name = name
         self.sender = sender
@@ -45,9 +63,17 @@ class TrackInfo:
         return str(self.to_dict())
 
     def to_dict(self):
-        return {'uri': self.uri, 'name': self.name, 'sender': self.sender, 'duration': self.duration,
-                'track_type': self.track_type, 'track_id': self.track_id, 'alt_uri': self.alt_uri,
-                'image_uri': self.image_uri, 'quiet': self.quiet}
+        return {
+            "uri": self.uri,
+            "name": self.name,
+            "sender": self.sender,
+            "duration": self.duration,
+            "track_type": self.track_type,
+            "track_id": self.track_id,
+            "alt_uri": self.alt_uri,
+            "image_uri": self.image_uri,
+            "quiet": self.quiet,
+        }
 
 
 class AudioLibraryInterface:
@@ -55,98 +81,121 @@ class AudioLibraryInterface:
         def __init__(self):
             super().__init__(
                 {
-                    'plugin_owner': '',
-                    'plugin_name': '',
-                    'sender': '',
-                    'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
-                    'track_uri': '',
-                    'alt_uri': '',
-                    'image_uri': '',
-                    'img_uri_hashed': '',
-                    'track_id': '',
-                    'queue': [],
-                    'queue_length': 0,
-                    'status': TrackStatus.STOPPED,
-                    'volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]),
-                    'loop': False,
-                    'duck_audio': global_settings.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO, fallback=False),
-                    'ducking_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME]),
-                    'ducking_threshold': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]),
-                    'ducking_delay': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY]),
+                    "plugin_owner": "",
+                    "plugin_name": "",
+                    "sender": "",
+                    "track": TrackInfo(
+                        uri="",
+                        name="",
+                        sender="",
+                        duration=-1,
+                        track_type=TrackType.FILE,
+                    ),
+                    "track_uri": "",
+                    "alt_uri": "",
+                    "image_uri": "",
+                    "img_uri_hashed": "",
+                    "track_id": "",
+                    "queue": [],
+                    "queue_length": 0,
+                    "status": TrackStatus.STOPPED,
+                    "volume": float(
+                        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]
+                    ),
+                    "loop": False,
+                    "duck_audio": global_settings.cfg.getboolean(
+                        C_MEDIA_SETTINGS, P_MEDIA_DUCK_AUDIO, fallback=False
+                    ),
+                    "ducking_volume": float(
+                        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_VOLUME]
+                    ),
+                    "ducking_threshold": float(
+                        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]
+                    ),
+                    "ducking_start_delay": float(
+                        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_START_DELAY]
+                    ),
+                    "ducking_end_delay": float(
+                        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_END_DELAY]
+                    ),
                     # Internal Audio Ducking Settings
-                    'is_ducking': False,
-                    'duck_start': 0.0,
-                    'duck_end': 0.0,
-                    'last_volume': float(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]),
-                    'start_time': 0,
-                    'pause_time': 0,
-                    'progress_time': 0,
-                    'audio_library': ''
+                    "is_ducking": False,
+                    "duck_start": 0.0,
+                    "duck_end": 0.0,
+                    "last_volume": float(
+                        global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_DEFAULT_VOLUME]
+                    ),
+                    "start_time": 0,
+                    "pause_time": 0,
+                    "progress_time": 0,
+                    "audio_library": "",
                 }
             )
 
         def __str__(self):
-            dict_str = f"plugin_owner: {self['plugin_owner']}<br>" \
-                       f"plugin_name: {self['plugin_name']}<br>" \
-                       f"sender: {self['track'].sender}<br>" \
-                       f"track: {self['track'].name}<br>" \
-                       f"track_uri: {(self['track'].uri[:25] + (self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>" \
-                       f"alt_uri: {(self['track'].alt_uri[:25] + (self['track'].alt_uri[25:] and '...')) if len(self['track'].alt_uri) > 0 else self['track'].alt_uri}<br>" \
-                       f"image_uri: {(self['track'].image_uri[:25] + (self['track'].image_uri[25:] and '...')) if len(self['track'].image_uri) > 0 else self['track'].image_uri}<br>" \
-                       f"img_uri_hashed: {self['img_uri_hashed']}<br>" \
-                       f"track_id: {self['track'].track_id}<br>" \
-                       f"quiet: {self['track'].quiet}<br>" \
-                       f"duration: {self['track'].duration}<br>" \
-                       f"type: {self['track'].track_type.value}<br>" \
-                       f"queue: ["
-            dict_str += ', '.join(x.name for x in self['queue'])
-            dict_str += f"]<br>queue_length: {self['queue_length']}<br>" \
-                        f"status: {self['status'].value}<br>" \
-                        f"start_time: {self['start_time']}<br>" \
-                        f"pause_time: {self['pause_time']}<br>" \
-                        f"progress_time: {self['progress_time']}<br>" \
-                        f"volume: {self.get_volume()}<br>" \
-                        f"loop: {self['loop']}<br>" \
-                        f"duck_audio: {self['duck_audio']}<br>" \
-                        f"ducking_volume: {self['ducking_volume']}<br>" \
-                        f"ducking_threshold: {self['ducking_threshold']}<br>" \
-                        f"ducking_delay: {self['ducking_delay']}<br>" \
-                        f"audio_library; {self['audio_library']}"
+            dict_str = (
+                f"plugin_owner: {self['plugin_owner']}<br>"
+                f"plugin_name: {self['plugin_name']}<br>"
+                f"sender: {self['track'].sender}<br>"
+                f"track: {self['track'].name}<br>"
+                f"track_uri: {(self['track'].uri[:25] + (self['track'].uri[25:] and '...')) if len(self['track'].uri) > 0 else self['track'].uri}<br>"
+                f"alt_uri: {self['track'].alt_uri}<br>"
+                f"image_uri: {(self['track'].image_uri[:25] + (self['track'].image_uri[25:] and '...')) if len(self['track'].image_uri) > 0 else self['track'].image_uri}<br>"
+                f"img_uri_hashed: {self['img_uri_hashed']}<br>"
+                f"track_id: {self['track'].track_id}<br>"
+                f"quiet: {self['track'].quiet}<br>"
+                f"duration: {self['track'].duration}<br>"
+                f"type: {self['track'].track_type.value}<br>"
+                f"queue: [{', '.join(x.name for x in self['queue'])}]<br>"
+                f"queue_length: {self['queue_length']}<br>"
+                f"status: {self['status'].value}<br>"
+                f"start_time: {self['start_time']}<br>"
+                f"pause_time: {self['pause_time']}<br>"
+                f"progress_time: {self['progress_time']}<br>"
+                f"volume: {self.get_volume()}<br>"
+                f"loop: {self['loop']}<br>"
+                f"duck_audio: {self['duck_audio']}<br>"
+                f"ducking_volume: {self['ducking_volume']}<br>"
+                f"ducking_threshold: {self['ducking_threshold']}<br>"
+                f"ducking_start_delay: {self['ducking_start_delay']}<br>"
+                f"ducking_end_delay: {self['ducking_end_delay']}<br>"
+                f"audio_library: {self['audio_library']}"
+            )
             return dict_str
 
         # Plugin owner
         def get_plugin_owner(self):
-            return self.get('plugin_owner')
+            return self.get("plugin_owner")
 
         def set_plugin_owner(self, owner_name):
-            self['plugin_owner'] = owner_name
+            self["plugin_owner"] = owner_name
 
         def clear_plugin_owner(self):
-            self['plugin_owner'] = ''
+            self["plugin_owner"] = ""
 
         # Track
         def get_track(self):
-            return self.get('track', TrackInfo('', '', '', None, TrackType.FILE))
+            return self.get("track", TrackInfo("", "", "", None, TrackType.FILE))
 
         def set_track(self, track_obj: TrackInfo):
-            self['track'] = track_obj
+            self["track"] = track_obj
 
         def clear_track(self):
-            self['track'] = TrackInfo('', '', '', None, TrackType.FILE)
+            self["track"] = TrackInfo("", "", "", None, TrackType.FILE)
 
         def get_queue(self):
-            return self['queue']
+            return self["queue"]
 
         def clear_queue(self):
-            self['queue'] = []
-            self['queue_length'] = 0
+            self["queue"] = []
+            self["queue_length"] = 0
 
         def update_queue(self, queue):
-            self['queue'] = queue
-            self['queue_length'] = len(queue)
+            self["queue"] = queue
+            self["queue_length"] = len(queue)
 
         def get_queue_length(self):
-            return self['queue_length']
+            return self["queue_length"]
 
         # Volume
         def set_volume(self, volume):
@@ -154,36 +203,36 @@ class AudioLibraryInterface:
                 volume = 1
             elif volume < 0:
                 volume = 0
-            self['volume'] = volume
+            self["volume"] = volume
 
         def get_volume(self):
             return float(f"{self['volume']:.2f}")
 
         # Loop
         def enable_loop(self):
-            self['loop'] = True
+            self["loop"] = True
 
         def disable_loop(self):
-            self['loop'] = False
+            self["loop"] = False
 
         def is_looping(self):
-            return self['loop']
+            return self["loop"]
 
         # Playing status
         def set_status(self, status: TrackStatus):
-            self['status'] = status
+            self["status"] = status
 
         def get_status(self):
-            return self['status']
+            return self["status"]
 
         def is_playing(self):
-            return True if self['status'] == TrackStatus.PLAYING else False
+            return True if self["status"] == TrackStatus.PLAYING else False
 
         def is_paused(self):
-            return True if self['status'] == TrackStatus.PAUSED else False
+            return True if self["status"] == TrackStatus.PAUSED else False
 
         def is_stopped(self):
-            return True if self['status'] == TrackStatus.STOPPED else False
+            return True if self["status"] == TrackStatus.STOPPED else False
 
     class AudioUtilites:
         def __init__(self):
@@ -195,82 +244,108 @@ class AudioLibraryInterface:
         def lerp_volume(self, cur_vol, targ_vol, lerp_time):
             cur_time = 0
             while cur_time < 1:
-                global_settings.aud_interface.status.set_volume(cur_vol + cur_time * (targ_vol - cur_vol))
+                global_settings.aud_interface.status.set_volume(
+                    cur_vol + cur_time * (targ_vol - cur_vol)
+                )
                 cur_time += lerp_time
                 sleep(0.01)
             global_settings.aud_interface.status.set_volume(targ_vol)
 
         def set_volume(self, volume: float, auto=False):
             if not auto:
-                global_settings.aud_interface.status['last_volume'] = volume
-            lerp_thr = Thread(target=self.lerp_volume,
-                              args=(float(global_settings.aud_interface.status.get_volume()), volume, 0.025),
-                              daemon=True)
+                global_settings.aud_interface.status["last_volume"] = volume
+            lerp_thr = Thread(
+                target=self.lerp_volume,
+                args=(
+                    float(global_settings.aud_interface.status.get_volume()),
+                    volume,
+                    0.025,
+                ),
+                daemon=True,
+            )
             lerp_thr.start()
 
         def set_volume_fast(self, volume: float, auto=False):
             if not auto:
-                global_settings.aud_interface.status['last_volume'] = volume
+                global_settings.aud_interface.status["last_volume"] = volume
             global_settings.aud_interface.status.set_volume(volume)
 
         def set_last_volume(self, volume: float):
-            global_settings.aud_interface.status['last_volume'] = volume
+            global_settings.aud_interface.status["last_volume"] = volume
 
         def duck_volume(self):
             if not self.is_ducking():
-                global_settings.aud_interface.status['is_ducking'] = True
-                self.set_volume(global_settings.aud_interface.status['ducking_volume'], auto=True)
+                global_settings.aud_interface.status["is_ducking"] = True
+                self.set_volume(
+                    global_settings.aud_interface.status["ducking_volume"], auto=True
+                )
 
         def set_duck_volume(self, volume: float):
-            global_settings.aud_interface.status['ducking_volume'] = volume
+            global_settings.aud_interface.status["ducking_volume"] = volume
 
         def get_ducking_volume(self):
-            return global_settings.aud_interface.status['ducking_volume']
+            return global_settings.aud_interface.status["ducking_volume"]
 
         def set_duck_threshold(self, threshold: float):
             if threshold < 0:
                 return
-            global_settings.aud_interface.status['ducking_threshold'] = threshold
+            global_settings.aud_interface.status["ducking_threshold"] = threshold
 
-        def set_ducking_delay(self, delay: float):
+        def set_ducking_start_delay(self, delay: float):
             if delay < 0 or delay > 5:
                 return
-            global_settings.aud_interface.status['ducking_delay'] = delay
+            global_settings.aud_interface.status["ducking_start_delay"] = delay
+
+        def set_ducking_end_delay(self, delay: float):
+            if delay < 0 or delay > 5:
+                return
+            global_settings.aud_interface.status["ducking_end_delay"] = delay
 
         def get_ducking_threshold(self):
-            return global_settings.aud_interface.status['ducking_threshold']
+            return global_settings.aud_interface.status["ducking_threshold"]
 
-        def get_ducking_delay(self):
-            return global_settings.aud_interface.status['ducking_delay']
+        def get_ducking_start_delay(self):
+            return global_settings.aud_interface.status["ducking_start_delay"]
+
+        def get_ducking_end_delay(self):
+            return global_settings.aud_interface.status["ducking_end_delay"]
 
         def unduck_volume(self):
             if self.is_ducking():
-                self.set_volume(global_settings.aud_interface.status['last_volume'], auto=True)
-                global_settings.aud_interface.status['duck_start'] = 0.0
-                global_settings.aud_interface.status['duck_end'] = 0.0
-                global_settings.aud_interface.status['is_ducking'] = False
+                self.set_volume(
+                    global_settings.aud_interface.status["last_volume"], auto=True
+                )
+                global_settings.aud_interface.status["duck_start"] = 0.0
+                global_settings.aud_interface.status["duck_end"] = 0.0
+                global_settings.aud_interface.status["is_ducking"] = False
 
         def is_ducking(self):
-            return global_settings.aud_interface.status['is_ducking']
+            return global_settings.aud_interface.status["is_ducking"]
 
         def can_duck(self):
-            return global_settings.aud_interface.status['duck_audio']
+            return global_settings.aud_interface.status["duck_audio"]
 
         def toggle_ducking(self):
-            global_settings.aud_interface.status['duck_audio'] = not global_settings.aud_interface.status['duck_audio']
+            global_settings.aud_interface.status[
+                "duck_audio"
+            ] = not global_settings.aud_interface.status["duck_audio"]
 
     def __init__(self):
         self.status = AudioLibraryInterface.Status()
-        self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
+        self.queue = queue_handler.QueueHandler(
+            [], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
+        )
         self.audio_utilities = AudioLibraryInterface.AudioUtilites()
         self.exit_flag: bool = False
 
     def callback_check(self, method_name):
         # Execute any callbacks subscribed to next_track
         for clbk in global_settings.plugin_callbacks:
-            split_clbk = clbk.split('|')
-            if split_clbk[0] == self.status['plugin_name'] and split_clbk[1] == method_name:
+            split_clbk = clbk.split("|")
+            if (
+                split_clbk[0] == self.status["plugin_name"]
+                and split_clbk[1] == method_name
+            ):
                 global_settings.plugin_callbacks[clbk]()
 
     def play(self, audio_lib, override=False):
@@ -294,59 +369,72 @@ class AudioLibraryInterface:
         if not track_info:
             global_settings.gui_service.quick_gui(
                 f"There is no track available to play",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
             return
-        self.callback_check('on_play')
+        self.callback_check("on_play")
         if global_settings.audio_inst:
             stop_audio_instance()
-        self.status['audio_library'] = audio_lib
-        self.status['start_time'] = int(time())
-        self.status['progress_time'] = 0
-        create_audio_instance(self.status.get_track().uri, skipto=self.status['progress_time'],
-                              audio_lib=audio_lib)
+        self.status["audio_library"] = audio_lib
+        self.status["start_time"] = int(time())
+        self.status["progress_time"] = 0
+        create_audio_instance(
+            self.status.get_track().uri,
+            skipto=self.status["progress_time"],
+            audio_lib=audio_lib,
+        )
         self.status.set_status(TrackStatus.PLAYING)
         if not track_info.quiet:
             self.display_playing_gui()
 
     def calculate_progress(self):
         if self.status.is_playing():
-            if self.status['progress_time'] == 0:
-                if self.status['pause_time'] == 0:
-                    self.status['progress_time'] = int(time()) - self.status['start_time']
+            if self.status["progress_time"] == 0:
+                if self.status["pause_time"] == 0:
+                    self.status["progress_time"] = (
+                        int(time()) - self.status["start_time"]
+                    )
                 else:
-                    self.status['progress_time'] = self.status['pause_time'] - self.status['start_time']
+                    self.status["progress_time"] = (
+                        self.status["pause_time"] - self.status["start_time"]
+                    )
             else:
-                if self.status['pause_time'] == 0:
-                    self.status['progress_time'] = int(time()) - self.status['start_time']
+                if self.status["pause_time"] == 0:
+                    self.status["progress_time"] = (
+                        int(time()) - self.status["start_time"]
+                    )
                 else:
-                    if self.status['pause_time'] != self.status['start_time']:
-                        self.status['progress_time'] = self.status['progress_time'] + (
-                                self.status['pause_time'] - self.status['start_time'])
+                    if self.status["pause_time"] != self.status["start_time"]:
+                        self.status["progress_time"] = self.status["progress_time"] + (
+                            self.status["pause_time"] - self.status["start_time"]
+                        )
                     else:
-                        self.status['progress_time'] = self.status['progress_time'] + (
-                                int(time()) - self.status['start_time'])
-                        self.status['start_time'] = int(time())
-                        self.status['pause_time'] = int(time())
+                        self.status["progress_time"] = self.status["progress_time"] + (
+                            int(time()) - self.status["start_time"]
+                        )
+                        self.status["start_time"] = int(time())
+                        self.status["pause_time"] = int(time())
 
     def pause(self):
         if self.status.is_playing():
             if global_settings.audio_inst:
                 stop_audio_instance()
             self.calculate_progress()
-            self.status['pause_time'] = int(time())
+            self.status["pause_time"] = int(time())
 
             self.status.set_status(TrackStatus.PAUSED)
             global_settings.gui_service.quick_gui(
                 f"Paused track at {self.audio_utilities.sec_formatted(self.status['progress_time'])}",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
 
     def resume(self):
         if self.status.is_paused():
-            self.status['start_time'] = int(time())
-            self.status['pause_time'] = int(time())
-            self.play(self.status['audio_library'])
+            self.status["start_time"] = int(time())
+            self.status["pause_time"] = int(time())
+            self.play(self.status["audio_library"])
 
     def skip(self, track_number):
         if self.queue.is_empty():
@@ -360,26 +448,28 @@ class AudioLibraryInterface:
         reversed_list.reverse()
         self.status.update_queue(reversed_list)
 
-        self.callback_check('on_skip')
+        self.callback_check("on_skip")
         if global_settings.audio_inst:
             stop_audio_instance()
 
         if track_number == 0:
             global_settings.gui_service.quick_gui(
                 f"Skipping to next track in the audio queue.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
         else:
             global_settings.gui_service.quick_gui(
                 f"Skipping to track {track_number} in the audio queue.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
 
-        self.status['start_time'] = int(time())
-        self.status['pause_time'] = 0
-        self.status['progress_time'] = 0
+        self.status["start_time"] = int(time())
+        self.status["pause_time"] = 0
+        self.status["progress_time"] = 0
 
-        self.play(audio_lib=self.status['audio_library'], override=True)
+        self.play(audio_lib=self.status["audio_library"], override=True)
 
     def replay(self):
         self.seek(0)
@@ -392,101 +482,117 @@ class AudioLibraryInterface:
         reversed_list.reverse()
         self.status.update_queue(reversed_list)
         global_settings.gui_service.quick_gui(
-            f"Shuffled the audio queue.",
-            text_type='header',
-            box_align='left')
+            f"Shuffled the audio queue.", text_type="header", box_align="left"
+        )
 
     def seek(self, seconds: int):
         if self.status.is_playing():
             if global_settings.audio_inst:
                 stop_audio_instance()
-            create_audio_instance(self.status.get_track().uri, skipto=seconds,
-                                  audio_lib=self.status['audio_library'])
+            create_audio_instance(
+                self.status.get_track().uri,
+                skipto=seconds,
+                audio_lib=self.status["audio_library"],
+            )
 
-            self.status['start_time'] = int(time())
-            self.status['pause_time'] = 0
-            self.status['progress_time'] = int(seconds)
+            self.status["start_time"] = int(time())
+            self.status["pause_time"] = 0
+            self.status["progress_time"] = int(seconds)
 
             global_settings.gui_service.quick_gui(
                 f"Skipped to {str(timedelta(seconds=int(seconds)))} in the audio track.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
 
     def stop(self):
         if global_settings.audio_inst:
             stop_audio_instance()
-        self.callback_check('on_stop')
-        self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
-        self.status.update({
-            'plugin_owner': '',
-            'plugin_name': '',
-            'sender': '',
-            'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
-            'track_uri': '',
-            'alt_uri': '',
-            'image_uri': '',
-            'img_uri_hashed': '',
-            'track_id': '',
-            'queue': [],
-            'queue_length': 0,
-            'status': TrackStatus.STOPPED,
-            'pause_time': 0,
-            'start_time': 0,
-            'progress_time': 0,
-            'volume': self.status['volume'],
-            'loop': self.status['loop'],
-            'duck_audio': self.status['duck_audio'],
-            'ducking_volume': self.status['ducking_volume'],
-            'ducking_threshold': self.status['ducking_threshold'],
-            'ducking_delay': self.status['ducking_delay'],
-            # Internal Audio Ducking Settings
-            'is_ducking': False,
-            'duck_start': 0.0,
-            'duck_end': 0.0,
-            'last_volume': self.status['last_volume'],
-            'audio_library': ''
-        })
+        self.callback_check("on_stop")
+        self.queue = queue_handler.QueueHandler(
+            [], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
+        )
+        self.status.update(
+            {
+                "plugin_owner": "",
+                "plugin_name": "",
+                "sender": "",
+                "track": TrackInfo(
+                    uri="", name="", sender="", duration=-1, track_type=TrackType.FILE
+                ),
+                "track_uri": "",
+                "alt_uri": "",
+                "image_uri": "",
+                "img_uri_hashed": "",
+                "track_id": "",
+                "queue": [],
+                "queue_length": 0,
+                "status": TrackStatus.STOPPED,
+                "pause_time": 0,
+                "start_time": 0,
+                "progress_time": 0,
+                "volume": self.status["volume"],
+                "loop": self.status["loop"],
+                "duck_audio": self.status["duck_audio"],
+                "ducking_volume": self.status["ducking_volume"],
+                "ducking_threshold": self.status["ducking_threshold"],
+                "ducking_start_delay": self.status["ducking_start_delay"],
+                "ducking_end_delay": self.status["ducking_end_delay"],
+                # Internal Audio Ducking Settings
+                "is_ducking": False,
+                "duck_start": 0.0,
+                "duck_end": 0.0,
+                "last_volume": self.status["last_volume"],
+                "audio_library": "",
+            }
+        )
         self.clear_dni()
 
     def reset(self):
-        self.callback_check('on_reset')
-        self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
-        self.status.update({
-            'plugin_owner': '',
-            'plugin_name': '',
-            'sender': '',
-            'track': TrackInfo(uri='', name='', sender='', duration=-1, track_type=TrackType.FILE),
-            'track_uri': '',
-            'alt_uri': '',
-            'image_uri': '',
-            'img_uri_hashed': '',
-            'track_id': '',
-            'queue': [],
-            'queue_length': 0,
-            'status': TrackStatus.STOPPED,
-            'pause_time': 0,
-            'start_time': 0,
-            'progress_time': 0,
-            'volume': self.status['volume'],
-            'loop': self.status['loop'],
-            'duck_audio': self.status['duck_audio'],
-            'ducking_volume': self.status['ducking_volume'],
-            'ducking_threshold': self.status['ducking_threshold'],
-            'ducking_delay': self.status['ducking_delay'],
-            # Internal Audio Ducking Settings
-            'is_ducking': False,
-            'duck_start': 0.0,
-            'duck_end': 0.0,
-            'last_volume': self.status['last_volume'],
-            'audio_library': ''
-        })
+        self.callback_check("on_reset")
+        self.queue = queue_handler.QueueHandler(
+            [], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
+        )
+        self.status.update(
+            {
+                "plugin_owner": "",
+                "plugin_name": "",
+                "sender": "",
+                "track": TrackInfo(
+                    uri="", name="", sender="", duration=-1, track_type=TrackType.FILE
+                ),
+                "track_uri": "",
+                "alt_uri": "",
+                "image_uri": "",
+                "img_uri_hashed": "",
+                "track_id": "",
+                "queue": [],
+                "queue_length": 0,
+                "status": TrackStatus.STOPPED,
+                "pause_time": 0,
+                "start_time": 0,
+                "progress_time": 0,
+                "volume": self.status["volume"],
+                "loop": self.status["loop"],
+                "duck_audio": self.status["duck_audio"],
+                "ducking_volume": self.status["ducking_volume"],
+                "ducking_threshold": self.status["ducking_threshold"],
+                "ducking_start_delay": self.status["ducking_start_delay"],
+                "ducking_end_delay": self.status["ducking_end_delay"],
+                # Internal Audio Ducking Settings
+                "is_ducking": False,
+                "duck_start": 0.0,
+                "duck_end": 0.0,
+                "last_volume": self.status["last_volume"],
+                "audio_library": "",
+            }
+        )
         self.clear_dni()
 
     def clear_queue(self):
-        self.queue = queue_handler.QueueHandler([], maxlen=int(
-            global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN]))
+        self.queue = queue_handler.QueueHandler(
+            [], maxlen=int(global_settings.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
+        )
         self.status.update_queue(list(self.queue))
 
     def enqueue_track(self, track_obj, to_front=False, quiet=False):
@@ -494,13 +600,14 @@ class AudioLibraryInterface:
             if not quiet:
                 global_settings.gui_service.quick_gui(
                     "Cannot add any more tracks because the audio queue is full!",
-                    text_type='header',
-                    box_align='left')
+                    text_type="header",
+                    box_align="left",
+                )
             return
         # Calculate track duration if a file is provided.
         if track_obj.track_type == TrackType.FILE and not track_obj.duration:
             try:
-                with wave.open(track_obj.uri, 'r') as wfile:
+                with wave.open(track_obj.uri, "r") as wfile:
                     frames = wfile.getnframes()
                     rate = wfile.getframerate()
                     raw_length = frames / float(rate)
@@ -513,7 +620,7 @@ class AudioLibraryInterface:
         elif track_obj.track_type == TrackType.STREAM and not track_obj.duration:
             track_obj.duration = -1
         # New tracks must have a non-empty name.
-        if track_obj.name == '':
+        if track_obj.name == "":
             return
         # Enqueue the track based on priority.
         if to_front:
@@ -527,8 +634,9 @@ class AudioLibraryInterface:
         if not quiet:
             global_settings.gui_service.quick_gui(
                 f"{track_obj.sender} added <font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{track_obj.name}</font> to the audio queue.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
 
     def loop_track(self):
         if self.status.is_looping():
@@ -540,7 +648,7 @@ class AudioLibraryInterface:
         # Search and remove first occurrence of track by name.
         if track_name:
             track_index = None
-            for i, track_info in enumerate(self.status['queue']):
+            for i, track_info in enumerate(self.status["queue"]):
                 if track_info.name == track_name:
                     track_index = i
                     break
@@ -557,12 +665,12 @@ class AudioLibraryInterface:
 
     def next_track(self):
         # Execute any callbacks subscribed to next_track
-        self.callback_check('on_next_track')
+        self.callback_check("on_next_track")
 
-        self.status['start_time'] = int(time())
-        self.status['pause_time'] = 0
-        self.status['progress_time'] = 0
-        if self.status.is_looping() and self.status.get_track().alt_uri != '':
+        self.status["start_time"] = int(time())
+        self.status["pause_time"] = 0
+        self.status["progress_time"] = 0
+        if self.status.is_looping() and self.status.get_track().alt_uri != "":
             self.status.set_status(TrackStatus.PLAYING)
             return True
         track_to_play = self.queue.pop_item()
@@ -571,7 +679,7 @@ class AudioLibraryInterface:
             reversed_list = list(self.queue)
             reversed_list.reverse()
             self.status.update_queue(reversed_list)
-            self.callback_check('song_integrity_check')
+            self.callback_check("song_integrity_check")
             if not track_to_play.quiet:
                 self.display_playing_gui()
             self.status.set_status(TrackStatus.PLAYING)
@@ -588,12 +696,19 @@ class AudioLibraryInterface:
                 f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
                 f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
                 f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
-                text_type='header',
-                box_align='left')
-        elif self.get_track().track_type == TrackType.STREAM and self.get_track().image_uri and self.get_track().track_id:
-            cur_track_hashed_img_uri = hex(crc32(str.encode(self.get_track().track_id)) & 0xffffffff)
+                text_type="header",
+                box_align="left",
+            )
+        elif (
+            self.get_track().track_type == TrackType.STREAM
+            and self.get_track().image_uri
+            and self.get_track().track_id
+        ):
+            cur_track_hashed_img_uri = hex(
+                crc32(str.encode(self.get_track().track_id)) & 0xFFFFFFFF
+            )
             self.status["img_uri_hashed"] = cur_track_hashed_img_uri
-            image_uri_split = self.get_track().image_uri.rsplit('/', 1)
+            image_uri_split = self.get_track().image_uri.rsplit("/", 1)
             image_dir = image_uri_split[0]
             image_file = cur_track_hashed_img_uri
             cur_track = self.status.get_track()
@@ -602,23 +717,74 @@ class AudioLibraryInterface:
                     image_dir,
                     image_file,
                     caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
-                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
-                            f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
-                    caption_align='left',
+                    f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
+                    f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
+                    caption_align="left",
                     format_img=True,
-                    img_size=32768
+                    img_size=32768,
                 )
+            elif cur_track.track_id == "radio":
+                # TEMPORARY HACKWORK, REMOVE THIS SHIT IN THE REWORK
+                track_name_temp = None
+                try:
+                    # radio stream
+                    encoding = (
+                        "utf-8"  # default: iso-8859-1 for mp3 and utf-8 for ogg streams
+                    )
+                    request = urllib2.Request(
+                        cur_track.alt_uri, headers={"Icy-MetaData": "1"}
+                    )  # request metadata
+                    response = urllib2.urlopen(request)
+                    metaint = int(response.headers["icy-metaint"])
+                    for _ in range(
+                        10
+                    ):  # # title may be empty initially, try several times
+                        response.read(metaint)  # skip to metadata
+                        metadata_length = (
+                            struct.unpack("B", response.read(1))[0] * 16
+                        )  # length byte
+                        metadata = response.read(metadata_length).rstrip(b"\0")
+                        # extract title from the metadata
+                        m = re.search(rb"StreamTitle='([^']*)';", metadata)
+                        if m:
+                            title = m.group(1)
+                            if title:
+                                # print(title.decode(encoding, errors='replace'))
+                                track_name_temp = title.decode(
+                                    encoding, errors="replace"
+                                )
+                                global_settings.gui_service.quick_gui(
+                                    f"<br>Current Song: {track_name_temp}<br>Stream: {cur_track.alt_uri}",
+                                    text_type="header",
+                                    box_align="left",
+                                )
+                                break
+                            else:
+                                # print("No title found!")
+                                global_settings.gui_service.quick_gui(
+                                    "Could not retrieve a song title from this radio stream.",
+                                    text_type="header",
+                                    box_align="left",
+                                )
+                except Exception as err:
+                    print(err)
+                    global_settings.gui_service.quick_gui(
+                        "Could not retrieve a song title from this stream.",
+                        text_type="header",
+                        box_align="left",
+                    )
             else:
                 from JJMumbleBot.lib.utils.dir_utils import get_main_dir
+
                 global_settings.gui_service.quick_gui_img(
-                    f'{get_main_dir()}/lib/images',
-                    f'img_unavailable',
+                    f"{get_main_dir()}/lib/images",
+                    f"img_unavailable",
                     caption=f"<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_IND_COL]}>{'Now playing' if self.status.is_playing() else 'Paused'}</font>[{cur_track.track_type.value}"
-                            f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
-                            f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
-                    caption_align='left',
+                    f"({self.audio_utilities.sec_formatted(self.status['progress_time']) + '-' if (self.status['progress_time']) > 0 else ''}{str(timedelta(seconds=int(cur_track.duration))) if int(cur_track.duration) > 0 else -1})]: "
+                    f"{'<br>' if len(cur_track.name) > 40 else ''}<font color={global_settings.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]}>{cur_track.name}</font> by {cur_track.sender}",
+                    caption_align="left",
                     format_img=True,
-                    img_size=32768
+                    img_size=32768,
                 )
 
     def check_dni(self, plugin_name, quiet=False):
@@ -626,11 +792,13 @@ class AudioLibraryInterface:
             return True
         if not quiet:
             dprint(
-                f'An audio plugin({global_settings.audio_dni}) is already using the audio interface.')
+                f"An audio plugin({global_settings.audio_dni}) is already using the audio interface."
+            )
             global_settings.gui_service.quick_gui(
                 f"An audio plugin({global_settings.audio_dni}) is already using the audio interface.",
-                text_type='header',
-                box_align='left')
+                text_type="header",
+                box_align="left",
+            )
         return False
 
     def check_dni_is_mine(self, plugin_name):
@@ -645,10 +813,10 @@ class AudioLibraryInterface:
 
     def set_dni(self, plugin_name, plugin_title):
         global_settings.audio_dni = plugin_name
-        self.status['plugin_name'] = plugin_name
+        self.status["plugin_name"] = plugin_name
         self.status.set_plugin_owner(plugin_title)
 
     def clear_dni(self):
         global_settings.audio_dni = None
-        self.status['plugin_name'] = ''
+        self.status["plugin_name"] = ""
         self.status.clear_plugin_owner()

@@ -42,5 +42,5 @@ aliases = {}
 # Initialized Plugins.
 bot_plugins = None
 # Last Command Output
-last_command_type = ''
-last_command_output = ''
+last_command_type = ""
+last_command_output = ""
