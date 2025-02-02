@@ -3,8 +3,6 @@
 <p align="center">
   <a href="https://github.com/DuckBoss/JJMumbleBot/releases/latest"><img src="https://img.shields.io/github/release/DuckBoss/JJMumbleBot.svg"></a>
   <a href="https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL-blue.svg"></a>
-  <a href="https://www.codefactor.io/repository/github/duckboss/jjmumblebot"><img src="https://www.codefactor.io/repository/github/duckboss/jjmumblebot/badge"></a>
-  <a href="https://travis-ci.com/DuckBoss/JJMumbleBot"><img src="https://travis-ci.com/DuckBoss/JJMumbleBot.svg?branch=master"></a><br>
 </p>
 <p align="center">
   :mailbox: <b>How to reach me:</b> <a href="mailto:duckboss@kakao.com" alt="duckboss@kakao.com">duckboss@kakao.com</a><br>
