@@ -202,7 +202,7 @@ class Plugin(PluginBase):
                 url, headers={"Icy-MetaData": "1"}
             )  # request metadata
             response = urllib2.urlopen(request)
-            print(response.headers, file=sys.stderr)
+            # print(response.headers, file=sys.stderr)
             metaint = int(response.headers["icy-metaint"])
             for _ in range(10):  # # title may be empty initially, try several times
                 response.read(metaint)  # skip to metadata
