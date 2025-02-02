@@ -30,12 +30,19 @@ Most pre-existing issues and new features going forward will be addressed in the
     - Updated plugin version to `v5.3.0`
 - <b>Image Plugin</b>:
     - Fixed an issue where image thumbnails could not be generated due to an outdated API.
+- <b>Server Tools Plugin</b>:
+    - Added missing default user connection sound file: `default_user_sound.wav`
+    - Improved error-handling and error log details.
+    - Added utility methods to find audio clips from the plugin media directory and integrate better with the sound board plugin.
+    
 - <b>Misc Changes</b>:
     - General formatting fixes and test cases updates.
+    - Improved and fixed documentation in several plugins.
+    - Updated plugin templating to improve plugin creation experience.
     - Updated pymumble and pymumble callback references to use updated API.
 
 ### Minimum Requirements Updates
- - This project now requires a minimum of Python 3.9+ (previously 3.7+) to maintain compatibility with the 'yt-dlp' dependency which is heavily used for audio-related plugins.
+ - This project now requires a minimum of Python 3.9+ (previously 3.7+) to improve compatibility with the 'yt-dlp' dependency and newer VLC versions which is heavily used for audio-related plugins.
 
 ### Dependency Updates
  - The project has been updated to use 'yt-dlp' instead of 'youtube-dl' since the original project is no longer in development. This new library works identically and is actively maintained.
