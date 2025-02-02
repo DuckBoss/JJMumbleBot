@@ -40,6 +40,7 @@ Most pre-existing issues and new features going forward will be addressed in the
     - Improved and fixed documentation in several plugins.
     - Updated plugin templating to improve plugin creation experience.
     - Updated pymumble and pymumble callback references to use updated API.
+    - Updated wiki with new requirements, upgrade guide, and release pages.
 
 ### Minimum Requirements Updates
  - This project now requires a minimum of Python 3.9+ (previously 3.7+) to improve compatibility with the 'yt-dlp' dependency and newer VLC versions which is heavily used for audio-related plugins.
