@@ -1,9 +1,9 @@
 from JJMumbleBot.lib.plugin_template import PluginBase
 from JJMumbleBot.lib.utils.plugin_utils import PluginUtilityService
 from JJMumbleBot.lib.utils.logging_utils import log
-from JJMumbleBot.settings import global_settings
-from JJMumbleBot.lib.resources.strings import *
 from JJMumbleBot.lib.utils.print_utils import PrintMode
+from JJMumbleBot.settings import global_settings as gs
+from JJMumbleBot.lib.resources.strings import *
 
 
 class Plugin(PluginBase):
@@ -18,6 +18,7 @@ class Plugin(PluginBase):
         # Add any custom initialization code here...
         # ...
         # ...
+        self.register_callbacks()
         self.is_running = True
         log(INFO,
             f"{self.metadata[C_PLUGIN_INFO][P_PLUGIN_NAME]} v{self.metadata[C_PLUGIN_INFO][P_PLUGIN_VERS]} Plugin Initialized.",
@@ -42,14 +43,22 @@ class Plugin(PluginBase):
         if not self.is_running:
             self.__init__()
 
-    # Each command must be it's own method definition
-    # All command methods must be prefixed with 'cmd' and require 'self','data' in the parameters.
-    # Example: !my_echo_command -> def cmd_mycommand(self, data)
+    # This method is used to register plugin-specific callbacks for event-driven actions.
+    # For example, in the media plugin, there are multiple callbacks registered to handle
+    # the automatic downloading of thumbnail images and sequencing of tracks.
+    # Since the implementation of a plugin's callbacks are unique to the plugin, this template leaves this blank.
+    # In addition, not all plugins require callbacks to be registered and is dependent on the use-case.
+    def register_callbacks(self):
+        pass
+
+    # Each command must be its own method definition
+    # All command methods must be prefixed with 'cmd_' and require 'self','data' in the parameters.
+    # Example: !example_echo -> def cmd_example_echo(self, data)
     # You can use the 'data' parameter to extract information such as the command name/message body.
-    # Example: !my_echo_command blah blah blah
-    #          data.command -> my_echo_command
-    #          data.message -> !my_echo_command blah blah blah
-    def cmd_my_echo_command(self, data):
+    # Example: !example_echo blah blah blah
+    #          data.command -> example_echo
+    #          data.message -> !example_echo blah blah blah
+    def cmd_example_echo(self, data):
         text_to_echo = data.message.strip().split(' ', 1)[1]
-        global_settings.gui_service.quick_gui(text_to_echo, text_type='header', box_align='left', ignore_whisper=True)
+        gs.gui_service.quick_gui(text_to_echo, text_type='header', box_align='left', ignore_whisper=True)
         log(INFO, f"Echo:[{text_to_echo}]", origin=L_GENERAL)

@@ -1,15 +1,17 @@
-from pymumble_py3.messages import Cmd as PyMessages
-from pymumble_py3.constants import *
+from mumble.messages import Cmd as PyMessages
+from mumble.constants import CMD
 
 
 class RemoteTextMessage(PyMessages):
     def __init__(self, session, channel_id, message, actor):
         PyMessages.__init__(self)
 
-        self.cmd = PYMUMBLE_CMD_TEXTMESSAGE
+        self.cmd = CMD.TEXT_MESSAGE
         self.actor = actor
         self.message = message
-        self.parameters = {"session": session,
-                           "channel_id": channel_id,
-                           "message": message,
-                           "actor": actor}
+        self.parameters = {
+            "session": session,
+            "channel_id": channel_id,
+            "message": message,
+            "actor": actor,
+        }

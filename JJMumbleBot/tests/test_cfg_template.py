@@ -43,6 +43,7 @@ class TestConfigTemplate:
     def test_def_comment(self):
         default_comment = self.cfg[C_CONNECTION_SETTINGS][P_USER_COMMENT]
         assert default_comment == "Hello! I am JJMumbleBot!"
+
     #################################
 
     # Media Settings Config Tests
@@ -59,7 +60,9 @@ class TestConfigTemplate:
         assert stereo_audio is True
 
     def test_audio_library_quiet(self):
-        audio_library_quiet = self.cfg.getboolean(C_MEDIA_SETTINGS, P_MEDIA_AUDIO_LIB_QUIET)
+        audio_library_quiet = self.cfg.getboolean(
+            C_MEDIA_SETTINGS, P_MEDIA_AUDIO_LIB_QUIET
+        )
         assert audio_library_quiet is True
 
     def test_media_default_volume(self):
@@ -78,9 +81,13 @@ class TestConfigTemplate:
         media_duck_threshold = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_THRESHOLD]
         assert media_duck_threshold == "2500.0"
 
-    def test_media_duck_delay(self):
-        media_duck_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_DELAY]
-        assert media_duck_delay == "1.0"
+    def test_media_duck_start_delay(self):
+        media_duck_start_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_START_DELAY]
+        assert media_duck_start_delay == "1.0"
+
+    def test_media_duck_end_delay(self):
+        media_duck_end_delay = self.cfg[C_MEDIA_SETTINGS][P_MEDIA_DUCK_END_DELAY]
+        assert media_duck_end_delay == "1.0"
 
     def test_media_max_queue_length(self):
         media_max_queue_length = int(self.cfg[C_MEDIA_SETTINGS][P_MEDIA_QUEUE_LEN])
@@ -101,6 +108,7 @@ class TestConfigTemplate:
     def test_perm_media_directory(self):
         perm_media_directory = self.cfg[C_MEDIA_SETTINGS][P_PERM_MEDIA_DIR]
         assert perm_media_directory == ""
+
     #################################
 
     # Logging Config Tests
@@ -127,6 +135,7 @@ class TestConfigTemplate:
     def test_enable_log_stack_trace(self):
         hide_message_logging = self.cfg.getboolean(C_LOGGING, P_LOG_TRACE)
         assert hide_message_logging is False
+
     #################################
 
     # Plugin Config Tests
@@ -139,13 +148,18 @@ class TestConfigTemplate:
         assert len(safe_mode_plugins) == 2
 
     def test_allowed_root_channels_for_temp_channels(self):
-        allowed_root_channels_for_temp_channels = list(loads(self.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_ALLOWED_CHANNELS)))
+        allowed_root_channels_for_temp_channels = list(
+            loads(self.cfg.get(C_PLUGIN_SETTINGS, P_PLUG_ALLOWED_CHANNELS))
+        )
         assert len(allowed_root_channels_for_temp_channels) == 1
+
     #################################
 
     # Main Settings Config Tests
     def test_enable_database_integrity_check(self):
-        enable_database_integrity_check = self.cfg.getboolean(C_MAIN_SETTINGS, P_DB_INTEGRITY)
+        enable_database_integrity_check = self.cfg.getboolean(
+            C_MAIN_SETTINGS, P_DB_INTEGRITY
+        )
         assert enable_database_integrity_check is True
 
     def test_enable_database_backup(self):
@@ -171,6 +185,7 @@ class TestConfigTemplate:
     def test_command_hist_lim(self):
         command_hist_lim = int(self.cfg[C_MAIN_SETTINGS][P_CMD_HIST_LIM])
         assert command_hist_lim == 25
+
     #################################
 
     # PGUI Settings Config Tests
@@ -209,4 +224,5 @@ class TestConfigTemplate:
     def test_text_sub_header_color(self):
         text_header_color = self.cfg[C_PGUI_SETTINGS][P_TXT_SUBHEAD_COL]
         assert text_header_color == "yellow"
+
     #################################

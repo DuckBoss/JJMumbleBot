@@ -1,8 +1,5 @@
 from JJMumbleBot.lib.utils.print_utils import dprint
-from pymumble_py3.constants import PYMUMBLE_CLBK_USERCREATED, PYMUMBLE_CLBK_CONNECTED, PYMUMBLE_CLBK_SOUNDRECEIVED, \
-    PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, PYMUMBLE_CLBK_DISCONNECTED, PYMUMBLE_CLBK_CHANNELUPDATED, \
-    PYMUMBLE_CLBK_CHANNELREMOVED, PYMUMBLE_CLBK_CHANNELCREATED, PYMUMBLE_CLBK_USERREMOVED, PYMUMBLE_CLBK_USERUPDATED, \
-    PYMUMBLE_CLBK_PERMISSIONDENIED
+from mumble.callbacks import CALLBACK
 
 
 class Callbacks(dict):
@@ -35,19 +32,21 @@ class Callbacks(dict):
 class CoreCallbacks(Callbacks):
     def __init__(self):
         super().__init__()
-        self.update({
-            PYMUMBLE_CLBK_USERCREATED: [],
-            PYMUMBLE_CLBK_TEXTMESSAGERECEIVED: [],
-            PYMUMBLE_CLBK_SOUNDRECEIVED: [],
-            PYMUMBLE_CLBK_CONNECTED: [],
-            PYMUMBLE_CLBK_CHANNELCREATED: [],
-            PYMUMBLE_CLBK_CHANNELREMOVED: [],
-            PYMUMBLE_CLBK_CHANNELUPDATED: [],
-            PYMUMBLE_CLBK_USERREMOVED: [],
-            PYMUMBLE_CLBK_USERUPDATED: [],
-            PYMUMBLE_CLBK_DISCONNECTED: [],
-            PYMUMBLE_CLBK_PERMISSIONDENIED: []
-        })
+        self.update(
+            {
+                CALLBACK.USER_CREATED: [],
+                CALLBACK.TEXT_MESSAGE_RECEIVED: [],
+                CALLBACK.SOUND_RECEIVED: [],
+                CALLBACK.CONNECTED: [],
+                CALLBACK.CHANNEL_CREATED: [],
+                CALLBACK.CHANNEL_REMOVED: [],
+                CALLBACK.CHANNEL_UPDATED: [],
+                CALLBACK.USER_REMOVED: [],
+                CALLBACK.USER_UPDATED: [],
+                CALLBACK.DISCONNECTED: [],
+                CALLBACK.PERMISSION_DENIED: [],
+            }
+        )
 
     def register_callback(self, callback, dest: list):
         self[callback] = dest

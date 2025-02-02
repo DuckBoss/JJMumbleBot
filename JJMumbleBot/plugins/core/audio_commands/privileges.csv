@@ -16,4 +16,5 @@ volume,3
 duckaudio,4
 duckvolume,4
 duckthreshold,4
-duckdelay,4
+duckstartdelay,4
+duckenddelay,4

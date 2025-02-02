@@ -8,7 +8,9 @@ class TestMetadataTemplate:
     def setup_method(self):
         # Initialize metadata.
         self.cfg = configparser.ConfigParser()
-        self.cfg.read(f"{get_main_dir()}/templates/plugin_templates/metadata_template.ini")
+        self.cfg.read(
+            f"{get_main_dir()}/templates/plugin_templates/metadata_template.ini"
+        )
 
     # Plugin Information Tests
     def test_plugin_version(self):
@@ -24,7 +26,7 @@ class TestMetadataTemplate:
         assert self.cfg[C_PLUGIN_INFO][P_PLUGIN_LANG] == "EN"
 
     def test_plugin_commands(self):
-        assert len(list(loads(self.cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS]))) == 0
+        assert len(list(loads(self.cfg[C_PLUGIN_INFO][P_PLUGIN_CMDS]))) == 1
 
     # Plugin Settings Tests
     def test_thread_wait_for_commands(self):
