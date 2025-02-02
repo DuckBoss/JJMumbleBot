@@ -12,12 +12,31 @@
 <body>
 <nav id="table_of_contents"></nav>
 <div class="main-content">
-    <h2 id="page-title"><small><b>v</b></small>5.2.0 Update</h2>
+    <h2 id="page-title"><small><b>v</b></small>5.3.0 Update</h2>
     <h4>Major Management Improvements</h4>
-    <h6><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v5.2.0">Github Download Link</a></h6>
+    <h6><a href="https://github.com/DuckBoss/JJMumbleBot/releases/tag/v5.3.0">Github Download Link</a></h6>
     <hr/>
     <div class="update-guide alert alert-dismissible alert-warning">
-        <h5>Update Guide For <small><b>v</b></small>5.1.0 and <small><b>v</b></small>5.1.1 Users</h5>
+        <h5>Update Guide To v5.3.0 For <small><b>v</b></small>5.2.0 Users</h5>
+
+        <details>
+            <summary class="unselectable">Click Here To View Guide</summary>
+            <ul>
+                <li><h6><b class="update-guide-header btn-danger">Required</b> Update Config.ini File</h6>
+                    Update your <code>config.ini</code> file to include the two new audio ducking fields under the <code>[Media Settings]</code> section:
+                    <pre class="left-shifted-pre">
+                        [Media Settings]
+                        DuckingStartDelay = 1.0
+                        DuckingEndDelay = 1.0
+                    </pre>
+                    <b>Be sure to remove the <code>DuckingDelay</code>field if it exists.</b>
+                    <i>Refer to the /templates/ directory to see a template of the file.</i>
+                </li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-guide alert alert-dismissible alert-warning">
+        <h5>Update Guide To v5.3.0 For <small><b>v</b></small>5.1.0 and <small><b>v</b></small>5.1.1 Users</h5>
 
         <details>
             <summary class="unselectable">Click Here To View Guide</summary>
@@ -28,6 +47,13 @@
                         [Main Settings]
                         EnableDatabaseIntegrityCheck = True
                     </pre>
+                    Update your <code>config.ini</code> file to include the two new audio ducking fields under the <code>[Media Settings]</code> section:
+                    <pre class="left-shifted-pre">
+                        [Media Settings]
+                        DuckingStartDelay = 1.0
+                        DuckingEndDelay = 1.0
+                    </pre>
+                    <b>Be sure to remove the <code>DuckingDelay</code>field if it exists.</b>
                     <i>Refer to the /templates/ directory to see a template of the file.</i>
                 </li>
                 <li><h6><b class="update-guide-header btn-warning">Optional</b> Setup Custom Aliases File</h6>
@@ -48,188 +74,69 @@
     <hr/>
     <div class="update-details">
         <details>
-            <summary class="unselectable">Wiki Command For Server Tools Plugin <b class="update-details-header btn-success small">NEW</b></summary>
+            <summary class="unselectable">Radio Streaming Support for Media Plugin <b class="update-details-header btn-success small">NEW</b></summary>
             <ul>
-                This is a simple command that displays a link to the JJMumbleBot wiki for quick reference at runtime.
+                Added support for streaming audio from radio stations.
                 <li>
-                    <code>!wiki</code>: Displays a link to the JJMumbleBot wiki.
+                    <code>!radiolink 'url'</code>: Start streaming audio from compatible radio stations.
+                </li>
+                <i>Please note that radio streaming isn't supported for all radio stations and it requires a direct link to the icecast stream.<br>
+                    Some examples of working radio station links are provided in the plugin's metadata file.</i><br>
+                <i>You can use existing audio commands with radio streaming such as <code>!stop/!pause/!resume/!playing</code></i><br>
+                <i>Radio streaming isn't supported for all radio stations and it requires a direct link to the icecast stream.<br>
+                Some examples of working radio station links are provided in the plugin's metadata file.</i><br>
+                <li>
+                    <p> Here are some examples of working icecast radio streams:</p>
+                    <ul>
+                        <li>Rock:<code>!radiolink http://stream.radioreklama.bg:80/radio1rock128</code></li>
+                        <li>Latin/Spanish:<code>!radiolink http://radio35.virtualtronics.com:8129/stream</code>"</li>
+                        <li>Korean Misc:<code>!radiolink https://das-edge13-live365-dal02.cdnstream.com/a48202</code></li>
+                        <li>KPOP:<code>!radiolink https://antares.dribbcast.com/proxy/kpop?mp=/s</code></li>
+                        <li>JPOP:<code>!radiolink https://antares.dribbcast.com/proxy/jpop?mp=/s</code></li>
+                        <li>NPR News:<code>!radiolink https://npr-ice.streamguys1.com/live.mp3</code></li>
+                        <li>Video Game Music:<code>!radiolink http://stream.rpgamers.net:8000/rpgn</code></li>
+                    </ul>
                 </li>
             </ul>
         </details>
     </div>
     <div class="update-details">
         <details>
-            <summary class="unselectable">Custom Aliases And Runtime Modifications <b class="update-details-header btn-warning small">UPDATED</b></summary>
+            <summary class="unselectable">Audio Ducking Updates <b class="update-details-header btn-warning small">UPDATED</b></summary>
+            <p>Split the audio ducking delay option into two separate delay options for finer control over the audio ducking feature:</p>
+            <ul>
+                <li>Removed <code>!duckdelay</code> command and replaced it with <code>!duckstartdelay</code> and <code></code>!duckenddelay</code>.</li>
+                <li>Use <code>!duckstartdelay</code> <seconds> to specify how long the bot should wait before ducking the audio volume when it detects user voice activity.</li>
+                <li>Use <code>!duckenddelay</code> <seconds> to specify how long the bot should wait before restoring the ducked volume back to the original value when it detects no user voice activity.</li>
+                <li>Updated command line arguments and config options to match the above changes.</li>
+            </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Adjusted <code>!sbrandom...</code> Related Commands Logic for Sound Board Plugin <b class="update-details-header btn-warning small">UPDATED</b></summary>
             <p>
-                Previously, aliases could be updated by modifying the <code>global_aliases.csv</code> file. Every update to the file required restarting the bot which was very tedious!<br/>
-                In this update, the internal database handling of this process has been improved and the file has been renamed to <code>custom_aliases.csv</code> for consistency.<br/>
-                With this update, Updating multiple aliases can be updated at runtime using either a <code>local csv file</code> or a <code>remote csv file</code> downloaded through a URL.
+                Adjusted logic for the <code>!sbrandom...</code> related commands to choose a different audio clip if it picks the same audio clip as the last time it was run. This change is to mitigate cases when it chooses the same audio clip back to back, making it feel less random.
             </p>
-            <h6>Update Aliases With Local Files:</h6>
-            <ul>
-                <li>
-                    Users can now set custom aliases for commands by utilizing a <code>custom_aliases.csv</code> file within the cfg folder.<sup>*</sup><br/>
-                    This is useful for everyone, but particularly helpful for docker containers and cloud-hosted solutions that have their <code>/cfg/</code> folders mounted.<br/>
-                    <small><sup>*</sup><i>This file is automatically generated if it's missing and was formerly called the <code>global_aliases.csv</code> file.</i></small><br/>
-                </li>
-                <li>
-                    For example: <i>"I want to have an alias to display information about the bot!"</i><br/>
-                    <pre class="left-shifted-pre">
-                        alias,command
-                        botinfo,(about)|(version)
-                    </pre>
-                    In this simple example, the <code>custom_aliases.csv</code> is modified so that a <code>!botinfo</code> alias is made to call the <code>!about and !version</code> commands.
-                </li>
-                <li>
-                    You can update the database at runtime using the new command: <code>!refreshaliases</code>.
-                </li>
-            </ul>
-            <h6>Update Aliases With Remote Files:</h6>
-            <ul>
-                <li>
-                    Bot owners now have an option of updating aliases by utilizing a csv file on a remote endpoint/URL.<br/>
-                    This functions similarly to the local file method shown above, but has the advantage of not requiring extensive access to the filesystem.<br/>
-                    This is extremely useful for bot owners that use cloud-hosting solutions with limited filesystem access.<br/>
-                    <small><i>The csv file is downloaded to the following temporary path: <code>/cfg/downloads/_aliases.csv</code></i></small>
-                </li>
-                <li>
-                    This can be achieved by utilizing this new command: <code>!importaliases 'URL'</code>
-                </li>
-            </ul>
         </details>
     </div>
     <div class="update-details">
         <details>
-            <summary class="unselectable">Custom Command Permissions And Runtime Modifications <b class="update-details-header btn-success small">NEW</b></summary>
-            <p>
-                Previously, to update the command permissions, each command had to be meticulously updated by modifying multiple csv files across multiple plugin folders.<br/>
-                With this update, that is no longer the case and updating multiple commands can be updated at runtime using either a <code>local csv file</code> or a <code>remote csv file</code> downloaded through a URL.<br/>
-                In addition to those updates, new commands have been added to display/update individual command permissions.
-            </p>
-            <h6>Display/Update Individual Permissions With Commands:</h6>
-            <ul>
-                <li>
-                    <code>!getpermission 'command_name'</code>: Displays the permission level for the specified command.<br/>
-                    <code>!setpermission 'command_name' 'permission_level'</code>: Modifies the permission level for the specified command.<br/>
-                </li>
-            </ul>
-            <h6>Update Command Permissions With Local Files:</h6>
-            <ul>
-                <li>
-                    Users can now set custom permission levels for commands by utilizing a <code>custom_permissions.csv</code> file within the cfg folder.<sup>*</sup><br/>
-                    This is useful for everyone, but particularly helpful for docker containers and cloud-hosted solutions that have their <code>/cfg/</code> folders mounted.<br/>
-                    <small><sup>*</sup><i>This file is automatically generated if it's missing.</i></small><br/>
-                </li>
-                <li>
-                    For example: <i>"I want to allow only administrators to change the bot volume!"</i><br/>
-                    <pre class="left-shifted-pre">
-                        command,permission
-                        volume,4
-                    </pre>
-                    In this example, the <code>custom_permissions.csv</code> is modified so that the volume command is set to a permission level of 4 (administrators and above only).
-                </li>
-                <li>
-                    You can update the database at runtime using the new command: <code>!refreshpermissions</code>.
-                </li>
-            </ul>
-            <h6>Update Command Permissions With Remote Files:</h6>
-            <ul>
-                <li>
-                    Bot owners now have an option of updating the command permissions by utilizing a csv file on a remote endpoint/URL.<br/>
-                    This functions similarly to the local file method shown above, but has the advantage of not requiring extensive access to the filesystem.<br/>
-                    This is extremely useful for bot owners that use cloud-hosting solutions with limited filesystem access.<br/>
-                    <small><i>The csv file is downloaded to the following temporary path: <code>/cfg/downloads/_permissions.csv</code></i></small>
-                </li>
-                <li>
-                    This can be achieved by utilizing this command: <code>!importpermissions 'URL'</code>
-                </li>
-            </ul>
-        </details>
-    </div>
-    <div class="update-details">
-        <details>
-            <summary class="unselectable">Custom User Privileges And Runtime Modifications <b class="update-details-header btn-success small">NEW</b></summary>
-            <p>
-                Previously, to update the user privileges, administrators had to individually update user privileges using the <code>!setprivileges</code> command for every user.<br/>
-                With this update, It is much simpler to update multiple user privileges at a time at runtime using either a <code>local csv file</code> or a <code>remove csv file</code> downloaded with a URL.
-            </p>
-            <h6>Update User Privileges With Local Files:</h6>
-            <ul>
-                <li>
-                    Users can now set custom privileges for users by utilizing a <code>custom_user_privileges.csv</code> file within the cfg folder.<sup>*</sup><br/>
-                    This is useful for everyone, but particularly helpful for docker containers and cloud hosted-solutions that have their <code>/cfg/</code> folders mounted.<br/>
-                    <small><sup>*</sup><i>This file is automatically generated if it's missing.</i></small><br/>
-                </li>
-                <li>
-                    For example: <i>"I want to change privileges for 4 users!"</i><br/>
-                    <pre class="left-shifted-pre">
-                        username,level
-                        Jason,4
-                        Thomas,3
-                        Suzy,4
-                        John,2
-                    </pre>
-                    In this example, the <code>custom_user_privileges.csv</code> is modified to update the privileges of individual users..
-                </li>
-                <li>
-                    You can update the database at runtime using the new command: <code>!refreshuserprivileges</code>.
-                </li>
-            </ul>
-            <h6>Update User Privileges With Remote Files:</h6>
-            <ul>
-                <li>
-                    Bot owners now have an option of updating user privileges by utilizing a csv file on a remote endpoint/URL.<br/>
-                    This functions similarly to the local file method shown above, but has the advantage of not requiring extensive access to the filesystem.<br/>
-                    This is extremely useful for bot owners that use cloud-hosting solutions with limited filesystem access.<br/>
-                    <small><i>The csv file is downloaded to the following temporary path: <code>/cfg/downloads/_privileges.csv</code></i></small>
-                </li>
-                <li>
-                    This can be achieved by utilizing this command: <code>!importuserprivileges 'URL'</code>
-                </li>
-            </ul>
-        </details>
-    </div>
-    <div class="update-details">
-        <details>
-            <summary class="unselectable">Database and Config Integrity Checking <b class="update-details-header btn-success small">NEW</b></summary>
-            <ul>
-                <li>
-                    On startup, the database is updated with any custom command permissions, custom aliases, or custom user privileges provided in the
-                    <code>custom_aliases.csv, custom_permissions.csv, and custom_user_privileges.csv</code> files.<sup>1</sup><br/>
-                    <small><sup>1</sup><i>This feature can be disabled in the <code>config.ini</code> file, but disabling it may result in data conflicts when updates occur.</i></small>
-                </li>
-                <li>On startup, the <code>config.ini</code> file is scanned to make sure the options match the options in the <code>template_config.ini</code> file to ensure integrity.<sup>2</sup><br/>
-                    <small><sup>2</sup><i>This feature <b>CANNOT</b> be disabled in the <code>config.ini</code> file since it is critical to prevent conflicts in the config file.</i></small>
-                </li>
-            </ul>
-        </details>
-    </div>
-    <div class="update-details">
-        <details>
-            <summary class="unselectable">New Command Line Arguments <b class="update-details-header btn-success small">NEW</b></summary>
-            <ul>
-                <li><code>-regeneratedatabase</code>: Deletes the existing internal database if it exists, so that it can be regenerated from scratch.</li>
-            </ul>
-        </details>
-    </div>
-    <div class="update-details">
-        <details>
-            <summary class="unselectable">Wiki Visual Overhaul <b class="update-details-header btn-warning small">UPDATED</b></summary>
-            <ul>
-                <li>
-                    The <a href="https://duckboss.github.io/JJMumbleBot/wiki/new/whats_new.html">JJMumbleBot Wiki</a> has had a visual overhaul to improve readability and navigation!<br/>
-                    Come check it out!
-                </li>
-            </ul>
+            <summary class="unselectable">Dependency Updates <b class="update-details-header btn-warning small">UPDATED</b></summary>
+            <p>This project now requires a minimum of <code>Python 3.9+ (previously 3.7+)</code> to improve compatibility with the <code>yt-dlp</code> dependency and newer VLC versions which is heavily used for audio-related plugins.</p>
+            <p>The project has been updated to use <code>yt-dlp</code> instead of <code>youtube-dl</code> since the original project is no longer in development.
+                <br>This new library works identically and is actively maintained.</p>
+            <p>I've updated the pymumble dependency to use a <a href="https://github.com/DuckBoss/pymumble">stable fork that I've created</a> of <a href="https://github.com/oopsbagel/pymumble">another fork by oopsbagel</a> which aims to improve and modernize pymumble since the original project is no longer in active development.
+                <br>I've decided to fork it into my own repository so I can verify patches and ensure stability for usage in this bot.</p>
         </details>
     </div>
     <div class="update-details">
         <details>
             <summary class="unselectable">Bug Fixes <b class="update-details-header btn-danger small">FIXES</b></summary>
             <ul>
-                <li>Fixed error-handling for the <code>!volume</code> command.</li>
-                <li>Fixed issue where custom aliases would be re-added to the database on start-up if they were previously removed using a command.</li>
-                <li>The JJMumbleBot Wiki now properly displays an error if javascript is disabled.</li>
+                <li>Fixed an issue where image thumbnails could not be generated due to an outdated API.</li>
+                <li>Added missing default user connection sound file to server tools plugin: default_user_sound.wav</li>
+                <li>Improved and fixed documentation in several plugins.</li>
             </ul>
         </details>
     </div>
@@ -237,16 +144,28 @@
         <details>
             <summary class="unselectable">Other Changes <b class="update-details-header btn-info small">MISC</b></summary>
             <ul>
-                <li>A warning is now displayed if database backups are enabled but the database file is missing.</li>
-                <li>A different message is now displayed to blacklisted users that try to use bot commands.</li>
-                <li>Renamed the generated <code>global_aliases.csv</code> to <code>custom_aliases.csv</code></li>
-                <li>Cleaned up the console messages on regular bot startup.</li>
+                <li>General formatting fixes and test cases updates.</li>
+                <li>Updated plugin templating to improve plugin creation experience.</li>
+                <li>Updated pymumble and pymumble callback references to use updated API.</li>
+                <li>Updated wiki with new requirements, upgrade guide, and release pages.</li>
                 <li>Optimized logging and debugging messages in the internal database library.</li>
+                <li>Added utility methods to find audio clips from the plugin media directory and integrate better with the sound board plugin.</li>
                 <li>Refactored user privilege checks.</li>
                 <li>Updated repository README to allow new users to better understand the features of JJMumbleBot.</li>
                 <li>Updated <code>Quick Setup Utility</code> web utility for v5.2.0</li>
                 <li>Updated bot internal version and updated plugins to v5.2.0</li>
             </ul>
+        </details>
+    </div>
+    <div class="update-details">
+        <details>
+            <summary class="unselectable">Known Issues <b class="update-details-header btn-danger small">KNOWN ISSUES</b></summary>
+            <p>
+                <b>Server Tools Plugin:</b>
+                The feature to play a 'connection sound' when a user connects to the server is currently broken.
+                <br>I highly suggest not using this feature. I don't plan on fixing it in this project and I will be addressing it in the larger rework project 'Mumimo'.
+                <br>If you still decide to use it and the audio queue freezes, simply use !stop to flush the audio queue.
+            </p>
         </details>
     </div>
 </div>
