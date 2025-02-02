@@ -1,11 +1,11 @@
 ## JJMumbleBot v5.3.0 - New features and fixes
 
-This bot is no longer under active development, however I wanted
-to release a patch for existing users while they wait for the rework project to be ready for an initial release. This patch mostly aims to add small features and fix some existing issues that prevented the bot from working. This patch includes dependency updates and contains some breaking changes as a result.
+<b>This project is no longer under active development, and the bot is being reworked in the following rework project: [Mumimo](https://github.com/DuckBoss/Mumimo)</b>
+However I wanted to release a patch for existing users while they wait for the rework project to be ready for an initial release. This patch mostly aims to add small features and fix some existing issues that prevented the bot from working. This patch includes dependency updates and contains some breaking changes as a result.
 Most pre-existing issues and new features going forward will be addressed in the rework project: [Mumimo](https://github.com/DuckBoss/Mumimo).
 
 ### New Features, Changes and Fixes
-- <b>Media Plugin</b>
+- <b>Media Plugin</b>:
     - Added support for streaming audio from radio stations.
     Simply use the `!radiolink <link>` command to start streaming from compatible radio stations.
     Radio streaming isn't supported for all radio stations and it requires a direct link to the icecast stream.
