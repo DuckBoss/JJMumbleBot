@@ -131,13 +131,15 @@ class Plugin(PluginBase):
         return None
 
     def util_find_and_create_track(self, file_name) -> Union[TrackInfo, None]:
+        file_track = None
         if self.metadata.getboolean(
             C_PLUGIN_SET, P_USE_SOUNDBOARD_CLIPS, fallback=True
         ):
-            if self.util_find_sb_file(file_name):
+            file_track = self.util_find_sb_file(file_name)
+            if file_track is not None:
                 return TrackInfo(
-                    uri=f"{get_perm_med_dir()}/sound_board/{file_name}",
-                    alt_uri=f"{get_perm_med_dir()}/sound_board/{file_name}",
+                    uri=f"{get_perm_med_dir()}/sound_board/{file_track}",
+                    alt_uri=f"{get_perm_med_dir()}/sound_board/{file_track}",
                     name=file_name,
                     sender=get_bot_name(),
                     duration=None,
@@ -146,10 +148,11 @@ class Plugin(PluginBase):
                 )
             return None
         else:
-            if self.util_find_file(file_name):
+            file_track = self.util_find_file(file_name)
+            if file_track is not None:
                 return TrackInfo(
-                    uri=f"{get_perm_med_dir()}/{self.plugin_name}/{file_name}",
-                    alt_uri=f"{get_perm_med_dir()}/{self.plugin_name}/{file_name}",
+                    uri=f"{get_perm_med_dir()}/{self.plugin_name}/{file_track}",
+                    alt_uri=f"{get_perm_med_dir()}/{self.plugin_name}/{file_track}",
                     name=file_name,
                     sender=get_bot_name(),
                     duration=None,
