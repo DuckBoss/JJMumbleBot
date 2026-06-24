@@ -1,3 +1,12 @@
+## JJMumbleBot v5.3.1 - Login sounds fixes
+<b>This project is no longer under active development, and the bot is being reworked in the following rework project: [Mumimo](https://github.com/DuckBoss/Mumimo)</b>
+However, I still use this older version of the bot and try to fix bugs when I find them, so here it is.
+
+### Fixes
+- <b>Server Tools Plugin</b>:
+    - Fixed login/user-connection sounds: The feature to play a 'connection sound' when a user connects to the server is
+ fixed with this update. You should now be able to set login sounds and it should play when the user connects to the server as it used to work before.
+
 ## JJMumbleBot v5.3.0 - New features and fixes
 
 <b>This project is no longer under active development, and the bot is being reworked in the following rework project: [Mumimo](https://github.com/DuckBoss/Mumimo)</b>
