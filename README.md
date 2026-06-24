@@ -5,7 +5,7 @@
   <a href="https://github.com/DuckBoss/JJMumbleBot/blob/master/LICENSE"><img src="https://img.shields.io/badge/License-GPL-blue.svg"></a>
 </p>
 <p align="center">
-  :mailbox: <b>How to reach me:</b> <a href="mailto:duckboss@kakao.com" alt="duckboss@kakao.com">duckboss@kakao.com</a><br>
+  :mailbox: <b>How to reach me:</b> <a href="mailto:me@duckhuggles.com" alt="me@duckhuggles.com">me@duckhuggles.com</a><br>
 </p>
 
 
