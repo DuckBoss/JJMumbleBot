@@ -129,6 +129,13 @@ config.ini
 *.py.save
 *.db
 *.dll
+
+# AI assistance
+.cursor/
+.claude/
+.opencode/
+.*.md
+
 # Ignore configuration and runtime files and directories
 JJMumbleBot/cfg/global_aliases.csv
 JJMumbleBot/cfg/custom_aliases.csv
